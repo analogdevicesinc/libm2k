@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: libm2k
+Description: Library for interfacing ADALM2000 devices
+Version: @VERSION@
+
+Requires:
+Libs: -L${libdir} -lm2k
+Cflags: -I${includedir}

@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.1.3)
+option(BUILD_STATIC_LIB "Build static library" OFF)
+
+if (NOT WIN32)
+	find_library(PTHREAD_LIBRARIES pthread)
+	if (PTHREAD_LIBRARIES)
+		target_link_libraries(${PROJECT_NAME} LINK_PRIVATE ${PTHREAD_LIBRARIES})
+	endif()
+endif()
+
+
+if(APPLE)
+	# build universal binaries by default
+	set(CMAKE_OSX_ARCHITECTURES "x86_64")
+endif()
+
+if(MSVC)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
+endif()
+
+include_directories(SYSTEM ${IIO_INCLUDE_DIRS})
+
+FILE(GLOB SRC_LIST  *.cpp *.cc)
+FILE(GLOB HEADERS_LIST ${CMAKE_SOURCE_DIR}/include/libm2k/*.h)
+
+add_library(m2k SHARED
+			${SRC_LIST}
+			${HEADERS_LIST})
+
+if (WIN32 OR ENABLE_APPLICATION_BUNDLE)
+	set_target_properties(m2k PROPERTIES OUTPUT_NAME m2k)
+endif()	
+
+target_link_libraries(m2k ${IIO_LIBRARIES})
+
+set_target_properties(m2k PROPERTIES
+	VERSION ${LIBM2K_VERSION}
+	SOVERSION ${LIBM2K_VERSION}
+	PUBLIC_HEADER "${HEADERS_LIST}"
+)
+
+message(${CMAKE_INSTALL_LIBDIR})
+install(TARGETS m2k
+	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+	PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/libm2k")
