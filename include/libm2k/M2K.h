@@ -23,6 +23,8 @@
 #   else
 #	define __api __declspec(dllimport)
 #   endif
+#else
+#	define __api __attribute__((visibility ("default")))
 #endif
 
 #include <vector>

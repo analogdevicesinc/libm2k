@@ -18,7 +18,7 @@
  */
 
 #include "../include/libm2k/M2K.h"
-#include "iio.h"
+#include <iio.h>
 #include <iostream>
 
 using namespace m2k;
@@ -68,7 +68,7 @@ out_destroy_context:
 
 DeviceBuilder* DeviceBuilder::deviceOpen(const char *uri)
 {
-        auto ctx = iio_create_context_from_uri(uri);
+	iio_context* ctx = iio_create_context_from_uri(uri);
         if (ctx) {
                 std::cout << "all good \n";
                 const char *name = new char[100];
@@ -76,7 +76,7 @@ DeviceBuilder* DeviceBuilder::deviceOpen(const char *uri)
                 iio_context_get_attr(ctx, 4, &name, &value);
                 std::cout << name << " " <<  value <<  "\n";
         }
-        auto dev = new DeviceBuilder();
+	DeviceBuilder* dev = new DeviceBuilder();
         return dev;
 }
 

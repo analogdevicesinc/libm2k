@@ -1,14 +1,6 @@
 cmake_minimum_required(VERSION 3.1.3)
 option(BUILD_STATIC_LIB "Build static library" OFF)
 
-if (NOT WIN32)
-	find_library(PTHREAD_LIBRARIES pthread)
-	if (PTHREAD_LIBRARIES)
-		target_link_libraries(${PROJECT_NAME} LINK_PRIVATE ${PTHREAD_LIBRARIES})
-	endif()
-endif()
-
-
 if(APPLE)
 	# build universal binaries by default
 	set(CMAKE_OSX_ARCHITECTURES "x86_64")
@@ -30,6 +22,14 @@ add_library(m2k SHARED
 if (WIN32 OR ENABLE_APPLICATION_BUNDLE)
 	set_target_properties(m2k PROPERTIES OUTPUT_NAME m2k)
 endif()	
+
+if (NOT WIN32)
+	find_library(PTHREAD_LIBRARIES pthread)
+	if (PTHREAD_LIBRARIES)
+		target_link_libraries(${PROJECT_NAME} ${PTHREAD_LIBRARIES})
+	endif()
+endif()
+
 
 target_link_libraries(m2k ${IIO_LIBRARIES})
 
