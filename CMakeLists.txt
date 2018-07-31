@@ -16,7 +16,7 @@
 #  Boston, MA 02110-1301, USA.
 
 cmake_minimum_required(VERSION 3.1.3)
-project(libm2k LANGUAGES CXX VERSION 1.00)
+project(m2k LANGUAGES CXX VERSION 1.00)
 include(GNUInstallDirs)
 include(FindGit OPTIONAL)
 
@@ -68,29 +68,6 @@ if(APPLE)
 	if("${isSystemDir}" STREQUAL "-1")
 		set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_LIBDIR}")
 	endif()
-endif()
-
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
-	option(WITH_DOC "Generate documentation with Doxygen" ON)
-
-	if (WITH_DOC)
-		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-		set(HTML_DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/html)
-		file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/doc DESTINATION ${HTML_DEST_DIR})
-
-		add_custom_command(TARGET m2k POST_BUILD
-			COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMENT "Generating API documentation with Doxygen" VERBATIM
-			)
-
-		if(NOT SKIP_INSTALL_ALL)
-			install(DIRECTORY ${HTML_DEST_DIR} DESTINATION ${CMAKE_INSTALL_DOCDIR})
-		endif()
-	endif()
-else()
-	message(STATUS "Doxygen not found, API documentation won't be generated")
 endif()
 
 add_subdirectory(src)
