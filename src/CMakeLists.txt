@@ -10,10 +10,16 @@ if(MSVC)
 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 endif()
 
-include_directories(SYSTEM ${IIO_INCLUDE_DIRS})
+include_directories(
+	SYSTEM ${IIO_INCLUDE_DIRS}
+)
 
 FILE(GLOB SRC_LIST  *.cpp *.cc)
-FILE(GLOB HEADERS_LIST ${CMAKE_SOURCE_DIR}/include/libm2k/*.h)
+FILE(GLOB HEADERS_LIST
+	${CMAKE_SOURCE_DIR}/include/libm2k/*.h
+	${CMAKE_SOURCE_DIR}/include/libm2k/interprocess/*.hpp
+	${CMAKE_SOURCE_DIR}/include/libm2k/interprocess/*/*.hpp
+	${CMAKE_SOURCE_DIR}/include/libm2k/interprocess/*/*/*.hpp)
 
 add_library(m2k SHARED
 			${SRC_LIST}
@@ -31,7 +37,9 @@ if (NOT WIN32)
 endif()
 
 
-target_link_libraries(m2k ${IIO_LIBRARIES})
+target_link_libraries(m2k
+	${IIO_LIBRARIES}
+)
 
 set_target_properties(m2k PROPERTIES
 	VERSION ${LIBM2K_VERSION}

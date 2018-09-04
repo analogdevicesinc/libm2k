@@ -17,35 +17,27 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef _WIN32
-#   ifdef LIBM2K_EXPORTS
-#	define __api __declspec(dllexport)
-#   else
-#	define __api __declspec(dllimport)
-#   endif
-#else
-#	define __api __attribute__((visibility ("default")))
-#endif
-
 #include <vector>
 #include <string>
 //#include <memory>
+
+#include "m2kglobal.h"
 
 namespace m2k {
 //        class DeviceBuilderImpl;
         /* @class DeviceBuilder
          * handles a device
          */
-        class __api DeviceBuilder {
+	class LIBM2K_API DeviceBuilder {
         public:
                 explicit DeviceBuilder();
                 ~DeviceBuilder();
-                static __api std::vector<std::string> listDevices();
-                static __api DeviceBuilder* deviceOpen(const char*); //should ret GenericDevice
-                static __api void deviceClose(DeviceBuilder*); //should return GenericDevice
+		static std::vector<std::string> listDevices();
+		static DeviceBuilder* deviceOpen(const char*); //should ret GenericDevice
+		static void deviceClose(DeviceBuilder*); //should return GenericDevice
         private:
                 std::vector<std::string> m_connectedDevices; //should be GenericDevice
 //                std::unique_ptr<M2KImpl> m_pimpl;
-        };
+	};
 }
 //#endif

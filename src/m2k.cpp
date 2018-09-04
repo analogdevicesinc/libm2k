@@ -24,7 +24,6 @@
 using namespace m2k;
 using namespace std;
 
-
 DeviceBuilder::DeviceBuilder()// : m_pimpl(new M2KImpl())
 {
 	std::cout << "Constructor \n";

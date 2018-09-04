@@ -25,6 +25,9 @@ set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 # generate docs by default
 option(WITH_DOC "Generate documentation with Doxygen" ON)
 
+# build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
+add_definitions(-DLIBM2K_EXPORTS=1)
+
 # Get the GIT hash of the latest commit
 if (GIT_FOUND)
 	execute_process(
@@ -72,6 +75,7 @@ endif()
 
 add_subdirectory(src)
 add_subdirectory(examples)
+
 
 if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
