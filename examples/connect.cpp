@@ -117,12 +117,20 @@ int main(int argc, char **argv)
 //		}
 //	}
 
-	try {
-		test();
-	} catch(no_device_exception& e) {
-		std::cout << e.what() << std::endl;
+	std::vector<std::string> lst = DeviceBuilder::listDevices();
+	if (lst.size() > 0) {
+		GenericDevice *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
+		if (d) {
+			auto anIn = d->analogInOpen();
+			DeviceBuilder::deviceClose(d);
+		}
 	}
 
+//	try {
+//		test();
+//	} catch(no_device_exception& e) {
+//		std::cout << e.what() << std::endl;
+//	}
 
 
 	/*

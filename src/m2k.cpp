@@ -18,11 +18,15 @@
  */
 
 #include "../include/libm2k/M2K.h"
+#include "../include/libm2k/m2kexceptions.h"
 #include <iio.h>
 #include <iostream>
+#include <vector>
 
 using namespace m2k;
 using namespace std;
+
+std::vector<GenericDevice*> DeviceBuilder::s_connectedDevices = {};
 
 DeviceBuilder::DeviceBuilder()// : m_pimpl(new M2KImpl())
 {
@@ -65,21 +69,21 @@ out_destroy_context:
 	return uris;
 }
 
-DeviceBuilder* DeviceBuilder::deviceOpen(const char *uri)
+GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 {
-	iio_context* ctx = iio_create_context_from_uri(uri);
-        if (ctx) {
-                std::cout << "all good \n";
-                const char *name = new char[100];
-                const char *value = new char[100];
-                iio_context_get_attr(ctx, 4, &name, &value);
-                std::cout << name << " " <<  value <<  "\n";
-        }
-	DeviceBuilder* dev = new DeviceBuilder();
+	GenericDevice* dev;
+	try {
+		dev = new GenericDevice(std::string(uri));
+	} catch(no_device_exception& e) {
+		std::cout << e.what() << std::endl;
+		return nullptr;
+	}
+	s_connectedDevices.push_back(dev);
         return dev;
 }
 
-void DeviceBuilder::deviceClose(DeviceBuilder* device)
+void DeviceBuilder::deviceClose(GenericDevice* device)
 {
+
         std::cout << "Delete iio ctx \n";
 }

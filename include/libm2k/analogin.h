@@ -1,15 +1,17 @@
-#ifndef ANALOGINBUFFER_H
-#define ANALOGINBUFFER_H
+#ifndef ANALOGIN_H
+#define ANALOGIN_H
 
 #include "m2kglobal.h"
 #include "m2kexceptions.h"
 
+#include <iio.h>
 #include <vector>
+#include <string>
 
 class LIBM2K_API AnalogIn
 {
 public:
-	AnalogIn();
+	AnalogIn(iio_context*, std::string&, bool buffered = false);
 	~AnalogIn();
 
 	enum ANALOG_IN_CHANNEL {
@@ -71,10 +73,15 @@ public:
 		return m_data.data();
 	}
 
+	struct iio_device* getIioDevice();
+	std::string getIioDeviceName();
+
 
 private:
 	bool m_cyclic;
+	bool m_buffered;
+	struct iio_device* m_device;
 	std::vector<int> m_data; // int??
 };
 
-#endif // ANALOGINBUFFER_H
+#endif // ANALOGIN_H

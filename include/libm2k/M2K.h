@@ -17,27 +17,40 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifndef M2K_H
+#define M2K_H
+
 #include <vector>
 #include <string>
-//#include <memory>
-
+#include <iio.h>
 #include "m2kglobal.h"
+#include "analogin.h"
 
 namespace m2k {
-//        class DeviceBuilderImpl;
-        /* @class DeviceBuilder
-         * handles a device
-         */
+	class GenericDevice;
 	class LIBM2K_API DeviceBuilder {
+		static std::vector<GenericDevice*> s_connectedDevices; //should be GenericDevice
         public:
                 explicit DeviceBuilder();
                 ~DeviceBuilder();
 		static std::vector<std::string> listDevices();
-		static DeviceBuilder* deviceOpen(const char*); //should ret GenericDevice
-		static void deviceClose(DeviceBuilder*); //should return GenericDevice
+		static GenericDevice* deviceOpen(const char*); //should ret GenericDevice
+		static void deviceClose(GenericDevice*); //should return GenericDevice
         private:
-                std::vector<std::string> m_connectedDevices; //should be GenericDevice
 //                std::unique_ptr<M2KImpl> m_pimpl;
 	};
+
+	class LIBM2K_API GenericDevice {
+		static std::vector<AnalogIn*> s_instancesAnalogIn;
+	public:
+		GenericDevice(std::string);
+		~GenericDevice();
+		AnalogIn* analogInOpen();
+		void analogInClose(AnalogIn*);
+		AnalogIn* getAnalogInInstance(std::string);
+	private:
+		std::string m_uri;
+		iio_context* m_ctx;
+	};
 }
-//#endif
+#endif //M2K_H
