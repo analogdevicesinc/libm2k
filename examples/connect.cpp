@@ -122,6 +122,7 @@ int main(int argc, char **argv)
 		GenericDevice *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
 		if (d) {
 			auto anIn = d->analogInOpen();
+			d->blinkLed();
 			DeviceBuilder::deviceClose(d);
 		}
 	}

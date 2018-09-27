@@ -102,3 +102,8 @@ AnalogIn* GenericDevice::getAnalogInInstance(std::string d_name)
 	return device;
 }
 
+void GenericDevice::blinkLed()
+{
+	Utils::blinkLed(m_ctx, 4, true);
+}
+

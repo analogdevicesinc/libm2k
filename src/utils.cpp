@@ -20,8 +20,13 @@
 #include "utils.h"
 #include <iio.h>
 
+#include <thread>
+#include <chrono>
+#include <iostream>
+
 using namespace std;
 using namespace m2k;
+
 
 bool Utils::iioDevHasAttribute(iio_device* dev, std::string const& attr)
 {
@@ -189,6 +194,61 @@ double Utils::getIioDevTemp(iio_context* ctx, const std::string& d_name)
 	}
 
 	return temp;
+}
+
+void Utils::blinkLed(iio_context *ctx, const double duration, bool blocking)
+{
+	struct iio_device *m2k_fabric = iio_context_find_device(ctx, "m2k-fabric");
+
+	if (!m2k_fabric) {
+		//throw
+		return;
+	}
+
+	struct iio_channel *fabric_channel = iio_device_find_channel(m2k_fabric, "voltage4", true);
+
+	if (!fabric_channel) {
+		//throw
+		return;
+	}
+
+	if (!iioChannelHasAttribute(fabric_channel, "done_led_overwrite_powerdown")) {
+		//throw
+		return;
+	}
+
+	std::cout << "blinking " << std::endl;
+	//save current state of the LED
+	bool currentValue;
+	iio_channel_attr_read_bool(fabric_channel,
+				   "done_led_overwrite_powerdown",
+				   &currentValue);
+
+	const double blinkInterval = 0.05;
+	double remainingTime = duration;
+	std::thread th([=](double remainingTime, double blinkInterval, iio_channel *iioch){
+		while(remainingTime > 0) {
+			bool value;
+			iio_channel_attr_read_bool(fabric_channel,
+						   "done_led_overwrite_powerdown",
+						   &value);
+			iio_channel_attr_write_bool(fabric_channel,
+						   "done_led_overwrite_powerdown",
+						   !value);
+			remainingTime -= blinkInterval;
+			std::this_thread::sleep_for(50ms);
+		}
+	}, remainingTime, blinkInterval, fabric_channel);
+
+	if (blocking) {
+		th.join();
+	} else if (th.joinable()) {
+		th.detach();
+	}
+	//restore the state of the LED
+	iio_channel_attr_write_bool(fabric_channel,
+				   "done_led_overwrite_powerdown",
+				   currentValue);
 }
 
 //std::string Utils::getIioDevByPartialName(std::string dev)

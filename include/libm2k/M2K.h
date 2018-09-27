@@ -48,6 +48,7 @@ namespace m2k {
 		AnalogIn* analogInOpen();
 		void analogInClose(AnalogIn*);
 		AnalogIn* getAnalogInInstance(std::string);
+		void blinkLed();
 	private:
 		std::string m_uri;
 		iio_context* m_ctx;

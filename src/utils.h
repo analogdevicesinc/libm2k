@@ -59,6 +59,8 @@ namespace m2k {
 
 		static double getIioDevTemp(iio_context* ctx, const std::string& d_name);
 
+                static void blinkLed(iio_context* ctx, const double duration, bool blocking = false);
+
 	};
 }
 
