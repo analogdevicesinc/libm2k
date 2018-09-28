@@ -1,6 +1,7 @@
-#include "../include/libm2k/analogin.h"
-#include "../include/libm2k/m2kexceptions.h"
+
 #include <iio.h>
+
+#include "libm2k/analogin.hpp"
 
 AnalogIn::AnalogIn(iio_context* ctx, std::string &_dev, bool buffered) :
 	m_buffered(buffered)

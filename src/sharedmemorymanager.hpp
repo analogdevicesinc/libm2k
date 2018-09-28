@@ -1,12 +1,15 @@
 #ifndef SHAREDMEMORYMANAGER_H
 #define SHAREDMEMORYMANAGER_H
 
-#include "m2kglobal.h"
+#include "libm2k/m2kglobal.hpp"
 
 #include "interprocess/shared_memory_object.hpp"
 #include "interprocess/mapped_region.hpp"
 #include "interprocess/sync/scoped_lock.hpp"
 #include "interprocess/sync/interprocess_mutex.hpp"
+
+
+#include <bitset>
 
 using namespace boost::interprocess;
 

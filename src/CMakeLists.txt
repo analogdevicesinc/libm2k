@@ -16,14 +16,23 @@ include_directories(
 
 FILE(GLOB SRC_LIST  *.cpp *.cc)
 FILE(GLOB HEADERS_LIST
-	${CMAKE_SOURCE_DIR}/include/libm2k/*.h
-	${CMAKE_SOURCE_DIR}/include/libm2k/interprocess/*.hpp
-	${CMAKE_SOURCE_DIR}/include/libm2k/interprocess/*/*.hpp
-	${CMAKE_SOURCE_DIR}/include/libm2k/interprocess/*/*/*.hpp)
+        ${CMAKE_SOURCE_DIR}/include/libm2k/*.hpp
+        ${CMAKE_SOURCE_DIR}/src/devices/*/*.hpp
+        ${CMAKE_SOURCE_DIR}/src/*.hpp)
+
+FILE(GLOB BOOST_INTERPROCESS ${CMAKE_SOURCE_DIR}/src/interprocess/*.hpp
+                             ${CMAKE_SOURCE_DIR}/src/interprocess/*/*.hpp
+                             ${CMAKE_SOURCE_DIR}/src/interprocess/*/*/*.hpp
+                             )
+
+FILE(GLOB DEVICES ${CMAKE_SOURCE_DIR}/src/devices/*/*.cpp)
+
 
 add_library(m2k SHARED
 			${SRC_LIST}
-			${HEADERS_LIST})
+                        ${HEADERS_LIST}
+                        ${DEVICES}
+                        ${BOOST_INTERPROCESS})
 
 if (WIN32 OR ENABLE_APPLICATION_BUNDLE)
 	set_target_properties(m2k PROPERTIES OUTPUT_NAME m2k)

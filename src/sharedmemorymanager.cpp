@@ -1,4 +1,4 @@
-#include "../include/libm2k/sharedmemorymanager.h"
+#include "sharedmemorymanager.hpp"
 #include <iostream>
 
 

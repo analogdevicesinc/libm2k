@@ -73,10 +73,6 @@ if(APPLE)
 	endif()
 endif()
 
-add_subdirectory(src)
-add_subdirectory(examples)
-
-
 if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
 		"Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
@@ -95,8 +91,11 @@ find_library(IIO_LIBRARIES NAMES iio libiio PATHS ${VC_PATH}/lib ${VC_PATH}/lib/
 find_path(IIO_INCLUDE_DIRS iio.h PATHS ${VC_PATH}/include)
 
 include_directories(
-	${CMAKE_SOURCE_DIR}/include/
+        ${CMAKE_SOURCE_DIR}/include/
 )
+
+add_subdirectory(src)
+add_subdirectory(examples)
 
 set(LIBM2K_PC ${CMAKE_CURRENT_BINARY_DIR}/libm2k.pc)
 configure_file(libm2k.pc.cmakein ${LIBM2K_PC} @ONLY)

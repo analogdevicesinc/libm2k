@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "utils.h"
+#include "utils.hpp"
 #include <iio.h>
 
 #include <thread>
@@ -25,7 +25,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace m2k;
+using namespace libm2k::utils;
 
 
 bool Utils::iioDevHasAttribute(iio_device* dev, std::string const& attr)

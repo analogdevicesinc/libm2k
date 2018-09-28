@@ -1,8 +1,8 @@
 #ifndef ANALOGIN_H
 #define ANALOGIN_H
 
-#include "m2kglobal.h"
-#include "m2kexceptions.h"
+#include "m2kglobal.hpp"
+#include "m2kexceptions.hpp"
 
 #include <iio.h>
 #include <vector>

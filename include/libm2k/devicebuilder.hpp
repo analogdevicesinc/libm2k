@@ -17,41 +17,29 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef M2K_H
-#define M2K_H
+#ifndef DEVICEBUILDER_HPP
+#define DEVICEBUILDER_HPP
 
 #include <vector>
 #include <string>
 #include <iio.h>
-#include "m2kglobal.h"
-#include "analogin.h"
+#include "m2kglobal.hpp"
+#include "analogin.hpp"
+#include "genericdevice.hpp"
 
-namespace m2k {
-	class GenericDevice;
-	class LIBM2K_API DeviceBuilder {
-		static std::vector<GenericDevice*> s_connectedDevices; //should be GenericDevice
-        public:
-                explicit DeviceBuilder();
-                ~DeviceBuilder();
-		static std::vector<std::string> listDevices();
-		static GenericDevice* deviceOpen(const char*); //should ret GenericDevice
-		static void deviceClose(GenericDevice*); //should return GenericDevice
-        private:
+namespace libm2k {
+namespace devices {
+class LIBM2K_API DeviceBuilder {
+	static std::vector<GenericDevice*> s_connectedDevices; //should be GenericDevice
+public:
+	explicit DeviceBuilder();
+	~DeviceBuilder();
+	static std::vector<std::string> listDevices();
+	static GenericDevice* deviceOpen(const char*); //should ret GenericDevice
+	static void deviceClose(GenericDevice*); //should return GenericDevice
+private:
 //                std::unique_ptr<M2KImpl> m_pimpl;
-	};
-
-	class LIBM2K_API GenericDevice {
-		static std::vector<AnalogIn*> s_instancesAnalogIn;
-	public:
-		GenericDevice(std::string);
-		~GenericDevice();
-		AnalogIn* analogInOpen();
-		void analogInClose(AnalogIn*);
-		AnalogIn* getAnalogInInstance(std::string);
-		void blinkLed();
-	private:
-		std::string m_uri;
-		iio_context* m_ctx;
-	};
+};
+}
 }
 #endif //M2K_H

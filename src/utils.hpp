@@ -26,7 +26,8 @@
 class iio_context;
 class iio_device;
 class iio_channel;
-namespace m2k {
+namespace libm2k {
+namespace utils {
 	class Utils {
 	public:
 		enum MEASURE_UNIT {
@@ -62,6 +63,7 @@ namespace m2k {
                 static void blinkLed(iio_context* ctx, const double duration, bool blocking = false);
 
 	};
+}
 }
 
 

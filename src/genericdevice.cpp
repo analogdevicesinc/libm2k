@@ -17,14 +17,15 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../include/libm2k/M2K.h"
-#include "../include/libm2k/m2kexceptions.h"
-#include "utils.h"
-#include <iio.h>
+#include "libm2k/genericdevice.hpp"
+#include "libm2k/m2kexceptions.hpp"
+
+#include "utils.hpp"
 #include <iostream>
 
-using namespace m2k;
-using namespace std;
+
+using namespace libm2k::devices;
+using namespace libm2k::utils;
 
 std::vector<AnalogIn*> GenericDevice::s_instancesAnalogIn = {};
 

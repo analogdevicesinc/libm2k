@@ -17,14 +17,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../include/libm2k/M2K.h"
-#include "../include/libm2k/m2kexceptions.h"
+#include "libm2k/devicebuilder.hpp"
+#include "libm2k/m2kexceptions.hpp"
+#include "libm2k/genericdevice.hpp"
 #include <iio.h>
 #include <iostream>
 #include <vector>
 
-using namespace m2k;
-using namespace std;
+using namespace libm2k::devices;
 
 std::vector<GenericDevice*> DeviceBuilder::s_connectedDevices = {};
 

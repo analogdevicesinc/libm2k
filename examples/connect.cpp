@@ -1,10 +1,15 @@
-#include "../include/libm2k/M2K.h"
-#include "../include/libm2k/m2kexceptions.h"
-#include "../include/libm2k/sharedmemorymanager.h"
+//#include "../include/libm2k/M2K.h"
+//#include "../include/libm2k/m2kexceptions.h"
+#include "libm2k/devicebuilder.hpp"
+#include "libm2k/m2kexceptions.hpp"
+#include "libm2k/devices.hpp"
+
+// No longer visibile in the library
+//#include "../include/libm2k/sharedmemorymanager.h"
 
 #include <iostream>
 #include "assert.h"
-using namespace m2k;
+using namespace libm2k::devices;
 
 void test() {
 	throw no_device_exception("no device found!");
@@ -127,6 +132,9 @@ int main(int argc, char **argv)
 		}
 	}
 
+	FMCOMMS *fm = new FMCOMMS();
+	M2K *m2kd = new M2K();
+
 //	try {
 //		test();
 //	} catch(no_device_exception& e) {
@@ -139,13 +147,13 @@ int main(int argc, char **argv)
 	 *
 	 *
 	 * */
-	int x;
-	std::cin >> x;
-	if (x == 0) {
-		SharedMemoryManager::getInstance().write();
-	} else {
-		SharedMemoryManager::getInstance().read();
-	}
+//	int x;
+//	std::cin >> x;
+//	if (x == 0) {
+//		SharedMemoryManager::getInstance().write();
+//	} else {
+//		SharedMemoryManager::getInstance().read();
+//	}
 
 	//assert(false);
 
