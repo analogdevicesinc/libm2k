@@ -242,7 +242,7 @@ void Utils::blinkLed(iio_context *ctx, const double duration, bool blocking)
 						   "done_led_overwrite_powerdown",
 						   !value);
 			remainingTime -= blinkInterval;
-			std::this_thread::sleep_for(50ms);
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		}
 	}, remainingTime, blinkInterval, fabric_channel);
 
