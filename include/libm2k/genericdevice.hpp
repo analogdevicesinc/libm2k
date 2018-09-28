@@ -12,12 +12,13 @@ namespace devices {
 class LIBM2K_API GenericDevice {
 	static std::vector<AnalogIn*> s_instancesAnalogIn;
 public:
-	GenericDevice(std::string);
+	GenericDevice(std::string uri, struct iio_context*, std::string name);
 	~GenericDevice();
 	AnalogIn* analogInOpen();
 	void analogInClose(AnalogIn*);
 	AnalogIn* getAnalogInInstance(std::string);
 	void blinkLed();
+	static GenericDevice* getDevice(std::string uri);
 private:
 	std::string m_uri;
 	iio_context* m_ctx;

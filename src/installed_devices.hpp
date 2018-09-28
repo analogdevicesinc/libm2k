@@ -45,7 +45,7 @@ GenericDevice* buildDevice(std::string name) // enum Device Name
 	DeviceTypes t = get_type_from_name(name);
 	switch (t) {
 //case DevFMCOMMS: return new FMCOMMS();//case DevM2K: return new M2K();
-	case Other: return new GenericDevice("");
+	case Other: return new GenericDevice("", nullptr, "");
 	}
 }
 

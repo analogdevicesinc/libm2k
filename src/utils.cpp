@@ -19,6 +19,12 @@
 
 #include "utils.hpp"
 #include <iio.h>
+#include <regex>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <algorithm>
+#include "libm2k/m2kexceptions.hpp"
 
 #include <thread>
 #include <chrono>
@@ -249,6 +255,97 @@ void Utils::blinkLed(iio_context *ctx, const double duration, bool blocking)
 	iio_channel_attr_write_bool(fabric_channel,
 				   "done_led_overwrite_powerdown",
 				   currentValue);
+}
+
+std::vector<Utils::ini_device_struct> Utils::parseIniFile(std::string path)
+{
+	std::string line;
+	std::ifstream configFile(path);
+	std::string deviceName = "";
+	struct ini_device_struct device;
+	std::vector<struct ini_device_struct> devs = {};
+	device.hw_name = "";
+	device.key_val_pairs = {};
+
+	if (configFile.is_open()) {
+		while (getline(configFile, line)) {
+			auto section = parseIniSection(line);
+
+			if ((deviceName == "") && (section != "")) {
+				deviceName = section;
+				device.hw_name = deviceName;
+				continue;
+
+			} else if ((deviceName != "") && (section != "")) {
+				/* Found a new section, save the current device struct
+				 * and create another one */
+				devs.push_back(device);
+				deviceName = section;
+				device.hw_name = deviceName;
+				device.key_val_pairs = {};
+				continue;
+
+			} else if (deviceName != "") {
+				auto kv_pair = parseIniPair(line);
+				if ((kv_pair.first != "") && (kv_pair.second.size() != 0)) {
+					device.key_val_pairs.push_back(kv_pair);
+				}
+
+			} else {
+				throw invalid_parameter_exception(
+					"Invalid configuration file: " + path);
+			}
+		}
+		if (device.key_val_pairs.size() != 0) {
+			devs.push_back(device);
+		}
+		configFile.close();
+	}
+	return devs;
+}
+
+std::string Utils::parseIniSection(std::string line)
+{
+	std::regex section_reg{R"(\[.+\])"};
+	bool section_match = std::regex_match(line, section_reg);
+	if (section_match) {
+		return line.substr(1, line.size() - 2);
+	}
+	return "";
+}
+
+
+std::pair<std::string, std::vector<std::string>>
+	Utils::parseIniPair(std::string line)
+{
+	std::string key = "";
+	std::vector<std::string> values {};
+	std:size_t delim = line.find("=");
+	if (delim != std::string::npos) {
+		key = line.substr(0, delim);
+		line = line.substr(delim+1, line.size()-delim-1);
+		line.erase(remove(line.begin(), line.end(), ' '), line.end());
+		values = split(line, ",");
+		for (int i = 0; i < values.size(); i++) {
+			if (values.at(i) == "") {
+				values.erase(values.begin() + i);
+			}
+		}
+	}
+	return std::pair<std::string, std::vector<std::string>>(key, values);
+}
+
+std::vector<std::string> Utils::split(std::string s, std::string delimiter) {
+	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+	std::string token;
+	std::vector<std::string> res;
+	while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
+		token = s.substr(pos_start, pos_end - pos_start);
+		pos_start = pos_end + delim_len;
+		res.push_back(token);
+	}
+	res.push_back(s.substr(pos_start));
+	return res;
 }
 
 //std::string Utils::getIioDevByPartialName(std::string dev)

@@ -29,7 +29,7 @@ using namespace libm2k::utils;
 
 std::vector<AnalogIn*> GenericDevice::s_instancesAnalogIn = {};
 
-GenericDevice::GenericDevice(std::string uri)
+GenericDevice::GenericDevice(std::string uri, struct iio_context*, std::string name)
 {
 	m_ctx = iio_create_context_from_uri(uri.c_str());
 	if (!m_ctx) {
@@ -43,6 +43,18 @@ GenericDevice::~GenericDevice()
 	if (m_ctx) {
 		iio_context_destroy(m_ctx);
 	}
+}
+
+GenericDevice* GenericDevice::getDevice(std::string uri)
+{
+	struct iio_context* ctx = iio_create_context_from_uri(uri.c_str());
+	if (!ctx) {
+		throw no_device_exception("No device found for uri: " + uri);
+	}
+//	std::string hw_name = identifyDevice(ctx);
+//	return new M2K(uri, ctx, hw_name);
+
+	return nullptr;
 }
 
 /**
@@ -63,8 +75,6 @@ AnalogIn* GenericDevice::analogInOpen()
 //	}
 
 	for (auto el : Utils::getIioDevByChannelAttrs(m_ctx, {"raw"})) {
-		// check if the device is analog, not digital (either check the name for "logic",
-		// or check the attributes for "direction"
 		if (std::string(el.first).find("logic") == std::string::npos) {
 			if (Utils::isInputChannel(m_ctx, el.first, el.second)) {
 				if (getAnalogInInstance(el.first) == nullptr) {

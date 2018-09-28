@@ -21,10 +21,12 @@
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/genericdevice.hpp"
 #include <iio.h>
+#include "utils.hpp"
 #include <iostream>
 #include <vector>
 
 using namespace libm2k::devices;
+using namespace libm2k::utils;
 
 std::vector<GenericDevice*> DeviceBuilder::s_connectedDevices = {};
 
@@ -43,6 +45,18 @@ std::vector<std::string> DeviceBuilder::listDevices()
 	struct iio_context_info **info;
 	unsigned int nb_contexts;
 	std::vector<std::string> uris;
+
+	auto devices_info = Utils::parseIniFile("..\\resources\\filter.ini");
+	for (Utils::ini_device_struct device_info : devices_info) {
+		if (device_info.hw_name == "") {
+			std::cout << "error" << std::endl;
+		} else {
+			std::cout << device_info.hw_name << " " << device_info.key_val_pairs.at(0).first << std::endl;
+			for (auto i : device_info.key_val_pairs.at(0).second) {
+				std::cout << i << ", ";
+			}
+		}
+	}
 
 	struct iio_scan_context *scan_ctx = iio_create_scan_context("usb", 0);
 
@@ -73,7 +87,8 @@ GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 {
 	GenericDevice* dev;
 	try {
-		dev = new GenericDevice(std::string(uri));
+		dev = GenericDevice::getDevice(std::string(uri));
+//		dev = new GenericDevice(std::string(uri));
 	} catch(no_device_exception& e) {
 		std::cout << e.what() << std::endl;
 		return nullptr;

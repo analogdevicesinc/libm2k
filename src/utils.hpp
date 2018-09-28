@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 class iio_context;
 class iio_device;
@@ -30,6 +31,13 @@ namespace libm2k {
 namespace utils {
 	class Utils {
 	public:
+
+		struct ini_device_struct {
+			std::string hw_name;
+			std::vector< std::pair< std::string,std::vector<std::string>>>
+				key_val_pairs;
+		};
+
 		enum MEASURE_UNIT {
 			NO_UNIT = 0,
 			VOLTS = 1,
@@ -62,6 +70,13 @@ namespace utils {
 
                 static void blinkLed(iio_context* ctx, const double duration, bool blocking = false);
 
+		static std::vector<Utils::ini_device_struct> parseIniFile(std::string path);
+
+	private:
+		static std::string parseIniSection(std::string line);
+		static std::pair<std::string, std::vector<std::string>>
+			parseIniPair(std::string line);
+		static std::vector<std::string> split(std::string, std::string);
 	};
 }
 }

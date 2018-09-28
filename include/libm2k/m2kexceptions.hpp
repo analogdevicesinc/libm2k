@@ -20,6 +20,7 @@ public:
 };
 
 class LIBM2K_API instrument_already_in_use_exception : public std::runtime_error {
+public:
 	explicit instrument_already_in_use_exception(const std::string& what) :
 		runtime_error(what) {}
 	explicit instrument_already_in_use_exception(const char* what) :
@@ -28,6 +29,7 @@ class LIBM2K_API instrument_already_in_use_exception : public std::runtime_error
 };
 
 class LIBM2K_API invalid_parameter_exception: public std::runtime_error {
+public:
 	explicit invalid_parameter_exception(const std::string& what) :
 		runtime_error(what) {}
 	explicit invalid_parameter_exception(const char* what) :
@@ -36,6 +38,7 @@ class LIBM2K_API invalid_parameter_exception: public std::runtime_error {
 };
 
 class LIBM2K_API timeout_exception: public std::runtime_error {
+public:
 	explicit timeout_exception(const std::string& what) :
 		runtime_error(what) {}
 	explicit timeout_exception(const char* what) :
