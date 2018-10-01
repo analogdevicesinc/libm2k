@@ -48,7 +48,7 @@ installed_devices += """
 """
 
 installed_devices += """
-std::vector<std::string> devices_ini_file_path = {
+static std::vector<std::string> devices_ini_file_path = {
 """
 for i in range(len(devicesIniFilePath)):
 	if i != len(devicesIniFilePath) - 1:
