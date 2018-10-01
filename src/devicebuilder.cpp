@@ -108,10 +108,8 @@ GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 	if (!ctx) {
 		throw no_device_exception("No device found for uri: " + *uri);
 	}
-
-	auto device_list = Utils::getAllDevices(ctx);
 	//iio_context_destroy(ctx);
-	std::string dev_name = DeviceBuilder::identifyDevice(device_list);
+	std::string dev_name = DeviceBuilder::identifyDevice(ctx);
 	std::cout << dev_name << std::endl;
 	return new GenericDevice(std::string(uri),ctx, dev_name);
 }
@@ -122,32 +120,17 @@ void DeviceBuilder::deviceClose(GenericDevice* device)
 	std::cout << "Delete iio ctx \n";
 }
 
-std::string DeviceBuilder::identifyDevice(const std::vector<std::string> &device_list)
+std::string DeviceBuilder::identifyDevice(iio_context *ctx)
 {
-//	devices_ini_file_path
-	for (int i = 0; i < devices_ini_file_path.size(); ++i) {
-			std::cout << devices_ini_file_path[i] << std::endl;
-			std::vector<Utils::ini_device_struct> iniconf = Utils::parseIniFile(devices_ini_file_path[i]);
-//			std::cout << iniconf[0].hw_name << std::endl;
-			for (int j = 0; j < iniconf[0].key_val_pairs.size(); ++j) {
-				std::cout << iniconf[0].key_val_pairs[j].first << std::endl;
-				bool device_found = true;
-				for (int k = 0; k < iniconf[0].key_val_pairs[k].second.size(); ++k) {
-					bool found = false;
-					for (int x = 0; x < device_list.size(); ++x) {
-						if (iniconf[0].key_val_pairs[j].second[k] == device_list[x]) {
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
-						device_found = false;
-						break;
-					}
-				}
-				if (device_found) {
-					return iniconf[0].hw_name;
-				}
+	std::string device_name = "";
+	for (auto &devices_ini_file : devices_ini_file_path) {
+		for (auto &iniconf : Utils::parseIniFile(devices_ini_file)) {
+			device_name = iniconf.hw_name;
+			auto device_list = Utils::valuesForIniConfigKey(iniconf, "compatible-devices");
+			bool found = Utils::devicesFoundInContext(ctx, device_list);
+			if (found) {
+				return device_name;
 			}
+		}
 	}
 }

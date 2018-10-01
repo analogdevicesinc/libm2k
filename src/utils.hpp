@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <unordered_set>
 
 class iio_context;
 class iio_device;
@@ -72,7 +73,12 @@ namespace utils {
 
 		static std::vector<Utils::ini_device_struct> parseIniFile(std::string path);
 
-		static std::vector<std::string> getAllDevices(iio_context *ctx);
+		static std::unordered_set<std::string> getAllDevices(iio_context *ctx);
+
+		static std::vector<std::string> valuesForIniConfigKey(const ini_device_struct &iniconf,
+								const std::string &key);
+		static bool devicesFoundInContext(iio_context *ctx, std::vector<std::string> device_list);
+
 	private:
 		static std::string parseIniSection(std::string line);
 		static std::pair<std::string, std::vector<std::string>>

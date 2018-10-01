@@ -26,6 +26,7 @@
 #include "m2kglobal.hpp"
 #include "analogin.hpp"
 #include "genericdevice.hpp"
+#include <unordered_set>
 
 namespace libm2k {
 namespace devices {
@@ -37,7 +38,7 @@ public:
 	static std::vector<std::string> listDevices();
 	static GenericDevice* deviceOpen(const char*); //should ret GenericDevice
 	static void deviceClose(GenericDevice*); //should return GenericDevice
-	static std::string identifyDevice(const std::vector<std::string> &device_list);
+	static std::string identifyDevice(iio_context *ctx);
 private:
 //                std::unique_ptr<M2KImpl> m_pimpl;
 };

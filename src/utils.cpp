@@ -348,15 +348,38 @@ std::vector<std::string> Utils::split(std::string s, std::string delimiter) {
 	return res;
 }
 
-std::vector<std::string> Utils::getAllDevices(iio_context *ctx)
+std::unordered_set<std::string> Utils::getAllDevices(iio_context *ctx)
 {
 	unsigned int nb_devices = iio_context_get_devices_count(ctx);
-	std::vector<std::string> device_list;
+	std::unordered_set<std::string> device_list;
 	for (unsigned int i = 0; i < nb_devices; ++i) {
 		auto dev = iio_context_get_device(ctx, i);
-		device_list.push_back(std::string(iio_device_get_name(dev)));
+		device_list.emplace(std::string(iio_device_get_name(dev)));
 	}
 	return device_list;
+}
+
+std::vector<string> Utils::valuesForIniConfigKey(const Utils::ini_device_struct &iniconf, const string &key)
+{
+	for (const auto &key_value_pair : iniconf.key_val_pairs) {
+		if (key_value_pair.first == key) {
+			return key_value_pair.second;
+		}
+	}
+	return std::vector<std::string>();
+}
+
+bool Utils::devicesFoundInContext(iio_context *ctx, std::vector<string> device_list)
+{
+	auto context_devices = getAllDevices(ctx);
+	bool device_found = true;
+	for (const auto &device : device_list) {
+		if (context_devices.find(device) == context_devices.end()) {
+			device_found = false;
+			break;
+		}
+	}
+	return device_found;
 }
 
 //std::string Utils::getIioDevByPartialName(std::string dev)
