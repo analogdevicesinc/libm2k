@@ -72,6 +72,7 @@ namespace utils {
 
 		static std::vector<Utils::ini_device_struct> parseIniFile(std::string path);
 
+		static std::vector<std::string> getAllDevices(iio_context *ctx);
 	private:
 		static std::string parseIniSection(std::string line);
 		static std::pair<std::string, std::vector<std::string>>

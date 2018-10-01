@@ -126,15 +126,18 @@ int main(int argc, char **argv)
 	if (lst.size() > 0) {
 		GenericDevice *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
 		if (d) {
-			auto anIn = d->analogInOpen();
+//			auto anIn = d->analogInOpen();
 			d->blinkLed();
-			DeviceBuilder::deviceClose(d);
+			//DeviceBuilder::deviceClose(d);
 		}
+		delete d;
 	}
 
-	FMCOMMS *fm = new FMCOMMS();
-	M2K *m2kd = new M2K();
+//	FMCOMMS *fm = new FMCOMMS();
+//	M2K *m2kd = new M2K();
 
+//	delete fm;
+//	delete m2kd;
 //	try {
 //		test();
 //	} catch(no_device_exception& e) {

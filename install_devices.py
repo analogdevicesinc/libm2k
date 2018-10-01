@@ -3,11 +3,12 @@
 import os
 
 pluginList = []
+devicesIniFilePath = []
 
 for dirpath, dirnames, filenames in os.walk("."):
     for filename in [f for f in filenames if f.endswith(".ini")]:
 	if "devices" in dirpath:
-        	#print os.path.join(dirpath, filename)
+        	devicesIniFilePath.append(os.path.abspath(os.path.join(dirpath, filename)))
 		f = open(os.path.join(dirpath, filename))
 		line = f.readline().strip()
 		pluginList.append(line[1:len(line) - 1])
@@ -20,6 +21,7 @@ installed_devices += """
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "libm2k/genericdevice.hpp"
 
@@ -46,15 +48,26 @@ installed_devices += """
 """
 
 installed_devices += """
+std::vector<std::string> devices_ini_file_path = {
+"""
+for i in range(len(devicesIniFilePath)):
+	if i != len(devicesIniFilePath) - 1:
+		installed_devices += ("""\t{{"{0}"}},\n""").format(devicesIniFilePath[i])
+	else:
+		installed_devices += ("""\t{{"{0}"}}\n""").format(devicesIniFilePath[i])
+installed_devices += """
+};"""
+
+installed_devices += """
 typedef std::map<std::string, DeviceTypes> device_name_to_type_map;
 
 device_name_to_type_map dev_map = {
 """
 for i in range(len(pluginList)):
 	if i != len(pluginList) - 1:
-		installed_devices += (""" {{"{0}", DeviceTypes::Dev{0}}},\n""").format(pluginList[i])
+		installed_devices += ("""\t{{"{0}", DeviceTypes::Dev{0}}},\n""").format(pluginList[i])
 	else:
-		installed_devices += (""" {{"{0}", DeviceTypes::Dev{0}}}""").format(pluginList[i])
+		installed_devices += ("""\t{{"{0}", DeviceTypes::Dev{0}}}""").format(pluginList[i])
 installed_devices += """
 };
 """
@@ -83,7 +96,7 @@ for plugin in pluginList:
 	installed_devices += ("""//case Dev{0}: return new {0}();""").format(plugin)
 
 installed_devices += """
-	case Other: return new GenericDevice("");
+	//case Other: return new GenericDevice("");
 	}
 }
 

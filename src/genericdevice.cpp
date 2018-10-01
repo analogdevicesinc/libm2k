@@ -29,12 +29,13 @@ using namespace libm2k::utils;
 
 std::vector<AnalogIn*> GenericDevice::s_instancesAnalogIn = {};
 
-GenericDevice::GenericDevice(std::string uri, struct iio_context*, std::string name)
+GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::string name)
 {
-	m_ctx = iio_create_context_from_uri(uri.c_str());
-	if (!m_ctx) {
-		throw no_device_exception("No device found for uri: " + uri);
-	}
+//	m_ctx = iio_create_context_from_uri(uri.c_str());
+//	if (!m_ctx) {
+//		throw no_device_exception("No device found for uri: " + uri);
+//	}
+	m_ctx = ctx;
 	m_uri = uri;
 }
 
@@ -51,6 +52,11 @@ GenericDevice* GenericDevice::getDevice(std::string uri)
 	if (!ctx) {
 		throw no_device_exception("No device found for uri: " + uri);
 	}
+
+//	for (auto x: Utils::getAllDevices(ctx)) {
+//		std::cout << x << std::endl;
+//	}
+
 //	std::string hw_name = identifyDevice(ctx);
 //	return new M2K(uri, ctx, hw_name);
 

@@ -348,6 +348,17 @@ std::vector<std::string> Utils::split(std::string s, std::string delimiter) {
 	return res;
 }
 
+std::vector<std::string> Utils::getAllDevices(iio_context *ctx)
+{
+	unsigned int nb_devices = iio_context_get_devices_count(ctx);
+	std::vector<std::string> device_list;
+	for (unsigned int i = 0; i < nb_devices; ++i) {
+		auto dev = iio_context_get_device(ctx, i);
+		device_list.push_back(std::string(iio_device_get_name(dev)));
+	}
+	return device_list;
+}
+
 //std::string Utils::getIioDevByPartialName(std::string dev)
 //{
 //	unsigned int nb_devices = iio_context_get_devices_count(m_ctx);

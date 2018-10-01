@@ -4,6 +4,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "libm2k/genericdevice.hpp"
 
@@ -21,11 +22,16 @@ enum DeviceTypes {
 	Other
 };
 
+static std::vector<std::string> devices_ini_file_path = {
+	"/home/daniel/libm2k/src/devices/FMCOMMS/fmcomms.ini",
+	"/home/daniel/libm2k/src/devices/M2K/m2k.ini"
+};
+
 typedef std::map<std::string, DeviceTypes> device_name_to_type_map;
 
 device_name_to_type_map dev_map = {
- {"FMCOMMS", DeviceTypes::DevFMCOMMS},
- {"M2K", DeviceTypes::DevM2K}
+	{"FMCOMMS", DeviceTypes::DevFMCOMMS},
+	{"M2K", DeviceTypes::DevM2K}
 };
 
 DeviceTypes get_type_from_name(std::string name)
@@ -45,7 +51,7 @@ GenericDevice* buildDevice(std::string name) // enum Device Name
 	DeviceTypes t = get_type_from_name(name);
 	switch (t) {
 //case DevFMCOMMS: return new FMCOMMS();//case DevM2K: return new M2K();
-	case Other: return new GenericDevice("", nullptr, "");
+	//case Other: return new GenericDevice("");
 	}
 }
 

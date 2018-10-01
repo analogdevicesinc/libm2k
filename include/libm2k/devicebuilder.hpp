@@ -37,6 +37,7 @@ public:
 	static std::vector<std::string> listDevices();
 	static GenericDevice* deviceOpen(const char*); //should ret GenericDevice
 	static void deviceClose(GenericDevice*); //should return GenericDevice
+	static std::string identifyDevice(const std::vector<std::string> &device_list);
 private:
 //                std::unique_ptr<M2KImpl> m_pimpl;
 };

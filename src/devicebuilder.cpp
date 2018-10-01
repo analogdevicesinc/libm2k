@@ -20,6 +20,7 @@
 #include "libm2k/devicebuilder.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/genericdevice.hpp"
+#include "installed_devices.hpp"
 #include <iio.h>
 #include "utils.hpp"
 #include <iostream>
@@ -85,20 +86,68 @@ out_destroy_context:
 
 GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 {
-	GenericDevice* dev;
-	try {
-		dev = GenericDevice::getDevice(std::string(uri));
-//		dev = new GenericDevice(std::string(uri));
-	} catch(no_device_exception& e) {
-		std::cout << e.what() << std::endl;
-		return nullptr;
+//	std::vector<Utils::ini_device_struct> iniconf = Utils::parseIniFile("/home/daniel/libm2k/src/devices/M2K/m2k.ini");
+//	std::cout << iniconf[0].hw_name << std::endl;
+//	for (int i = 0; i < iniconf[0].key_val_pairs.size(); ++i) {
+//		std::cout << iniconf[0].key_val_pairs[i].first << std::endl;
+//		for (int j = 0; j < iniconf[0].key_val_pairs[i].second.size(); ++j) {
+//			std::cout << iniconf[0].key_val_pairs[i].second[j] << std::endl;
+//		}
+//	}
+//	GenericDevice* dev;
+//	try {
+//		dev = GenericDevice::getDevice(std::string(uri));
+////		dev = new GenericDevice(std::string(uri));
+//	} catch(no_device_exception& e) {
+//		std::cout << e.what() << std::endl;
+//		return nullptr;
+//	}
+//	s_connectedDevices.push_back(dev);
+//        return dev;
+	struct iio_context* ctx = iio_create_context_from_uri(uri);
+	if (!ctx) {
+		throw no_device_exception("No device found for uri: " + *uri);
 	}
-	s_connectedDevices.push_back(dev);
-        return dev;
+
+	auto device_list = Utils::getAllDevices(ctx);
+	//iio_context_destroy(ctx);
+	std::string dev_name = DeviceBuilder::identifyDevice(device_list);
+	std::cout << dev_name << std::endl;
+	return new GenericDevice(std::string(uri),ctx, dev_name);
 }
 
 void DeviceBuilder::deviceClose(GenericDevice* device)
 {
+	//delete device;
+	std::cout << "Delete iio ctx \n";
+}
 
-        std::cout << "Delete iio ctx \n";
+std::string DeviceBuilder::identifyDevice(const std::vector<std::string> &device_list)
+{
+//	devices_ini_file_path
+	for (int i = 0; i < devices_ini_file_path.size(); ++i) {
+			std::cout << devices_ini_file_path[i] << std::endl;
+			std::vector<Utils::ini_device_struct> iniconf = Utils::parseIniFile(devices_ini_file_path[i]);
+//			std::cout << iniconf[0].hw_name << std::endl;
+			for (int j = 0; j < iniconf[0].key_val_pairs.size(); ++j) {
+				std::cout << iniconf[0].key_val_pairs[j].first << std::endl;
+				bool device_found = true;
+				for (int k = 0; k < iniconf[0].key_val_pairs[k].second.size(); ++k) {
+					bool found = false;
+					for (int x = 0; x < device_list.size(); ++x) {
+						if (iniconf[0].key_val_pairs[j].second[k] == device_list[x]) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						device_found = false;
+						break;
+					}
+				}
+				if (device_found) {
+					return iniconf[0].hw_name;
+				}
+			}
+	}
 }
