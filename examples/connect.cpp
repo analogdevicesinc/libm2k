@@ -117,22 +117,14 @@ private:
 
 int main(int argc, char **argv)
 {
-//	std::vector<std::string> lst = DeviceBuilder::listDevices();
-//	if (lst.size() > 0) {
-//		DeviceBuilder *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
-//		if (d) {
-//			DeviceBuilder::deviceClose(d);
-//		}
-//	}
-
 	std::vector<std::string> lst = DeviceBuilder::listDevices();
 	if (lst.size() > 0) {
 		GenericDevice *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
 		if (d) {
 			try {
 				GenericAnalogIn* aIn = d->getAnalogIn(0);
-//				aIn->setSampleRate(1000000);
-				aIn->setSampleRate(0, 30720000);
+				aIn->setSampleRate(1000000);
+//				aIn->setSampleRate(0, 30720000);
 				double *samps = aIn->getSamples(1024);
 //				auto aIn2 = d->getAnalogIn("m2k-adc");
 			} catch (std::runtime_error &e) {

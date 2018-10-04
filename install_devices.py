@@ -52,9 +52,9 @@ static std::vector<std::string> devices_ini_file_path = {
 """
 for i in range(len(devicesIniFilePath)):
 	if i != len(devicesIniFilePath) - 1:
-		installed_devices += ("""\t{{"{0}"}},\n""").format(devicesIniFilePath[i])
+		installed_devices += ("""\t{{R"({0})"}},\n""").format(devicesIniFilePath[i])
 	else:
-		installed_devices += ("""\t{{"{0}"}}\n""").format(devicesIniFilePath[i])
+		installed_devices += ("""\t{{R"({0})"}}\n""").format(devicesIniFilePath[i])
 installed_devices += """
 };"""
 
@@ -78,7 +78,7 @@ DeviceTypes get_type_from_name(std::string name)
 	try {
 		t = dev_map.at(name);
 		return t;
-	} catch (std::out_of_range e){
+	} catch (std::out_of_range &e){
 
 	}
 	return t;
@@ -86,17 +86,18 @@ DeviceTypes get_type_from_name(std::string name)
 """
 
 installed_devices += """
-GenericDevice* buildDevice(std::string name) // enum Device Name
+GenericDevice* buildDevice(std::string name, std::string uri,
+			struct iio_context* ctx) // enum Device Name
 {
 	DeviceTypes t = get_type_from_name(name);
 	switch (t) {
 """
 
 for plugin in pluginList:
-	installed_devices += ("""//case Dev{0}: return new {0}();""").format(plugin)
+	installed_devices += ("""\t\tcase Dev{0}: return new {0}(uri, ctx, name);\n""").format(plugin)
 
 installed_devices += """
-	//case Other: return new GenericDevice("");
+	\tcase Other: return new GenericDevice(uri, ctx, name);
 	}
 }
 

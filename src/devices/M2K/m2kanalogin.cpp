@@ -20,6 +20,7 @@ libm2k::analog::M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 			iio_channel_attr_write_bool(chn0, "powerdown", false);
 			iio_channel_attr_write_bool(chn1, "powerdown", false);
 		}
+		iio_device_attr_write_bool(m2k_fabric, "clk_powerdown", false);
 	}
 }
 

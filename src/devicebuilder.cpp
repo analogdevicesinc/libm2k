@@ -47,7 +47,6 @@ std::vector<std::string> DeviceBuilder::listDevices()
 	unsigned int nb_contexts;
 	std::vector<std::string> uris;
 
-	auto devices_info = Utils::parseIniFile("..\\resources\\filter.ini");
 	for (Utils::ini_device_struct device_info : devices_info) {
 		if (device_info.hw_name == "") {
 			std::cout << "error" << std::endl;
