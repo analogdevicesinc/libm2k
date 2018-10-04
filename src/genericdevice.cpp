@@ -19,28 +19,32 @@
 
 #include "libm2k/genericdevice.hpp"
 #include "libm2k/m2kexceptions.hpp"
+#include "libm2k/genericanalogin.hpp"
 
 #include "utils.hpp"
 #include <iostream>
 
-
+using namespace libm2k::analog;
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
-std::vector<AnalogIn*> GenericDevice::s_instancesAnalogIn = {};
+std::vector<GenericAnalogIn*> GenericDevice::s_instancesAnalogIn = {};
 
 GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::string name)
 {
-//	m_ctx = iio_create_context_from_uri(uri.c_str());
-//	if (!m_ctx) {
-//		throw no_device_exception("No device found for uri: " + uri);
-//	}
 	m_ctx = ctx;
 	m_uri = uri;
+
+	/* Initialize the AnalogIn list */
+	scanAllAnalogIn();
 }
 
 GenericDevice::~GenericDevice()
 {
+	for (auto aIn : s_instancesAnalogIn) {
+		delete aIn;
+	}
+	s_instancesAnalogIn.clear();
 	if (m_ctx) {
 		iio_context_destroy(m_ctx);
 	}
@@ -52,75 +56,115 @@ GenericDevice* GenericDevice::getDevice(std::string uri)
 	if (!ctx) {
 		throw no_device_exception("No device found for uri: " + uri);
 	}
-
-//	for (auto x: Utils::getAllDevices(ctx)) {
-//		std::cout << x << std::endl;
-//	}
-
-//	std::string hw_name = identifyDevice(ctx);
-//	return new M2K(uri, ctx, hw_name);
-
 	return nullptr;
 }
 
-/**
- * @brief GenericDevice::analogInOpen
- * Should search devices with "raw" attr or "adc"
- * @return
- */
-AnalogIn* GenericDevice::analogInOpen()
+void GenericDevice::scanAllAnalogIn()
 {
-//	unsigned int nb_devices = iio_context_get_devices_count(m_ctx);
-//	for (unsigned int i = 0; i < nb_devices; i++) {
-//		auto dev = iio_context_get_device(m_ctx, i);
-//		std::cout << iio_device_get_name(dev) << std::endl;
-//	}
-
-//	for (auto el : Utils::getIioDevByGlobalAttrs(m_ctx, {"raw"})) {
-//		std::cout << "elem global attr: " << el << std::endl;
-//	}
-
-	for (auto el : Utils::getIioDevByChannelAttrs(m_ctx, {"raw"})) {
-		if (std::string(el.first).find("logic") == std::string::npos) {
-			if (Utils::isInputChannel(m_ctx, el.first, el.second)) {
-				if (getAnalogInInstance(el.first) == nullptr) {
-					try {
-						AnalogIn* aIn = new AnalogIn(m_ctx, el.first, false);
-						s_instancesAnalogIn.push_back(aIn);
-						std::cout << "elem channel attr: " << el.first << " " << el.second << std::endl;
-					} catch(no_device_exception& e)  {
-						std::cout << e.what() << std::endl;
-					}
+	auto dev_list = Utils::getAllDevices(m_ctx);
+	for (auto dev : dev_list) {
+		try {
+			if (isIioDeviceBufferCapable(dev) &&
+					(getIioDeviceType(dev) == ANALOG) &&
+					getIioDeviceDirection(dev) == INPUT) {
+				try {
+					auto aIn = new GenericAnalogIn(m_ctx, dev);
+					s_instancesAnalogIn.push_back(aIn);
+				} catch (std::runtime_error& e) {
+					std::cout << e.what() << std::endl;
 				}
+			}
+		} catch (no_device_exception& e) {
+			std::cout << e.what() << "\n";
+		}
+	}
+}
+
+GenericAnalogIn *GenericDevice::getAnalogIn(int index)
+{
+	if (index < s_instancesAnalogIn.size()) {
+		return s_instancesAnalogIn.at(index);
+	} else {
+		throw no_device_exception("No such analog in");
+	}
+}
+
+GenericAnalogIn *GenericDevice::getAnalogIn(std::string dev_name)
+{
+	for (GenericAnalogIn* d : s_instancesAnalogIn) {
+		if (d->getDeviceName() == dev_name) {
+			return d;
+		}
+	}
+	throw no_device_exception("No such analog in");
+}
+
+bool GenericDevice::isIioDeviceBufferCapable(std::string dev_name)
+{
+	unsigned int dev_count = iio_device_get_buffer_attrs_count(
+				iio_context_find_device(m_ctx, dev_name.c_str()));
+	if (dev_count > 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+GenericDevice::DEVICE_TYPE GenericDevice::getIioDeviceType(std::string dev_name)
+{
+	auto dev = iio_context_find_device(m_ctx, dev_name.c_str());
+	if (!dev) {
+		throw no_device_exception("No device found with name: " + dev_name);
+	}
+
+	auto chn = iio_device_get_channel(dev, 0);
+	if (!chn) {
+		return GenericDevice::NONE;
+	}
+
+	const struct iio_data_format* data_format = iio_channel_get_data_format(chn);
+	if (data_format->bits == 1) {
+		return GenericDevice::DIGITAL;
+	} else {
+		return GenericDevice::ANALOG;
+	}
+}
+
+GenericDevice::DEVICE_DIRECTION GenericDevice::getIioDeviceDirection(std::string dev_name)
+{
+	DEVICE_DIRECTION dir = NO_DIRECTION;
+	auto dev = iio_context_find_device(m_ctx, dev_name.c_str());
+	if (!dev) {
+		throw no_device_exception("No device found with name: " + dev_name);
+	}
+
+	auto chn_count = iio_device_get_channels_count(dev);
+	for (int i = 0; i < chn_count; i++) {
+		auto chn = iio_device_get_channel(dev, i);
+		if (iio_channel_is_output(chn)) {
+			if (dir == INPUT) {
+				dir = BOTH;
+			} else if (dir != BOTH){
+				dir = OUTPUT;
+			}
+		} else {
+			if (dir == OUTPUT) {
+				dir = BOTH;
+			} else if (dir != BOTH){
+				dir = INPUT;
 			}
 		}
 	}
-//	return new AnalogIn(m_ctx, , false);
-	return nullptr;
-}
-
-/**
- * @brief GenericDevice::analogInClose
- */
-void GenericDevice::analogInClose(AnalogIn* analogInDev)
-{
-
-}
-
-AnalogIn* GenericDevice::getAnalogInInstance(std::string d_name)
-{
-	AnalogIn* device = nullptr;;
-	for (AnalogIn* d : s_instancesAnalogIn) {
-		if (d->getIioDeviceName() == d_name) {
-			device = d;
-			break;
-		}
-	}
-	return device;
+	return dir;
 }
 
 void GenericDevice::blinkLed()
 {
 	Utils::blinkLed(m_ctx, 4, true);
+}
+
+iio_context *GenericDevice::ctx()
+{
+	return m_ctx;
 }
 

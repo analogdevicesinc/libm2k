@@ -86,38 +86,24 @@ out_destroy_context:
 
 GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 {
-//	std::vector<Utils::ini_device_struct> iniconf = Utils::parseIniFile("/home/daniel/libm2k/src/devices/M2K/m2k.ini");
-//	std::cout << iniconf[0].hw_name << std::endl;
-//	for (int i = 0; i < iniconf[0].key_val_pairs.size(); ++i) {
-//		std::cout << iniconf[0].key_val_pairs[i].first << std::endl;
-//		for (int j = 0; j < iniconf[0].key_val_pairs[i].second.size(); ++j) {
-//			std::cout << iniconf[0].key_val_pairs[i].second[j] << std::endl;
-//		}
-//	}
-//	GenericDevice* dev;
-//	try {
-//		dev = GenericDevice::getDevice(std::string(uri));
-////		dev = new GenericDevice(std::string(uri));
-//	} catch(no_device_exception& e) {
-//		std::cout << e.what() << std::endl;
-//		return nullptr;
-//	}
-//	s_connectedDevices.push_back(dev);
-//        return dev;
 	struct iio_context* ctx = iio_create_context_from_uri(uri);
 	if (!ctx) {
 		throw no_device_exception("No device found for uri: " + *uri);
 	}
-	//iio_context_destroy(ctx);
 	std::string dev_name = DeviceBuilder::identifyDevice(ctx);
 	std::cout << dev_name << std::endl;
-	return new GenericDevice(std::string(uri),ctx, dev_name);
+
+	GenericDevice* dev = buildDevice(dev_name, std::string(uri), ctx);
+	s_connectedDevices.push_back(dev);
+	return dev;
 }
 
 void DeviceBuilder::deviceClose(GenericDevice* device)
 {
-	//delete device;
-	std::cout << "Delete iio ctx \n";
+	for (auto dev : s_connectedDevices) {
+		delete dev;
+	}
+	s_connectedDevices.clear();
 }
 
 std::string DeviceBuilder::identifyDevice(iio_context *ctx)

@@ -61,7 +61,7 @@ installed_devices += """
 installed_devices += """
 typedef std::map<std::string, DeviceTypes> device_name_to_type_map;
 
-device_name_to_type_map dev_map = {
+static device_name_to_type_map dev_map = {
 """
 for i in range(len(pluginList)):
 	if i != len(pluginList) - 1:

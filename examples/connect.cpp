@@ -3,13 +3,16 @@
 #include "libm2k/devicebuilder.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/devices.hpp"
+#include "libm2k/genericanalogin.hpp"
 
 // No longer visibile in the library
 //#include "../include/libm2k/sharedmemorymanager.h"
 
 #include <iostream>
 #include "assert.h"
+
 using namespace libm2k::devices;
+using namespace libm2k::analog;
 
 void test() {
 	throw no_device_exception("no device found!");
@@ -126,8 +129,18 @@ int main(int argc, char **argv)
 	if (lst.size() > 0) {
 		GenericDevice *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
 		if (d) {
-//			auto anIn = d->analogInOpen();
+			try {
+				GenericAnalogIn* aIn = d->getAnalogIn(0);
+//				aIn->setSampleRate(1000000);
+				aIn->setSampleRate(0, 30720000);
+				double *samps = aIn->getSamples(1024);
+//				auto aIn2 = d->getAnalogIn("m2k-adc");
+			} catch (std::runtime_error &e) {
+				std::cout << e.what() << "\n";
+			}
+//			auto anIn = d->openAnalogIn();
 			d->blinkLed();
+//			d->closeAnalogIn()
 			//DeviceBuilder::deviceClose(d);
 		}
 		delete d;
