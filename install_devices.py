@@ -97,7 +97,8 @@ for plugin in pluginList:
 	installed_devices += ("""\t\tcase Dev{0}: return new {0}(uri, ctx, name);\n""").format(plugin)
 
 installed_devices += """
-	\tcase Other: return new GenericDevice(uri, ctx, name);
+	\tcase Other:
+	\tdefault: return new GenericDevice(uri, ctx, name);
 	}
 }
 

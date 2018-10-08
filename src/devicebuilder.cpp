@@ -89,6 +89,7 @@ GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 	if (!ctx) {
 		throw no_device_exception("No device found for uri: " + *uri);
 	}
+	std::cout << "creating IIO context\n";
 	std::string dev_name = DeviceBuilder::identifyDevice(ctx);
 	std::cout << dev_name << std::endl;
 
@@ -118,4 +119,5 @@ std::string DeviceBuilder::identifyDevice(iio_context *ctx)
 			}
 		}
 	}
+	return device_name;
 }

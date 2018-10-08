@@ -4,6 +4,7 @@
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/devices.hpp"
 #include "libm2k/genericanalogin.hpp"
+#include "libm2k/dmm.hpp"
 
 // No longer visibile in the library
 //#include "../include/libm2k/sharedmemorymanager.h"
@@ -123,10 +124,17 @@ int main(int argc, char **argv)
 		if (d) {
 			try {
 				GenericAnalogIn* aIn = d->getAnalogIn(0);
-				aIn->setSampleRate(1000000);
+//				aIn->setSampleRate(1000000);
 //				aIn->setSampleRate(0, 30720000);
-				double *samps = aIn->getSamples(1024);
+//				double *samps = aIn->getSamples(1024);
 //				auto aIn2 = d->getAnalogIn("m2k-adc");
+
+
+				DMM* dmm = d->getDMM(0);
+				std::vector<std::pair<double, std::string>> readings = dmm->read();
+				for (std::pair<double, std::string> read : readings) {
+					std::cout << read.second << " " << read.first;
+				}
 			} catch (std::runtime_error &e) {
 				std::cout << e.what() << "\n";
 			}

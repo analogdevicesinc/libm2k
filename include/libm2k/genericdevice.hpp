@@ -23,12 +23,13 @@
 #include "m2kglobal.hpp"
 #include <string>
 #include <iio.h>
-#include "analogin.hpp"
+#include <vector>
 
 
 namespace libm2k {
 namespace analog {
 	class GenericAnalogIn;
+	class DMM;
 }
 
 namespace devices {
@@ -51,14 +52,19 @@ public:
 	virtual ~GenericDevice();
 
 	virtual void scanAllAnalogIn();
+	void scanAllDMM();
 	static GenericDevice* getDevice(std::string uri);
 
-	libm2k::analog::GenericAnalogIn* getAnalogIn(int);
+	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
 	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
+	libm2k::analog::DMM* getDMM(unsigned int);
+	libm2k::analog::DMM* getDMM(std::string);
+
 	void blinkLed();
 	struct iio_context* ctx();
 protected:
 	static std::vector<libm2k::analog::GenericAnalogIn*> s_instancesAnalogIn;
+	static std::vector<libm2k::analog::DMM*> s_instancesDMM;
 private:
 	bool isIioDeviceBufferCapable(std::string);
 	GenericDevice::DEVICE_TYPE getIioDeviceType(std::string);

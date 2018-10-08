@@ -20,6 +20,7 @@
 #include "libm2k/genericdevice.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/genericanalogin.hpp"
+#include "libm2k/dmm.hpp"
 
 #include "utils.hpp"
 #include <iostream>
@@ -29,6 +30,7 @@ using namespace libm2k::devices;
 using namespace libm2k::utils;
 
 std::vector<GenericAnalogIn*> GenericDevice::s_instancesAnalogIn = {};
+std::vector<DMM*> GenericDevice::s_instancesDMM = {};
 
 GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::string name)
 {
@@ -37,6 +39,9 @@ GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::stri
 
 	/* Initialize the AnalogIn list */
 	scanAllAnalogIn();
+
+	/* Initialize the DMM list */
+	scanAllDMM();
 }
 
 GenericDevice::~GenericDevice()
@@ -47,6 +52,7 @@ GenericDevice::~GenericDevice()
 	s_instancesAnalogIn.clear();
 	if (m_ctx) {
 		iio_context_destroy(m_ctx);
+		std::cout << "destroying IIO context\n";
 	}
 }
 
@@ -74,18 +80,19 @@ void GenericDevice::scanAllAnalogIn()
 					std::cout << e.what() << std::endl;
 				}
 			}
-		} catch (no_device_exception& e) {
+		} catch (std::runtime_error& e) {
 			std::cout << e.what() << "\n";
 		}
 	}
 }
 
-GenericAnalogIn *GenericDevice::getAnalogIn(int index)
+GenericAnalogIn *GenericDevice::getAnalogIn(unsigned int index)
 {
 	if (index < s_instancesAnalogIn.size()) {
 		return s_instancesAnalogIn.at(index);
 	} else {
-		throw no_device_exception("No such analog in");
+//		throw no_device_exception("No such analog in");
+		return nullptr;
 	}
 }
 
@@ -96,7 +103,26 @@ GenericAnalogIn *GenericDevice::getAnalogIn(std::string dev_name)
 			return d;
 		}
 	}
-	throw no_device_exception("No such analog in");
+	return nullptr;
+}
+
+DMM *GenericDevice::getDMM(unsigned int index)
+{
+	if (index < s_instancesDMM.size()) {
+		return s_instancesDMM.at(index);
+	} else {
+		return nullptr;
+	}
+}
+
+DMM *GenericDevice::getDMM(std::string dev_name)
+{
+	for (DMM* d : s_instancesDMM) {
+		if (d->getDeviceName() == dev_name) {
+			return d;
+		}
+	}
+	return nullptr;
 }
 
 bool GenericDevice::isIioDeviceBufferCapable(std::string dev_name)
@@ -156,6 +182,23 @@ GenericDevice::DEVICE_DIRECTION GenericDevice::getIioDeviceDirection(std::string
 		}
 	}
 	return dir;
+}
+
+void GenericDevice::scanAllDMM()
+{
+	auto dev_list = Utils::getIioDevByChannelAttrs(m_ctx, {"raw", "scale"});
+	for (auto dev : dev_list) {
+		try {
+			if (getIioDeviceDirection(dev.first) != OUTPUT) {
+				if (!getDMM(dev.first)) {
+					auto dmm = new DMM(m_ctx, dev.first);
+					s_instancesDMM.push_back(dmm);
+				}
+			}
+		} catch (std::runtime_error &e) {
+			std::cout << e.what() << std::endl;
+		}
+	}
 }
 
 void GenericDevice::blinkLed()

@@ -66,13 +66,15 @@ double* GenericAnalogIn::getSamples(int nb_samples)
 
 	struct iio_buffer* buffer = iio_device_create_buffer(m_dev, nb_samples, false);
 	if (!buffer) {
-		throw instrument_already_in_use_exception("Cannot create buffer for " + m_dev_name);
+		throw instrument_already_in_use_exception(
+			"Cannot create buffer for " + m_dev_name);
 	}
 
 	ssize_t ret = iio_buffer_refill(buffer);
 	if (ret < 0) {
 		iio_buffer_destroy(buffer);
-		throw instrument_already_in_use_exception("Cannot refill buffer for " + m_dev_name);
+		throw instrument_already_in_use_exception(
+			"Cannot refill buffer for " + m_dev_name);
 	}
 
 	samples = static_cast<double*> (iio_buffer_start(buffer));
