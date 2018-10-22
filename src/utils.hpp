@@ -39,12 +39,6 @@ namespace utils {
 				key_val_pairs;
 		};
 
-		enum MEASURE_UNIT {
-			NO_UNIT = 0,
-			VOLTS = 1,
-			DEGREES = 2,
-		};
-
 		static std::vector<std::string> getIioDevByGlobalAttrs(iio_context*, std::vector<std::string> attr_list);
 
 		/**
@@ -65,8 +59,6 @@ namespace utils {
 
 		static bool isInputChannel(iio_context*, std::string const& dev, std::string const& chn);
 
-		static int getChannelUnit(iio_context*, std::string const& dev, std::string const& chn);
-
 		static double getIioDevTemp(iio_context* ctx, const std::string& d_name);
 
                 static void blinkLed(iio_context* ctx, const double duration, bool blocking = false);
@@ -78,6 +70,8 @@ namespace utils {
 		static std::vector<std::string> valuesForIniConfigKey(const ini_device_struct &iniconf,
 								const std::string &key);
 		static bool devicesFoundInContext(iio_context *ctx, std::vector<std::string> device_list);
+
+		static std::string getHardwareRevision(struct iio_context *ctx);
 
 	private:
 		static std::string parseIniSection(std::string line);

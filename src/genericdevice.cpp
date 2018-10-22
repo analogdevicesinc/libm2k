@@ -21,6 +21,7 @@
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/genericanalogin.hpp"
 #include "libm2k/dmm.hpp"
+#include "libm2k/m2k.hpp"
 
 #include "utils.hpp"
 #include <iostream>
@@ -211,3 +212,12 @@ iio_context *GenericDevice::ctx()
 	return m_ctx;
 }
 
+libm2k::devices::M2K* GenericDevice::toM2k()
+{
+	M2K* dev = dynamic_cast<M2K*>(this);
+	if(dev) {
+		return dev;
+	} else {
+		return nullptr;
+	}
+}

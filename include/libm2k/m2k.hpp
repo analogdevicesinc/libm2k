@@ -17,40 +17,32 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "m2k.hpp"
-#include "m2kanalogin.hpp"
-#include "libm2k/m2kexceptions.hpp"
+#ifndef M2K_H
+#define M2K_H
+
+#include "libm2k/m2kglobal.hpp"
+#include "libm2k/genericdevice.hpp"
+
 #include <iostream>
+#include <iio.h>
 
-using namespace std;
-using namespace libm2k::devices;
-using namespace libm2k::analog;
-
-M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
-	GenericDevice(uri, ctx, name)
-{
-	std::cout << "I am M2K device " << std::endl;
-
-	/* Initialize the AnalogIn list */
-	for (auto aIn : s_instancesAnalogIn) {
-		delete aIn;
-	}
-	s_instancesAnalogIn.clear();
-	scanAllAnalogIn();
+namespace libm2k {
+namespace analog {
+class M2kAnalogIn;
 }
 
-M2K::~M2K()
+namespace devices {
+
+class LIBM2K_API M2K : public libm2k::devices::GenericDevice
 {
+public:
+	M2K(std::string uri, iio_context* ctx, std::string name);
+	~M2K();
+	void scanAllAnalogIn();
+	void calibrate();
 
+	libm2k::analog::M2kAnalogIn* getAnalogIn(unsigned int index);
+};
 }
-
-void M2K::scanAllAnalogIn()
-{
-	try {
-		GenericAnalogIn* aIn = new M2kAnalogIn(ctx(), "m2k-adc");
-		s_instancesAnalogIn.push_back(aIn);
-	} catch (std::runtime_error& e) {
-		std::cout << e.what() << std::endl;
-	}
 }
-
+#endif // M2K_H

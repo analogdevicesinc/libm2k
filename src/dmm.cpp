@@ -79,11 +79,32 @@ double DMM::getAttrValue(struct iio_channel *chn, std::string attr)
 	return value;
 }
 
-std::pair<double, std::string> DMM::readChannel(struct iio_channel *chn)
+DMM::dmm_reading DMM::readChannel(struct iio_channel *chn)
 {
+	std::string chn_name = iio_channel_get_id(chn);
+	try {
+		return readChannel(chn_name);
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error(e.what());
+	}
+}
+
+struct iio_channel* DMM::getChannel(std::string chn_name)
+{
+	for (struct iio_channel* chn : m_channel_list) {
+		if (iio_channel_get_id(chn) == chn_name) {
+			return chn;
+		}
+	}
+	throw invalid_parameter_exception("No channel with this id");
+}
+
+DMM::dmm_reading DMM::readChannel(std::string chn_name)
+{
+	dmm_reading result;
 	double value = 0;
 	std::string key = "";
-	std::string chn_name = iio_channel_get_id(chn);
+	struct iio_channel *chn = iio_device_find_channel(m_dev, chn_name.c_str(), false);
 	try {
 		if (iio_channel_find_attr(chn, "raw") != NULL) {
 			value = getAttrValue(chn, "raw");
@@ -100,14 +121,14 @@ std::pair<double, std::string> DMM::readChannel(struct iio_channel *chn)
 		}
 
 		if (iio_channel_find_attr(chn, "scale") != NULL) {
-			value += getAttrValue(chn, "scale");
+			value *= getAttrValue(chn, "scale");
 		}
 
 		if (chn_name.find("voltage") != std::string::npos) {
 			key = " Volts\n";
 			value = value / 1000;
 		} else if (chn_name.find("temp") != std::string::npos) {
-			key = " °C\n";
+			key = " \xB0\C\n";
 			value = value / 1000;
 		} else if (chn_name.find("current") != std::string::npos) {
 			key = " Milliampere\n";
@@ -122,19 +143,23 @@ std::pair<double, std::string> DMM::readChannel(struct iio_channel *chn)
 		} else {
 			key = " \n";
 		}
-		return std::pair<double, std::string>(value, key);
+
+		result.name = chn_name;
+		result.unit = key;
+		result.value = value;
+		return result;
 
 	} catch (std::runtime_error &e) {
 		throw std::runtime_error(e.what());
 	}
 }
 
-std::vector<std::pair<double, std::string>> DMM::read()
+std::vector<DMM::dmm_reading> DMM::read()
 {
-	std::vector<std::pair<double, std::string>> result = {};
+	std::vector<dmm_reading> result = {};
 	try {
 		for (struct iio_channel* chn : m_channel_list) {
-			std::pair<double, std::string> res = readChannel(chn);
+			dmm_reading res = readChannel(chn);
 			result.push_back(res);
 		}
 		return result;

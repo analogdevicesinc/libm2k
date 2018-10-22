@@ -33,6 +33,7 @@ namespace analog {
 }
 
 namespace devices {
+class M2K;
 class LIBM2K_API GenericDevice {
 public:
 	enum DEVICE_TYPE {
@@ -62,6 +63,8 @@ public:
 
 	void blinkLed();
 	struct iio_context* ctx();
+
+	libm2k::devices::M2K* toM2k();
 protected:
 	static std::vector<libm2k::analog::GenericAnalogIn*> s_instancesAnalogIn;
 	static std::vector<libm2k::analog::DMM*> s_instancesDMM;

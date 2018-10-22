@@ -1,14 +1,11 @@
-//#include "../include/libm2k/M2K.h"
-//#include "../include/libm2k/m2kexceptions.h"
 #include "libm2k/devicebuilder.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/devices.hpp"
 #include "libm2k/genericanalogin.hpp"
 #include "libm2k/dmm.hpp"
 
-// No longer visibile in the library
-//#include "../include/libm2k/sharedmemorymanager.h"
-
+#include "libm2k/m2k.hpp"
+#include "libm2k/m2kanalogin.hpp"
 #include <iostream>
 #include "assert.h"
 
@@ -121,20 +118,30 @@ int main(int argc, char **argv)
 	std::vector<std::string> lst = DeviceBuilder::listDevices();
 	if (lst.size() > 0) {
 		GenericDevice *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
-		if (d) {
+		M2K* dev = d->toM2k();
+		if (dev) {
 			try {
 				GenericAnalogIn* aIn = d->getAnalogIn(0);
-//				aIn->setSampleRate(1000000);
+				aIn->setSampleRate(1000000);
 //				aIn->setSampleRate(0, 30720000);
-//				double *samps = aIn->getSamples(1024);
+				double *samps = aIn->getSamples(20);
 //				auto aIn2 = d->getAnalogIn("m2k-adc");
+
+				M2kAnalogIn* maIn = dev->getAnalogIn(0);
+				maIn->setRange(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kAnalogIn::PLUS_MINUS_5V);
 
 
 				DMM* dmm = d->getDMM(0);
-				std::vector<std::pair<double, std::string>> readings = dmm->read();
-				for (std::pair<double, std::string> read : readings) {
-					std::cout << read.second << " " << read.first;
+				std::vector<DMM::dmm_reading> readings = dmm->read();
+				for (DMM::dmm_reading read : readings) {
+					std::cout << read.name << " " << read.value << " " << read.unit;
 				}
+
+				for (int i = 0; i < 20; i++) {
+					std::cout << samps[i] << " ";
+				}
+				std::cout << std::endl;
+
 			} catch (std::runtime_error &e) {
 				std::cout << e.what() << "\n";
 			}

@@ -156,27 +156,6 @@ bool Utils::isInputChannel(iio_context* ctx, std::string const& d_name, std::str
 	return isInput;
 }
 
-int Utils::getChannelUnit(iio_context* ctx, std::string const& d_name, std::string const& c_name)
-{
-	struct iio_device* dev = iio_context_find_device(ctx, d_name.c_str());
-	struct iio_channel* chn;
-	if (!dev) {
-		return NO_UNIT;
-	}
-
-	chn = iio_device_find_channel(dev, c_name.c_str(), false);
-	if (!chn) {
-		return NO_UNIT;
-	}
-
-	if (iioChannelHasAttribute(chn, "offset") &&
-			iioChannelHasAttribute(chn, "raw") &&
-			iioChannelHasAttribute(chn, "scale")) {
-		return DEGREES;
-	}
-	return VOLTS;
-}
-
 double Utils::getIioDevTemp(iio_context* ctx, const std::string& d_name)
 {
 	double temp = -273.15;
@@ -380,6 +359,26 @@ bool Utils::devicesFoundInContext(iio_context *ctx, std::vector<string> device_l
 		}
 	}
 	return device_found;
+}
+
+std::string Utils::getHardwareRevision(struct iio_context *ctx)
+{
+	const char *hw_rev_attr_val = iio_context_get_attr_value(ctx,
+			"hw_model");
+	std::string rev;
+
+	if (hw_rev_attr_val) {
+		std::string const s = hw_rev_attr_val;
+		std::string const key = "Rev.";
+		int n = s.find(key);
+
+		n += key.length();
+		rev =  s.substr(n, 1);
+	} else {
+		rev = "A";
+	}
+
+	return rev;
 }
 
 //std::string Utils::getIioDevByPartialName(std::string dev)

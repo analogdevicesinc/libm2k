@@ -2,7 +2,6 @@
 #define FMCOMMS_H
 
 #include "libm2k/m2kglobal.hpp"
-//#include "libm2k/genericdevice.h"
 
 #include <iostream>
 

@@ -29,11 +29,19 @@ namespace libm2k {
 namespace analog {
 class LIBM2K_API DMM {
 public:
+	struct dmm_reading {
+		std::string name;
+		double value;
+		std::string unit;
+	};
+
 	DMM(struct iio_context *ctx, std::string dev);
 	virtual ~DMM();
 
-	std::pair<double, std::string> readChannel(struct iio_channel* chn);
-	std::vector<std::pair<double, std::string>> read();
+	struct iio_channel* getChannel(std::string chn_name);
+	dmm_reading readChannel(struct iio_channel* chn);
+	dmm_reading readChannel(std::string chn_name);
+	std::vector<dmm_reading> read();
 	std::string getDeviceName();
 
 private:
