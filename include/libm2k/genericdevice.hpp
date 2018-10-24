@@ -22,9 +22,11 @@
 
 #include "m2kglobal.hpp"
 #include <string>
-#include <iio.h>
 #include <vector>
 
+extern "C" {
+	struct iio_context;
+}
 
 namespace libm2k {
 namespace analog {

@@ -22,15 +22,17 @@
 
 #include "libm2k/m2kglobal.hpp"
 #include "libm2k/genericdevice.hpp"
-
 #include <iostream>
-#include <iio.h>
+
+extern "C" {
+	struct iio_context;
+}
 
 namespace libm2k {
 namespace analog {
 class M2kAnalogIn;
 }
-
+class M2kCalibration;
 namespace devices {
 
 class LIBM2K_API M2K : public libm2k::devices::GenericDevice
@@ -40,8 +42,14 @@ public:
 	~M2K();
 	void scanAllAnalogIn();
 	void calibrate();
+	bool calibrateADC();
+	bool calibrateDAC();
+	bool resetCalibration();
 
 	libm2k::analog::M2kAnalogIn* getAnalogIn(unsigned int index);
+	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
+private:
+	M2kCalibration* m_calibration;
 };
 }
 }

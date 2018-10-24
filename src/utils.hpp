@@ -73,6 +73,8 @@ namespace utils {
 
 		static std::string getHardwareRevision(struct iio_context *ctx);
 
+		static double average(double *data, size_t numElements);
+
 	private:
 		static std::string parseIniSection(std::string line);
 		static std::pair<std::string, std::vector<std::string>>

@@ -21,6 +21,7 @@
 #include "libm2k/m2kexceptions.hpp"
 #include <stdexcept>
 #include <algorithm>
+#include <iio.h>
 
 using namespace libm2k::analog;
 using namespace std;

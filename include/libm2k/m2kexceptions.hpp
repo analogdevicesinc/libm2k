@@ -25,10 +25,6 @@
 #include <stdexcept>
 #include <string>
 
-
-
-
-
 class LIBM2K_API no_device_exception: public std::runtime_error {
 public:
 	explicit no_device_exception(const std::string& what) :

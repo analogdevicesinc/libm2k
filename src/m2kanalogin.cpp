@@ -23,6 +23,9 @@
 #include "utils.hpp"
 
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <iio.h>
 #include <string.h>
 
 using namespace libm2k::analog;
@@ -31,7 +34,8 @@ using namespace std;
 
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 			 std::__cxx11::string adc_dev) :
-	GenericAnalogIn(ctx, adc_dev)
+	GenericAnalogIn(ctx, adc_dev),
+	m_need_processing(false)
 {
 	applyM2kFixes();
 
@@ -49,6 +53,16 @@ M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 		iio_device_attr_write_bool(m_m2k_fabric, "clk_powerdown", false);
 	}
 
+	m_ad5625 = iio_context_find_device(m_ctx, "ad5625");
+	if (m_ad5625) {
+		auto chn0 = iio_device_find_channel(m_ad5625, "voltage2", true);
+		auto chn1 = iio_device_find_channel(m_ad5625, "voltage3", true);
+		if (chn0 && chn1) {
+			m_ad5625_channels.push_back(chn0);
+			m_ad5625_channels.push_back(chn1);
+		}
+	}
+
 	try {
 		m_trigger = new M2kHardwareTrigger(m_ctx);
 	} catch (std::exception& e){
@@ -56,7 +70,11 @@ M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 	}
 
 	for (unsigned int i = 0; i < m_nb_channels; i++) {
+		m_channel_list.push_back(iio_device_find_channel(
+			m_dev, "voltage" + i, false));
 		m_input_range.push_back(PLUS_MINUS_25V);
+//		m_adc_calib_offset.push_back(0);
+		m_adc_calib_gain.push_back(1);
 	}
 }
 
@@ -65,8 +83,13 @@ M2kAnalogIn::~M2kAnalogIn()
 
 }
 
+void M2kAnalogIn::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
+{
+	m_adc_calib_gain[channel] = gain;
+}
+
 double M2kAnalogIn::convertRawToVolts(int sample, float correctionGain,
-		float filterCompensation, float offset, float hw_gain)
+		float hw_gain, float filterCompensation, float offset)
 {
 	// TO DO: explain this formula
 	return ((sample * 0.78) / ((1 << 11) * 1.3 * hw_gain) *
@@ -74,19 +97,45 @@ double M2kAnalogIn::convertRawToVolts(int sample, float correctionGain,
 }
 
 int M2kAnalogIn::convertVoltsToRaw(double voltage, float correctionGain,
-		float filterCompensation, float offset, float hw_gain)
+		float hw_gain, float filterCompensation, float offset)
 {
 	// TO DO: explain this formula
 	return ((voltage - offset) / (correctionGain * filterCompensation) *
 		(2048 * 1.3 * hw_gain) / 0.78);
 }
 
-double* M2kAnalogIn::getSamples(int nb_samples)
+std::vector<std::vector<double>> M2kAnalogIn::getSamples(int nb_samples)
 {
 	try {
 		return GenericAnalogIn::getSamples(nb_samples);
 	} catch (std::runtime_error &e) {
 		throw e;
+	}
+}
+
+std::vector<std::vector<double>> M2kAnalogIn::getProcessedSamples(int nb_samples)
+{
+	std::vector<std::vector<double>> samples;
+	try {
+		m_need_processing = true;
+		samples = GenericAnalogIn::getSamples(nb_samples);
+		m_need_processing = false;
+		return samples;
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
+{
+	if (m_need_processing) {
+		return convertRawToVolts(sample,
+					 m_adc_calib_gain.at(channel),
+					 0.02,
+					 1,
+					 0);
+	} else {
+		return (double)sample;
 	}
 }
 
@@ -185,6 +234,25 @@ M2kAnalogIn::ANALOG_IN_CHANNEL M2kAnalogIn::getTriggerChannel()
 	}
 }
 
+void M2kAnalogIn::setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel,
+				 M2kHardwareTrigger::mode mode)
+{
+	try {
+		m_trigger->setTriggerMode(channel, mode);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+M2kHardwareTrigger::mode M2kAnalogIn::getTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel)
+{
+	try {
+		m_trigger->triggerMode(channel);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
 void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 {
 	const char *str_gain_mode;
@@ -219,4 +287,87 @@ std::vector<M2kAnalogIn::M2K_RANGE> M2kAnalogIn::getAvailableRanges()
 {
 	std::vector<M2kAnalogIn::M2K_RANGE> ranges = {};
 
+}
+
+double M2kAnalogIn::getOversamplingRatio()
+{
+	double oversampling_ratio = 0;
+	if (Utils::iioDevHasAttribute(m_dev, "oversampling_ratio")) {
+		iio_device_attr_read_double(m_dev, "oversampling_ratio",
+			&oversampling_ratio);
+	} else {
+		throw invalid_parameter_exception(m_dev_name +
+				" has no oversampling ratio attribute");
+	}
+	return oversampling_ratio;
+}
+
+double M2kAnalogIn::getOversamplingRatio(unsigned int chn_idx)
+{
+	double oversampling_ratio = 0;
+
+	if (chn_idx >= m_nb_channels) {
+		throw invalid_parameter_exception(m_dev_name +
+				" has no such channel");
+	}
+
+	auto chn = iio_device_get_channel(m_dev, chn_idx);
+	if (Utils::iioChannelHasAttribute(chn, "oversampling_ratio")) {
+		iio_channel_attr_read_double(chn, "oversampling_ratio",
+			&oversampling_ratio);
+	} else {
+		throw invalid_parameter_exception(m_dev_name +
+				" has no oversampling ratio attribute "
+				"for the selected channel");
+	}
+	return oversampling_ratio;
+}
+
+double M2kAnalogIn::setOversamplingRatio(double oversampling_ratio)
+{
+	if (Utils::iioDevHasAttribute(m_dev, "oversampling_ratio")) {
+		iio_device_attr_write_double(m_dev, "oversampling_ratio",
+			oversampling_ratio);
+	} else {
+		throw invalid_parameter_exception(m_dev_name +
+				" has no oversampling ratio attribute");
+	}
+	return getOversamplingRatio();
+}
+
+double M2kAnalogIn::setOversamplingRatio(unsigned int chn_idx, double oversampling_ratio)
+{
+	if (chn_idx >= m_nb_channels) {
+		throw invalid_parameter_exception(m_dev_name +
+				" has no such channel");
+	}
+
+	auto chn = iio_device_get_channel(m_dev, chn_idx);
+	if (Utils::iioChannelHasAttribute(chn, "oversampling_ratio")) {
+		iio_channel_attr_write_double(chn, "oversampling_ratio",
+			oversampling_ratio);
+	} else {
+		throw invalid_parameter_exception(m_dev_name +
+				" has no oversampling ratio "
+				"attribute for the selected channel");
+	}
+	return getOversamplingRatio(chn_idx);
+}
+
+iio_channel *M2kAnalogIn::getChannel(M2kAnalogIn::ANALOG_IN_CHANNEL chn_idx)
+{
+	if (chn_idx < m_channel_list.size()) {
+		return m_channel_list.at(chn_idx);
+	} else {
+		throw invalid_parameter_exception("No such ADC channel");
+	}
+}
+
+iio_channel *M2kAnalogIn::getAuxChannel(unsigned int chn_idx)
+{
+	if (chn_idx < m_ad5625_channels.size()) {
+		return m_ad5625_channels.at(chn_idx);
+	} else {
+		throw invalid_parameter_exception("No such ad5625 channel");
+	}
 }

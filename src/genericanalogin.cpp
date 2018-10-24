@@ -21,6 +21,7 @@
 #include "libm2k/m2kexceptions.hpp"
 
 #include "utils.hpp"
+#include <iio.h>
 #include <iostream>
 
 using namespace libm2k::utils;
@@ -52,35 +53,88 @@ GenericAnalogIn::~GenericAnalogIn()
 	m_data.clear();
 }
 
-double* GenericAnalogIn::getSamples(int nb_samples)
+std::vector<std::vector<double>> GenericAnalogIn::getSamples(int nb_samples)
 {
-	double* samples;
+	std::vector<bool> channels_enabled;
+//	std::vector<std::vector<int16_t>> ch_data;
+	m_data.clear();
+
 	if (!m_dev) {
 		throw no_device_exception("No such device: " + m_dev_name);
 	}
 
-	unsigned int i;
-	for (i = 0; i < m_nb_channels; i++) {
+	// Store channels enable state
+	for (unsigned int i = 0; i < m_nb_channels; i++) {
+		bool en = iio_channel_is_enabled(
+				iio_device_get_channel(m_dev, i));
+		channels_enabled.push_back(en);
+		std::vector<double> data {};
+		for (int j = 0; j < nb_samples; j++) {
+			data.push_back(0);
+		}
+		m_data.push_back(data);
+	}
+
+	// Enable the required channels
+	for (int i = 0; i < m_data.size(); i++) {
 		enableChannel(i, true);
 	}
 
-	struct iio_buffer* buffer = iio_device_create_buffer(m_dev, nb_samples, false);
+	struct iio_buffer *buffer = iio_device_create_buffer(m_dev,
+		nb_samples, false);
+
 	if (!buffer) {
+		for (unsigned int i = 0; i < m_nb_channels; i++) {
+			enableChannel(i, channels_enabled.at(i));
+		}
 		throw instrument_already_in_use_exception(
 			"Cannot create buffer for " + m_dev_name);
 	}
 
-	ssize_t ret = iio_buffer_refill(buffer);
+	int ret = iio_buffer_refill(buffer);
+
 	if (ret < 0) {
 		iio_buffer_destroy(buffer);
+		for (unsigned int i = 0; i < m_nb_channels; i++) {
+			enableChannel(i, channels_enabled.at(i));
+		}
+
 		throw instrument_already_in_use_exception(
 			"Cannot refill buffer for " + m_dev_name);
 	}
 
-	samples = static_cast<double*> (iio_buffer_start(buffer));
+	ptrdiff_t p_inc = iio_buffer_step(buffer);
+	uintptr_t p_dat;
+	uintptr_t p_end = (uintptr_t)iio_buffer_end(buffer);
+	unsigned int i;
+	for (i = 0, p_dat = (uintptr_t)iio_buffer_first(buffer, m_channel_list.at(0));
+			p_dat < p_end; p_dat += p_inc, i++)
+	{
+		for (int ch = 0; ch < m_data.size(); ch++) {
+//			m_data[ch][i] = ((int16_t*)p_dat)[ch];
+//			std::cout << "before processing " << i << " " << ch << std::endl;
+			m_data[ch][i] = processSample(((int16_t*)p_dat)[ch], ch);
+		}
+	}
 
 	iio_buffer_destroy(buffer);
-	return samples;
+
+	// Restore channels enable states
+	for (unsigned int i = 0; i < m_nb_channels; i++) {
+		enableChannel(i, channels_enabled.at(i));
+	}
+	return m_data;
+}
+
+struct iio_context* GenericAnalogIn::getContext()
+{
+	return m_ctx;
+}
+
+double GenericAnalogIn::processSample(int16_t sample, unsigned int ch)
+{
+	std::cout << "GENERIC\n";
+	return (double)sample;
 }
 
 void GenericAnalogIn::openAnalogIn()

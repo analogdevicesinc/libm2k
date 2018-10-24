@@ -24,6 +24,7 @@
 #include "libm2k/m2k.hpp"
 
 #include "utils.hpp"
+#include <iio.h>
 #include <iostream>
 
 using namespace libm2k::analog;

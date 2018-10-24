@@ -22,9 +22,14 @@
 
 #include "libm2k/m2kglobal.hpp"
 #include "m2k.hpp"
-#include "iio.h"
 #include <vector>
 #include <memory>
+
+extern "C" {
+	struct iio_context;
+	struct iio_device;
+	struct iio_channel;
+}
 
 namespace libm2k {
 namespace analog {

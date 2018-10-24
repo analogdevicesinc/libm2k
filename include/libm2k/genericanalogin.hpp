@@ -23,7 +23,12 @@
 #include "m2kglobal.hpp"
 #include <string>
 #include <vector>
-#include <iio.h>
+
+extern "C" {
+	struct iio_context;
+	struct iio_device;
+	struct iio_channel;
+}
 
 namespace libm2k {
 namespace analog {
@@ -32,7 +37,7 @@ public:
 	GenericAnalogIn(struct iio_context* ctx, std::string adc_dev);
 	virtual ~GenericAnalogIn();
 
-	virtual double* getSamples(int nb_samples);
+	virtual std::vector<std::vector<double>> getSamples(int nb_samples);
 	virtual void openAnalogIn();
 	virtual void closeAnalogIn();
 
@@ -41,12 +46,15 @@ public:
 	virtual double setSampleRate(double sampleRate);
 	virtual double setSampleRate(unsigned int chn_idx, double sampleRate);
 
+	virtual double processSample(int16_t sample, unsigned int channel);
+
+	struct iio_context* getContext();
 	void enableChannel(unsigned int index, bool enable);
 	std::string getDeviceName();
 
 	//iterator
 	//if we use a stl container just forward definitions to that container
-	typedef std::vector<double>::iterator iterator;
+	typedef std::vector<std::vector<double>>::iterator iterator;
 
 	iterator begin()
 	{
@@ -58,7 +66,7 @@ public:
 		return m_data.end();
 	}
 
-	double* data()
+	std::vector<double>* data()
 	{
 		return m_data.data();
 	}
@@ -68,7 +76,7 @@ protected:
 	struct iio_device* m_dev;
 	std::vector<struct iio_channel*> m_channel_list;
 	std::string m_dev_name;
-	std::vector<double> m_data;
+	std::vector<std::vector<double>> m_data;
 	unsigned int m_nb_channels;
 	bool m_cyclic;
 };

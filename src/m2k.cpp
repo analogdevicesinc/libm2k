@@ -20,6 +20,7 @@
 #include "libm2k/m2k.hpp"
 #include "libm2k/m2kanalogin.hpp"
 #include "libm2k/m2kexceptions.hpp"
+#include "libm2k/m2kcalibration.hpp"
 #include <iostream>
 
 using namespace std;
@@ -37,6 +38,8 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 	}
 	s_instancesAnalogIn.clear();
 	scanAllAnalogIn();
+	std::vector<libm2k::analog::M2kAnalogIn*> lst = getAllAnalogIn();
+	m_calibration = new M2kCalibration(lst);
 }
 
 M2K::~M2K()
@@ -47,7 +50,7 @@ M2K::~M2K()
 void M2K::scanAllAnalogIn()
 {
 	try {
-		GenericAnalogIn* aIn = new M2kAnalogIn(ctx(), "m2k-adc");
+		GenericAnalogIn* aIn = new libm2k::analog::M2kAnalogIn(ctx(), "m2k-adc");
 		s_instancesAnalogIn.push_back(aIn);
 	} catch (std::runtime_error& e) {
 		std::cout << e.what() << std::endl;
@@ -59,12 +62,53 @@ void M2K::calibrate()
 
 }
 
+bool M2K::resetCalibration()
+{
+	try {
+		return m_calibration->resetCalibration();
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error(e.what());
+	}
+}
+
+bool M2K::calibrateADC()
+{
+	try {
+		return m_calibration->calibrateADC();
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error(e.what());
+	}
+}
+
+bool M2K::calibrateDAC()
+{
+
+}
+
 M2kAnalogIn* M2K::getAnalogIn(unsigned int index)
 {
 	if (index < s_instancesAnalogIn.size()) {
-		return dynamic_cast<M2kAnalogIn*>(s_instancesAnalogIn.at(index));
+		return dynamic_cast<libm2k::analog::M2kAnalogIn*>(
+					s_instancesAnalogIn.at(index));
 	} else {
 		throw no_device_exception("No such analog in");
 //		return nullptr;
 	}
+}
+
+std::vector<M2kAnalogIn*> M2K::getAllAnalogIn()
+{
+	std::vector<libm2k::analog::M2kAnalogIn*> allAnalogIn = {};
+	for (GenericAnalogIn* inst : s_instancesAnalogIn) {
+		try {
+			libm2k::analog::M2kAnalogIn* analogIn =
+				dynamic_cast<libm2k::analog::M2kAnalogIn*>(inst);
+			if (analogIn) {
+				allAnalogIn.push_back(analogIn);
+			}
+		} catch (std::runtime_error &e) {
+			throw no_device_exception(e.what());
+		}
+	}
+	return allAnalogIn;
 }

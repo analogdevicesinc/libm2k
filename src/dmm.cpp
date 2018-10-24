@@ -19,7 +19,7 @@
 
 #include "libm2k/dmm.hpp"
 #include "libm2k/m2kexceptions.hpp"
-
+#include <iio.h>
 #include <iostream>
 
 using namespace libm2k::analog;
@@ -154,7 +154,7 @@ DMM::dmm_reading DMM::readChannel(std::string chn_name)
 	}
 }
 
-std::vector<DMM::dmm_reading> DMM::read()
+std::vector<DMM::dmm_reading> DMM::readAll()
 {
 	std::vector<dmm_reading> result = {};
 	try {

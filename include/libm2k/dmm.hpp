@@ -21,9 +21,14 @@
 #define DMM_HPP
 
 #include "libm2k/m2kglobal.hpp"
-#include <iio.h>
 #include <vector>
 #include <string>
+
+extern "C" {
+	struct iio_context;
+	struct iio_device;
+	struct iio_channel;
+}
 
 namespace libm2k {
 namespace analog {
@@ -41,7 +46,7 @@ public:
 	struct iio_channel* getChannel(std::string chn_name);
 	dmm_reading readChannel(struct iio_channel* chn);
 	dmm_reading readChannel(std::string chn_name);
-	std::vector<dmm_reading> read();
+	std::vector<dmm_reading> readAll();
 	std::string getDeviceName();
 
 private:

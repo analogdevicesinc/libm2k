@@ -22,11 +22,14 @@
 
 #include <vector>
 #include <string>
-#include <iio.h>
 #include "m2kglobal.hpp"
 #include "analogin.hpp"
 #include "genericdevice.hpp"
 #include <unordered_set>
+
+extern "C" {
+	struct iio_context;
+}
 
 namespace libm2k {
 namespace devices {

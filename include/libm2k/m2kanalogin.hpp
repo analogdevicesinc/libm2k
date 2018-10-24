@@ -23,8 +23,13 @@
 #include "libm2k/m2kglobal.hpp"
 #include "libm2k/genericanalogin.hpp"
 #include "m2khardwaretrigger.hpp"
-#include <iio.h>
 #include <vector>
+
+extern "C" {
+	struct iio_context;
+	struct iio_device;
+	struct iio_channel;
+}
 
 namespace libm2k {
 namespace analog {
@@ -50,11 +55,18 @@ public:
 	M2kAnalogIn(struct iio_context*, std::string adc_dev);
 	~M2kAnalogIn();
 
-	double* getSamples(int nb_samples);
+	std::vector<std::vector<double>> getSamples(int nb_samples);
+	std::vector<std::vector<double>> getProcessedSamples(int nb_samples);
 	void openAnalogIn();
 	void closeAnalogIn();
 
 	void calibrate(bool async = true);
+	bool fine_tune(size_t span, int16_t centerVal0,
+				    int16_t centerVal1,
+				    size_t num_samples);
+
+	double processSample(int16_t sample, unsigned int channel);
+
 	uint16_t getVoltageRaw(ANALOG_IN_CHANNEL ch);
 	double getVoltage(ANALOG_IN_CHANNEL ch);
 	double getScalingFactor(ANALOG_IN_CHANNEL ch);
@@ -65,35 +77,59 @@ public:
 	M2K_RANGE getRange(ANALOG_IN_CHANNEL channel);
 	std::vector<M2K_RANGE>  getAvailableRanges();
 
+	double getOversamplingRatio();
+	double getOversamplingRatio(unsigned int);
+	double setOversamplingRatio(double sampleRate);
+	double setOversamplingRatio(unsigned int chn_idx, double sampleRate);
+
+	struct iio_channel* getChannel(ANALOG_IN_CHANNEL);
+	struct iio_channel* getAuxChannel(unsigned int);
+
 	//trigger channel?
 //	double getSampleRate();
 //	double setSampleRate(double sampleRate);
 	int getTriggerDelay();
 	void setTriggerDelay(int delay);
 	void setTriggerDelay(double percent);
+
 	double getTriggerOffset();
 	void setTriggerOffset(double volt);
+
 	void setEnableTrigger(bool en);
 	bool getEnableTrigger();
+
 	void setTriggerChannel(ANALOG_IN_CHANNEL channel);
 	ANALOG_IN_CHANNEL getTriggerChannel();
 
-private:
+	void setTriggerMode(ANALOG_IN_CHANNEL,
+		libm2k::analog::M2kHardwareTrigger::mode);
+	libm2k::analog::M2kHardwareTrigger::mode getTriggerMode(ANALOG_IN_CHANNEL);
+
+
+	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
+
 	double convertRawToVolts(int sample, float correctionGain = 1,
-			float filterCompensation = 1,
-			float offset = 0,
-			float hw_gain = 0.02);
+				 float hw_gain = 0.02,
+				 float filterCompensation = 1,
+				 float offset = 0);
 	int convertVoltsToRaw(double voltage, float correctionGain = 1,
-			float filterCompensation = 1,
-			float offset = 0,
-			float hw_gain = 0.02);
+			      float hw_gain = 0.02,
+			      float filterCompensation = 1,
+			      float offset = 0);
+
+private:
 	void applyM2kFixes();
+	bool m_need_processing;
 
 	libm2k::analog::M2kHardwareTrigger *m_trigger;
 	std::vector<M2K_RANGE> m_input_range;
 
 	struct iio_device* m_m2k_fabric;
+	struct iio_device* m_ad5625;
 	std::vector<struct iio_channel*> m_m2k_fabric_channels;
+	std::vector<struct iio_channel*> m_ad5625_channels;
+	std::vector<double> m_adc_calib_gain;
+	std::vector<std::string> m_calib_trigger_mode;
 };
 }
 }

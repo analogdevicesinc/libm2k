@@ -381,6 +381,16 @@ std::string Utils::getHardwareRevision(struct iio_context *ctx)
 	return rev;
 }
 
+double Utils::average(double *data, size_t numElements)
+{
+	double sum = 0;
+
+	for (size_t i = 0; i < numElements; i++)
+		sum += data[i];
+
+	return (sum / (double)numElements);
+}
+
 //std::string Utils::getIioDevByPartialName(std::string dev)
 //{
 //	unsigned int nb_devices = iio_context_get_devices_count(m_ctx);

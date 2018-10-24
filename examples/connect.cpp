@@ -124,23 +124,33 @@ int main(int argc, char **argv)
 				GenericAnalogIn* aIn = d->getAnalogIn(0);
 				aIn->setSampleRate(1000000);
 //				aIn->setSampleRate(0, 30720000);
-				double *samps = aIn->getSamples(20);
 //				auto aIn2 = d->getAnalogIn("m2k-adc");
 
 				M2kAnalogIn* maIn = dev->getAnalogIn(0);
-				maIn->setRange(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kAnalogIn::PLUS_MINUS_5V);
-
+				maIn->setRange(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
+					       M2kAnalogIn::PLUS_MINUS_25V);
 
 				DMM* dmm = d->getDMM(0);
-				std::vector<DMM::dmm_reading> readings = dmm->read();
+				std::vector<DMM::dmm_reading> readings = dmm->readAll();
 				for (DMM::dmm_reading read : readings) {
 					std::cout << read.name << " " << read.value << " " << read.unit;
 				}
 
+				bool ret = dev->resetCalibration();
+				auto samps = aIn->getSamples(20);
 				for (int i = 0; i < 20; i++) {
-					std::cout << samps[i] << " ";
+					std::cout << samps[0][i] << " ";
+					std::cout << samps[1][i] << " ";
 				}
 				std::cout << std::endl;
+
+				ret = dev->calibrateADC();
+
+				samps = maIn->getProcessedSamples(20);
+				for (int i = 0; i < 20; i++) {
+					std::cout << samps[0][i] << " ";
+					std::cout << samps[1][i] << " ";
+				}
 
 			} catch (std::runtime_error &e) {
 				std::cout << e.what() << "\n";
