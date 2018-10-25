@@ -75,6 +75,13 @@ namespace utils {
 
 		static double average(double *data, size_t numElements);
 
+		static std::vector<unsigned long> getAvailableSamplerates(struct iio_device*);
+		static double getSampleRate(struct iio_device*);
+		static double getSampleRate(struct iio_device*, unsigned int);
+		static double setSampleRate(struct iio_device*, double sampleRate);
+		static double setSampleRate(struct iio_device*, unsigned int chn_idx,
+					    double sampleRate);
+
 	private:
 		static std::string parseIniSection(std::string line);
 		static std::pair<std::string, std::vector<std::string>>

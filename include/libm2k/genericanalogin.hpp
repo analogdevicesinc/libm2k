@@ -41,10 +41,11 @@ public:
 	virtual void openAnalogIn();
 	virtual void closeAnalogIn();
 
-	virtual double getSampleRate();
-	virtual double getSampleRate(unsigned int);
-	virtual double setSampleRate(double sampleRate);
-	virtual double setSampleRate(unsigned int chn_idx, double sampleRate);
+	double getSampleRate();
+	double getSampleRate(unsigned int);
+	double setSampleRate(double sampleRate);
+	double setSampleRate(unsigned int chn_idx, double sampleRate);
+	std::vector<unsigned long> getAvailableSamplerates();
 
 	virtual double processSample(int16_t sample, unsigned int channel);
 
@@ -74,8 +75,9 @@ public:
 protected:
 	struct iio_context* m_ctx;
 	struct iio_device* m_dev;
-	std::vector<struct iio_channel*> m_channel_list;
 	std::string m_dev_name;
+	std::vector<unsigned long> m_available_samplerates;
+	std::vector<struct iio_channel*> m_channel_list;
 	std::vector<std::vector<double>> m_data;
 	unsigned int m_nb_channels;
 	bool m_cyclic;

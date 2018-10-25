@@ -47,6 +47,7 @@ public:
 	bool resetCalibration();
 
 	libm2k::analog::M2kAnalogIn* getAnalogIn(unsigned int index);
+	libm2k::analog::M2kAnalogIn* getAnalogIn(std::string);
 	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
 private:
 	M2kCalibration* m_calibration;

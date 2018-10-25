@@ -96,6 +96,20 @@ M2kAnalogIn* M2K::getAnalogIn(unsigned int index)
 	}
 }
 
+M2kAnalogIn *M2K::getAnalogIn(string dev_name)
+{
+	for (GenericAnalogIn* d : s_instancesAnalogIn) {
+		if (d->getDeviceName() == dev_name) {
+			libm2k::analog::M2kAnalogIn* analogIn =
+				dynamic_cast<libm2k::analog::M2kAnalogIn*>(d);
+			if (analogIn) {
+				return analogIn;
+			}
+		}
+	}
+	return nullptr;
+}
+
 std::vector<M2kAnalogIn*> M2K::getAllAnalogIn()
 {
 	std::vector<libm2k::analog::M2kAnalogIn*> allAnalogIn = {};

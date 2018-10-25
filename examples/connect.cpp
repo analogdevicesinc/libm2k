@@ -152,6 +152,10 @@ int main(int argc, char **argv)
 					std::cout << samps[1][i] << " ";
 				}
 
+				for (auto s : aIn->getAvailableSamplerates()) {
+					std::cout << " s " << s << std::endl;
+				}
+
 			} catch (std::runtime_error &e) {
 				std::cout << e.what() << "\n";
 			}

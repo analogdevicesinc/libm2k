@@ -23,6 +23,7 @@
 #include "utils.hpp"
 #include <iio.h>
 #include <iostream>
+#include <algorithm>
 
 using namespace libm2k::utils;
 using namespace libm2k::analog;
@@ -133,7 +134,6 @@ struct iio_context* GenericAnalogIn::getContext()
 
 double GenericAnalogIn::processSample(int16_t sample, unsigned int ch)
 {
-	std::cout << "GENERIC\n";
 	return (double)sample;
 }
 
@@ -149,66 +149,43 @@ void GenericAnalogIn::closeAnalogIn()
 
 double GenericAnalogIn::getSampleRate()
 {
-	double sampleRate = 0;
-
-	if (Utils::iioDevHasAttribute(m_dev, "sampling_frequency")) {
-		iio_device_attr_read_double(m_dev, "sampling_frequency",
-			&sampleRate);
-	} else {
-		throw invalid_parameter_exception(m_dev_name +
-				" has no sampling frequency attribute");
+	try {
+		return Utils::getSampleRate(m_dev);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
 	}
-	return sampleRate;
 }
 
 double GenericAnalogIn::getSampleRate(unsigned int chn_idx)
 {
-	double sampleRate = 0;
-
-	if (chn_idx >= m_nb_channels) {
-		throw invalid_parameter_exception(m_dev_name +
-				" has no such channel");
+	try {
+		return Utils::getSampleRate(m_dev, chn_idx);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
 	}
-
-	auto chn = iio_device_get_channel(m_dev, chn_idx);
-	if (Utils::iioChannelHasAttribute(chn, "sampling_frequency")) {
-		iio_channel_attr_read_double(chn, "sampling_frequency",
-			&sampleRate);
-	} else {
-		throw invalid_parameter_exception(m_dev_name +
-				" has no sampling frequency attribute for the selected channel");
-	}
-	return sampleRate;
 }
 
 double GenericAnalogIn::setSampleRate(double sampleRate)
 {
-	if (Utils::iioDevHasAttribute(m_dev, "sampling_frequency")) {
-		iio_device_attr_write_double(m_dev, "sampling_frequency",
-			sampleRate);
-	} else {
-		throw invalid_parameter_exception(m_dev_name +
-				" has no sampling frequency attribute");
+	try {
+		return Utils::setSampleRate(m_dev, sampleRate);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
 	}
-	return getSampleRate();
 }
 
 double GenericAnalogIn::setSampleRate(unsigned int chn_idx, double sampleRate)
 {
-	if (chn_idx >= m_nb_channels) {
-		throw invalid_parameter_exception(m_dev_name +
-				" has no such channel");
+	try {
+		return Utils::setSampleRate(m_dev, chn_idx, sampleRate);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
 	}
+}
 
-	auto chn = iio_device_get_channel(m_dev, chn_idx);
-	if (Utils::iioChannelHasAttribute(chn, "sampling_frequency")) {
-		iio_channel_attr_write_double(chn, "sampling_frequency",
-			sampleRate);
-	} else {
-		throw invalid_parameter_exception(m_dev_name +
-				" has no sampling frequency attribute for the selected channel");
-	}
-	return getSampleRate(chn_idx);
+std::vector<unsigned long> GenericAnalogIn::getAvailableSamplerates()
+{
+	return Utils::getAvailableSamplerates(m_dev);
 }
 
 string GenericAnalogIn::getDeviceName()
