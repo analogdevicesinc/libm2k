@@ -368,7 +368,7 @@ void M2kCalibration::updateAdcCorrections()
 bool M2kCalibration::resetCalibration()
 {
 	if (!m_initialized) {
-		return false;
+		initialize();
 	}
 
 	setCalibrationMode(NONE);

@@ -24,6 +24,7 @@
 #include "libm2k/genericanalogin.hpp"
 #include "m2khardwaretrigger.hpp"
 #include <vector>
+#include <map>
 
 extern "C" {
 	struct iio_context;
@@ -39,11 +40,6 @@ public:
 	enum ANALOG_IN_CHANNEL {
 		ANALOG_IN_CHANNEL_1 = 0,
 		ANALOG_IN_CHANNEL_2 = 1
-	};
-
-	enum GAIN_CONFIG {
-		LOW_GAIN = 0,
-		HIGH_GAIN = 1
 	};
 
 	enum M2K_RANGE {
@@ -69,9 +65,9 @@ public:
 
 	uint16_t getVoltageRaw(ANALOG_IN_CHANNEL ch);
 	double getVoltage(ANALOG_IN_CHANNEL ch);
+
 	double getScalingFactor(ANALOG_IN_CHANNEL ch);
-	void setGain(ANALOG_IN_CHANNEL ch, GAIN_CONFIG gain);
-	GAIN_CONFIG getGain(ANALOG_IN_CHANNEL ch);
+
 	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range);
 	void setRange(ANALOG_IN_CHANNEL channel, double min, double max);
 	M2K_RANGE getRange(ANALOG_IN_CHANNEL channel);
@@ -86,8 +82,6 @@ public:
 	struct iio_channel* getAuxChannel(unsigned int);
 
 	//trigger channel?
-//	double getSampleRate();
-//	double setSampleRate(double sampleRate);
 	int getTriggerDelay();
 	void setTriggerDelay(int delay);
 	void setTriggerDelay(double percent);
@@ -107,6 +101,8 @@ public:
 
 
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
+	double getFilterCompensation(double samplerate);
+	double getValueForRange(M2K_RANGE);
 
 	double convertRawToVolts(int sample, float correctionGain = 1,
 				 float hw_gain = 0.02,
@@ -129,7 +125,10 @@ private:
 	std::vector<struct iio_channel*> m_m2k_fabric_channels;
 	std::vector<struct iio_channel*> m_ad5625_channels;
 	std::vector<double> m_adc_calib_gain;
-	std::vector<std::string> m_calib_trigger_mode;
+	std::vector<double> m_adc_calib_offset;
+	std::vector<double> m_adc_hw_offset;
+
+	std::map<double, double> m_filter_compensation_table;
 };
 }
 }

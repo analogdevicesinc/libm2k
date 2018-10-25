@@ -69,12 +69,22 @@ M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 		throw no_device_exception("Disabling hardware trigger support.");
 	}
 
+	/* Filters applied while decimating affect the
+	/ amplitude of the received  data */
+	m_filter_compensation_table[1E8] = 1.00;
+	m_filter_compensation_table[1E7] = 1.05;
+	m_filter_compensation_table[1E6] = 1.10;
+	m_filter_compensation_table[1E5] = 1.15;
+	m_filter_compensation_table[1E4] = 1.20;
+	m_filter_compensation_table[1E3] = 1.26;
+
 	for (unsigned int i = 0; i < m_nb_channels; i++) {
 		m_channel_list.push_back(iio_device_find_channel(
 			m_dev, "voltage" + i, false));
 		m_input_range.push_back(PLUS_MINUS_25V);
-//		m_adc_calib_offset.push_back(0);
+		m_adc_calib_offset.push_back(0);
 		m_adc_calib_gain.push_back(1);
+		m_adc_hw_offset.push_back(0);
 	}
 }
 
@@ -131,12 +141,20 @@ double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
 	if (m_need_processing) {
 		return convertRawToVolts(sample,
 					 m_adc_calib_gain.at(channel),
-					 0.02,
-					 1,
-					 0);
+					 getValueForRange(m_input_range.at(channel)),
+					 getFilterCompensation(getSampleRate()),
+					 m_adc_hw_offset.at(channel));
 	} else {
 		return (double)sample;
 	}
+}
+
+double M2kAnalogIn::getScalingFactor(M2kAnalogIn::ANALOG_IN_CHANNEL ch)
+{
+	return (0.78 / ((1 << 11) * 1.3 *
+		getValueForRange(m_input_range.at(ch))) *
+		m_adc_calib_gain.at(ch) *
+		getFilterCompensation(getSampleRate()));
 }
 
 void M2kAnalogIn::openAnalogIn()
@@ -369,5 +387,21 @@ iio_channel *M2kAnalogIn::getAuxChannel(unsigned int chn_idx)
 		return m_ad5625_channels.at(chn_idx);
 	} else {
 		throw invalid_parameter_exception("No such ad5625 channel");
+	}
+}
+
+double M2kAnalogIn::getFilterCompensation(double samplerate)
+{
+	return m_filter_compensation_table.at(samplerate);
+}
+
+double M2kAnalogIn::getValueForRange(M2K_RANGE range)
+{
+	if (range == PLUS_MINUS_25V) {
+		return 0.02017;
+	} else if (range == PLUS_MINUS_5V) {
+		return 0.21229;
+	} else {
+		return 0;
 	}
 }
