@@ -19,6 +19,7 @@
 
 #include "libm2k/m2k.hpp"
 #include "libm2k/m2kanalogin.hpp"
+#include "libm2k/m2kanalogout.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/m2kcalibration.hpp"
 #include <iostream>
@@ -37,9 +38,18 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 		delete aIn;
 	}
 	s_instancesAnalogIn.clear();
+
+	/* Initialize the AnalogOut list */
+	for (auto aOut : s_instancesAnalogOut) {
+		delete aOut;
+	}
+	s_instancesAnalogOut.clear();
+
 	scanAllAnalogIn();
-	std::vector<libm2k::analog::M2kAnalogIn*> lst = getAllAnalogIn();
-	m_calibration = new M2kCalibration(lst);
+	scanAllAnalogOut();
+	std::vector<libm2k::analog::M2kAnalogIn*> lstIn = getAllAnalogIn();
+	std::vector<libm2k::analog::M2kAnalogOut*> lstOut = getAllAnalogOut();
+	m_calibration = new M2kCalibration(lstIn, lstOut);
 }
 
 M2K::~M2K()
@@ -52,6 +62,19 @@ void M2K::scanAllAnalogIn()
 	try {
 		GenericAnalogIn* aIn = new libm2k::analog::M2kAnalogIn(ctx(), "m2k-adc");
 		s_instancesAnalogIn.push_back(aIn);
+	} catch (std::runtime_error& e) {
+		std::cout << e.what() << std::endl;
+	}
+}
+
+void M2K::scanAllAnalogOut()
+{
+	try {
+		GenericAnalogOut* aOut = new libm2k::analog::M2kAnalogOut(ctx(), "m2k-dac-a");
+		s_instancesAnalogOut.push_back(aOut);
+
+		GenericAnalogOut* bOut = new libm2k::analog::M2kAnalogOut(ctx(), "m2k-dac-b");
+		s_instancesAnalogOut.push_back(bOut);
 	} catch (std::runtime_error& e) {
 		std::cout << e.what() << std::endl;
 	}
@@ -82,7 +105,11 @@ bool M2K::calibrateADC()
 
 bool M2K::calibrateDAC()
 {
-
+	try {
+		return m_calibration->calibrateDAC();
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error(e.what());
+	}
 }
 
 M2kAnalogIn* M2K::getAnalogIn(unsigned int index)
@@ -110,6 +137,20 @@ M2kAnalogIn *M2K::getAnalogIn(string dev_name)
 	return nullptr;
 }
 
+M2kAnalogOut *M2K::getAnalogOut(string dev_name)
+{
+	for (GenericAnalogOut* d : s_instancesAnalogOut) {
+		if (d->getDeviceName() == dev_name) {
+			libm2k::analog::M2kAnalogOut* analogOut =
+				dynamic_cast<libm2k::analog::M2kAnalogOut*>(d);
+			if (analogOut) {
+				return analogOut;
+			}
+		}
+	}
+	return nullptr;
+}
+
 std::vector<M2kAnalogIn*> M2K::getAllAnalogIn()
 {
 	std::vector<libm2k::analog::M2kAnalogIn*> allAnalogIn = {};
@@ -125,4 +166,21 @@ std::vector<M2kAnalogIn*> M2K::getAllAnalogIn()
 		}
 	}
 	return allAnalogIn;
+}
+
+std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
+{
+	std::vector<libm2k::analog::M2kAnalogOut*> allAnalogOut;
+	for (GenericAnalogOut* inst : s_instancesAnalogOut) {
+		try {
+			libm2k::analog::M2kAnalogOut* analogOut =
+				dynamic_cast<libm2k::analog::M2kAnalogOut*>(inst);
+			if (analogOut) {
+				allAnalogOut.push_back(analogOut);
+			}
+		} catch (std::runtime_error &e) {
+			throw no_device_exception(e.what());
+		}
+	}
+	return allAnalogOut;
 }

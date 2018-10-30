@@ -31,6 +31,7 @@ extern "C" {
 namespace libm2k {
 namespace analog {
 class M2kAnalogIn;
+class M2kAnalogOut;
 }
 class M2kCalibration;
 namespace devices {
@@ -41,6 +42,8 @@ public:
 	M2K(std::string uri, iio_context* ctx, std::string name);
 	~M2K();
 	void scanAllAnalogIn();
+	void scanAllAnalogOut();
+
 	void calibrate();
 	bool calibrateADC();
 	bool calibrateDAC();
@@ -48,7 +51,9 @@ public:
 
 	libm2k::analog::M2kAnalogIn* getAnalogIn(unsigned int index);
 	libm2k::analog::M2kAnalogIn* getAnalogIn(std::string);
+	libm2k::analog::M2kAnalogOut* getAnalogOut(std::string dev_name);
 	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
+	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
 private:
 	M2kCalibration* m_calibration;
 };

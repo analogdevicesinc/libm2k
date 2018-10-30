@@ -6,7 +6,10 @@
 
 #include "libm2k/m2k.hpp"
 #include "libm2k/m2kanalogin.hpp"
+#include "libm2k/m2kanalogout.hpp"
 #include <iostream>
+#include <thread>
+#include <chrono>
 #include "assert.h"
 
 using namespace libm2k::devices;
@@ -119,10 +122,10 @@ int main(int argc, char **argv)
 	if (lst.size() > 0) {
 		GenericDevice *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
 		M2K* dev = d->toM2k();
-		if (dev) {
+		if (d) {
 			try {
 				GenericAnalogIn* aIn = d->getAnalogIn(0);
-				aIn->setSampleRate(1000000);
+				aIn->setSampleRate(1000);
 //				aIn->setSampleRate(0, 30720000);
 //				auto aIn2 = d->getAnalogIn("m2k-adc");
 
@@ -146,7 +149,24 @@ int main(int argc, char **argv)
 
 				ret = dev->calibrateADC();
 
-				samps = maIn->getProcessedSamples(20);
+				// Analog Out
+				M2kAnalogOut* maOut = dev->getAnalogOut("m2k-dac-a");
+				M2kAnalogOut* mbOut = dev->getAnalogOut("m2k-dac-b");
+				ret = dev->calibrateDAC();
+				maOut->setSampleRate(75e6);
+				mbOut->setSampleRate(75e6);
+				maOut->setOversamplingRatio(1);
+				mbOut->setOversamplingRatio(1);
+
+				std::cout << "scaling factor " << maOut->getScalingFactor() << std::endl;
+
+				maOut->sendConstant(4.2, false, 1024, true);
+				mbOut->sendConstant(2.2, false, 1024, true);
+
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+
+				samps = maIn->getSamples(20, true);
 				for (int i = 0; i < 20; i++) {
 					std::cout << samps[0][i] << " ";
 					std::cout << samps[1][i] << " ";

@@ -37,6 +37,7 @@ extern "C" {
 namespace libm2k {
 namespace analog {
 class M2kAnalogIn;
+class M2kAnalogOut;
 class M2kHardwareTrigger;
 }
 class M2kAdc;
@@ -58,7 +59,8 @@ public:
 		HIGH
 	};
 
-	M2kCalibration(std::vector<libm2k::analog::M2kAnalogIn*>& analogIn);
+	M2kCalibration(std::vector<libm2k::analog::M2kAnalogIn*>& analogIn,
+		       std::vector<libm2k::analog::M2kAnalogOut*>& analogOut);
 //	M2kCalibration(struct iio_context *ctx,
 //		    std::shared_ptr<M2kAdc> adc = nullptr,
 //		    std::shared_ptr<M2kDac> dac_a = nullptr,
@@ -75,6 +77,7 @@ public:
 	bool calibrateADC();
 	bool calibrateADCoffset();
 	bool calibrateADCgain();
+	bool calibrateDAC();
 	bool calibrateDACoffset();
 	bool calibrateDACgain();
 	void cancelCalibration();
@@ -91,6 +94,7 @@ public:
 	bool resetCalibration();
 	void updateHwCorrections();
 	void updateAdcCorrections();
+	void updateDacCorrections();
 
 	static void setChannelEnableState(struct iio_channel *chn, bool en);
 
@@ -112,6 +116,7 @@ private:
 	void dacBOutputDC(int16_t value);
 	void configHwSamplerate();
 	void configAdcSamplerate();
+	void configDacSamplerate();
 
 	bool m_cancel;
 
@@ -122,8 +127,10 @@ private:
 	struct iio_context *m_ctx;
 //	struct iio_device *m_m2k_adc;
 	libm2k::analog::M2kAnalogIn *m_m2k_adc;
-	struct iio_device *m_m2k_dac_a;
-	struct iio_device *m_m2k_dac_b;
+//	struct iio_device *m_m2k_dac_a;
+//	struct iio_device *m_m2k_dac_b;
+	libm2k::analog::M2kAnalogOut *m_m2k_dac_a;
+	libm2k::analog::M2kAnalogOut *m_m2k_dac_b;
 	struct iio_device *m2k_ad5625;
 	struct iio_device *m_m2k_fabric;
 
@@ -170,6 +177,7 @@ private:
 	int m_calibration_mode;
 
 	const std::vector<libm2k::analog::M2kAnalogIn*> m_analogIn;
+	const std::vector<libm2k::analog::M2kAnalogOut*> m_analogOut;
 };
 
 }

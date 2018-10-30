@@ -20,6 +20,7 @@
 #include "libm2k/genericdevice.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/genericanalogin.hpp"
+#include "libm2k/genericanalogout.hpp"
 #include "libm2k/dmm.hpp"
 #include "libm2k/m2k.hpp"
 
@@ -32,6 +33,7 @@ using namespace libm2k::devices;
 using namespace libm2k::utils;
 
 std::vector<GenericAnalogIn*> GenericDevice::s_instancesAnalogIn = {};
+std::vector<GenericAnalogOut*> GenericDevice::s_instancesAnalogOut = {};
 std::vector<DMM*> GenericDevice::s_instancesDMM = {};
 
 GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::string name)
@@ -41,6 +43,9 @@ GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::stri
 
 	/* Initialize the AnalogIn list */
 	scanAllAnalogIn();
+
+	/* Initialize the AnalogIn list */
+	scanAllAnalogOut();
 
 	/* Initialize the DMM list */
 	scanAllDMM();
@@ -52,6 +57,12 @@ GenericDevice::~GenericDevice()
 		delete aIn;
 	}
 	s_instancesAnalogIn.clear();
+
+	for (auto aIn : s_instancesAnalogOut) {
+		delete aIn;
+	}
+	s_instancesAnalogOut.clear();
+
 	if (m_ctx) {
 		iio_context_destroy(m_ctx);
 		std::cout << "destroying IIO context\n";
@@ -83,7 +94,24 @@ void GenericDevice::scanAllAnalogIn()
 				}
 			}
 		} catch (std::runtime_error& e) {
-			std::cout << e.what() << "\n";
+			throw std::runtime_error(e.what());
+		}
+	}
+}
+
+void GenericDevice::scanAllAnalogOut()
+{
+	auto dev_list = Utils::getAllDevices(m_ctx);
+	for (auto dev : dev_list) {
+		try {
+			if (isIioDeviceBufferCapable(dev) &&
+					(getIioDeviceType(dev) == ANALOG) &&
+					getIioDeviceDirection(dev) == OUTPUT) {
+				auto aOut = new GenericAnalogOut(m_ctx, dev);
+				s_instancesAnalogOut.push_back(aOut);
+			}
+		} catch (std::runtime_error &e) {
+			throw std::runtime_error(e.what());
 		}
 	}
 }
@@ -101,6 +129,25 @@ GenericAnalogIn *GenericDevice::getAnalogIn(unsigned int index)
 GenericAnalogIn *GenericDevice::getAnalogIn(std::string dev_name)
 {
 	for (GenericAnalogIn* d : s_instancesAnalogIn) {
+		if (d->getDeviceName() == dev_name) {
+			return d;
+		}
+	}
+	return nullptr;
+}
+
+GenericAnalogOut *GenericDevice::getAnalogOut(unsigned int index)
+{
+	if (index < s_instancesAnalogOut.size()) {
+		return s_instancesAnalogOut.at(index);
+	} else {
+		return nullptr;
+	}
+}
+
+GenericAnalogOut *GenericDevice::getAnalogOut(std::string dev_name)
+{
+	for (GenericAnalogOut* d : s_instancesAnalogOut) {
 		if (d->getDeviceName() == dev_name) {
 			return d;
 		}

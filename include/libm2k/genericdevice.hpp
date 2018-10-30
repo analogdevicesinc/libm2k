@@ -31,6 +31,7 @@ extern "C" {
 namespace libm2k {
 namespace analog {
 	class GenericAnalogIn;
+	class GenericAnalogOut;
 	class DMM;
 }
 
@@ -55,11 +56,14 @@ public:
 	virtual ~GenericDevice();
 
 	virtual void scanAllAnalogIn();
+	virtual void scanAllAnalogOut();
 	void scanAllDMM();
 	static GenericDevice* getDevice(std::string uri);
 
 	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
 	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
+	libm2k::analog::GenericAnalogOut* getAnalogOut(unsigned int);
+	libm2k::analog::GenericAnalogOut* getAnalogOut(std::string);
 	libm2k::analog::DMM* getDMM(unsigned int);
 	libm2k::analog::DMM* getDMM(std::string);
 
@@ -69,6 +73,7 @@ public:
 	libm2k::devices::M2K* toM2k();
 protected:
 	static std::vector<libm2k::analog::GenericAnalogIn*> s_instancesAnalogIn;
+	static std::vector<libm2k::analog::GenericAnalogOut*> s_instancesAnalogOut;
 	static std::vector<libm2k::analog::DMM*> s_instancesDMM;
 private:
 	bool isIioDeviceBufferCapable(std::string);
