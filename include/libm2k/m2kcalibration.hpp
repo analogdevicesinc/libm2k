@@ -61,17 +61,15 @@ public:
 
 	M2kCalibration(std::vector<libm2k::analog::M2kAnalogIn*>& analogIn,
 		       std::vector<libm2k::analog::M2kAnalogOut*>& analogOut);
-//	M2kCalibration(struct iio_context *ctx,
-//		    std::shared_ptr<M2kAdc> adc = nullptr,
-//		    std::shared_ptr<M2kDac> dac_a = nullptr,
-//		    std::shared_ptr<M2kDac> dac_b = nullptr);
 	~M2kCalibration();
 
 	bool initialize();
 	bool isInitialized() const;
 
-	void setHardwareInCalibMode();
-	void restoreHardwareFromCalibMode();
+	void setAdcInCalibMode();
+	void setDacInCalibMode();
+	void restoreAdcFromCalibMode();
+	void restoreDacFromCalibMode();
 
 	bool calibrateAll();
 	bool calibrateADC();
@@ -92,7 +90,6 @@ public:
 	double dacBvlsb() const;
 
 	bool resetCalibration();
-	void updateHwCorrections();
 	void updateAdcCorrections();
 	void updateDacCorrections();
 
@@ -105,8 +102,6 @@ public:
 	void dacOutputStop();
 
 private:
-	bool adc_data_capture(int16_t *dataCh0, int16_t *dataCh1,
-			      size_t num_sampl_per_chn);
 	bool fine_tune(size_t span, int16_t centerVal0, int16_t centerVal1,
 		size_t num_samples);
 
@@ -114,7 +109,6 @@ private:
 		struct iio_buffer** buffer, size_t value);
 	void dacAOutputDC(int16_t value);
 	void dacBOutputDC(int16_t value);
-	void configHwSamplerate();
 	void configAdcSamplerate();
 	void configDacSamplerate();
 
@@ -125,10 +119,7 @@ private:
 	std::shared_ptr<M2kDac> m2k_dac_b;
 
 	struct iio_context *m_ctx;
-//	struct iio_device *m_m2k_adc;
 	libm2k::analog::M2kAnalogIn *m_m2k_adc;
-//	struct iio_device *m_m2k_dac_a;
-//	struct iio_device *m_m2k_dac_b;
 	libm2k::analog::M2kAnalogOut *m_m2k_dac_a;
 	libm2k::analog::M2kAnalogOut *m_m2k_dac_b;
 	struct iio_device *m2k_ad5625;
@@ -147,10 +138,6 @@ private:
 	struct iio_channel *m_ad5625_channel1;
 	struct iio_channel *m_ad5625_channel2;
 	struct iio_channel *m_ad5625_channel3;
-//	struct iio_channel *m_adc_ad5625_channel0;
-//	struct iio_channel *m_adc_ad5625_channel1;
-//	struct iio_channel *m_dac_ad5625_channel0;
-//	struct iio_channel *m_dac_ad5625_channel1;
 
 	struct iio_buffer *m_dac_a_buffer;
 	struct iio_buffer *m_dac_b_buffer;
@@ -173,6 +160,8 @@ private:
 	double dac_b_sampl_freq;
 	double dac_b_oversampl;
 
+	bool m_adc_calibrated;
+	bool m_dac_calibrated;
 	bool m_initialized;
 	int m_calibration_mode;
 

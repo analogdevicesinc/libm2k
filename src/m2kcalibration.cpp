@@ -39,9 +39,10 @@ M2kCalibration::M2kCalibration(std::vector<M2kAnalogIn*>& analogIn,
 			       std::vector<M2kAnalogOut*>& analogOut):
 	m_analogIn(analogIn),
 	m_analogOut(analogOut),
-//	m_ctx(ctx),
 	m_dac_a_buffer(NULL),
 	m_dac_b_buffer(NULL),
+	m_adc_calibrated(false),
+	m_dac_calibrated(false),
 	m_initialized(false),
 	m_cancel(false)
 {
@@ -59,10 +60,10 @@ M2kCalibration::M2kCalibration(std::vector<M2kAnalogIn*>& analogIn,
 
 M2kCalibration::~M2kCalibration()
 {
-	if (m_dac_a_buffer)
-		iio_buffer_destroy(m_dac_a_buffer);
-	if (m_dac_b_buffer)
-		iio_buffer_destroy(m_dac_b_buffer);
+//	if (m_dac_a_buffer)
+//		iio_buffer_destroy(m_dac_a_buffer);
+//	if (m_dac_b_buffer)
+//		iio_buffer_destroy(m_dac_b_buffer);
 }
 
 bool M2kCalibration::initialize()
@@ -72,22 +73,10 @@ bool M2kCalibration::initialize()
 	if (!m_ctx)
 		return false;
 
-//	// IIO devices
-//	m_m2k_adc = iio_context_find_device(m_ctx, "m2k-adc");
-//	if (!m_m2k_adc)
-//		return false;
-//	m_m2k_dac_a = iio_context_find_device(m_ctx, "m2k-dac-a");
-//	if (!m_m2k_dac_a)
-//		return false;
-//	m_m2k_dac_b = iio_context_find_device(m_ctx, "m2k-dac-b");
-//	if (!m_m2k_dac_b)
-//		return false;
 	m_m2k_fabric = iio_context_find_device(m_ctx, "m2k-fabric");
-	if (!m_m2k_fabric)
+	if (!m_m2k_fabric) {
 		return false;
-//	m2k_ad5625 = iio_context_find_device(m_ctx, "ad5625");
-//	if (!m2k_ad5625)
-//		return false;
+	}
 
 	// IIO channels
 	try {
@@ -104,22 +93,6 @@ bool M2kCalibration::initialize()
 		throw invalid_parameter_exception(e.what());
 	}
 
-
-//	m_dac_a_channel = iio_device_find_channel(m_m2k_dac_a, "voltage0", true);
-//	m_dac_b_channel = iio_device_find_channel(m_m2k_dac_b, "voltage0", true);
-//	m_ad5625_channel0 = iio_device_find_channel(m2k_ad5625, "voltage0", true);
-//	if (!m_ad5625_channel0)
-//		return false;
-//	m_ad5625_channel1 = iio_device_find_channel(m2k_ad5625, "voltage1", true);
-//	if (!m_ad5625_channel1)
-//		return false;
-//	m_dac_a_fabric = iio_device_find_channel(m_m2k_fabric, "voltage0", true);
-//	if (!m_dac_a_fabric)
-//		return false;
-//	m_dac_b_fabric = iio_device_find_channel(m_m2k_fabric, "voltage1", true);
-//	if (!m_dac_b_fabric)
-//		return false;
-
 	m_adc_ch0_gain = 1;
 	m_adc_ch1_gain = 1;
 	m_dac_a_ch_vlsb = 0;
@@ -135,17 +108,7 @@ bool M2kCalibration::isInitialized() const
 	return m_initialized;
 }
 
-//void M2kCalibration::setAdcInCalibMode()
-//{
-
-//}
-
-//void M2kCalibration::setDacInCalibMode()
-//{
-
-//}
-
-void M2kCalibration::setHardwareInCalibMode()
+void M2kCalibration::setAdcInCalibMode()
 {
 	// Make sure hardware triggers are disabled before calibrating
 	try {
@@ -155,31 +118,56 @@ void M2kCalibration::setHardwareInCalibMode()
 						 M2kHardwareTrigger::ALWAYS);
 		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_2,
 						 M2kHardwareTrigger::ALWAYS);
+
+		/* Save the previous values for sampling frequency and oversampling ratio */
+		adc_sampl_freq = m_m2k_adc->getSampleRate();
+		adc_oversampl = m_m2k_adc->getOversamplingRatio();
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
+}
 
-	/* Save the previous values for sampling frequency and oversampling ratio */
-	adc_sampl_freq = m_m2k_adc->getSampleRate();
-	adc_oversampl = m_m2k_adc->getOversamplingRatio();
-//	iio_device_attr_read_double(m_m2k_adc, "sampling_frequency",
-//		&adc_sampl_freq);
-//	iio_device_attr_read_double(m_m2k_adc, "oversampling_ratio",
-//		&adc_oversampl);
+void M2kCalibration::setDacInCalibMode()
+{
+	try {
+		dac_a_sampl_freq = m_m2k_dac_a->getSampleRate();
+		dac_a_oversampl = m_m2k_dac_a->getOversamplingRatio();
+		dac_b_sampl_freq = m_m2k_dac_b->getSampleRate();
+		dac_b_oversampl = m_m2k_dac_b->getOversamplingRatio();
+	} catch(std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
 
-	dac_a_sampl_freq = m_m2k_dac_a->getSampleRate();
-	dac_a_oversampl = m_m2k_dac_a->getOversamplingRatio();
-	dac_b_sampl_freq = m_m2k_dac_b->getSampleRate();
-	dac_b_oversampl = m_m2k_dac_b->getOversamplingRatio();
+void M2kCalibration::restoreAdcFromCalibMode()
+{
+	try {
+		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
+					  m_trigger0_mode);
 
-//	iio_device_attr_read_double(m_m2k_dac_a, "sampling_frequency",
-//		&dac_a_sampl_freq);
-//	iio_device_attr_read_double(m_m2k_dac_a, "oversampling_ratio",
-//		&dac_a_oversampl);
-//	iio_device_attr_read_double(m_m2k_dac_b, "sampling_frequency",
-//		&dac_b_sampl_freq);
-//	iio_device_attr_read_double(m_m2k_dac_b, "oversampling_ratio",
-//		&dac_b_oversampl);
+		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_2,
+					  m_trigger1_mode);
+
+		/* Restore the previous values for sampling frequency and oversampling ratio */
+		m_m2k_adc->setSampleRate(adc_sampl_freq);
+		m_m2k_adc->setOversamplingRatio(adc_oversampl);
+
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+void M2kCalibration::restoreDacFromCalibMode()
+{
+	try {
+		double samplerate_a = m_m2k_dac_a->setSampleRate(dac_a_sampl_freq);
+		double oversampl_a = m_m2k_dac_a->setOversamplingRatio(dac_a_oversampl);
+		double samplerate_b = m_m2k_dac_b->setSampleRate(dac_b_sampl_freq);
+		double oversampl_b = m_m2k_dac_b->setOversamplingRatio(dac_b_oversampl);
+
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
 }
 
 void M2kCalibration::configAdcSamplerate()
@@ -203,57 +191,6 @@ void M2kCalibration::configDacSamplerate()
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
-}
-
-void M2kCalibration::configHwSamplerate()
-{
-	// Make sure we calibrate at the highest sample rate
-//	double sampleRate = m_analogIn.at(0)->setSampleRate(1e8);
-//	m_analogIn.at(0)->setOversamplingRatio(1);
-	configAdcSamplerate();
-	configDacSamplerate();
-//	m2k_dac_a->setSampleRate(75E6);
-//	iio_device_attr_write_longlong(m2k_dac_a->iio_dac_dev(), "oversampling_ratio", 1);
-//	m2k_dac_b->setSampleRate(75E6);
-//	iio_device_attr_write_longlong(m2k_dac_b->iio_dac_dev(), "oversampling_ratio", 1);
-}
-
-void M2kCalibration::restoreHardwareFromCalibMode()
-{
-	try {
-		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
-					  m_trigger0_mode);
-
-		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_2,
-					  m_trigger1_mode);
-
-		/* Restore the previous values for sampling frequency and oversampling ratio */
-		m_m2k_adc->setSampleRate(adc_sampl_freq);
-		m_m2k_adc->setOversamplingRatio(adc_oversampl);
-
-		double samplerate_a = m_m2k_dac_a->setSampleRate(dac_a_sampl_freq);
-		double oversampl_a = m_m2k_dac_a->setOversamplingRatio(dac_a_oversampl);
-		double samplerate_b = m_m2k_dac_b->setSampleRate(dac_b_sampl_freq);
-		double oversampl_b = m_m2k_dac_b->setOversamplingRatio(dac_b_oversampl);
-
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
-
-
-//	iio_device_attr_write_double(m_m2k_adc, "sampling_frequency",
-//		adc_sampl_freq);
-//	iio_device_attr_write_double(m_m2k_adc, "oversampling_ratio",
-//		adc_oversampl);
-
-//	iio_device_attr_write_double(m_m2k_dac_a, "sampling_frequency",
-//		dac_a_sampl_freq);
-//	iio_device_attr_write_double(m_m2k_dac_a, "oversampling_ratio",
-//		dac_a_oversampl);
-//	iio_device_attr_write_double(m_m2k_dac_b, "sampling_frequency",
-//		dac_b_sampl_freq);
-//	iio_device_attr_write_double(m_m2k_dac_b, "oversampling_ratio",
-//		dac_b_oversampl);
 }
 
 bool M2kCalibration::calibrateADCoffset()
@@ -381,26 +318,6 @@ double M2kCalibration::adcGainChannel1() const
 	return m_adc_ch1_gain;
 }
 
-void M2kCalibration::updateHwCorrections()
-{
-//	iio_channel_attr_write_double(m_ad5625_channel0, "raw",
-//				      m_dac_a_ch_offset);
-//	iio_channel_attr_write_double(m_ad5625_channel1, "raw",
-//				      m_dac_b_ch_offset);
-
-//	if(m2k_adc) {
-//		m2k_adc->setChnCorrectionOffset(0, adcOffsetChannel0());
-//		m2k_adc->setChnCorrectionOffset(1, adcOffsetChannel1());
-//		m2k_adc->setChnCorrectionGain(0, adcGainChannel0());
-//		m2k_adc->setChnCorrectionGain(1, adcGainChannel1());
-//	}
-
-//	if(m2k_dac_a)
-//		m2k_dac_a->setVlsb(dacAvlsb());
-//	if(m2k_dac_b)
-//		m2k_dac_b->setVlsb(dacBvlsb());
-}
-
 void M2kCalibration::updateDacCorrections()
 {
 	iio_channel_attr_write_double(m_ad5625_channel0, "raw",
@@ -447,7 +364,9 @@ bool M2kCalibration::resetCalibration()
 
 	updateAdcCorrections();
 	updateDacCorrections();
-//	updateHwCorrections();
+
+	m_adc_calibrated = false;
+	m_dac_calibrated = false;
 	return true;
 }
 
@@ -457,74 +376,6 @@ void M2kCalibration::setChannelEnableState(struct iio_channel *chn, bool en)
 		iio_channel_enable(chn);
 	else
 		iio_channel_disable(chn);
-}
-
-bool M2kCalibration::adc_data_capture(int16_t *dataCh0, int16_t *dataCh1,
-	size_t num_sampl_per_chn)
-{
-//	if (!dataCh0 && !dataCh1) {
-//		return false;
-//	}
-
-//	// Store channels enable state
-//	bool channel0Enabled = iio_channel_is_enabled(m_adc_channel0);
-//	bool channel1Enabled = iio_channel_is_enabled(m_adc_channel1);
-
-//	// Enable the required channels
-//	m_m2k_adc->enableChannel(0, !!dataCh0);
-//	m_m2k_adc->enableChannel(1, !!dataCh1);
-////	setChannelEnableState(m_adc_channel0, !!dataCh0);
-////	setChannelEnableState(m_adc_channel1, !!dataCh1);
-
-//	struct iio_buffer *buffer = iio_device_create_buffer(m_m2k_adc,
-//		num_sampl_per_chn, false);
-
-//	if (!buffer) {
-//		m_analogIn.at(0)->enableChannel(0, channel0Enabled);
-//		m_analogIn.at(0)->enableChannel(1, channel1Enabled);
-////		setChannelEnableState(m_adc_channel0, channel0Enabled);
-////		setChannelEnableState(m_adc_channel1, channel1Enabled);
-//		return false;
-//	}
-
-//	int ret = iio_buffer_refill(buffer);
-
-//	if (ret < 0) {
-//		iio_buffer_destroy(buffer);
-//		m_analogIn.at(0)->enableChannel(0, channel0Enabled);
-//		m_analogIn.at(0)->enableChannel(1, channel1Enabled);
-////		setChannelEnableState(m_adc_channel0, channel0Enabled);
-////		setChannelEnableState(m_adc_channel1, channel1Enabled);
-//		return false;
-//	}
-
-//	ptrdiff_t p_inc = iio_buffer_step(buffer);
-//	uintptr_t p_dat;
-//	uintptr_t p_end = (uintptr_t)iio_buffer_end(buffer);
-//	unsigned int i;
-//	for (i = 0, p_dat = (uintptr_t)iio_buffer_first(buffer, m_adc_channel0);
-//			p_dat < p_end; p_dat += p_inc, i++)
-//	{
-//		if (dataCh0 && dataCh1) {
-//			dataCh0[i] = ((int16_t*)p_dat)[0];
-//			dataCh1[i] = ((int16_t*)p_dat)[1];
-
-//		} else if (dataCh0) {
-//			dataCh0[i] = ((int16_t*)p_dat)[0];
-//		} else if (dataCh1) {
-//			dataCh1[i] = ((int16_t*)p_dat)[0];
-//		}
-//	}
-
-//	iio_buffer_destroy(buffer);
-
-//	// Restore channels enable states
-//	m_analogIn.at(0)->enableChannel(0, channel0Enabled);
-//	m_analogIn.at(1)->enableChannel(1, channel1Enabled);
-////	setChannelEnableState(m_adc_channel0, channel0Enabled);
-////	setChannelEnableState(m_adc_channel1, channel1Enabled);
-
-//	return true;
 }
 
 bool M2kCalibration::fine_tune(size_t span, int16_t centerVal0, int16_t centerVal1,
@@ -678,20 +529,6 @@ bool M2kCalibration::calibrateDACoffset()
 	iio_channel_attr_write_longlong(m_ad5625_channel1, "raw",
 		m_dac_b_ch_offset);
 
-//	if (m_dac_a_buffer) {
-//		iio_buffer_destroy(m_dac_a_buffer);
-//		m_dac_a_buffer = NULL;
-//	}
-
-//	if (m_dac_b_buffer) {
-//		iio_buffer_destroy(m_dac_b_buffer);
-//		m_dac_b_buffer = NULL;
-//	}
-
-//	m_m2k_dac_a->enableChannel(0, false);
-//	m_m2k_dac_b->enableChannel(0, false);
-//	setChannelEnableState(m_dac_a_channel, false);
-//	setChannelEnableState(m_dac_b_channel, false);
 	m_m2k_dac_a->stopOutput();
 	m_m2k_dac_b->stopOutput();
 	setCalibrationMode(NONE);
@@ -751,21 +588,8 @@ bool M2kCalibration::calibrateDACgain()
 	m_dac_a_ch_vlsb = voltage0 / 1024;
 	m_dac_b_ch_vlsb = voltage1 / 1024;
 
-//	if (m_dac_a_buffer) {
-//		iio_buffer_destroy(m_dac_a_buffer);
-//		m_dac_a_buffer = NULL;
-//	}
-
-//	if (m_dac_b_buffer) {
-//		iio_buffer_destroy(m_dac_b_buffer);
-//		m_dac_b_buffer = NULL;
-//	}
 	m_m2k_dac_a->stopOutput();
 	m_m2k_dac_b->stopOutput();
-
-//	dacOutputStop();
-//	setChannelEnableState(m_dac_a_channel, false);
-//	setChannelEnableState(m_dac_b_channel, false);
 
 	setCalibrationMode(NONE);
 
@@ -834,27 +658,8 @@ void M2kCalibration::dacAOutputDC(int16_t value)
 
 void M2kCalibration::dacOutputStop()
 {
-//	if (m_dac_a_buffer) {
-//		iio_buffer_cancel(m_dac_a_buffer);
-//		iio_buffer_destroy(m_dac_a_buffer);
-//		m_dac_a_buffer = NULL;
-//	}
-
-//	if (m_dac_b_buffer) {
-//		iio_buffer_cancel(m_dac_b_buffer);
-//		iio_buffer_destroy(m_dac_b_buffer);
-//		m_dac_b_buffer = NULL;
-//	}
-
 	m_m2k_dac_a->stopOutput();
 	m_m2k_dac_b->stopOutput();
-
-//	m_m2k_dac_a->enableChannel(0, false);
-//	m_m2k_dac_b->enableChannel(0, false);
-
-//	/* FIXME: TODO: Move this into a HW class / lib M2k */
-//	iio_channel_attr_write_bool(m_dac_a_fabric, "powerdown", true);
-//	iio_channel_attr_write_bool(m_dac_b_fabric, "powerdown", true);
 
 	setCalibrationMode(NONE);
 }
@@ -864,20 +669,6 @@ void M2kCalibration::dacBOutputDC(int16_t value)
 //	dacOutputDC(m_m2k_dac_b, m_dac_b_channel, &m_dac_b_buffer, value);
 }
 
-//float M2kCalibration::convSampleToVolts(float sample, float correctionGain)
-//{
-	// using stuff from M2kAnalogIn
-	// TO DO: explain this formula and add methods to change gain and offset
-//	return ((sample * 0.78) / ((1 << 11) * 1.3) * correctionGain);
-//}
-
-//float M2kCalibration::convVoltsToSample(float voltage, float correctionGain)
-//{
-	// using stuff from M2kAnalogIn
-	// TO DO: explain this formula and add methods to change gain and offset
-//	return (voltage / correctionGain * (2048 * 1.3) / 0.78);
-//}
-
 bool M2kCalibration::calibrateADC()
 {
 	bool ok;
@@ -885,6 +676,8 @@ bool M2kCalibration::calibrateADC()
 		if (!m_initialized) {
 			initialize();
 		}
+
+		setAdcInCalibMode();
 
 		configAdcSamplerate();
 		ok = calibrateADCoffset();
@@ -899,6 +692,8 @@ bool M2kCalibration::calibrateADC()
 		}
 
 		updateAdcCorrections();
+		restoreAdcFromCalibMode();
+		m_adc_calibrated = true;
 		return true;
 	} catch (std::runtime_error &e) {
 		throw std::runtime_error("ADC calibration failed: " +
@@ -906,6 +701,7 @@ bool M2kCalibration::calibrateADC()
 	}
 calibration_fail:
 	m_cancel=false;
+	m_adc_calibrated = false;
 	return false;
 }
 
@@ -917,7 +713,15 @@ bool M2kCalibration::calibrateDAC()
 			initialize();
 		}
 
+		if (!m_adc_calibrated) {
+			calibrateADC();
+		}
+		setDacInCalibMode();
+		setAdcInCalibMode();
+
+		configAdcSamplerate();
 		configDacSamplerate();
+
 		ok = calibrateDACoffset();
 
 		if (!ok || m_cancel) {
@@ -929,7 +733,12 @@ bool M2kCalibration::calibrateDAC()
 		if (!ok  || m_cancel) {
 			goto calibration_fail;
 		}
+
 		updateDacCorrections();
+		restoreDacFromCalibMode();
+		restoreAdcFromCalibMode();
+
+		m_dac_calibrated = true;
 		return true;
 	} catch (std::runtime_error &e) {
 		throw std::runtime_error("DAC calibration failed " +
@@ -937,6 +746,7 @@ bool M2kCalibration::calibrateDAC()
 	}
 calibration_fail:
 	m_cancel=false;
+	m_dac_calibrated = false;
 	return false;
 }
 
@@ -945,7 +755,6 @@ bool M2kCalibration::calibrateAll()
 	bool ok;
 	try {
 		initialize();
-		//	configHwSamplerate();
 
 		ok = calibrateADC();
 
