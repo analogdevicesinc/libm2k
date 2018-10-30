@@ -431,24 +431,27 @@ std::vector<unsigned long> Utils::getAvailableSamplerates(iio_device *dev)
 	return values;
 }
 
-double Utils::getSampleRate(struct iio_device* dev)
+double Utils::getDoubleValue(struct iio_device* dev, std::string attr)
 {
-	double sampleRate = 0;
+	double value = 0;
 	std::string dev_name = iio_device_get_name(dev);
 
-	if (Utils::iioDevHasAttribute(dev, "sampling_frequency")) {
-		iio_device_attr_read_double(dev, "sampling_frequency",
-			&sampleRate);
+	if (Utils::iioDevHasAttribute(dev, attr)) {
+		iio_device_attr_read_double(dev, attr.c_str(),
+			&value);
 	} else {
 		throw invalid_parameter_exception(dev_name +
-				" has no sampling frequency attribute");
+				" has no " +
+				attr +
+				"attribute");
 	}
-	return sampleRate;
+	return value;
 }
 
-double Utils::getSampleRate(struct iio_device* dev, unsigned int chn_idx)
+double Utils::getDoubleValue(struct iio_device* dev, unsigned int chn_idx,
+			     std::string attr)
 {
-	double sampleRate = 0;
+	double value = 0;
 	unsigned int nb_channels = iio_device_get_channels_count(dev);
 	std::string dev_name = iio_device_get_name(dev);
 
@@ -458,30 +461,36 @@ double Utils::getSampleRate(struct iio_device* dev, unsigned int chn_idx)
 	}
 
 	auto chn = iio_device_get_channel(dev, chn_idx);
-	if (Utils::iioChannelHasAttribute(chn, "sampling_frequency")) {
-		iio_channel_attr_read_double(chn, "sampling_frequency",
-			&sampleRate);
+	if (Utils::iioChannelHasAttribute(chn, attr)) {
+		iio_channel_attr_read_double(chn, attr.c_str(),
+			&value);
 	} else {
 		throw invalid_parameter_exception(dev_name +
-				" has no sampling frequency attribute for the selected channel");
+				" has no " +
+				attr +
+				" attribute for the selected channel");
 	}
-	return sampleRate;
+	return value;
 }
 
-double Utils::setSampleRate(struct iio_device* dev, double sampleRate)
+double Utils::setDoubleValue(struct iio_device* dev, double value,
+			     std::string attr)
 {
 	std::string dev_name = iio_device_get_name(dev);
-	if (Utils::iioDevHasAttribute(dev, "sampling_frequency")) {
-		iio_device_attr_write_double(dev, "sampling_frequency",
-			sampleRate);
+	if (Utils::iioDevHasAttribute(dev, attr)) {
+		iio_device_attr_write_double(dev, attr.c_str(),
+			value);
 	} else {
 		throw invalid_parameter_exception(dev_name +
-				" has no sampling frequency attribute");
+				" has no " +
+				attr +
+				" attribute");
 	}
-	return getSampleRate(dev);
+	return getDoubleValue(dev, attr);
 }
 
-double Utils::setSampleRate(struct iio_device* dev, unsigned int chn_idx, double sampleRate)
+double Utils::setDoubleValue(struct iio_device* dev, unsigned int chn_idx,
+			     double value, std::string attr)
 {
 	unsigned int nb_channels = iio_device_get_channels_count(dev);
 	std::string dev_name = iio_device_get_name(dev);
@@ -491,14 +500,16 @@ double Utils::setSampleRate(struct iio_device* dev, unsigned int chn_idx, double
 	}
 
 	auto chn = iio_device_get_channel(dev, chn_idx);
-	if (Utils::iioChannelHasAttribute(chn, "sampling_frequency")) {
-		iio_channel_attr_write_double(chn, "sampling_frequency",
-			sampleRate);
+	if (Utils::iioChannelHasAttribute(chn, attr)) {
+		iio_channel_attr_write_double(chn, attr.c_str(),
+			value);
 	} else {
 		throw invalid_parameter_exception(dev_name +
-				" has no sampling frequency attribute for the selected channel");
+				" has no " +
+				attr +
+				" attribute for the selected channel");
 	}
-	return getSampleRate(dev, chn_idx);
+	return getDoubleValue(dev, chn_idx, attr);
 }
 
 //std::string Utils::getIioDevByPartialName(std::string dev)
