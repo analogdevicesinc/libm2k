@@ -37,7 +37,8 @@ public:
 	GenericAnalogIn(struct iio_context* ctx, std::string adc_dev);
 	virtual ~GenericAnalogIn();
 
-	virtual std::vector<std::vector<double>> getSamples(int nb_samples);
+	virtual std::vector<std::vector<double>> getSamples(int nb_samples,
+							    bool processed=false);
 	virtual void openAnalogIn();
 	virtual void closeAnalogIn();
 

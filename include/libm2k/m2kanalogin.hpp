@@ -51,15 +51,11 @@ public:
 	M2kAnalogIn(struct iio_context*, std::string adc_dev);
 	~M2kAnalogIn();
 
-	std::vector<std::vector<double>> getSamples(int nb_samples);
-	std::vector<std::vector<double>> getProcessedSamples(int nb_samples);
+	std::vector<std::vector<double>> getSamples(int nb_samples,
+						    bool processed=false);
+//	std::vector<std::vector<double>> getProcessedSamples(int nb_samples);
 	void openAnalogIn();
 	void closeAnalogIn();
-
-	void calibrate(bool async = true);
-	bool fine_tune(size_t span, int16_t centerVal0,
-				    int16_t centerVal1,
-				    size_t num_samples);
 
 	double processSample(int16_t sample, unsigned int channel);
 
@@ -75,8 +71,8 @@ public:
 
 	double getOversamplingRatio();
 	double getOversamplingRatio(unsigned int);
-	double setOversamplingRatio(double sampleRate);
-	double setOversamplingRatio(unsigned int chn_idx, double sampleRate);
+	double setOversamplingRatio(double oversampling);
+	double setOversamplingRatio(unsigned int chn_idx, double oversampling);
 
 	struct iio_channel* getChannel(ANALOG_IN_CHANNEL);
 	struct iio_channel* getAuxChannel(unsigned int);
@@ -104,14 +100,14 @@ public:
 	double getFilterCompensation(double samplerate);
 	double getValueForRange(M2K_RANGE);
 
-	double convertRawToVolts(int sample, float correctionGain = 1,
-				 float hw_gain = 0.02,
-				 float filterCompensation = 1,
-				 float offset = 0);
-	int convertVoltsToRaw(double voltage, float correctionGain = 1,
-			      float hw_gain = 0.02,
-			      float filterCompensation = 1,
-			      float offset = 0);
+	double convertRawToVolts(int sample, double correctionGain = 1,
+				 double hw_gain = 0.02,
+				 double filterCompensation = 1,
+				 double offset = 0);
+	int convertVoltsToRaw(double voltage, double correctionGain = 1,
+			      double hw_gain = 0.02,
+			      double filterCompensation = 1,
+			      double offset = 0);
 
 private:
 	void applyM2kFixes();

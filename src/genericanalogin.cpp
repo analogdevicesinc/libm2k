@@ -54,7 +54,8 @@ GenericAnalogIn::~GenericAnalogIn()
 	m_data.clear();
 }
 
-std::vector<std::vector<double>> GenericAnalogIn::getSamples(int nb_samples)
+std::vector<std::vector<double>> GenericAnalogIn::getSamples(int nb_samples,
+							     bool processed)
 {
 	std::vector<bool> channels_enabled;
 //	std::vector<std::vector<int16_t>> ch_data;
@@ -150,7 +151,7 @@ void GenericAnalogIn::closeAnalogIn()
 double GenericAnalogIn::getSampleRate()
 {
 	try {
-		return Utils::getSampleRate(m_dev);
+		return Utils::getDoubleValue(m_dev, "sampling_frequency");
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -159,7 +160,8 @@ double GenericAnalogIn::getSampleRate()
 double GenericAnalogIn::getSampleRate(unsigned int chn_idx)
 {
 	try {
-		return Utils::getSampleRate(m_dev, chn_idx);
+		return Utils::getDoubleValue(m_dev, chn_idx,
+					     "sampling_frequency");
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -168,7 +170,8 @@ double GenericAnalogIn::getSampleRate(unsigned int chn_idx)
 double GenericAnalogIn::setSampleRate(double sampleRate)
 {
 	try {
-		return Utils::setSampleRate(m_dev, sampleRate);
+		return Utils::setDoubleValue(m_dev, sampleRate,
+					    "sampling_frequency");
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -177,7 +180,8 @@ double GenericAnalogIn::setSampleRate(double sampleRate)
 double GenericAnalogIn::setSampleRate(unsigned int chn_idx, double sampleRate)
 {
 	try {
-		return Utils::setSampleRate(m_dev, chn_idx, sampleRate);
+		return Utils::setDoubleValue(m_dev, chn_idx,
+					    sampleRate, "sampling_frequency");
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
