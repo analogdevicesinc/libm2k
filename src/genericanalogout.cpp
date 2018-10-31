@@ -43,6 +43,11 @@ GenericAnalogOut::GenericAnalogOut(iio_context *ctx, std::string dac_dev):
 	for (unsigned int i = 0; i < m_nb_channels; i++) {
 		m_channel_list.push_back(iio_device_get_channel(m_dev, i));
 	}
+
+	if (m_channel_list.size() != m_nb_channels) {
+		m_nb_channels = m_channel_list.size();
+	}
+	m_buffer = nullptr;
 }
 
 GenericAnalogOut::~GenericAnalogOut()
@@ -109,9 +114,56 @@ void GenericAnalogOut::enableChannel(unsigned int index, bool enable)
 	}
 }
 
+bool GenericAnalogOut::isChannelEnabled(unsigned int index)
+{
+	if (index < m_channel_list.size()) {
+		return iio_channel_is_enabled(m_channel_list.at(index));
+	} else {
+		throw invalid_parameter_exception("No such channel for the AnalogOut");
+	}
+}
+
 std::string GenericAnalogOut::getDeviceName()
 {
 	return m_dev_name;
+}
+
+void GenericAnalogOut::push(std::vector<short> &data, bool cyclic,
+			    unsigned int chn_idx)
+{
+	size_t size = data.size();
+//	short raw_value = 0;
+
+	if (m_buffer) {
+		iio_buffer_destroy(m_buffer);
+	}
+
+	try {
+		if (!isChannelEnabled(chn_idx)) {
+			throw invalid_parameter_exception("The AnalogOut channel "
+							  "is not enabled");
+			// or should we check if we have at least one en channel?
+		}
+
+		setupBeforeBuffer();
+
+		m_buffer = iio_device_create_buffer(m_dev,
+						size,
+						cyclic);
+		if (!m_buffer) {
+			throw invalid_parameter_exception("Can't create the TX buffer");
+		}
+
+		// on which channel do we write this?
+		size_t ret = iio_channel_write(m_channel_list.at(chn_idx), m_buffer, data.data(),
+			  size * sizeof(short));
+
+		iio_buffer_push(m_buffer);
+
+		setupAfterBuffer();
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
 }
 
 void libm2k::analog::GenericAnalogOut::openAnalogOut()
@@ -124,3 +176,26 @@ void libm2k::analog::GenericAnalogOut::closeAnalogOut()
 
 }
 
+void GenericAnalogOut::stopOutput()
+{
+	if (m_buffer) {
+		iio_buffer_destroy(m_buffer);
+		m_buffer = nullptr;
+	}
+}
+
+void GenericAnalogOut::setupBeforeBuffer()
+{
+//	write some attr if needed
+}
+
+void GenericAnalogOut::setupAfterBuffer()
+{
+//	write some attrs if needed
+}
+
+
+short GenericAnalogOut::processSample(double value, bool raw)
+{
+	return (short)value;
+}

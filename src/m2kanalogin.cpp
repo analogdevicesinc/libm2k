@@ -254,7 +254,7 @@ void M2kAnalogIn::setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel,
 M2kHardwareTrigger::mode M2kAnalogIn::getTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel)
 {
 	try {
-		m_trigger->triggerMode(channel);
+		return m_trigger->triggerMode(channel);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}

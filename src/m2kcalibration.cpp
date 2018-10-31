@@ -60,10 +60,6 @@ M2kCalibration::M2kCalibration(std::vector<M2kAnalogIn*>& analogIn,
 
 M2kCalibration::~M2kCalibration()
 {
-//	if (m_dac_a_buffer)
-//		iio_buffer_destroy(m_dac_a_buffer);
-//	if (m_dac_b_buffer)
-//		iio_buffer_destroy(m_dac_b_buffer);
 }
 
 bool M2kCalibration::initialize()
@@ -489,10 +485,16 @@ bool M2kCalibration::calibrateDACoffset()
 	iio_channel_attr_write_longlong(m_ad5625_channel1, "raw", 2048);
 
 	// write to DAC
-	m_m2k_dac_a->sendConstant(0, true);
-	m_m2k_dac_b->sendConstant(0, true);
-//	dacAOutputDC(0);
-//	dacBOutputDC(0);
+	std::vector<short> vec_data(256, 0);
+	try {
+		m_m2k_dac_a->enableChannel(0, true);
+		m_m2k_dac_b->enableChannel(0, true);
+		m_m2k_dac_a->push(vec_data, true);
+		m_m2k_dac_b->push(vec_data, true);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception("DAC offset calibration failed: "
+						  + std::string(e.what()));
+	}
 
 	// Allow some time for the voltage to settle
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -548,10 +550,16 @@ bool M2kCalibration::calibrateDACgain()
 	setCalibrationMode(DAC);
 
 	// Use the positive half scale point for gain calibration
-	m_m2k_dac_a->sendConstant(1024, true);
-	m_m2k_dac_b->sendConstant(1024, true);
-//	dacAOutputDC(1024);
-//	dacBOutputDC(1024);
+	std::vector<short> vec_data(256, 1024);
+	try {
+		m_m2k_dac_a->enableChannel(0, true);
+		m_m2k_dac_b->enableChannel(0, true);
+		m_m2k_dac_a->push(vec_data, true);
+		m_m2k_dac_b->push(vec_data, true);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception("DAC gain calibration failed: "
+						  + std::string(e.what()));
+	}
 
 	// Allow some time for the voltage to settle
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));

@@ -62,7 +62,6 @@ M2kAnalogOut::M2kAnalogOut(iio_context *ctx, string dac_dev):
 		}
 	}
 
-	m_buffer = nullptr;
 	m_dac_calib_vlsb = 10.0 / ((double)( 1 << 12 ));
 	m_filter_compensation_table[75E6] = 1.00;
 	m_filter_compensation_table[75E5] = 1.525879;
@@ -167,6 +166,37 @@ void M2kAnalogOut::setDacCalibVlsb(double vlsb)
 	m_dac_calib_vlsb = vlsb;
 }
 
+void M2kAnalogOut::push(std::vector<short> &data, bool cyclic,
+			unsigned int chn_idx)
+{
+	size_t size = data.size();
+	std::vector<short> raw_data_buffer;
+	for (int i = 0; i < size; i++) {
+		raw_data_buffer.push_back(processSample(data.at(i), true));
+	}
+	try {
+		GenericAnalogOut::push(raw_data_buffer, cyclic, chn_idx);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+void M2kAnalogOut::push(std::vector<double> &data, bool cyclic,
+			unsigned int chn_idx)
+{
+	size_t size = data.size();
+	std::vector<short> raw_data_buffer;
+
+	for (int i = 0; i < size; i++) {
+		raw_data_buffer.push_back(processSample(data.at(i), false));
+	}
+	try {
+		GenericAnalogOut::push(raw_data_buffer, cyclic, chn_idx);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
 double M2kAnalogOut::getScalingFactor()
 {
 	return (-1 * (1 / m_dac_calib_vlsb) * 16) /
@@ -178,52 +208,42 @@ double M2kAnalogOut::getFilterCompensation(double samplerate)
 	return m_filter_compensation_table.at(samplerate);
 }
 
-void M2kAnalogOut::sendConstant(double value, bool raw,
-				size_t size, bool cyclic)
+void M2kAnalogOut::stopOutput()
 {
-	short data[size];
-	short raw_value = 0;
-
-	if (m_buffer) {
-		iio_buffer_destroy(m_buffer);
+	for (auto fabric_chn : m_m2k_fabric_channels) {
+		iio_channel_attr_write_bool(fabric_chn, "powerdown", true);
 	}
 
-	enableChannel(0, true);
+	GenericAnalogOut::stopOutput();
+}
 
+short M2kAnalogOut::processSample(double value, bool raw)
+{
 	if (raw) {
-		raw_value = value;
+		short raw_value = value;
+		raw_value = (-raw_value) << 4;
 
 		// This should go away once channel type gets
 		// changed from 'le:S16/16>>0' to 'le:S12/16>>4'
-		raw_value = (-raw_value) << 4;
+		return raw_value;
 	} else {
-		raw_value = convertVoltsToRaw(value, m_dac_calib_vlsb,
+		return convertVoltsToRaw(value, m_dac_calib_vlsb,
 			      getFilterCompensation(
 				      getSampleRate()));
 	}
+}
 
-	std::fill_n(data, size, raw_value);
-
+void M2kAnalogOut::setupBeforeBuffer()
+{
 	iio_device_attr_write_bool(m_dev, "dma_sync", true);
-	m_buffer = iio_device_create_buffer(m_dev,
-					size,
-					cyclic);
-	size_t ret = iio_channel_write(m_channel_list.at(0), m_buffer, data,
-		  size * sizeof(short));
+}
 
-	iio_buffer_push(m_buffer);
+void M2kAnalogOut::setupAfterBuffer()
+{
 	iio_device_attr_write_bool(m_dev, "dma_sync", false);
 
 	for (auto fabric_chn : m_m2k_fabric_channels) {
 		iio_channel_attr_write_bool(fabric_chn, "powerdown", false);
-	}
-}
-
-void M2kAnalogOut::stopOutput()
-{
-	enableChannel(0, true);
-	for (auto fabric_chn : m_m2k_fabric_channels) {
-		iio_channel_attr_write_bool(fabric_chn, "powerdown", true);
 	}
 }
 

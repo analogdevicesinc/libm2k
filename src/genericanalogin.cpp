@@ -46,6 +46,10 @@ GenericAnalogIn::GenericAnalogIn(iio_context *ctx, std::__cxx11::string adc_dev)
 		m_channel_list.push_back(iio_device_get_channel(m_dev, i));
 	}
 
+	if (m_channel_list.size() != m_nb_channels) {
+		m_nb_channels = m_channel_list.size();
+	}
+
 	iio_context_set_timeout(m_ctx, 0);
 }
 

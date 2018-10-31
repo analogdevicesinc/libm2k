@@ -160,8 +160,10 @@ int main(int argc, char **argv)
 
 				std::cout << "scaling factor " << maOut->getScalingFactor() << std::endl;
 
-				maOut->sendConstant(4.2, false, 1024, true);
-				mbOut->sendConstant(2.2, false, 1024, true);
+				std::vector<double> vec_a(1024, 4.2);
+				std::vector<short> vec_b(1024, 0);
+				maOut->push(vec_a, true);
+				mbOut->push(vec_b, true);
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 

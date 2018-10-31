@@ -46,6 +46,10 @@ DMM::DMM(struct iio_context *ctx, std::string dev)
 			m_channel_list.push_back(chn);
 		}
 	}
+
+	if (m_channel_list.size() != m_nb_channels) {
+		m_nb_channels = m_channel_list.size();
+	}
 }
 
 DMM::~DMM()

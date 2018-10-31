@@ -28,6 +28,7 @@ extern "C" {
 	struct iio_context;
 	struct iio_device;
 	struct iio_channel;
+	struct iio_buffer;
 }
 
 namespace libm2k {
@@ -48,10 +49,22 @@ public:
 
 	struct iio_context* getContext();
 	void enableChannel(unsigned int index, bool enable);
+	bool isChannelEnabled(unsigned int index);
 	std::string getDeviceName();
+
+
+	virtual void push(std::vector<short>& data, bool cyclic = true,
+			  unsigned int chn_idx = 0);
+	virtual void stopOutput();
+	virtual short processSample(double value, bool raw);
+
+	virtual void setupBeforeBuffer();
+	virtual void setupAfterBuffer();
+
 protected:
 	struct iio_context* m_ctx;
 	struct iio_device* m_dev;
+	struct iio_buffer* m_buffer;
 	std::string m_dev_name;
 	unsigned int m_nb_channels;
 	std::vector<struct iio_channel*> m_channel_list;

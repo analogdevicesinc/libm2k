@@ -29,7 +29,6 @@ extern "C" {
 	struct iio_context;
 	struct iio_device;
 	struct iio_channel;
-	struct iio_buffer;
 }
 
 namespace libm2k {
@@ -59,16 +58,20 @@ public:
 				double filterCompensation);
 
 	void setDacCalibVlsb(double vlsb);
-	void sendConstant(double value,
-			  bool raw = false,
-			  size_t size = 256,
-			  bool cyclic = true);
+
+	void push(std::vector<double>& data, bool cyclic = true,
+		  unsigned int chn_idx = 0);
+	void push(std::vector<short>& data, bool cyclic = true,
+		  unsigned int chn_idx = 0);
 	void stopOutput();
+	short processSample(double value, bool raw);
+
+	void setupBeforeBuffer();
+	void setupAfterBuffer();
 
 private:
 	struct iio_device* m_ad5625;
 	struct iio_device* m_m2k_fabric;
-	struct iio_buffer* m_buffer;
 	std::vector<struct iio_channel*> m_m2k_fabric_channels;
 	std::vector<struct iio_channel*> m_ad5625_channels;
 	double m_dac_calib_vlsb;
