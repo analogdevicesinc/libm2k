@@ -167,9 +167,13 @@ int main(int argc, char **argv)
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-
-				samps = maIn->getSamples(20, true);
-				for (int i = 0; i < 20; i++) {
+				maIn->setSourceChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_1);
+				maIn->setTriggerDelay(-10);
+				maIn->setLevel(M2kAnalogIn::ANALOG_IN_CHANNEL_1, 1);
+				maIn->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::ANALOG);
+				maIn->setAnalogCondition(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::FALLING_EDGE);
+				samps = maIn->getSamples(48, true);
+				for (int i = 0; i < 48; i++) {
 					std::cout << samps[0][i] << " ";
 					std::cout << samps[1][i] << " ";
 				}

@@ -77,24 +77,31 @@ public:
 	struct iio_channel* getChannel(ANALOG_IN_CHANNEL);
 	struct iio_channel* getAuxChannel(unsigned int);
 
-	//trigger channel?
+	int getLevel(ANALOG_IN_CHANNEL chnIdx) const;
+	void setLevel(ANALOG_IN_CHANNEL chnIdx, int level);
+
+	int getHysteresis(ANALOG_IN_CHANNEL chnIdx) const;
+	void setHysteresis(ANALOG_IN_CHANNEL chnIdx, int histeresis);
+
+	M2kHardwareTrigger::condition getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const;
+	void setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond);
+
+	M2kHardwareTrigger::condition getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const;
+	void setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond);
+
+	M2kHardwareTrigger::mode getTriggerMode(ANALOG_IN_CHANNEL chnIdx);
+	void setTriggerMode(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::mode mode);
+
+	M2kHardwareTrigger::source getSource() const;
+	void setSource(M2kHardwareTrigger::source src);
+
+	unsigned int numChannels() const;
+
+	ANALOG_IN_CHANNEL getSourceChannel();
+	void setSourceChannel(ANALOG_IN_CHANNEL chnIdx);
+
 	int getTriggerDelay();
 	void setTriggerDelay(int delay);
-	void setTriggerDelay(double percent);
-
-	double getTriggerOffset();
-	void setTriggerOffset(double volt);
-
-	void setEnableTrigger(bool en);
-	bool getEnableTrigger();
-
-	void setTriggerChannel(ANALOG_IN_CHANNEL channel);
-	ANALOG_IN_CHANNEL getTriggerChannel();
-
-	void setTriggerMode(ANALOG_IN_CHANNEL,
-		libm2k::analog::M2kHardwareTrigger::mode);
-	libm2k::analog::M2kHardwareTrigger::mode getTriggerMode(ANALOG_IN_CHANNEL);
-
 
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
 	double getFilterCompensation(double samplerate);
@@ -108,7 +115,6 @@ public:
 			      double hw_gain = 0.02,
 			      double filterCompensation = 1,
 			      double offset = 0);
-
 private:
 	void applyM2kFixes();
 	bool m_need_processing;

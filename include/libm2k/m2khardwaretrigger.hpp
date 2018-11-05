@@ -33,6 +33,8 @@ extern "C" {
 
 namespace libm2k {
 namespace analog {
+class M2kAnalogIn;
+
 class LIBM2K_API M2kHardwareTrigger
 {
 public:
@@ -56,13 +58,21 @@ public:
 		N_DIGITAL_XOR_ANALOG = 8,
 	};
 
+	enum source {
+		CHANNEL_1 = 0,
+		CHANNEL_2 = 1,
+		CHANNEL_1_OR_CHANNEL_2 = 2,
+		CHANNEL_1_AND_CHANNEL_2 = 3,
+		CHANNEL_1_XOR_CHANNEL_2 = 4,
+	};
+
 	struct Settings {
 		std::vector<condition> analog_condition;
 		std::vector<condition> digital_condition;
 		std::vector<int> level;
 		std::vector<int> hysteresis;
 		std::vector<enum mode> mode;
-		std::string source;
+		source trigger_source;
 		int delay;
 	};
 
@@ -72,30 +82,30 @@ public:
 
 	M2kHardwareTrigger(struct iio_context *ctx);
 
-	unsigned int numChannels() const;
-
-	condition analogCondition(unsigned int chnIdx) const;
-	void setAnalogCondition(unsigned int chnIdx, condition cond);
-
-	condition digitalCondition(unsigned int chnIdx) const;
-	void setDigitalCondition(unsigned int chnIdx, condition cond);
-
-	int level(unsigned int chnIdx) const;
+	int getLevel(unsigned int chnIdx) const;
 	void setLevel(unsigned int chnIdx, int level);
 
-	int hysteresis(unsigned int chnIdx) const;
+	int getHysteresis(unsigned int chnIdx) const;
 	void setHysteresis(unsigned int chnIdx, int histeresis);
 
-	mode triggerMode(unsigned int chnIdx) const;
+	condition getAnalogCondition(unsigned int chnIdx) const;
+	void setAnalogCondition(unsigned int chnIdx, condition cond);
+
+	condition getDigitalCondition(unsigned int chnIdx) const;
+	void setDigitalCondition(unsigned int chnIdx, condition cond);
+
+	mode getTriggerMode(unsigned int chnIdx) const;
 	void setTriggerMode(unsigned int chnIdx, mode mode);
 
-	std::string source() const;
-	void setSource(const std::string& source);
+	source getSource() const;
+	void setSource(source src);
 
-	int sourceChannel() const;
+	unsigned int numChannels() const;
+
+	int getSourceChannel() const;
 	void setSourceChannel(unsigned int chnIdx);
 
-	int delay() const;
+	int getDelay() const;
 	void setDelay(int delay);
 
 	std::unique_ptr<struct Settings> getCurrentHwSettings();
@@ -115,10 +125,12 @@ private:
 
 	unsigned int m_num_channels;
 
-	static std::vector<std::string> lut_analog_trigg_cond;
-	static std::vector<std::string> lut_digital_trigg_cond;
-	static std::vector<std::string> lut_trigg_mode;
-	static std::vector<std::string> lut_trigg_source;
+	static std::vector<std::string> m_trigger_analog_cond;
+	static std::vector<std::string> m_trigger_digital_cond;
+	static std::vector<std::string> m_trigger_mode;
+	static std::vector<std::string> m_trigger_source;
+	std::vector<bool> m_analog_enabled;
+	std::vector<bool> m_digital_enabled;
 };
 }
 }

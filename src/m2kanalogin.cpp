@@ -187,7 +187,7 @@ void M2kAnalogIn::applyM2kFixes()
 
 int M2kAnalogIn::getTriggerDelay()
 {
-	return m_trigger->delay();
+	return m_trigger->getDelay();
 }
 
 void M2kAnalogIn::setTriggerDelay(int delay)
@@ -195,49 +195,89 @@ void M2kAnalogIn::setTriggerDelay(int delay)
 	m_trigger->setDelay(delay);
 }
 
-void M2kAnalogIn::setTriggerDelay(double percent)
+int M2kAnalogIn::getLevel(ANALOG_IN_CHANNEL chnIdx) const
 {
-	//percent of what?:-??
+	return m_trigger->getLevel(chnIdx);
 }
 
-double M2kAnalogIn::getTriggerOffset()
+void M2kAnalogIn::setLevel(ANALOG_IN_CHANNEL chnIdx, int level)
 {
-
+	m_trigger->setLevel(chnIdx, level);
 }
 
-void M2kAnalogIn::setTriggerOffset(double volt)
+int M2kAnalogIn::getHysteresis(ANALOG_IN_CHANNEL chnIdx) const
 {
-
+	return m_trigger->getHysteresis(chnIdx);
 }
 
-void M2kAnalogIn::setEnableTrigger(bool en)
+void M2kAnalogIn::setHysteresis(ANALOG_IN_CHANNEL chnIdx, int hysteresis)
 {
-
+	m_trigger->setHysteresis(chnIdx, hysteresis);
 }
 
-bool M2kAnalogIn::getEnableTrigger()
+M2kHardwareTrigger::condition M2kAnalogIn::getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
 {
-
-}
-
-void M2kAnalogIn::setTriggerChannel(ANALOG_IN_CHANNEL channel)
-{
-	if (channel < m_nb_channels) {
-		m_trigger->setSourceChannel(channel);
-	} else {
-		throw invalid_parameter_exception("No such channel");
+	try {
+		return m_trigger->getAnalogCondition(chnIdx);
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error("M2K Analog In error: " +
+					 std::string(e.what()));
 	}
 }
 
-M2kAnalogIn::ANALOG_IN_CHANNEL M2kAnalogIn::getTriggerChannel()
+void M2kAnalogIn::setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond)
 {
-	int sourceChannel = m_trigger->sourceChannel();
-	if (sourceChannel == 0) {
-		return ANALOG_IN_CHANNEL_1;
-	} else if (sourceChannel == 1) {
-		return ANALOG_IN_CHANNEL_2;
+	m_trigger->setAnalogCondition(chnIdx, cond);
+}
+
+M2kHardwareTrigger::condition M2kAnalogIn::getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const
+{
+	try {
+		return m_trigger->getDigitalCondition(chnIdx);
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error("M2K Analog In error: " +
+					 std::string(e.what()));
+	}
+}
+
+void M2kAnalogIn::setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond)
+{
+	m_trigger->setDigitalCondition(chnIdx, cond);
+}
+
+M2kHardwareTrigger::source M2kAnalogIn::getSource() const
+{
+	try {
+		return m_trigger->getSource();
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error("M2K Analog In error: " +
+					 std::string(e.what()));
+	}
+}
+
+void M2kAnalogIn::setSource(M2kHardwareTrigger::source src)
+{
+	m_trigger->setSource(src);
+}
+
+void M2kAnalogIn::setSourceChannel(ANALOG_IN_CHANNEL channel)
+{
+	try {
+		m_trigger->setSourceChannel(channel);
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error("M2K Analog In error: " +
+					 std::string(e.what()));
+	}
+}
+
+M2kAnalogIn::ANALOG_IN_CHANNEL M2kAnalogIn::getSourceChannel()
+{
+	int sourceChannel = m_trigger->getSourceChannel();
+	if (sourceChannel > 0) {
+		return static_cast<ANALOG_IN_CHANNEL>(sourceChannel);
 	} else {
-		throw invalid_parameter_exception("No trigger channel configured");
+		throw std::runtime_error("M2K Analog In error: "
+					 " No trigger channel configured");
 	}
 }
 
@@ -254,7 +294,7 @@ void M2kAnalogIn::setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel,
 M2kHardwareTrigger::mode M2kAnalogIn::getTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel)
 {
 	try {
-		return m_trigger->triggerMode(channel);
+		return m_trigger->getTriggerMode(channel);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
