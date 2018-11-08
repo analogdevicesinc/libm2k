@@ -51,8 +51,8 @@ target_link_libraries(m2k
 )
 
 set_target_properties(m2k PROPERTIES
-	VERSION ${LIBM2K_VERSION}
-	SOVERSION ${LIBM2K_VERSION}
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION}
 	PUBLIC_HEADER "${HEADERS_LIST}"
 )
 
