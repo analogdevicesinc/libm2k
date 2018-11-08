@@ -23,7 +23,6 @@
 #include <vector>
 #include <string>
 #include "m2kglobal.hpp"
-#include "analogin.hpp"
 #include "genericdevice.hpp"
 #include <unordered_set>
 
