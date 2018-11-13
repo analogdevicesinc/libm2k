@@ -188,6 +188,8 @@ std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
 		}
 	}
 	return allAnalogOut;
+}
+
 void M2K::initialize()
 {
 	/* Apply M2k fixes */
