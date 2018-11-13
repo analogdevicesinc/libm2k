@@ -163,25 +163,25 @@ void M2kAnalogIn::closeAnalogIn()
 
 void M2kAnalogIn::applyM2kFixes()
 {
-	std::string hw_rev = Utils::getHardwareRevision(m_ctx);
+//	std::string hw_rev = Utils::getHardwareRevision(m_ctx);
 
-	struct iio_device *dev = iio_context_find_device(m_ctx, "ad9963");
+//	struct iio_device *dev = iio_context_find_device(m_ctx, "ad9963");
 
-	int config1 = 0x05;
-	int config2 = 0x05;
+//	int config1 = 0x05;
+//	int config2 = 0x05;
 
-	if (hw_rev == "A") {
-		config1 = 0x1B; // IGAIN1 +-6db  0.25db steps
-		config2 = 0x1B;
-	}
+//	if (hw_rev == "A") {
+//		config1 = 0x1B; // IGAIN1 +-6db  0.25db steps
+//		config2 = 0x1B;
+//	}
 
-	/* Configure TX path */
-	iio_device_reg_write(dev, 0x68, config1);
-	iio_device_reg_write(dev, 0x6B, config2);
-	iio_device_reg_write(dev, 0x69, 0x1C);  // IGAIN2 +-2.5%
-	iio_device_reg_write(dev, 0x6C, 0x1C);
-	iio_device_reg_write(dev, 0x6A, 0x20);  // IRSET +-20%
-	iio_device_reg_write(dev, 0x6D, 0x20);
+//	/* Configure TX path */
+//	iio_device_reg_write(dev, 0x68, config1);
+//	iio_device_reg_write(dev, 0x6B, config2);
+//	iio_device_reg_write(dev, 0x69, 0x1C);  // IGAIN2 +-2.5%
+//	iio_device_reg_write(dev, 0x6C, 0x1C);
+//	iio_device_reg_write(dev, 0x6A, 0x20);  // IRSET +-20%
+//	iio_device_reg_write(dev, 0x6D, 0x20);
 }
 
 

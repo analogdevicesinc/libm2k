@@ -56,6 +56,7 @@ public:
 	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
 private:
 	M2kCalibration* m_calibration;
+	void initialize();
 };
 }
 }

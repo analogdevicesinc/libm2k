@@ -22,16 +22,21 @@
 #include "libm2k/m2kanalogout.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/m2kcalibration.hpp"
+#include "utils.hpp"
+#include <iio.h>
 #include <iostream>
 
 using namespace std;
 using namespace libm2k::devices;
 using namespace libm2k::analog;
+using namespace libm2k::utils;
 
 M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 	GenericDevice(uri, ctx, name)
 {
 	std::cout << "I am M2K device " << std::endl;
+
+	initialize();
 
 	/* Initialize the AnalogIn list */
 	for (auto aIn : s_instancesAnalogIn) {
@@ -183,4 +188,26 @@ std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
 		}
 	}
 	return allAnalogOut;
+void M2K::initialize()
+{
+	/* Apply M2k fixes */
+	std::string hw_rev = Utils::getHardwareRevision(ctx());
+
+	struct iio_device *dev = iio_context_find_device(ctx(), "ad9963");
+
+	int config1 = 0x05;
+	int config2 = 0x05;
+
+	if (hw_rev == "A") {
+		config1 = 0x1B; // IGAIN1 +-6db  0.25db steps
+		config2 = 0x1B;
+	}
+
+	/* Configure TX path */
+	iio_device_reg_write(dev, 0x68, config1);
+	iio_device_reg_write(dev, 0x6B, config2);
+	iio_device_reg_write(dev, 0x69, 0x1C);  // IGAIN2 +-2.5%
+	iio_device_reg_write(dev, 0x6C, 0x1C);
+	iio_device_reg_write(dev, 0x6A, 0x20);  // IRSET +-20%
+	iio_device_reg_write(dev, 0x6D, 0x20);
 }
