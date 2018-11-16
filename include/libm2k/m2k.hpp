@@ -32,6 +32,7 @@ namespace libm2k {
 namespace analog {
 class M2kAnalogIn;
 class M2kAnalogOut;
+class M2kPowerSupply;
 }
 class M2kCalibration;
 namespace devices {
@@ -43,17 +44,25 @@ public:
 	~M2K();
 	void scanAllAnalogIn();
 	void scanAllAnalogOut();
+	void scanAllPowerSupply();
 
 	void calibrate();
 	bool calibrateADC();
 	bool calibrateDAC();
 	bool resetCalibration();
 
+	libm2k::analog::M2kPowerSupply* getPowerSupply();
 	libm2k::analog::M2kAnalogIn* getAnalogIn(unsigned int index);
 	libm2k::analog::M2kAnalogIn* getAnalogIn(std::string);
 	libm2k::analog::M2kAnalogOut* getAnalogOut(std::string dev_name);
 	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
 	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
+	int getDacBCalibrationOffset();
+	int getDacACalibrationOffset();
+	double getDacBCalibrationGain();
+	double getDacACalibrationGain();
+	int getAdcCalibrationOffset(unsigned int chn);
+	double getAdcCalibrationGain(unsigned int chn);
 private:
 	M2kCalibration* m_calibration;
 	void initialize();

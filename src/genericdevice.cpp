@@ -21,6 +21,7 @@
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/genericanalogin.hpp"
 #include "libm2k/genericanalogout.hpp"
+#include "libm2k/powersupply.hpp"
 #include "libm2k/dmm.hpp"
 #include "libm2k/m2k.hpp"
 
@@ -35,6 +36,7 @@ using namespace libm2k::utils;
 std::vector<GenericAnalogIn*> GenericDevice::s_instancesAnalogIn = {};
 std::vector<GenericAnalogOut*> GenericDevice::s_instancesAnalogOut = {};
 std::vector<DMM*> GenericDevice::s_instancesDMM = {};
+std::vector<PowerSupply*> GenericDevice::s_instancesPowerSupply = {};
 
 GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::string name)
 {
@@ -49,6 +51,9 @@ GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::stri
 
 	/* Initialize the DMM list */
 	scanAllDMM();
+
+	/* Initialize the power supply list */
+	scanAllPowerSupply();
 }
 
 GenericDevice::~GenericDevice()
@@ -214,7 +219,7 @@ GenericDevice::DEVICE_DIRECTION GenericDevice::getIioDeviceDirection(std::string
 	}
 
 	auto chn_count = iio_device_get_channels_count(dev);
-	for (int i = 0; i < chn_count; i++) {
+	for (unsigned int i = 0; i < chn_count; i++) {
 		auto chn = iio_device_get_channel(dev, i);
 		if (iio_channel_is_output(chn)) {
 			if (dir == INPUT) {
@@ -248,6 +253,10 @@ void GenericDevice::scanAllDMM()
 			std::cout << e.what() << std::endl;
 		}
 	}
+}
+
+void GenericDevice::scanAllPowerSupply()
+{
 }
 
 void GenericDevice::blinkLed()

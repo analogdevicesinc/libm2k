@@ -47,10 +47,7 @@ M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 		if (chn0 && chn1) {
 			m_m2k_fabric_channels.push_back(chn0);
 			m_m2k_fabric_channels.push_back(chn1);
-			iio_channel_attr_write_bool(chn0, "powerdown", false);
-			iio_channel_attr_write_bool(chn1, "powerdown", false);
 		}
-		iio_device_attr_write_bool(m_m2k_fabric, "clk_powerdown", false);
 	}
 
 	m_ad5625 = iio_context_find_device(m_ctx, "ad5625");
@@ -258,6 +255,11 @@ M2kHardwareTrigger::source M2kAnalogIn::getSource() const
 void M2kAnalogIn::setSource(M2kHardwareTrigger::source src)
 {
 	m_trigger->setSource(src);
+}
+
+unsigned int M2kAnalogIn::numChannels() const
+{
+	return m_nb_channels;
 }
 
 void M2kAnalogIn::setSourceChannel(ANALOG_IN_CHANNEL channel)

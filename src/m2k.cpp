@@ -22,6 +22,7 @@
 #include "libm2k/m2kanalogout.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/m2kcalibration.hpp"
+#include "libm2k/m2kpowersupply.hpp"
 #include "utils.hpp"
 #include <iio.h>
 #include <iostream>
@@ -52,6 +53,7 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 
 	scanAllAnalogIn();
 	scanAllAnalogOut();
+	scanAllPowerSupply();
 	std::vector<libm2k::analog::M2kAnalogIn*> lstIn = getAllAnalogIn();
 	std::vector<libm2k::analog::M2kAnalogOut*> lstOut = getAllAnalogOut();
 	m_calibration = new M2kCalibration(lstIn, lstOut);
@@ -59,7 +61,19 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 
 M2K::~M2K()
 {
+	/* Pre-init call to setup M2k */
+	struct iio_device *m2k_fabric = iio_context_find_device(ctx(), "m2k-fabric");
+	if (m2k_fabric) {
+		auto chn0 = iio_device_find_channel(m2k_fabric, "voltage0", false);
+		auto chn1 = iio_device_find_channel(m2k_fabric, "voltage1", false);
+		if (chn0 && chn1) {
+			iio_channel_attr_write_bool(chn0, "powerdown", true);
+			iio_channel_attr_write_bool(chn1, "powerdown", true);
+		}
 
+		/* ADF4360 global clock power down */
+		iio_device_attr_write_bool(m2k_fabric, "clk_powerdown", true);
+	}
 }
 
 void M2K::scanAllAnalogIn()
@@ -81,6 +95,16 @@ void M2K::scanAllAnalogOut()
 		GenericAnalogOut* bOut = new libm2k::analog::M2kAnalogOut(ctx(), "m2k-dac-b");
 		s_instancesAnalogOut.push_back(bOut);
 	} catch (std::runtime_error& e) {
+		std::cout << e.what() << std::endl;
+	}
+}
+
+void M2K::scanAllPowerSupply()
+{
+	try {
+		PowerSupply* pSupply = new libm2k::analog::M2kPowerSupply(ctx(), "ad5627", "ad9963");
+		s_instancesPowerSupply.push_back(pSupply);
+	} catch (std::runtime_error &e) {
 		std::cout << e.what() << std::endl;
 	}
 }
@@ -117,6 +141,50 @@ bool M2K::calibrateDAC()
 	}
 }
 
+double M2K::getAdcCalibrationGain(unsigned int chn)
+{
+	if (chn >= getAnalogIn(0)->numChannels()) {
+		throw std::runtime_error("No such ADC channel");
+	}
+	if (chn == 0) {
+		return m_calibration->adcGainChannel0();
+	} else {
+		return m_calibration->adcGainChannel1();
+	}
+}
+
+int M2K::getAdcCalibrationOffset(unsigned int chn)
+{
+	if (chn >= getAnalogIn(0)->numChannels()) {
+		throw std::runtime_error("No such ADC channel");
+	}
+	if (chn == 0) {
+		return m_calibration->adcOffsetChannel0();
+	} else {
+		return m_calibration->adcOffsetChannel1();
+	}
+}
+
+double M2K::getDacACalibrationGain()
+{
+	return m_calibration->dacAvlsb();
+}
+
+double M2K::getDacBCalibrationGain()
+{
+	return m_calibration->dacBvlsb();
+}
+
+int M2K::getDacACalibrationOffset()
+{
+	return m_calibration->dacAoffset();
+}
+
+int M2K::getDacBCalibrationOffset()
+{
+	return m_calibration->dacBoffset();
+}
+
 M2kAnalogIn* M2K::getAnalogIn(unsigned int index)
 {
 	if (index < s_instancesAnalogIn.size()) {
@@ -140,6 +208,16 @@ M2kAnalogIn *M2K::getAnalogIn(string dev_name)
 		}
 	}
 	return nullptr;
+}
+
+M2kPowerSupply* M2K::getPowerSupply()
+{
+	libm2k::analog::M2kPowerSupply* pSupply = dynamic_cast<libm2k::analog::M2kPowerSupply*>(
+				s_instancesPowerSupply.at(0));
+	if (pSupply) {
+		return pSupply;
+	}
+	throw no_device_exception("No M2K power supply");
 }
 
 M2kAnalogOut *M2K::getAnalogOut(string dev_name)
@@ -192,6 +270,18 @@ std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
 
 void M2K::initialize()
 {
+	/* Pre-init call to setup M2k */
+	struct iio_device *m2k_fabric = iio_context_find_device(ctx(), "m2k-fabric");
+	if (m2k_fabric) {
+		auto chn0 = iio_device_find_channel(m2k_fabric, "voltage0", false);
+		auto chn1 = iio_device_find_channel(m2k_fabric, "voltage1", false);
+		if (chn0 && chn1) {
+			iio_channel_attr_write_bool(chn0, "powerdown", false);
+			iio_channel_attr_write_bool(chn1, "powerdown", false);
+		}
+		iio_device_attr_write_bool(m2k_fabric, "clk_powerdown", false);
+	}
+
 	/* Apply M2k fixes */
 	std::string hw_rev = Utils::getHardwareRevision(ctx());
 

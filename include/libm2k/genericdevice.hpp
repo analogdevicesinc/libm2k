@@ -32,6 +32,7 @@ namespace libm2k {
 namespace analog {
 	class GenericAnalogIn;
 	class GenericAnalogOut;
+	class PowerSupply;
 	class DMM;
 }
 
@@ -57,6 +58,7 @@ public:
 
 	virtual void scanAllAnalogIn();
 	virtual void scanAllAnalogOut();
+	virtual void scanAllPowerSupply();
 	void scanAllDMM();
 	static GenericDevice* getDevice(std::string uri);
 
@@ -75,6 +77,7 @@ protected:
 	static std::vector<libm2k::analog::GenericAnalogIn*> s_instancesAnalogIn;
 	static std::vector<libm2k::analog::GenericAnalogOut*> s_instancesAnalogOut;
 	static std::vector<libm2k::analog::DMM*> s_instancesDMM;
+	static std::vector<libm2k::analog::PowerSupply*> s_instancesPowerSupply;
 private:
 	bool isIioDeviceBufferCapable(std::string);
 	GenericDevice::DEVICE_TYPE getIioDeviceType(std::string);

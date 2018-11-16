@@ -7,6 +7,7 @@
 #include "libm2k/m2k.hpp"
 #include "libm2k/m2kanalogin.hpp"
 #include "libm2k/m2kanalogout.hpp"
+#include "libm2k/m2kpowersupply.hpp"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -181,6 +182,12 @@ int main(int argc, char **argv)
 				for (auto s : aIn->getAvailableSamplerates()) {
 					std::cout << " s " << s << std::endl;
 				}
+
+				M2kPowerSupply* psupply = dev->getPowerSupply();
+				psupply->pushChannel(0, 3);
+				psupply->enableChannel(0, true);
+				psupply->enableChannel(0, false);
+
 
 			} catch (std::runtime_error &e) {
 				std::cout << e.what() << "\n";
