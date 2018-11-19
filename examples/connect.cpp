@@ -125,16 +125,16 @@ int main(int argc, char **argv)
 		M2K* dev = d->toM2k();
 		if (d) {
 			try {
-				GenericAnalogIn* aIn = d->getAnalogIn(0);
+				std::shared_ptr<GenericAnalogIn> aIn = d->getAnalogIn(0);
 				aIn->setSampleRate(1000);
 //				aIn->setSampleRate(0, 30720000);
 //				auto aIn2 = d->getAnalogIn("m2k-adc");
 
-				M2kAnalogIn* maIn = dev->getAnalogIn(0);
+				std::shared_ptr<M2kAnalogIn> maIn = dev->getAnalogIn(0);
 				maIn->setRange(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
 					       M2kAnalogIn::PLUS_MINUS_25V);
 
-				DMM* dmm = d->getDMM(0);
+				std::shared_ptr<DMM> dmm = d->getDMM(0);
 				std::vector<DMM::dmm_reading> readings = dmm->readAll();
 				for (DMM::dmm_reading read : readings) {
 					std::cout << read.name << " " << read.value << " " << read.unit;
@@ -151,8 +151,8 @@ int main(int argc, char **argv)
 				ret = dev->calibrateADC();
 
 				// Analog Out
-				M2kAnalogOut* maOut = dev->getAnalogOut("m2k-dac-a");
-				M2kAnalogOut* mbOut = dev->getAnalogOut("m2k-dac-b");
+				std::shared_ptr<M2kAnalogOut> maOut = dev->getAnalogOut("m2k-dac-a");
+				std::shared_ptr<M2kAnalogOut> mbOut = dev->getAnalogOut("m2k-dac-b");
 				ret = dev->calibrateDAC();
 				maOut->setSampleRate(75e6);
 				mbOut->setSampleRate(75e6);
@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 					std::cout << " s " << s << std::endl;
 				}
 
-				M2kPowerSupply* psupply = dev->getPowerSupply();
+				std::shared_ptr<M2kPowerSupply> psupply = dev->getPowerSupply();
 				psupply->pushChannel(0, 3);
 				psupply->enableChannel(0, true);
 				psupply->enableChannel(0, false);

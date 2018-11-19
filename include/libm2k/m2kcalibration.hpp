@@ -21,6 +21,7 @@
 #define M2KCALIBRATION_HPP
 
 #include "libm2k/m2kglobal.hpp"
+#include "libm2k/m2khardwaretrigger.hpp"
 #include <cstdint>
 #include <cstdlib>
 #include <string>
@@ -59,8 +60,8 @@ public:
 		HIGH
 	};
 
-	M2kCalibration(std::vector<libm2k::analog::M2kAnalogIn*>& analogIn,
-		       std::vector<libm2k::analog::M2kAnalogOut*>& analogOut);
+	M2kCalibration(std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>>& analogIn,
+		       std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>>& analogOut);
 	~M2kCalibration();
 
 	bool initialize();
@@ -119,9 +120,9 @@ private:
 	std::shared_ptr<M2kDac> m2k_dac_b;
 
 	struct iio_context *m_ctx;
-	libm2k::analog::M2kAnalogIn *m_m2k_adc;
-	libm2k::analog::M2kAnalogOut *m_m2k_dac_a;
-	libm2k::analog::M2kAnalogOut *m_m2k_dac_b;
+	std::shared_ptr<libm2k::analog::M2kAnalogIn> m_m2k_adc;
+	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac_a;
+	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac_b;
 	struct iio_device *m2k_ad5625;
 	struct iio_device *m_m2k_fabric;
 
@@ -165,8 +166,8 @@ private:
 	bool m_initialized;
 	int m_calibration_mode;
 
-	const std::vector<libm2k::analog::M2kAnalogIn*> m_analogIn;
-	const std::vector<libm2k::analog::M2kAnalogOut*> m_analogOut;
+	const std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> m_analogIn;
+	const std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> m_analogOut;
 };
 
 }

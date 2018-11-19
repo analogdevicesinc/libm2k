@@ -35,8 +35,8 @@ using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 
-M2kCalibration::M2kCalibration(std::vector<M2kAnalogIn*>& analogIn,
-			       std::vector<M2kAnalogOut*>& analogOut):
+M2kCalibration::M2kCalibration(std::vector<std::shared_ptr<M2kAnalogIn>>& analogIn,
+			       std::vector<std::shared_ptr<M2kAnalogOut>>& analogOut):
 	m_analogIn(analogIn),
 	m_analogOut(analogOut),
 	m_dac_a_buffer(NULL),
@@ -48,7 +48,7 @@ M2kCalibration::M2kCalibration(std::vector<M2kAnalogIn*>& analogIn,
 {
 	m_m2k_adc = m_analogIn.at(0);
 	m_ctx = m_m2k_adc->getContext();
-	for (M2kAnalogOut* aOut : m_analogOut) {
+	for (std::shared_ptr<M2kAnalogOut> aOut : m_analogOut) {
 		if (aOut->getDeviceName() == "m2k-dac-a") {
 			m_m2k_dac_a = aOut;
 		} else if (aOut->getDeviceName() == "m2k-dac-b") {

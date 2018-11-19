@@ -23,6 +23,7 @@
 #include "m2kglobal.hpp"
 #include <string>
 #include <vector>
+#include <memory>
 
 extern "C" {
 	struct iio_context;
@@ -62,22 +63,22 @@ public:
 	void scanAllDMM();
 	static GenericDevice* getDevice(std::string uri);
 
-	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
-	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
-	libm2k::analog::GenericAnalogOut* getAnalogOut(unsigned int);
-	libm2k::analog::GenericAnalogOut* getAnalogOut(std::string);
-	libm2k::analog::DMM* getDMM(unsigned int);
-	libm2k::analog::DMM* getDMM(std::string);
+	std::shared_ptr<libm2k::analog::GenericAnalogIn> getAnalogIn(unsigned int);
+	std::shared_ptr<libm2k::analog::GenericAnalogIn> getAnalogIn(std::string);
+	std::shared_ptr<libm2k::analog::GenericAnalogOut> getAnalogOut(unsigned int);
+	std::shared_ptr<libm2k::analog::GenericAnalogOut> getAnalogOut(std::string);
+	std::shared_ptr<libm2k::analog::DMM> getDMM(unsigned int);
+	std::shared_ptr<libm2k::analog::DMM> getDMM(std::string);
 
 	void blinkLed();
 	struct iio_context* ctx();
 
 	libm2k::devices::M2K* toM2k();
 protected:
-	static std::vector<libm2k::analog::GenericAnalogIn*> s_instancesAnalogIn;
-	static std::vector<libm2k::analog::GenericAnalogOut*> s_instancesAnalogOut;
-	static std::vector<libm2k::analog::DMM*> s_instancesDMM;
-	static std::vector<libm2k::analog::PowerSupply*> s_instancesPowerSupply;
+	static std::vector<std::shared_ptr<libm2k::analog::GenericAnalogIn>> s_instancesAnalogIn;
+	static std::vector<std::shared_ptr<libm2k::analog::GenericAnalogOut>> s_instancesAnalogOut;
+	static std::vector<std::shared_ptr<libm2k::analog::DMM>> s_instancesDMM;
+	static std::vector<std::shared_ptr<libm2k::analog::PowerSupply>> s_instancesPowerSupply;
 private:
 	bool isIioDeviceBufferCapable(std::string);
 	GenericDevice::DEVICE_TYPE getIioDeviceType(std::string);
