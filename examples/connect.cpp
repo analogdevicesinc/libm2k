@@ -8,6 +8,7 @@
 #include "libm2k/m2kanalogin.hpp"
 #include "libm2k/m2kanalogout.hpp"
 #include "libm2k/m2kpowersupply.hpp"
+#include "libm2k/m2kdigital.hpp"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -15,6 +16,7 @@
 
 using namespace libm2k::devices;
 using namespace libm2k::analog;
+using namespace libm2k::digital;
 
 void test() {
 	throw no_device_exception("no device found!");
@@ -171,7 +173,7 @@ int main(int argc, char **argv)
 				maIn->setSourceChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_1);
 				maIn->setTriggerDelay(-10);
 				maIn->setLevel(M2kAnalogIn::ANALOG_IN_CHANNEL_1, 1);
-				maIn->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::ANALOG);
+				maIn->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::ALWAYS);
 				maIn->setAnalogCondition(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::FALLING_EDGE);
 				samps = maIn->getSamples(48, true);
 				for (int i = 0; i < 48; i++) {
@@ -187,6 +189,17 @@ int main(int argc, char **argv)
 				psupply->pushChannel(0, 3);
 				psupply->enableChannel(0, true);
 				psupply->enableChannel(0, false);
+
+
+				// DIO
+				std::shared_ptr<M2kDigital> logic = dev->getDigital();
+				logic->enableChannelIn(M2kDigital::DIO_CHANNEL_1, true);
+				logic->enableChannelIn(M2kDigital::DIO_CHANNEL_2, true);
+				auto data = logic->getSamples(32);
+				for (auto d : data) {
+					std::cout << d << " ";
+				}
+				std::cout << std::endl;
 
 
 			} catch (std::runtime_error &e) {

@@ -44,6 +44,7 @@ public:
 		LOW = 3,
 		HIGH = 4,
 		ANY_EDGE = 5,
+		NONE = 6,
 	};
 
 	enum mode {
@@ -113,6 +114,8 @@ public:
 
 	void setStreamingFlag(bool);
 	bool getStreamingFlag();
+
+	static std::vector<std::string> getAvailableDigitalConditions();
 
 private:
 	struct iio_context *m_ctx;

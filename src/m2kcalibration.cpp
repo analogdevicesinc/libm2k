@@ -60,6 +60,8 @@ M2kCalibration::M2kCalibration(std::vector<std::shared_ptr<M2kAnalogIn>>& analog
 
 M2kCalibration::~M2kCalibration()
 {
+	m_analogIn.clear();
+	m_analogOut.clear();
 }
 
 bool M2kCalibration::initialize()
@@ -245,6 +247,7 @@ bool M2kCalibration::calibrateADCoffset()
 
 	calibrated = true;
 
+	ch_data.clear();
 	return calibrated;
 }
 
@@ -291,6 +294,7 @@ bool M2kCalibration::calibrateADCgain()
 
 	calibrated = true;
 
+	ch_data.clear();
 	return calibrated;
 }
 
@@ -502,6 +506,7 @@ bool M2kCalibration::calibrateDACoffset()
 	try {
 		ch_data = m_m2k_adc->getSamples(num_samples);
 	} catch (std::runtime_error &e) {
+		ch_data.clear();
 		throw invalid_parameter_exception(e.what());
 	}
 	if (ch_data.size() == 0) {
@@ -537,6 +542,7 @@ bool M2kCalibration::calibrateDACoffset()
 
 	calibrated = true;
 
+	ch_data.clear();
 	return calibrated;
 }
 
@@ -603,6 +609,7 @@ bool M2kCalibration::calibrateDACgain()
 
 	calibrated = true;
 
+	ch_data.clear();
 	return calibrated;
 }
 

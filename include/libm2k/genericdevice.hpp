@@ -37,6 +37,10 @@ namespace analog {
 	class DMM;
 }
 
+namespace digital {
+	class GenericDigital;
+}
+
 namespace devices {
 class M2K;
 class LIBM2K_API GenericDevice {
@@ -60,6 +64,7 @@ public:
 	virtual void scanAllAnalogIn();
 	virtual void scanAllAnalogOut();
 	virtual void scanAllPowerSupply();
+	virtual void scanAllDigital();
 	void scanAllDMM();
 	static GenericDevice* getDevice(std::string uri);
 
@@ -79,6 +84,7 @@ protected:
 	static std::vector<std::shared_ptr<libm2k::analog::GenericAnalogOut>> s_instancesAnalogOut;
 	static std::vector<std::shared_ptr<libm2k::analog::DMM>> s_instancesDMM;
 	static std::vector<std::shared_ptr<libm2k::analog::PowerSupply>> s_instancesPowerSupply;
+	static std::vector<std::shared_ptr<libm2k::digital::GenericDigital>> s_instancesDigital;
 private:
 	bool isIioDeviceBufferCapable(std::string);
 	GenericDevice::DEVICE_TYPE getIioDeviceType(std::string);

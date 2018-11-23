@@ -41,8 +41,6 @@ class M2kAnalogIn;
 class M2kAnalogOut;
 class M2kHardwareTrigger;
 }
-class M2kAdc;
-class M2kDac;
 
 class LIBM2K_API M2kCalibration
 {
@@ -115,10 +113,6 @@ private:
 
 	bool m_cancel;
 
-	std::shared_ptr<M2kAdc> m2k_adc;
-	std::shared_ptr<M2kDac> m2k_dac_a;
-	std::shared_ptr<M2kDac> m2k_dac_b;
-
 	struct iio_context *m_ctx;
 	std::shared_ptr<libm2k::analog::M2kAnalogIn> m_m2k_adc;
 	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac_a;
@@ -166,8 +160,8 @@ private:
 	bool m_initialized;
 	int m_calibration_mode;
 
-	const std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> m_analogIn;
-	const std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> m_analogOut;
+	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> m_analogIn;
+	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> m_analogOut;
 };
 
 }

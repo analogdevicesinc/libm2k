@@ -34,6 +34,11 @@ class M2kAnalogIn;
 class M2kAnalogOut;
 class M2kPowerSupply;
 }
+
+namespace digital {
+class M2kDigital;
+}
+
 class M2kCalibration;
 namespace devices {
 
@@ -45,12 +50,14 @@ public:
 	void scanAllAnalogIn();
 	void scanAllAnalogOut();
 	void scanAllPowerSupply();
+	void scanAllDigital();
 
 	void calibrate();
 	bool calibrateADC();
 	bool calibrateDAC();
 	bool resetCalibration();
 
+	std::shared_ptr<libm2k::digital::M2kDigital> getDigital();
 	std::shared_ptr<libm2k::analog::M2kPowerSupply> getPowerSupply();
 	std::shared_ptr<libm2k::analog::M2kAnalogIn> getAnalogIn(unsigned int index);
 	std::shared_ptr<libm2k::analog::M2kAnalogIn> getAnalogIn(std::string);

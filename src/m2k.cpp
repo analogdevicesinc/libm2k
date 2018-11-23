@@ -23,6 +23,7 @@
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/m2kcalibration.hpp"
 #include "libm2k/m2kpowersupply.hpp"
+#include "libm2k/m2kdigital.hpp"
 #include "utils.hpp"
 #include <iio.h>
 #include <iostream>
@@ -30,6 +31,7 @@
 using namespace std;
 using namespace libm2k::devices;
 using namespace libm2k::analog;
+using namespace libm2k::digital;
 using namespace libm2k::utils;
 
 M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
@@ -53,6 +55,7 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 	scanAllAnalogIn();
 	scanAllAnalogOut();
 	scanAllPowerSupply();
+	scanAllDigital();
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> lstIn = getAllAnalogIn();
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> lstOut = getAllAnalogOut();
 	m_calibration = new M2kCalibration(lstIn, lstOut);
@@ -73,6 +76,7 @@ M2K::~M2K()
 		/* ADF4360 global clock power down */
 		iio_device_attr_write_bool(m2k_fabric, "clk_powerdown", true);
 	}
+	delete m_calibration;
 }
 
 void M2K::scanAllAnalogIn()
@@ -103,6 +107,16 @@ void M2K::scanAllPowerSupply()
 	try {
 		std::shared_ptr<PowerSupply> pSupply = std::make_shared<libm2k::analog::M2kPowerSupply>(ctx(), "ad5627", "ad9963");
 		s_instancesPowerSupply.push_back(pSupply);
+	} catch (std::runtime_error &e) {
+		std::cout << e.what() << std::endl;
+	}
+}
+
+void M2K::scanAllDigital()
+{
+	try {
+		std::shared_ptr<GenericDigital> logic = std::make_shared<libm2k::digital::M2kDigital>(ctx(), "m2k-logic-analyzer");
+		s_instancesDigital.push_back(logic);
 	} catch (std::runtime_error &e) {
 		std::cout << e.what() << std::endl;
 	}
@@ -216,6 +230,15 @@ std::shared_ptr<M2kPowerSupply> M2K::getPowerSupply()
 		return pSupply;
 	}
 	throw no_device_exception("No M2K power supply");
+}
+
+std::shared_ptr<M2kDigital> M2K::getDigital()
+{
+	std::shared_ptr<M2kDigital> logic = dynamic_pointer_cast<M2kDigital>(s_instancesDigital.at(0));
+	if (logic) {
+		return logic;
+	}
+	throw no_device_exception("No M2K digital device found");
 }
 
 std::shared_ptr<M2kAnalogOut> M2K::getAnalogOut(string dev_name)

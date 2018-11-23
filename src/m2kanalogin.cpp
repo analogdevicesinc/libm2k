@@ -87,7 +87,7 @@ M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 
 M2kAnalogIn::~M2kAnalogIn()
 {
-
+	delete m_trigger;
 }
 
 void M2kAnalogIn::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)

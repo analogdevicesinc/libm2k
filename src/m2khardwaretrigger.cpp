@@ -39,6 +39,7 @@ std::vector<std::string> M2kHardwareTrigger::m_trigger_digital_cond = {
 	"level-low",
 	"level-high",
 	"edge-any",
+	"none"
 };
 
 std::vector<std::string> M2kHardwareTrigger::m_trigger_mode = {
@@ -200,7 +201,7 @@ M2kHardwareTrigger::condition M2kHardwareTrigger::getDigitalCondition(unsigned i
 	auto it = std::find(m_trigger_digital_cond.begin(),
 		m_trigger_digital_cond.end(), buf);
 	if  (it == m_trigger_digital_cond.end()) {
-		throw "unexpected value read from attribute: trigger";
+		throw std::invalid_argument("unexpected value read from attribute: trigger");
 	}
 
 	return static_cast<condition>(it - m_trigger_digital_cond.begin());
@@ -380,6 +381,11 @@ void M2kHardwareTrigger::setStreamingFlag(bool val)
 bool M2kHardwareTrigger::getStreamingFlag()
 {
 	return m_streaming_flag;
+}
+
+std::vector<string> M2kHardwareTrigger::getAvailableDigitalConditions()
+{
+	return m_trigger_digital_cond;
 }
 
 M2kHardwareTrigger::settings_uptr M2kHardwareTrigger::getCurrentHwSettings()

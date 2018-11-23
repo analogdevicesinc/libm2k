@@ -30,6 +30,7 @@
 #include <iostream>
 
 using namespace libm2k::analog;
+using namespace libm2k::digital;
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
@@ -37,6 +38,7 @@ std::vector<std::shared_ptr<GenericAnalogIn>> GenericDevice::s_instancesAnalogIn
 std::vector<std::shared_ptr<GenericAnalogOut>> GenericDevice::s_instancesAnalogOut = {};
 std::vector<std::shared_ptr<DMM>> GenericDevice::s_instancesDMM = {};
 std::vector<std::shared_ptr<PowerSupply>> GenericDevice::s_instancesPowerSupply = {};
+std::vector<std::shared_ptr<GenericDigital>> GenericDevice::s_instancesDigital = {};
 
 GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::string name)
 {
@@ -120,6 +122,11 @@ void GenericDevice::scanAllAnalogOut()
 			throw std::runtime_error(e.what());
 		}
 	}
+}
+
+void GenericDevice::scanAllDigital()
+{
+
 }
 
 std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(unsigned int index)
