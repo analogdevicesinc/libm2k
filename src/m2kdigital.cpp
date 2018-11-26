@@ -29,6 +29,16 @@ using namespace libm2k::digital;
 using namespace libm2k::analog;
 using namespace std;
 
+std::vector<std::string> M2kDigital::m_output_mode = {
+	"open-drain",
+	"push-pull",
+};
+
+std::vector<std::string> M2kDigital::m_trigger_logic_mode = {
+	"or",
+	"and",
+};
+
 M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev) :
 	GenericDigital(ctx, logic_dev)
 {
@@ -97,7 +107,7 @@ GenericDigital::DIO_DIRECTION M2kDigital::getDirection(DIO_CHANNEL index)
 	}
 }
 
-void M2kDigital::setValue(DIO_CHANNEL index, GenericDigital::level level)
+void M2kDigital::setValueRaw(DIO_CHANNEL index, GenericDigital::level level)
 {
 	if (index < m_nb_channels) {
 		long long val = static_cast<long long>(level);
@@ -108,7 +118,7 @@ void M2kDigital::setValue(DIO_CHANNEL index, GenericDigital::level level)
 	}
 }
 
-GenericDigital::level M2kDigital::getValue(DIO_CHANNEL index)
+GenericDigital::level M2kDigital::getValueRaw(DIO_CHANNEL index)
 {
 	if (index < m_nb_channels) {
 		long long val;
@@ -265,6 +275,62 @@ M2kHardwareTrigger::condition M2kDigital::getTrigger(M2kDigital::DIO_CHANNEL chn
 	}
 
 	return static_cast<M2kHardwareTrigger::condition>
-		(it - available_digital_conditions.begin());
+			(it - available_digital_conditions.begin());
+}
+
+void M2kDigital::setTriggerDelay(int delay)
+{
+	iio_channel_attr_write_longlong(m_channel_read_list.at(0), "trigger_delay", delay);
+}
+
+int M2kDigital::getTriggerDelay()
+{
+	long long val = 0;
+	int ret = iio_channel_attr_read_longlong(m_channel_read_list.at(0), "trigger_delay", &val);
+	if (ret < 0) {
+		throw invalid_parameter_exception("Can not read the attribute 'trigger delay'. ");
+	}
+	return val;
+}
+
+void M2kDigital::setTriggerMode(M2kDigital::DIO_TRIGGER_MODE trig_mode)
+{
+	std::string trigger_mode = m_trigger_logic_mode[trig_mode];
+	iio_channel_attr_write(m_channel_read_list.at(0), "trigger_logic_mode", trigger_mode.c_str());
+}
+
+M2kDigital::DIO_TRIGGER_MODE M2kDigital::getTriggerMode()
+{
+	char trigger_mode[1024];
+	iio_channel_attr_read(m_channel_read_list.at(0), "trigger_logic_mode", trigger_mode,
+			      sizeof(trigger_mode));
+	auto it = std::find(m_trigger_logic_mode.begin(), m_trigger_logic_mode.end(),
+			    trigger_mode);
+	if (it == m_trigger_logic_mode.end()) {
+		throw invalid_argument("Cannot read channel attribute: trigger logic mode");
+	}
+	return static_cast<DIO_TRIGGER_MODE>(it - m_trigger_logic_mode.begin());
+}
+
+void M2kDigital::setOutputMode(M2kDigital::DIO_CHANNEL chn, M2kDigital::DIO_MODE mode)
+{
+	std::string output_mode = m_output_mode[mode];
+	iio_channel_attr_write(m_channel_list.at(chn).m_channel, "outputmode",
+			       output_mode.c_str());
+
+}
+
+M2kDigital::DIO_MODE M2kDigital::getOutputMode(M2kDigital::DIO_CHANNEL chn)
+{
+	char output_mode[1024];
+	iio_channel_attr_read(m_channel_list.at(chn).m_channel, "outputmode", output_mode,
+			      sizeof(output_mode));
+	auto it = std::find(m_output_mode.begin(), m_output_mode.end(),
+			    output_mode);
+	if (it == m_output_mode.end()) {
+		throw invalid_argument("Cannot read channel attribute: trigger");
+	}
+
+	return static_cast<DIO_MODE>(it - m_output_mode.begin());
 }
 

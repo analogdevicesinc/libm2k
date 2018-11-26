@@ -195,12 +195,19 @@ int main(int argc, char **argv)
 				std::shared_ptr<M2kDigital> logic = dev->getDigital();
 				logic->enableChannelIn(M2kDigital::DIO_CHANNEL_1, true);
 				logic->enableChannelIn(M2kDigital::DIO_CHANNEL_2, true);
+//				logic->setTrigger(M2kDigital::DIO_CHANNEL_1, M2kHardwareTrigger::RISING_EDGE);
 				auto data = logic->getSamples(32);
 				for (auto d : data) {
 					std::cout << d << " ";
 				}
 				std::cout << std::endl;
 
+				logic->setTriggerMode(M2kDigital::DIO_AND);
+
+				logic->setDirection(M2kDigital::DIO_CHANNEL_4, M2kDigital::DIO_OUTPUT);
+				logic->setDirection(M2kDigital::DIO_CHANNEL_5, M2kDigital::DIO_OUTPUT);
+				logic->setValueRaw(M2kDigital::DIO_CHANNEL_4, M2kDigital::HIGH);
+				logic->setValueRaw(M2kDigital::DIO_CHANNEL_5, M2kDigital::HIGH);
 
 			} catch (std::runtime_error &e) {
 				std::cout << e.what() << "\n";

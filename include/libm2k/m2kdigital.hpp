@@ -62,14 +62,19 @@ public:
 		DIO_PUSHPULL = 1,
 	};
 
+	enum DIO_TRIGGER_MODE {
+		DIO_OR = 0,
+		DIO_AND = 1,
+	};
+
 	M2kDigital(struct iio_context* ctx, std::string logic_dev);
 	virtual ~M2kDigital();
 
 	void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir);
 	DIO_DIRECTION getDirection(DIO_CHANNEL index);
 
-	void setValue(DIO_CHANNEL index, level);
-	level getValue(DIO_CHANNEL index);
+	void setValueRaw(DIO_CHANNEL index, level);
+	level getValueRaw(DIO_CHANNEL index);
 
 	void push(std::vector<unsigned short>& data, bool cyclic = true);
 	std::vector<unsigned short> getSamples(int nb_samples);
@@ -81,15 +86,26 @@ public:
 	void setTrigger(DIO_CHANNEL, libm2k::analog::M2kHardwareTrigger::condition);
 	libm2k::analog::M2kHardwareTrigger::condition getTrigger(DIO_CHANNEL);
 
+	void setTriggerDelay(int delay);
+	int getTriggerDelay();
+
+	void setTriggerMode(DIO_TRIGGER_MODE);
+	DIO_TRIGGER_MODE getTriggerMode();
+
+	void setOutputMode(DIO_CHANNEL, DIO_MODE);
+	DIO_MODE getOutputMode(DIO_CHANNEL);
+
 private:
 	struct iio_device* m_dev_read;
 	struct iio_device* m_dev_write;
 	std::string m_dev_name_read;
 	std::string m_dev_name_write;
-	struct iio_buffer* m_buffer_out;
-	struct iio_buffer* m_buffer_in;
+	iio_buffer* m_buffer_out;
+	iio_buffer* m_buffer_in;
 	std::vector<struct iio_channel*> m_channel_read_list;
 	std::vector<struct iio_channel*> m_channel_write_list;
+	static std::vector<std::string> m_output_mode;
+	static std::vector<std::string> m_trigger_logic_mode;
 };
 }
 }
