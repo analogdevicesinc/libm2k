@@ -43,7 +43,7 @@ namespace digital {
 
 namespace devices {
 class M2K;
-class LIBM2K_API GenericDevice {
+class LIBM2K_API GenericDevice : public std::enable_shared_from_this<GenericDevice> {
 public:
 	enum DEVICE_TYPE {
 		ANALOG = 1,
@@ -66,7 +66,7 @@ public:
 	virtual void scanAllPowerSupply();
 	virtual void scanAllDigital();
 	void scanAllDMM();
-	static GenericDevice* getDevice(std::string uri);
+	std::string getUri();
 
 	std::shared_ptr<libm2k::analog::GenericAnalogIn> getAnalogIn(unsigned int);
 	std::shared_ptr<libm2k::analog::GenericAnalogIn> getAnalogIn(std::string);
@@ -78,7 +78,7 @@ public:
 	void blinkLed();
 	struct iio_context* ctx();
 
-	libm2k::devices::M2K* toM2k();
+	std::shared_ptr<libm2k::devices::M2K> toM2k();
 protected:
 	static std::vector<std::shared_ptr<libm2k::analog::GenericAnalogIn>> s_instancesAnalogIn;
 	static std::vector<std::shared_ptr<libm2k::analog::GenericAnalogOut>> s_instancesAnalogOut;

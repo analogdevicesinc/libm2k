@@ -23,13 +23,14 @@
 #include "installed_devices.hpp"
 #include <iio.h>
 #include "utils.hpp"
-#include <iostream>
+#include <algorithm>
 #include <vector>
+#include <iostream>
 
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
-std::vector<GenericDevice*> DeviceBuilder::s_connectedDevices = {};
+std::vector<std::shared_ptr<GenericDevice>> DeviceBuilder::s_connectedDevices = {};
 
 DeviceBuilder::DeviceBuilder()// : m_pimpl(new M2KImpl())
 {
@@ -83,8 +84,14 @@ out_destroy_context:
 	return uris;
 }
 
-GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
+std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
 {
+	for (std::shared_ptr<GenericDevice> dev : s_connectedDevices) {
+		if (dev->getUri() == std::string(uri)) {
+			return dev;
+		}
+	}
+
 	struct iio_context* ctx = iio_create_context_from_uri(uri);
 	if (!ctx) {
 		throw no_device_exception("No device found for uri: " + *uri);
@@ -93,17 +100,17 @@ GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 	std::string dev_name = DeviceBuilder::identifyDevice(ctx);
 	std::cout << dev_name << std::endl;
 
-	GenericDevice* dev = buildDevice(dev_name, std::string(uri), ctx);
+	std::shared_ptr<GenericDevice> dev = buildDevice(dev_name, std::string(uri), ctx);
 	s_connectedDevices.push_back(dev);
 	return dev;
 }
 
-void DeviceBuilder::deviceClose(GenericDevice* device)
+void DeviceBuilder::deviceClose(std::shared_ptr<GenericDevice> device)
 {
-	for (auto dev : s_connectedDevices) {
-		delete dev;
-	}
-	s_connectedDevices.clear();
+	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),
+					     s_connectedDevices.end(),
+					     device), s_connectedDevices.end());
+	device.reset();
 }
 
 std::string DeviceBuilder::identifyDevice(iio_context *ctx)

@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "libm2k/genericdevice.hpp"
 #include "libm2k/m2k.hpp"
@@ -47,17 +48,17 @@ DeviceTypes get_type_from_name(std::string name)
 	return t;
 }
 
-GenericDevice* buildDevice(std::string name, std::string uri,
+std::shared_ptr<GenericDevice> buildDevice(std::string name, std::string uri,
 			struct iio_context* ctx) // enum Device Name
 {
 	DeviceTypes t = get_type_from_name(name);
 	switch (t) {
 //		case DevFMCOMMS: return new FMCOMMS(uri, ctx, name);
-		case DevM2K: return new M2K(uri, ctx, name);
+		case DevM2K: return std::make_shared<M2K>(uri, ctx, name);
 
 		case Other:
 		default:
-		return new GenericDevice(uri, ctx, name);
+		return std::make_shared<GenericDevice>(uri, ctx, name);
 	}
 }
 

@@ -28,6 +28,7 @@
 #include "utils.hpp"
 #include <iio.h>
 #include <iostream>
+#include <memory>
 
 using namespace libm2k::analog;
 using namespace libm2k::digital;
@@ -75,15 +76,6 @@ GenericDevice::~GenericDevice()
 		iio_context_destroy(m_ctx);
 		std::cout << "destroying IIO context\n";
 	}
-}
-
-GenericDevice* GenericDevice::getDevice(std::string uri)
-{
-	struct iio_context* ctx = iio_create_context_from_uri(uri.c_str());
-	if (!ctx) {
-		throw no_device_exception("No device found for uri: " + uri);
-	}
-	return nullptr;
 }
 
 void GenericDevice::scanAllAnalogIn()
@@ -263,6 +255,11 @@ void GenericDevice::scanAllDMM()
 	}
 }
 
+std::string GenericDevice::getUri()
+{
+	return m_uri;
+}
+
 void GenericDevice::scanAllPowerSupply()
 {
 }
@@ -277,9 +274,10 @@ iio_context *GenericDevice::ctx()
 	return m_ctx;
 }
 
-libm2k::devices::M2K* GenericDevice::toM2k()
+std::shared_ptr<libm2k::devices::M2K> GenericDevice::toM2k()
 {
-	M2K* dev = dynamic_cast<M2K*>(this);
+	std::shared_ptr<libm2k::devices::M2K> dev =
+		std::dynamic_pointer_cast<libm2k::devices::M2K>(shared_from_this());
 	if(dev) {
 		return dev;
 	} else {

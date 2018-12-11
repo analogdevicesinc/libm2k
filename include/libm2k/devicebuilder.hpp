@@ -33,13 +33,13 @@ extern "C" {
 namespace libm2k {
 namespace devices {
 class LIBM2K_API DeviceBuilder {
-	static std::vector<GenericDevice*> s_connectedDevices; //should be GenericDevice
+	static std::vector<std::shared_ptr<GenericDevice>> s_connectedDevices; //should be GenericDevice
 public:
 	explicit DeviceBuilder();
 	~DeviceBuilder();
 	static std::vector<std::string> listDevices();
-	static GenericDevice* deviceOpen(const char*); //should ret GenericDevice
-	static void deviceClose(GenericDevice*); //should return GenericDevice
+	static std::shared_ptr<GenericDevice> deviceOpen(const char*); //should ret GenericDevice
+	static void deviceClose(std::shared_ptr<GenericDevice>); //should return GenericDevice
 	static std::string identifyDevice(iio_context *ctx);
 private:
 //                std::unique_ptr<M2KImpl> m_pimpl;

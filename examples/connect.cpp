@@ -123,8 +123,10 @@ int main(int argc, char **argv)
 {
 	std::vector<std::string> lst = DeviceBuilder::listDevices();
 	if (lst.size() > 0) {
-		GenericDevice *d = DeviceBuilder::deviceOpen(lst.at(0).c_str());
-		M2K* dev = d->toM2k();
+		std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
+		std::shared_ptr<GenericDevice> d2 = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
+		std::shared_ptr<GenericDevice> d3 = DeviceBuilder::deviceOpen(lst.at(0).c_str());
+		std::shared_ptr<M2K> dev = d->toM2k();
 		if (d) {
 			try {
 				std::shared_ptr<GenericAnalogIn> aIn = d->getAnalogIn(0);
@@ -215,9 +217,10 @@ int main(int argc, char **argv)
 //			auto anIn = d->openAnalogIn();
 			d->blinkLed();
 //			d->closeAnalogIn()
-			//DeviceBuilder::deviceClose(d);
+			DeviceBuilder::deviceClose(d);
+			DeviceBuilder::deviceClose(d2);
+			DeviceBuilder::deviceClose(d3);
 		}
-		delete d;
 	}
 
 //	FMCOMMS *fm = new FMCOMMS();
