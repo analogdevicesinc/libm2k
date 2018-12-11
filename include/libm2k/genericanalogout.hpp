@@ -45,7 +45,7 @@ public:
 	double getSampleRate(unsigned int);
 	double setSampleRate(double sampleRate);
 	double setSampleRate(unsigned int chn_idx, double sampleRate);
-	std::vector<unsigned long> getAvailableSamplerates();
+	std::vector<double> getAvailableSamplerates();
 
 	struct iio_context* getContext();
 	void enableChannel(unsigned int index, bool enable);

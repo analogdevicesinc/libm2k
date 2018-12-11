@@ -91,7 +91,7 @@ double GenericAnalogOut::setSampleRate(unsigned int chn_idx, double sampleRate)
 	}
 }
 
-std::vector<unsigned long> GenericAnalogOut::getAvailableSamplerates()
+std::vector<double> GenericAnalogOut::getAvailableSamplerates()
 {
 	return Utils::getAvailableSamplerates(m_dev);
 }

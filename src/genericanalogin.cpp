@@ -191,7 +191,7 @@ double GenericAnalogIn::setSampleRate(unsigned int chn_idx, double sampleRate)
 	}
 }
 
-std::vector<unsigned long> GenericAnalogIn::getAvailableSamplerates()
+std::vector<double> GenericAnalogIn::getAvailableSamplerates()
 {
 	return Utils::getAvailableSamplerates(m_dev);
 }

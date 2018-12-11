@@ -75,7 +75,7 @@ namespace utils {
 
 		static double average(double *data, size_t numElements);
 
-		static std::vector<unsigned long> getAvailableSamplerates(struct iio_device*);
+		static std::vector<double> getAvailableSamplerates(struct iio_device*);
 		static double getDoubleValue(struct iio_device*, std::string attr);
 		static double getDoubleValue(struct iio_device*, unsigned int,
 					    std::string attr);

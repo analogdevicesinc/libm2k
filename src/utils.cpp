@@ -391,9 +391,9 @@ double Utils::average(double *data, size_t numElements)
 	return (sum / (double)numElements);
 }
 
-std::vector<unsigned long> Utils::getAvailableSamplerates(iio_device *dev)
+std::vector<double> Utils::getAvailableSamplerates(iio_device *dev)
 {
-	std::vector<unsigned long> values;
+	std::vector<double> values;
 	std::vector<std::string> str_values;
 	char buf[1024];
 	int ret;
@@ -406,7 +406,7 @@ std::vector<unsigned long> Utils::getAvailableSamplerates(iio_device *dev)
 
 		for (auto it : str_values) {
 			try {
-				values.push_back(std::stoul(it));
+				values.push_back(std::stod(it));
 			} catch (invalid_argument &e) {
 				std::cout << "Not a valid samplerate " << e.what();
 			}
