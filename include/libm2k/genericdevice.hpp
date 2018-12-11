@@ -74,6 +74,7 @@ public:
 	std::shared_ptr<libm2k::analog::GenericAnalogOut> getAnalogOut(std::string);
 	std::shared_ptr<libm2k::analog::DMM> getDMM(unsigned int);
 	std::shared_ptr<libm2k::analog::DMM> getDMM(std::string);
+	std::vector<std::shared_ptr<libm2k::analog::DMM> > getAllDmm();
 
 	void blinkLed();
 	struct iio_context* ctx();

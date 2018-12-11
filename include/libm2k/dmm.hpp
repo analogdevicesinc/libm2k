@@ -17,11 +17,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DMM_HPP
-#define DMM_HPP
+#ifndef GENERICDMM_HPP
+#define GENERICDMM_HPP
 
 #include "libm2k/m2kglobal.hpp"
 #include <vector>
+#include <map>
 #include <string>
 
 extern "C" {
@@ -44,6 +45,7 @@ public:
 	virtual ~DMM();
 
 	struct iio_channel* getChannel(std::string chn_name);
+	std::vector<std::string> getAllChannels();
 	dmm_reading readChannel(struct iio_channel* chn);
 	dmm_reading readChannel(std::string chn_name);
 	std::vector<dmm_reading> readAll();
@@ -63,4 +65,4 @@ private:
 }
 
 
-#endif //DMM_HPP
+#endif //GENERICDMM_HPP

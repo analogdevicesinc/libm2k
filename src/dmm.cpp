@@ -103,6 +103,15 @@ struct iio_channel* DMM::getChannel(std::string chn_name)
 	throw invalid_parameter_exception("No channel with this id");
 }
 
+std::vector<std::string> DMM::getAllChannels()
+{
+	std::vector<std::string> channel_names = {};
+	for (struct iio_channel* chn : m_channel_list) {
+		channel_names.push_back(iio_channel_get_id(chn));
+	}
+	return channel_names;
+}
+
 DMM::dmm_reading DMM::readChannel(std::string chn_name)
 {
 	dmm_reading result;

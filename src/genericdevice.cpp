@@ -179,6 +179,11 @@ std::shared_ptr<DMM> GenericDevice::getDMM(std::string dev_name)
 	return nullptr;
 }
 
+std::vector<std::shared_ptr<DMM>> GenericDevice::getAllDmm()
+{
+	return s_instancesDMM;
+}
+
 bool GenericDevice::isIioDeviceBufferCapable(std::string dev_name)
 {
 	unsigned int dev_count = iio_device_get_buffer_attrs_count(
