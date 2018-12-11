@@ -238,7 +238,12 @@ void M2kHardwareTrigger::setLevel(unsigned int chnIdx, int level)
 	}
 
 	iio_channel_attr_write_longlong(m_analog_channels[chnIdx],
-		"trigger_level", static_cast<long long> (level));
+					"trigger_level", static_cast<long long> (level));
+}
+
+void M2kHardwareTrigger::setLevelVolts(unsigned int chnIdx, double v_level)
+{
+	int rawValue = 0;
 }
 
 int M2kHardwareTrigger::getHysteresis(unsigned int chnIdx) const
@@ -348,7 +353,7 @@ int M2kHardwareTrigger::getSourceChannel() const
 void M2kHardwareTrigger::setSourceChannel(unsigned int chnIdx)
 {
 	if (chnIdx >= numChannels()) {
-		throw std::invalid_argument("Channel index is out of range");
+		throw std::invalid_argument("Source channel index is out of range");
 	}
 
 	// Currently we don't need trigger on multiple channels simultaneously

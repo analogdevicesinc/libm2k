@@ -48,6 +48,7 @@ public:
 	double setSampleRate(unsigned int chn_idx, double sampleRate);
 	std::vector<double> getAvailableSamplerates();
 
+	virtual std::string getChannelName(unsigned int);
 
 	virtual double processSample(int16_t sample, unsigned int channel);
 

@@ -85,6 +85,7 @@ public:
 
 	int getLevel(unsigned int chnIdx) const;
 	void setLevel(unsigned int chnIdx, int level);
+	void setLevelVolts(unsigned int chnIdx, double v_level);
 
 	int getHysteresis(unsigned int chnIdx) const;
 	void setHysteresis(unsigned int chnIdx, int histeresis);
@@ -105,6 +106,7 @@ public:
 
 	int getSourceChannel() const;
 	void setSourceChannel(unsigned int chnIdx);
+
 
 	int getDelay() const;
 	void setDelay(int delay);

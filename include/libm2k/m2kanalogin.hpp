@@ -67,6 +67,7 @@ public:
 	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range);
 	void setRange(ANALOG_IN_CHANNEL channel, double min, double max);
 	M2K_RANGE getRange(ANALOG_IN_CHANNEL channel);
+	std::pair<double, double> getRangeLimits(M2K_RANGE);
 	std::vector<M2K_RANGE>  getAvailableRanges();
 
 	double getOversamplingRatio();
@@ -82,6 +83,8 @@ public:
 
 	int getHysteresis(ANALOG_IN_CHANNEL chnIdx) const;
 	void setHysteresis(ANALOG_IN_CHANNEL chnIdx, int histeresis);
+	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL);
+
 
 	M2kHardwareTrigger::condition getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const;
 	void setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond);
@@ -115,6 +118,9 @@ public:
 			      double hw_gain = 0.02,
 			      double filterCompensation = 1,
 			      double offset = 0);
+
+	void setStreamingFlag(bool);
+	bool getStreamingFlag();
 private:
 	void applyM2kFixes();
 	bool m_need_processing;

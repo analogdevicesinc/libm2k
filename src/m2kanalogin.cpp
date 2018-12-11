@@ -111,6 +111,16 @@ int M2kAnalogIn::convertVoltsToRaw(double voltage, double correctionGain,
 		(2048 * 1.3 * hw_gain) / 0.78);
 }
 
+void M2kAnalogIn::setStreamingFlag(bool en)
+{
+	m_trigger->setStreamingFlag(en);
+}
+
+bool M2kAnalogIn::getStreamingFlag()
+{
+	return m_trigger->getStreamingFlag();
+}
+
 std::vector<std::vector<double>> M2kAnalogIn::getSamples(int nb_samples,
 							 bool processed)
 {
@@ -210,6 +220,12 @@ int M2kAnalogIn::getHysteresis(ANALOG_IN_CHANNEL chnIdx) const
 void M2kAnalogIn::setHysteresis(ANALOG_IN_CHANNEL chnIdx, int hysteresis)
 {
 	m_trigger->setHysteresis(chnIdx, hysteresis);
+}
+
+std::pair<double, double> M2kAnalogIn::getHysteresisRange(M2kAnalogIn::ANALOG_IN_CHANNEL chn)
+{
+	std::pair<double, double> m2k_range = getRangeLimits(getRange(chn));
+	return std::pair<double, double>(0, m2k_range.second / 10);
 }
 
 M2kHardwareTrigger::condition M2kAnalogIn::getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
@@ -330,6 +346,15 @@ void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, double min, double max)
 M2kAnalogIn::M2K_RANGE M2kAnalogIn::getRange(ANALOG_IN_CHANNEL channel)
 {
 	return m_input_range[channel];
+}
+
+std::pair<double, double> M2kAnalogIn::getRangeLimits(M2kAnalogIn::M2K_RANGE range)
+{
+	if (range == PLUS_MINUS_25V) {
+		return std::pair<double, double>(-25, 25);
+	} else {
+		return std::pair<double, double>(-5, 5);
+	}
 }
 
 std::vector<M2kAnalogIn::M2K_RANGE> M2kAnalogIn::getAvailableRanges()

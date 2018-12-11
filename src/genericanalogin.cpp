@@ -196,6 +196,12 @@ std::vector<double> GenericAnalogIn::getAvailableSamplerates()
 	return Utils::getAvailableSamplerates(m_dev);
 }
 
+string GenericAnalogIn::getChannelName(unsigned int idx)
+{
+	const char* name = iio_channel_get_id(m_channel_list.at(idx));
+	return std::string(name);
+}
+
 string GenericAnalogIn::getDeviceName()
 {
 	return m_dev_name;
