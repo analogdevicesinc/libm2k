@@ -35,12 +35,6 @@ using namespace libm2k::digital;
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
-std::vector<std::shared_ptr<GenericAnalogIn>> GenericDevice::s_instancesAnalogIn = {};
-std::vector<std::shared_ptr<GenericAnalogOut>> GenericDevice::s_instancesAnalogOut = {};
-std::vector<std::shared_ptr<DMM>> GenericDevice::s_instancesDMM = {};
-std::vector<std::shared_ptr<PowerSupply>> GenericDevice::s_instancesPowerSupply = {};
-std::vector<std::shared_ptr<GenericDigital>> GenericDevice::s_instancesDigital = {};
-
 GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::string name)
 {
 	m_ctx = ctx;
@@ -63,14 +57,14 @@ GenericDevice::~GenericDevice()
 {
 //	for (auto aIn : s_instancesAnalogIn) {
 //	}
-	s_instancesAnalogIn.clear();
+	m_instancesAnalogIn.clear();
 
 //	for (int i = 0; i < s_instancesAnalogOut.size(); i++) {
 //	}
-	s_instancesAnalogOut.clear();
+	m_instancesAnalogOut.clear();
 
-	s_instancesDMM.clear();
-	s_instancesPowerSupply.clear();
+	m_instancesDMM.clear();
+	m_instancesPowerSupply.clear();
 
 	if (m_ctx) {
 		iio_context_destroy(m_ctx);
@@ -88,7 +82,7 @@ void GenericDevice::scanAllAnalogIn()
 					getIioDeviceDirection(dev) == INPUT) {
 				try {
 					auto aIn = std::make_shared<GenericAnalogIn>(m_ctx, dev);
-					s_instancesAnalogIn.push_back(aIn);
+					m_instancesAnalogIn.push_back(aIn);
 				} catch (std::runtime_error& e) {
 					std::cout << e.what() << std::endl;
 				}
@@ -108,7 +102,7 @@ void GenericDevice::scanAllAnalogOut()
 					(getIioDeviceType(dev) == ANALOG) &&
 					getIioDeviceDirection(dev) == OUTPUT) {
 				auto aOut = std::make_shared<GenericAnalogOut>(m_ctx, dev);
-				s_instancesAnalogOut.push_back(aOut);
+				m_instancesAnalogOut.push_back(aOut);
 			}
 		} catch (std::runtime_error &e) {
 			throw std::runtime_error(e.what());
@@ -123,8 +117,8 @@ void GenericDevice::scanAllDigital()
 
 std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(unsigned int index)
 {
-	if (index < s_instancesAnalogIn.size()) {
-		return s_instancesAnalogIn.at(index);
+	if (index < m_instancesAnalogIn.size()) {
+		return m_instancesAnalogIn.at(index);
 	} else {
 //		throw no_device_exception("No such analog in");
 		return nullptr;
@@ -133,7 +127,7 @@ std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(unsigned int index)
 
 std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(std::string dev_name)
 {
-	for (std::shared_ptr<GenericAnalogIn> d : s_instancesAnalogIn) {
+	for (std::shared_ptr<GenericAnalogIn> d : m_instancesAnalogIn) {
 		if (d->getDeviceName() == dev_name) {
 			return d;
 		}
@@ -143,8 +137,8 @@ std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(std::string dev_name
 
 std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(unsigned int index)
 {
-	if (index < s_instancesAnalogOut.size()) {
-		return s_instancesAnalogOut.at(index);
+	if (index < m_instancesAnalogOut.size()) {
+		return m_instancesAnalogOut.at(index);
 	} else {
 		return nullptr;
 	}
@@ -152,7 +146,7 @@ std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(unsigned int index
 
 std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(std::string dev_name)
 {
-	for (std::shared_ptr<GenericAnalogOut> d : s_instancesAnalogOut) {
+	for (std::shared_ptr<GenericAnalogOut> d : m_instancesAnalogOut) {
 		if (d->getDeviceName() == dev_name) {
 			return d;
 		}
@@ -162,8 +156,8 @@ std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(std::string dev_na
 
 std::shared_ptr<DMM> GenericDevice::getDMM(unsigned int index)
 {
-	if (index < s_instancesDMM.size()) {
-		return s_instancesDMM.at(index);
+	if (index < m_instancesDMM.size()) {
+		return m_instancesDMM.at(index);
 	} else {
 		return nullptr;
 	}
@@ -171,7 +165,7 @@ std::shared_ptr<DMM> GenericDevice::getDMM(unsigned int index)
 
 std::shared_ptr<DMM> GenericDevice::getDMM(std::string dev_name)
 {
-	for (std::shared_ptr<DMM> d : s_instancesDMM) {
+	for (std::shared_ptr<DMM> d : m_instancesDMM) {
 		if (d->getDeviceName() == dev_name) {
 			return d;
 		}
@@ -181,7 +175,7 @@ std::shared_ptr<DMM> GenericDevice::getDMM(std::string dev_name)
 
 std::vector<std::shared_ptr<DMM>> GenericDevice::getAllDmm()
 {
-	return s_instancesDMM;
+	return m_instancesDMM;
 }
 
 bool GenericDevice::isIioDeviceBufferCapable(std::string dev_name)
@@ -251,7 +245,7 @@ void GenericDevice::scanAllDMM()
 			if (getIioDeviceDirection(dev.first) != OUTPUT) {
 				if (!getDMM(dev.first)) {
 					auto dmm = std::make_shared<DMM>(m_ctx, dev.first);
-					s_instancesDMM.push_back(dmm);
+					m_instancesDMM.push_back(dmm);
 				}
 			}
 		} catch (std::runtime_error &e) {
@@ -277,6 +271,20 @@ void GenericDevice::blinkLed()
 iio_context *GenericDevice::ctx()
 {
 	return m_ctx;
+}
+
+std::string GenericDevice::getContextAttributes()
+{
+	if (!m_ctx) {
+		return "";
+		//throw error?
+	}
+	std::string descr = std::string(iio_context_get_description(m_ctx));
+	return descr;
+//	int attr_no = iio_context_get_attrs_count(m_ctx);
+//	for (int i = 0; i < attr_no; i++) {
+
+//	}
 }
 
 std::shared_ptr<libm2k::devices::M2K> GenericDevice::toM2k()

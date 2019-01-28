@@ -78,14 +78,15 @@ public:
 
 	void blinkLed();
 	struct iio_context* ctx();
+	std::string getContextAttributes();
 
 	std::shared_ptr<libm2k::devices::M2K> toM2k();
 protected:
-	static std::vector<std::shared_ptr<libm2k::analog::GenericAnalogIn>> s_instancesAnalogIn;
-	static std::vector<std::shared_ptr<libm2k::analog::GenericAnalogOut>> s_instancesAnalogOut;
-	static std::vector<std::shared_ptr<libm2k::analog::DMM>> s_instancesDMM;
-	static std::vector<std::shared_ptr<libm2k::analog::PowerSupply>> s_instancesPowerSupply;
-	static std::vector<std::shared_ptr<libm2k::digital::GenericDigital>> s_instancesDigital;
+	std::vector<std::shared_ptr<libm2k::analog::GenericAnalogIn>> m_instancesAnalogIn;
+	std::vector<std::shared_ptr<libm2k::analog::GenericAnalogOut>> m_instancesAnalogOut;
+	std::vector<std::shared_ptr<libm2k::analog::DMM>> m_instancesDMM;
+	std::vector<std::shared_ptr<libm2k::analog::PowerSupply>> m_instancesPowerSupply;
+	std::vector<std::shared_ptr<libm2k::digital::GenericDigital>> m_instancesDigital;
 private:
 	bool isIioDeviceBufferCapable(std::string);
 	GenericDevice::DEVICE_TYPE getIioDeviceType(std::string);
