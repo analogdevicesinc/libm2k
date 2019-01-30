@@ -17,12 +17,12 @@
 
 using namespace libm2k::devices;
 
-enum DeviceTypes {
-	DevFMCOMMS,
-	DevM2K,
+//enum DeviceTypes {
+//	DevFMCOMMS,
+//	DevM2K,
 
-	Other
-};
+//	Other
+//};
 
 static std::vector<std::string> devices_ini_file_path = {
 	{R"(C:\msys64\home\AlTrifan\libm2k\src\devices\FMCOMMS\fmcomms.ini)"},

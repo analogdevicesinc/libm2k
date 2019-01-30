@@ -20,17 +20,30 @@
 #include "libm2k/devicebuilder.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/genericdevice.hpp"
-#include "installed_devices.hpp"
+#include "libm2k/m2k.hpp"
 #include <iio.h>
 #include "utils.hpp"
 #include <algorithm>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
 std::vector<std::shared_ptr<GenericDevice>> DeviceBuilder::s_connectedDevices = {};
+std::map<DeviceTypes, std::vector<std::string>> DeviceBuilder::m_dev_map = {
+	{DeviceTypes::DevFMCOMMS, {"cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy"}},
+	{DeviceTypes::DevM2K, {"m2k-adc", "m2k-dac-a",
+			       "m2k-dac-b", "m2k-logic-analyzer-rx",
+			       "m2k-logic-analyzer-tx", "m2k-logic-analyzer"}}
+};
+
+std::map<DeviceTypes, std::string> DeviceBuilder::m_dev_name_map = {
+	{DeviceTypes::DevFMCOMMS, "FMMCOMMS"},
+	{DeviceTypes::DevM2K, "M2K"},
+	{Other, "Generic"}
+};
 
 DeviceBuilder::DeviceBuilder()// : m_pimpl(new M2KImpl())
 {
@@ -84,6 +97,20 @@ out_destroy_context:
 	return uris;
 }
 
+std::shared_ptr<GenericDevice> DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
+			struct iio_context* ctx) // enum Device Name
+{
+	std::string name = m_dev_name_map.at(type);
+	switch (type) {
+//		case DevFMCOMMS: return new FMCOMMS(uri, ctx, name);
+		case DevM2K: return std::make_shared<M2K>(uri, ctx, name);
+
+		case Other:
+		default:
+		return std::make_shared<GenericDevice>(uri, ctx, name);
+	}
+}
+
 std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
 {
 	for (std::shared_ptr<GenericDevice> dev : s_connectedDevices) {
@@ -97,10 +124,11 @@ std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
 		throw no_device_exception("No device found for uri: " + *uri);
 	}
 	std::cout << "creating IIO context\n";
-	std::string dev_name = DeviceBuilder::identifyDevice(ctx);
-	std::cout << dev_name << std::endl;
 
-	std::shared_ptr<GenericDevice> dev = buildDevice(dev_name, std::string(uri), ctx);
+	DeviceTypes dev_type = DeviceBuilder::identifyDevice(ctx);
+	std::cout << m_dev_name_map.at(dev_type) << std::endl;
+
+	std::shared_ptr<GenericDevice> dev = buildDevice(dev_type, std::string(uri), ctx);
 	s_connectedDevices.push_back(dev);
 	return dev;
 }
@@ -113,18 +141,14 @@ void DeviceBuilder::deviceClose(std::shared_ptr<GenericDevice> device)
 	device.reset();
 }
 
-std::string DeviceBuilder::identifyDevice(iio_context *ctx)
+DeviceTypes DeviceBuilder::identifyDevice(iio_context *ctx)
 {
-	std::string device_name = "";
-	for (auto &devices_ini_file : devices_ini_file_path) {
-		for (auto &iniconf : Utils::parseIniFile(devices_ini_file)) {
-			device_name = iniconf.hw_name;
-			auto device_list = Utils::valuesForIniConfigKey(iniconf, "compatible-devices");
-			bool found = Utils::devicesFoundInContext(ctx, device_list);
-			if (found) {
-				return device_name;
-			}
+	DeviceTypes type = Other;
+	for (auto dev : m_dev_map) {
+		bool found = Utils::devicesFoundInContext(ctx, dev.second);
+		if (found) {
+			return dev.first;
 		}
 	}
-	return device_name;
+	return type;
 }
