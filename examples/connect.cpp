@@ -167,6 +167,8 @@ int main(int argc, char **argv)
 
 				std::vector<double> vec_a(1024, 4.2);
 				std::vector<short> vec_b(1024, 0);
+				maOut->enableChannel(0, true);
+				mbOut->enableChannel(0, true);
 				maOut->push(vec_a, true);
 				mbOut->push(vec_b, true);
 

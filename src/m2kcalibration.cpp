@@ -538,6 +538,14 @@ bool M2kCalibration::calibrateDACoffset()
 
 	m_m2k_dac_a->stopOutput();
 	m_m2k_dac_b->stopOutput();
+
+	try {
+		m_m2k_dac_a->enableChannel(0, false);
+		m_m2k_dac_b->enableChannel(0, false);
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error(e.what());
+	}
+
 	setCalibrationMode(NONE);
 
 	calibrated = true;
@@ -604,6 +612,13 @@ bool M2kCalibration::calibrateDACgain()
 
 	m_m2k_dac_a->stopOutput();
 	m_m2k_dac_b->stopOutput();
+
+	try {
+		m_m2k_dac_a->enableChannel(0, false);
+		m_m2k_dac_b->enableChannel(0, false);
+	} catch (std::runtime_error &e) {
+		throw std::runtime_error(e.what());
+	}
 
 	setCalibrationMode(NONE);
 
