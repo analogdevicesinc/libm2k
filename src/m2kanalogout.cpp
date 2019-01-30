@@ -35,11 +35,6 @@ using namespace std;
 M2kAnalogOut::M2kAnalogOut(iio_context *ctx, string dac_dev):
 	GenericAnalogOut(ctx, dac_dev)
 {
-	for (unsigned int i = 0; i < m_nb_channels; i++) {
-		m_channel_list.push_back(iio_device_find_channel(
-			m_dev, "voltage" + i, true));
-	}
-
 	m_m2k_fabric = iio_context_find_device(m_ctx, "m2k-fabric");
 	if (m_m2k_fabric) {
 		auto chn0 = iio_device_find_channel(m_m2k_fabric, "voltage0", true);

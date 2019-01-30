@@ -76,8 +76,6 @@ M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 	m_filter_compensation_table[1E3] = 1.26;
 
 	for (unsigned int i = 0; i < m_nb_channels; i++) {
-		m_channel_list.push_back(iio_device_find_channel(
-			m_dev, "voltage" + i, false));
 		m_input_range.push_back(PLUS_MINUS_25V);
 		m_adc_calib_offset.push_back(0);
 		m_adc_calib_gain.push_back(1);
