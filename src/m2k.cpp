@@ -289,6 +289,23 @@ std::vector<std::shared_ptr<M2kAnalogOut>> M2K::getAllAnalogOut()
 	return allAnalogOut;
 }
 
+void M2K::startSyncedDacs()
+{
+	for (auto analogOut : getAllAnalogOut()) {
+		analogOut->syncedStart();
+	}
+
+	struct iio_device *m2k_fabric = iio_context_find_device(ctx(), "m2k-fabric");
+	if (m2k_fabric) {
+		auto chn0 = iio_device_find_channel(m2k_fabric, "voltage0", true);
+		auto chn1 = iio_device_find_channel(m2k_fabric, "voltage1", true);
+		if (chn0 && chn1) {
+			iio_channel_attr_write_bool(chn0, "powerdown", false);
+			iio_channel_attr_write_bool(chn1, "powerdown", false);
+		}
+	}
+}
+
 void M2K::initialize()
 {
 	/* Pre-init call to setup M2k */

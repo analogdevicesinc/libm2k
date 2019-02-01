@@ -66,15 +66,19 @@ public:
 	void stopOutput();
 	short processSample(double value, bool raw);
 
+	void syncedStart();
+
 	void setupBeforeBuffer();
 	void setupAfterBuffer();
 
+	void setSyncedStart(bool synced);
 private:
 	struct iio_device* m_ad5625;
 	struct iio_device* m_m2k_fabric;
 	std::vector<struct iio_channel*> m_m2k_fabric_channels;
 	std::vector<struct iio_channel*> m_ad5625_channels;
 	double m_dac_calib_vlsb;
+	bool m_sync_start;
 
 	std::map<double, double> m_filter_compensation_table;
 };

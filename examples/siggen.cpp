@@ -70,11 +70,21 @@ int main(int argc, char **argv) {
 	maOut->setSampleRate(sample_rate);
 	maOut->setOversamplingRatio(1);
 	maOut->enableChannel(0, true);
+	maOut->setSyncedStart(true);
 	maOut->push(data, true);
+
+	std::shared_ptr<M2kAnalogOut> mbOut = m2k_device->getAnalogOut("m2k-dac-b");
+	mbOut->setSampleRate(sample_rate);
+	mbOut->setOversamplingRatio(1);
+	mbOut->enableChannel(0, true);
+	mbOut->setSyncedStart(true);
+	mbOut->push(data, true);
+
+	m2k_device->startSyncedDacs();
 
 	std::cout << "Sine wave generated; Sleeping 3 seconds before stopping" << std::endl;
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+	std::this_thread::sleep_for(std::chrono::milliseconds(50000));
 
 	return 0;
 }

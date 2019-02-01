@@ -162,7 +162,6 @@ void M2kCalibration::restoreDacFromCalibMode()
 		double oversampl_a = m_m2k_dac_a->setOversamplingRatio(dac_a_oversampl);
 		double samplerate_b = m_m2k_dac_b->setSampleRate(dac_b_sampl_freq);
 		double oversampl_b = m_m2k_dac_b->setOversamplingRatio(dac_b_oversampl);
-
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -491,10 +490,14 @@ bool M2kCalibration::calibrateDACoffset()
 	// write to DAC
 	std::vector<short> vec_data(256, 0);
 	try {
+		m_m2k_dac_a->setSyncedStart(false);
+		m_m2k_dac_b->setSyncedStart(false);
 		m_m2k_dac_a->enableChannel(0, true);
 		m_m2k_dac_b->enableChannel(0, true);
 		m_m2k_dac_a->push(vec_data, true);
 		m_m2k_dac_b->push(vec_data, true);
+
+
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception("DAC offset calibration failed: "
 						  + std::string(e.what()));
@@ -566,6 +569,8 @@ bool M2kCalibration::calibrateDACgain()
 	// Use the positive half scale point for gain calibration
 	std::vector<short> vec_data(256, 1024);
 	try {
+		m_m2k_dac_a->setSyncedStart(false);
+		m_m2k_dac_b->setSyncedStart(false);
 		m_m2k_dac_a->enableChannel(0, true);
 		m_m2k_dac_b->enableChannel(0, true);
 		m_m2k_dac_a->push(vec_data, true);

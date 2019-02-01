@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2018 Analog Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,8 @@ using namespace libm2k::utils;
 using namespace std;
 
 M2kAnalogOut::M2kAnalogOut(iio_context *ctx, string dac_dev):
-	GenericAnalogOut(ctx, dac_dev)
+	GenericAnalogOut(ctx, dac_dev),
+	m_sync_start(true)
 {
 	m_m2k_fabric = iio_context_find_device(m_ctx, "m2k-fabric");
 	if (m_m2k_fabric) {
@@ -228,6 +229,16 @@ short M2kAnalogOut::processSample(double value, bool raw)
 	}
 }
 
+void M2kAnalogOut::setSyncedStart(bool synced)
+{
+	m_sync_start = synced;
+}
+
+void M2kAnalogOut::syncedStart()
+{
+	iio_device_attr_write_bool(m_dev, "dma_sync", false);
+}
+
 void M2kAnalogOut::setupBeforeBuffer()
 {
 	iio_device_attr_write_bool(m_dev, "dma_sync", true);
@@ -235,6 +246,10 @@ void M2kAnalogOut::setupBeforeBuffer()
 
 void M2kAnalogOut::setupAfterBuffer()
 {
+	if (m_sync_start) {
+		return;
+	}
+
 	iio_device_attr_write_bool(m_dev, "dma_sync", false);
 
 	for (auto fabric_chn : m_m2k_fabric_channels) {

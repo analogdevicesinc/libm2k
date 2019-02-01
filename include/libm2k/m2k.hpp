@@ -70,6 +70,7 @@ public:
 	double getDacACalibrationGain();
 	int getAdcCalibrationOffset(unsigned int chn);
 	double getAdcCalibrationGain(unsigned int chn);
+	void startSyncedDacs();
 private:
 	M2kCalibration* m_calibration;
 	void initialize();
