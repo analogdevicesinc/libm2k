@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 
 	std::cout << "Sine wave generated; Sleeping 3 seconds before stopping" << std::endl;
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(50000));
+	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
 	return 0;
 }

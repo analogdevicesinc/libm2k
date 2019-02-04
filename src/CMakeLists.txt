@@ -12,7 +12,9 @@ endif()
 
 include_directories(
 	SYSTEM ${IIO_INCLUDE_DIRS}
+        ${LOG4CPP_INCLUDE_DIR}
 )
+
 
 FILE(GLOB SRC_LIST  *.cpp *.cc)
 FILE(GLOB HEADERS_LIST
@@ -48,6 +50,7 @@ endif()
 
 target_link_libraries(m2k
 	${IIO_LIBRARIES}
+        ${LOG4CPP_LIBRARies}
 )
 
 set_target_properties(m2k PROPERTIES

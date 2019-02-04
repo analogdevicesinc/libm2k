@@ -28,6 +28,8 @@
 #include <iio.h>
 #include <iostream>
 
+#include "logger.h"
+
 using namespace std;
 using namespace libm2k::devices;
 using namespace libm2k::analog;
@@ -40,6 +42,11 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 	std::cout << "I am M2K device " << std::endl;
 
 	initialize();
+
+
+	LOG("BOOOMMM");
+
+
 
 	/* Initialize the AnalogIn list */
 //	for (auto aIn : s_instancesAnalogIn) {

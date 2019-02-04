@@ -47,6 +47,11 @@ if (GIT_FOUND)
 	endif()
 endif()
 
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
+
+include(findLog4Cpp)
+
+
 if (NOT LIBM2K_VERSION_GIT)
 	set(LIBM2K_VERSION_GIT v${PROJECT_VERSION})
 endif()
