@@ -22,11 +22,12 @@
 #include "libm2k/genericdevice.hpp"
 #include "libm2k/m2k.hpp"
 #include <iio.h>
-#include "utils.hpp"
+#include "libm2k/utils.hpp"
 #include <algorithm>
 #include <vector>
 #include <iostream>
 #include <memory>
+
 
 using namespace libm2k::devices;
 using namespace libm2k::utils;
@@ -121,7 +122,8 @@ std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
 
 	struct iio_context* ctx = iio_create_context_from_uri(uri);
 	if (!ctx) {
-		throw no_device_exception("No device found for uri: " + *uri);
+		std::string str = std::string(uri);
+		throw no_device_exception("No device found for uri: " + str);
 	}
 	std::cout << "creating IIO context\n";
 
@@ -130,6 +132,7 @@ std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
 
 	std::shared_ptr<GenericDevice> dev = buildDevice(dev_type, std::string(uri), ctx);
 	s_connectedDevices.push_back(dev);
+
 	return dev;
 }
 

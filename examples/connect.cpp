@@ -9,10 +9,12 @@
 #include "libm2k/m2kanalogout.hpp"
 #include "libm2k/m2kpowersupply.hpp"
 #include "libm2k/m2kdigital.hpp"
+#include <math.h>
 #include <iostream>
 #include <thread>
 #include <chrono>
 #include "assert.h"
+#include <sstream>
 
 using namespace libm2k::devices;
 using namespace libm2k::analog;
@@ -119,110 +121,146 @@ private:
 
 //END BRIDGE
 
+
 int main(int argc, char **argv)
 {
+
+
+
+	std::string e = "";
 	std::vector<std::string> lst = DeviceBuilder::listDevices();
-	if (lst.size() > 0) {
-		std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
-		std::shared_ptr<GenericDevice> d2 = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
-		std::shared_ptr<GenericDevice> d3 = DeviceBuilder::deviceOpen(lst.at(0).c_str());
-		std::shared_ptr<M2K> dev = d->toM2k();
-		if (d) {
-			try {
-				std::shared_ptr<GenericAnalogIn> aIn = d->getAnalogIn(0);
-				aIn->setSampleRate(1000);
-//				aIn->setSampleRate(0, 30720000);
-//				auto aIn2 = d->getAnalogIn("m2k-adc");
+	for (auto l : lst) {
+		try {
+//			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
+//			std::shared_ptr<GenericDevice> d2 = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
+			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen(l.c_str());
+			std::shared_ptr<M2K> dev = d->toM2k();
+			if (!dev) { // PLUTO
+				std::shared_ptr<GenericAnalogOut> plutoOut = d->getAnalogOut(0);
+				plutoOut->enableChannel(0, true);
+				plutoOut->enableChannel(1, true);
+				plutoOut->setSamplerate(0, 3840000);
+				plutoOut->setSamplerate(1, 3840000);
+				vector<short> data(1024, 2048);
 
-				std::shared_ptr<M2kAnalogIn> maIn = dev->getAnalogIn(0);
-				maIn->setRange(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
-					       M2kAnalogIn::PLUS_MINUS_25V);
+//				float amplitude = 2.5;
+//				std::vector<std::vector<double>> data_all;
+//				std::vector<double> data;
+//				double angle = 0.0;
+//				for (size_t i = 0; i < 1024  * 1024; ++i) {
+//					angle += (2 * M_PI) / static_cast<double>(1024  * 1024);
+//					float value = amplitude * static_cast<float>(std::sin(angle));
+//					data.push_back(static_cast<double>(value));
+//				}
 
-				std::shared_ptr<DMM> dmm = d->getDMM(0);
-				std::vector<DMM::dmm_reading> readings = dmm->readAll();
-				for (DMM::dmm_reading read : readings) {
-					std::cout << read.name << " " << read.value << " " << read.unit;
-				}
-
-				bool ret = dev->resetCalibration();
-				auto samps = aIn->getSamples(20);
-				for (int i = 0; i < 20; i++) {
-					std::cout << samps[0][i] << " ";
-					std::cout << samps[1][i] << " ";
-				}
-				std::cout << std::endl;
-
-				ret = dev->calibrateADC();
-
-				// Analog Out
-				std::shared_ptr<M2kAnalogOut> maOut = dev->getAnalogOut("m2k-dac-a");
-				std::shared_ptr<M2kAnalogOut> mbOut = dev->getAnalogOut("m2k-dac-b");
-				ret = dev->calibrateDAC();
-				maOut->setSampleRate(75e6);
-				mbOut->setSampleRate(75e6);
-				maOut->setOversamplingRatio(1);
-				mbOut->setOversamplingRatio(1);
-
-				std::cout << "scaling factor " << maOut->getScalingFactor() << std::endl;
-
-				std::vector<double> vec_a(1024, 4.2);
-				std::vector<short> vec_b(1024, 0);
-				maOut->enableChannel(0, true);
-				mbOut->enableChannel(0, true);
-				maOut->push(vec_a, true);
-				mbOut->push(vec_b, true);
-
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-				maIn->setSourceChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_1);
-				maIn->setTriggerDelay(-10);
-				maIn->setLevel(M2kAnalogIn::ANALOG_IN_CHANNEL_1, 1);
-				maIn->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::ALWAYS);
-				maIn->setAnalogCondition(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::FALLING_EDGE);
-				samps = maIn->getSamples(48, true);
-				for (int i = 0; i < 48; i++) {
-					std::cout << samps[0][i] << " ";
-					std::cout << samps[1][i] << " ";
-				}
-
-				for (auto s : aIn->getAvailableSamplerates()) {
-					std::cout << " s " << s << std::endl;
-				}
-
-				std::shared_ptr<M2kPowerSupply> psupply = dev->getPowerSupply();
-				psupply->pushChannel(0, 3);
-				psupply->enableChannel(0, true);
-				psupply->enableChannel(0, false);
-
-
-				// DIO
-				std::shared_ptr<M2kDigital> logic = dev->getDigital();
-				logic->enableChannelIn(M2kDigital::DIO_CHANNEL_1, true);
-				logic->enableChannelIn(M2kDigital::DIO_CHANNEL_2, true);
-//				logic->setTrigger(M2kDigital::DIO_CHANNEL_1, M2kHardwareTrigger::RISING_EDGE);
-				auto data = logic->getSamples(32);
-				for (auto d : data) {
-					std::cout << d << " ";
-				}
-				std::cout << std::endl;
-
-				logic->setTriggerMode(M2kDigital::DIO_AND);
-
-				logic->setDirection(M2kDigital::DIO_CHANNEL_4, M2kDigital::DIO_OUTPUT);
-				logic->setDirection(M2kDigital::DIO_CHANNEL_5, M2kDigital::DIO_OUTPUT);
-				logic->setValueRaw(M2kDigital::DIO_CHANNEL_4, M2kDigital::HIGH);
-				logic->setValueRaw(M2kDigital::DIO_CHANNEL_5, M2kDigital::HIGH);
-
-			} catch (std::runtime_error &e) {
-				std::cout << e.what() << "\n";
+				plutoOut->push(data, 0);
+				std::this_thread::sleep_for(std::chrono::milliseconds(20000));
 			}
-//			auto anIn = d->openAnalogIn();
-			d->blinkLed();
-//			d->closeAnalogIn()
-			DeviceBuilder::deviceClose(d);
-			DeviceBuilder::deviceClose(d2);
-			DeviceBuilder::deviceClose(d3);
+
+			if (dev) { // M2K
+				try {
+					std::shared_ptr<GenericAnalogIn> aIn = d->getAnalogIn(0);
+					aIn->setSampleRate(1000);
+
+					std::shared_ptr<M2kAnalogIn> maIn = dev->getAnalogIn(0);
+					maIn->setRange(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
+						       M2kAnalogIn::PLUS_MINUS_25V);
+
+					std::shared_ptr<DMM> dmm = d->getDMM(0);
+					std::vector<DMM::dmm_reading> readings = dmm->readAll();
+					for (DMM::dmm_reading read : readings) {
+						std::cout << read.name << " " << read.value << " " << read.unit;
+					}
+
+					bool ret = dev->resetCalibration();
+					auto samps = aIn->getSamples(20);
+					for (int i = 0; i < 20; i++) {
+						std::cout << samps[0][i] << " ";
+						std::cout << samps[1][i] << " ";
+					}
+					std::cout << std::endl;
+
+					ret = dev->calibrateADC();
+
+					// Analog Out
+					std::shared_ptr<M2kAnalogOut> maOut = dev->getAnalogOut();
+					//				std::shared_ptr<M2kAnalogOut> mbOut = dev->getAnalogOut("m2k-dac-b");
+					ret = dev->calibrateDAC();
+					maOut->setSamplerate(0, 75e6);
+					maOut->setSamplerate(1, 75e6);
+					maOut->setOversamplingRatio(0, 1);
+					maOut->setOversamplingRatio(1, 1);
+
+					std::cout << "scaling factor chn 0 " << maOut->getScalingFactor(0) << std::endl;
+					std::cout << "scaling factor chn 1 " << maOut->getScalingFactor(1) << std::endl;
+
+					std::vector<double> vec_a(1024, 4.1);
+					std::vector<double> vec_b(1024, 2.1);
+					std::vector<std::vector<double>> vec_all;
+					vec_all.push_back(vec_a);
+					vec_all.push_back(vec_b);
+
+					maOut->enableChannel(0, true);
+					maOut->enableChannel(1, true);
+					maOut->push(vec_all);
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+					maIn->setSourceChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_1);
+					maIn->setTriggerDelay(-10);
+					maIn->setLevel(M2kAnalogIn::ANALOG_IN_CHANNEL_1, 1);
+					maIn->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::ALWAYS);
+					maIn->setAnalogCondition(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::FALLING_EDGE);
+					samps = maIn->getSamples(48, true);
+					for (int i = 0; i < 48; i++) {
+						std::cout << samps[0][i] << " ";
+						std::cout << samps[1][i] << " ";
+					}
+
+					for (auto s : aIn->getAvailableSamplerates()) {
+						std::cout << " s " << s << std::endl;
+					}
+
+					std::shared_ptr<M2kPowerSupply> psupply = dev->getPowerSupply();
+					psupply->pushChannel(0, 3);
+					psupply->enableChannel(0, true);
+					psupply->enableChannel(0, false);
+
+
+					// DIO
+					std::shared_ptr<M2kDigital> logic = dev->getDigital();
+					logic->enableChannelIn(M2kDigital::DIO_CHANNEL_1, true);
+					logic->enableChannelIn(M2kDigital::DIO_CHANNEL_2, true);
+					//				logic->setTrigger(M2kDigital::DIO_CHANNEL_1, M2kHardwareTrigger::RISING_EDGE);
+					auto data = logic->getSamples(32);
+					for (auto d : data) {
+						std::cout << d << " ";
+					}
+					std::cout << std::endl;
+
+					logic->setTriggerMode(M2kDigital::DIO_AND);
+
+					logic->setDirection(M2kDigital::DIO_CHANNEL_4, M2kDigital::DIO_OUTPUT);
+					logic->setDirection(M2kDigital::DIO_CHANNEL_5, M2kDigital::DIO_OUTPUT);
+					logic->setValueRaw(M2kDigital::DIO_CHANNEL_4, M2kDigital::HIGH);
+					logic->setValueRaw(M2kDigital::DIO_CHANNEL_5, M2kDigital::HIGH);
+
+				} catch (std::runtime_error &e) {
+					std::cout << e.what() << "\n";
+				}
+				//			auto anIn = d->openAnalogIn();
+				d->blinkLed();
+				//			d->closeAnalogIn()
+//				DeviceBuilder::deviceClose(d);
+//				DeviceBuilder::deviceClose(d2);
+				DeviceBuilder::deviceClose(d);
+			}
+		} catch (std::runtime_error &e) {
+			std::cout << "Err on connect: " << e.what() << std::endl;
+			continue;
+
 		}
+
 	}
 
 //	FMCOMMS *fm = new FMCOMMS();

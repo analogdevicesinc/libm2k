@@ -20,7 +20,7 @@
 #include "libm2k/m2kanalogin.hpp"
 #include "libm2k/genericanalogin.hpp"
 #include "libm2k/m2kexceptions.hpp"
-#include "utils.hpp"
+#include "libm2k/utils.hpp"
 
 #include <iostream>
 #include <thread>

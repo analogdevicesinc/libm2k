@@ -115,10 +115,10 @@ private:
 
 	struct iio_context *m_ctx;
 	std::shared_ptr<libm2k::analog::M2kAnalogIn> m_m2k_adc;
-	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac_a;
+	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac;
 	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac_b;
 	struct iio_device *m2k_ad5625;
-	struct iio_device *m_m2k_fabric;
+	std::shared_ptr<libm2k::utils::Device> m_m2k_fabric;
 
 	struct iio_channel *m_adc_channel0;
 	struct iio_channel *m_adc_channel1;
@@ -162,6 +162,7 @@ private:
 
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> m_analogIn;
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> m_analogOut;
+	std::shared_ptr<libm2k::utils::Device> m_ad5625_dev;
 };
 
 }

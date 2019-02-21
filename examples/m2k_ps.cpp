@@ -29,12 +29,12 @@ int main (int argc, char **argv)
 
 		auto device_m2k = device->toM2k();
 		auto ps = device_m2k->getPowerSupply();
-		ps->pushChannel(0, 5);
+		ps->pushChannel(0, -1);
 		ps->enableChannel(0, true);
 		ps->enableChannel(1, true);
 		std::cout << "value read " << ps->readChannel(0) << std::endl;
 		try {
-			ps->pushChannel(1, -3);
+			ps->pushChannel(1, -2);
 			std::cout << "value read " << ps->readChannel(1) << std::endl;
 		} catch (std::exception &e) {
 			std::cout << "ERROR " << e.what() << std::endl;

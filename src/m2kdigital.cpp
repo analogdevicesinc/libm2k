@@ -19,7 +19,7 @@
 
 #include "libm2k/m2kdigital.hpp"
 #include "libm2k/m2kexceptions.hpp"
-#include "utils.hpp"
+#include "libm2k/utils.hpp"
 #include <iio.h>
 #include <iostream>
 #include <algorithm>

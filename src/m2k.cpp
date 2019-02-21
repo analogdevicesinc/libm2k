@@ -24,7 +24,8 @@
 #include "libm2k/m2kcalibration.hpp"
 #include "libm2k/m2kpowersupply.hpp"
 #include "libm2k/m2kdigital.hpp"
-#include "utils.hpp"
+#include "libm2k/utils.hpp"
+#include "libm2k/device.hpp"
 #include <iio.h>
 #include <iostream>
 
@@ -99,11 +100,9 @@ void M2K::scanAllAnalogIn()
 void M2K::scanAllAnalogOut()
 {
 	try {
-		std::shared_ptr<GenericAnalogOut> aOut = std::make_shared<libm2k::analog::M2kAnalogOut>(ctx(), "m2k-dac-a");
+		std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
+		std::shared_ptr<Device> aOut = std::make_shared<libm2k::analog::M2kAnalogOut>(ctx(), devs);
 		m_instancesAnalogOut.push_back(aOut);
-
-		std::shared_ptr<GenericAnalogOut> bOut = std::make_shared<libm2k::analog::M2kAnalogOut>(ctx(), "m2k-dac-b");
-		m_instancesAnalogOut.push_back(bOut);
 	} catch (std::runtime_error& e) {
 		std::cout << e.what() << std::endl;
 	}
@@ -248,15 +247,13 @@ std::shared_ptr<M2kDigital> M2K::getDigital()
 	throw no_device_exception("No M2K digital device found");
 }
 
-std::shared_ptr<M2kAnalogOut> M2K::getAnalogOut(string dev_name)
+std::shared_ptr<M2kAnalogOut> M2K::getAnalogOut()
 {
-	for (std::shared_ptr<GenericAnalogOut> d : m_instancesAnalogOut) {
-		if (d->getDeviceName() == dev_name) {
-			std::shared_ptr<libm2k::analog::M2kAnalogOut> analogOut =
+	for (std::shared_ptr<Device> d : m_instancesAnalogOut) {
+		std::shared_ptr<libm2k::analog::M2kAnalogOut> analogOut =
 				dynamic_pointer_cast<M2kAnalogOut>(d);
-			if (analogOut) {
-				return analogOut;
-			}
+		if (analogOut) {
+			return analogOut;
 		}
 	}
 	return nullptr;
@@ -282,7 +279,7 @@ std::vector<std::shared_ptr<M2kAnalogIn>> M2K::getAllAnalogIn()
 std::vector<std::shared_ptr<M2kAnalogOut>> M2K::getAllAnalogOut()
 {
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> allAnalogOut;
-	for (std::shared_ptr<GenericAnalogOut> inst : m_instancesAnalogOut) {
+	for (std::shared_ptr<Device> inst : m_instancesAnalogOut) {
 		try {
 			std::shared_ptr<libm2k::analog::M2kAnalogOut> analogOut =
 				dynamic_pointer_cast<libm2k::analog::M2kAnalogOut>(inst);
@@ -294,23 +291,6 @@ std::vector<std::shared_ptr<M2kAnalogOut>> M2K::getAllAnalogOut()
 		}
 	}
 	return allAnalogOut;
-}
-
-void M2K::startSyncedDacs()
-{
-	for (auto analogOut : getAllAnalogOut()) {
-		analogOut->syncedStart();
-	}
-
-	struct iio_device *m2k_fabric = iio_context_find_device(ctx(), "m2k-fabric");
-	if (m2k_fabric) {
-		auto chn0 = iio_device_find_channel(m2k_fabric, "voltage0", true);
-		auto chn1 = iio_device_find_channel(m2k_fabric, "voltage1", true);
-		if (chn0 && chn1) {
-			iio_channel_attr_write_bool(chn0, "powerdown", false);
-			iio_channel_attr_write_bool(chn1, "powerdown", false);
-		}
-	}
 }
 
 void M2K::initialize()

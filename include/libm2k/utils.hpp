@@ -20,6 +20,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "libm2k/m2kglobal.hpp"
 #include <string>
 #include <vector>
 #include <utility>
@@ -30,8 +31,22 @@ class iio_device;
 class iio_channel;
 namespace libm2k {
 namespace utils {
-	class Utils {
+	class LIBM2K_API Utils {
 	public:
+
+		enum DEVICE_TYPE {
+			ANALOG = 1,
+			DIGITAL = 2,
+			NONE = 3
+		};
+
+		enum DEVICE_DIRECTION {
+			INPUT = 1,
+			OUTPUT = 2,
+			BOTH = 3,
+			NO_DIRECTION = 4
+		};
+
 
 		struct ini_device_struct {
 			std::string hw_name;
@@ -84,11 +99,12 @@ namespace utils {
 		static double setDoubleValue(struct iio_device*, unsigned int chn_idx,
 					    double value, std::string attr);
 
+		static Utils::DEVICE_DIRECTION getIioDeviceDirection(iio_device *dev);
+		static std::vector<std::string> split(std::string, std::string);
 	private:
 		static std::string parseIniSection(std::string line);
 		static std::pair<std::string, std::vector<std::string>>
 			parseIniPair(std::string line);
-		static std::vector<std::string> split(std::string, std::string);
 	};
 }
 }

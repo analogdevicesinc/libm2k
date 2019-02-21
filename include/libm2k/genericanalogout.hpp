@@ -21,53 +21,38 @@
 #define GENERICANALOGOUT_HPP
 
 #include "m2kglobal.hpp"
+#include "libm2k/device.hpp"
 #include <string>
 #include <vector>
 
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-	struct iio_buffer;
-}
-
+using namespace libm2k::utils;
 namespace libm2k {
 namespace analog {
-class LIBM2K_API GenericAnalogOut {
+class LIBM2K_API GenericAnalogOut : public Device {
 public:
 	GenericAnalogOut(struct iio_context* ctx, std::string dac_dev);
 	virtual ~GenericAnalogOut();
 
-	virtual void openAnalogOut();
-	virtual void closeAnalogOut();
+	void openAnalogOut();
+	void closeAnalogOut();
 
-	double getSampleRate();
-	double getSampleRate(unsigned int);
-	double setSampleRate(double sampleRate);
-	double setSampleRate(unsigned int chn_idx, double sampleRate);
+	double getSamplerate();
+	double getSamplerate(unsigned int);
+	double setSamplerate(double sampleRate);
+	double setSamplerate(unsigned int chn_idx, double sampleRate);
 	std::vector<double> getAvailableSamplerates();
 
-	struct iio_context* getContext();
-	void enableChannel(unsigned int index, bool enable);
 	bool isChannelEnabled(unsigned int index);
 	std::string getDeviceName();
 
 
-	virtual void push(std::vector<short>& data, bool cyclic = true,
-			  unsigned int chn_idx = 0);
-	virtual void stopOutput();
-	virtual short processSample(double value, bool raw);
-
-	virtual void setupBeforeBuffer();
-	virtual void setupAfterBuffer();
+	void push(std::vector<double>& data, unsigned int chn_idx = 0, bool cyclic = true);
+	void push(std::vector<short>& data, unsigned int chn_idx = 0, bool cyclic = true);
+	void stopOutput();
 
 protected:
-	struct iio_context* m_ctx;
-	struct iio_device* m_dev;
-	struct iio_buffer* m_buffer;
 	std::string m_dev_name;
 	unsigned int m_nb_channels;
-	std::vector<struct iio_channel*> m_channel_list;
 };
 }
 }

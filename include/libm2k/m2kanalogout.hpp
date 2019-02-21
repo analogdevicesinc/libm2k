@@ -22,65 +22,60 @@
 
 #include "libm2k/m2kglobal.hpp"
 #include "libm2k/genericanalogout.hpp"
+#include "libm2k/device.hpp"
 #include <vector>
+#include <memory>
 #include <map>
 
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-}
-
+using namespace libm2k::utils;
 namespace libm2k {
 namespace analog {
-class LIBM2K_API M2kAnalogOut : public GenericAnalogOut
+class LIBM2K_API M2kAnalogOut : public Device
 {
 public:
-	M2kAnalogOut(struct iio_context*, std::string dac_dev);
+	M2kAnalogOut(struct iio_context*, std::vector<std::string> dac_devs);
 	~M2kAnalogOut();
 
 	void openAnalogOut();
 	void closeAnalogOut();
 
-	double getOversamplingRatio();
-	double getOversamplingRatio(unsigned int);
-	double setOversamplingRatio(double sampleRate);
-	double setOversamplingRatio(unsigned int chn_idx, double sampleRate);
+	/* chn can be 0 or 1, it actually refers to dac-a or dac-b) */
+	std::vector<double> getOversamplingRatio();
+	double getOversamplingRatio(unsigned int chn);
+	std::vector<double> setOversamplingRatio(std::vector<double> oversampling_ratio);
+	double setOversamplingRatio(unsigned int chn, double oversampling_ratio);
 
-	struct iio_channel* getChannel();
-	struct iio_channel* getAuxChannel(unsigned int chn_idx);
-	struct iio_channel* getFabricChannel(unsigned int chn_idx);
+	std::vector<double> getSamplerate();
+	double getSamplerate(unsigned int chn);
+	std::vector<double> setSamplerate(std::vector<double> samplerates);
+	double setSamplerate(unsigned int chn, double samplerate);
 
-	double getScalingFactor();
+	void setSyncedDma(bool en, int chn = -1);
+	bool getSyncedDma(int chn = -1);
+
+	double getScalingFactor(unsigned int chn);
 	double getFilterCompensation(double samplerate);
 
 	int convertVoltsToRaw(double voltage, double vlsb,
 				double filterCompensation);
 
-	void setDacCalibVlsb(double vlsb);
+	void setDacCalibVlsb(unsigned int chn, double vlsb);
 
-	void push(std::vector<double>& data, bool cyclic = true,
+	void push(std::vector<std::vector<double>>& data, bool cyclic = true,
 		  unsigned int chn_idx = 0);
-	void push(std::vector<short>& data, bool cyclic = true,
+	void push(std::vector<std::vector<short>>& data, bool cyclic = true,
 		  unsigned int chn_idx = 0);
 	void stopOutput();
-	short processSample(double value, bool raw);
 
-	void syncedStart();
-
-	void setupBeforeBuffer();
-	void setupAfterBuffer();
-
-	void setSyncedStart(bool synced);
+	void enableChannel(unsigned int chnIdx, bool enable);
 private:
-	struct iio_device* m_ad5625;
-	struct iio_device* m_m2k_fabric;
-	std::vector<struct iio_channel*> m_m2k_fabric_channels;
-	std::vector<struct iio_channel*> m_ad5625_channels;
-	double m_dac_calib_vlsb;
+	short processSample(double value, unsigned int channel, bool raw);
+	std::shared_ptr<Device> m_m2k_fabric;
+	std::vector<double> m_calib_vlsb;
 	bool m_sync_start;
 
 	std::map<double, double> m_filter_compensation_table;
+	std::vector<Device*> m_dac_devices;
 };
 }
 }

@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "utils.hpp"
+#include "libm2k/utils.hpp"
 #include <iio.h>
 #include <regex>
 #include <iostream>
@@ -511,6 +511,31 @@ double Utils::setDoubleValue(struct iio_device* dev, unsigned int chn_idx,
 	}
 	return getDoubleValue(dev, chn_idx, attr);
 }
+
+Utils::DEVICE_DIRECTION Utils::getIioDeviceDirection(struct iio_device* dev)
+{
+	DEVICE_DIRECTION dir = NO_DIRECTION;
+
+	unsigned int chn_count = iio_device_get_channels_count(dev);
+	for (unsigned int i = 0; i < chn_count; i++) {
+		auto chn = iio_device_get_channel(dev, i);
+		if (iio_channel_is_output(chn)) {
+			if (dir == INPUT) {
+				dir = BOTH;
+			} else if (dir != BOTH){
+				dir = OUTPUT;
+			}
+		} else {
+			if (dir == OUTPUT) {
+				dir = BOTH;
+			} else if (dir != BOTH){
+				dir = INPUT;
+			}
+		}
+	}
+	return dir;
+}
+
 
 //std::string Utils::getIioDevByPartialName(std::string dev)
 //{

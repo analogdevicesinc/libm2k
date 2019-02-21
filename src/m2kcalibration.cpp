@@ -21,7 +21,7 @@
 #include "libm2k/m2kanalogout.hpp"
 #include "libm2k/m2kcalibration.hpp"
 #include "libm2k/m2kexceptions.hpp"
-#include "utils.hpp"
+#include "libm2k/utils.hpp"
 //#include "osc_adc.h"
 //#include "hw_dac.h"
 
@@ -44,18 +44,13 @@ M2kCalibration::M2kCalibration(std::vector<std::shared_ptr<M2kAnalogIn>>& analog
 	m_adc_calibrated(false),
 	m_dac_calibrated(false),
 	m_initialized(false),
-	m_cancel(false)
+	m_cancel(false),
+	m_ad5625_dev(nullptr)
 {
 	m_m2k_adc = m_analogIn.at(0);
 	m_ctx = m_m2k_adc->getContext();
-	for (std::shared_ptr<M2kAnalogOut> aOut : m_analogOut) {
-		if (aOut->getDeviceName() == "m2k-dac-a") {
-			m_m2k_dac_a = aOut;
-		} else if (aOut->getDeviceName() == "m2k-dac-b") {
-			m_m2k_dac_b = aOut;
-		}
-	}
-
+	m_m2k_dac = m_analogOut.at(0);
+	m_ad5625_dev = make_shared<Device>(m_ctx, "ad5625");
 }
 
 M2kCalibration::~M2kCalibration()
@@ -71,7 +66,7 @@ bool M2kCalibration::initialize()
 	if (!m_ctx)
 		return false;
 
-	m_m2k_fabric = iio_context_find_device(m_ctx, "m2k-fabric");
+	m_m2k_fabric = make_shared<Device>(m_ctx, "m2k-fabric");
 	if (!m_m2k_fabric) {
 		return false;
 	}
@@ -80,13 +75,6 @@ bool M2kCalibration::initialize()
 	try {
 		m_adc_channel0 = m_m2k_adc->getChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_1);
 		m_adc_channel1 = m_m2k_adc->getChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_2);
-		m_ad5625_channel2 = m_m2k_adc->getAuxChannel(0);
-		m_ad5625_channel3 = m_m2k_adc->getAuxChannel(1);
-
-		m_dac_a_channel = m_m2k_dac_a->getChannel();
-		m_dac_b_channel = m_m2k_dac_b->getChannel();
-		m_ad5625_channel0 = m_m2k_dac_a->getAuxChannel(0);
-		m_ad5625_channel1 = m_m2k_dac_a->getAuxChannel(1);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -128,10 +116,10 @@ void M2kCalibration::setAdcInCalibMode()
 void M2kCalibration::setDacInCalibMode()
 {
 	try {
-		dac_a_sampl_freq = m_m2k_dac_a->getSampleRate();
-		dac_a_oversampl = m_m2k_dac_a->getOversamplingRatio();
-		dac_b_sampl_freq = m_m2k_dac_b->getSampleRate();
-		dac_b_oversampl = m_m2k_dac_b->getOversamplingRatio();
+		dac_a_sampl_freq = m_m2k_dac->getSamplerate(0);
+		dac_a_oversampl = m_m2k_dac->getOversamplingRatio(0);
+		dac_b_sampl_freq = m_m2k_dac->getSamplerate(1);
+		dac_b_oversampl = m_m2k_dac->getOversamplingRatio(1);
 	} catch(std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -158,10 +146,10 @@ void M2kCalibration::restoreAdcFromCalibMode()
 void M2kCalibration::restoreDacFromCalibMode()
 {
 	try {
-		double samplerate_a = m_m2k_dac_a->setSampleRate(dac_a_sampl_freq);
-		double oversampl_a = m_m2k_dac_a->setOversamplingRatio(dac_a_oversampl);
-		double samplerate_b = m_m2k_dac_b->setSampleRate(dac_b_sampl_freq);
-		double oversampl_b = m_m2k_dac_b->setOversamplingRatio(dac_b_oversampl);
+		double samplerate_a = m_m2k_dac->setSamplerate(0, dac_a_sampl_freq);
+		double oversampl_a = m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
+		double samplerate_b = m_m2k_dac->setSamplerate(1, dac_b_sampl_freq);
+		double oversampl_b = m_m2k_dac->setOversamplingRatio(1, dac_b_oversampl);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -181,10 +169,10 @@ void M2kCalibration::configAdcSamplerate()
 void M2kCalibration::configDacSamplerate()
 {
 	try {
-		double samplerate_a = m_m2k_dac_a->setSampleRate(75E6);
-		double oversampl_a = m_m2k_dac_a->setOversamplingRatio(1);
-		double samplerate_b = m_m2k_dac_b->setSampleRate(75E6);
-		double oversampl_b = m_m2k_dac_b->setOversamplingRatio(1);
+		double samplerate_a = m_m2k_dac->setSamplerate(0, 75E6);
+		double oversampl_a = m_m2k_dac->setOversamplingRatio(0, 1);
+		double samplerate_b = m_m2k_dac->setSamplerate(1, 75E6);
+		double oversampl_b = m_m2k_dac->setOversamplingRatio(1, 1);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -206,11 +194,10 @@ bool M2kCalibration::calibrateADCoffset()
 	setCalibrationMode(ADC_GND);
 
 	// Set DAC channels to middle scale
-	iio_channel_attr_write_longlong(m_ad5625_channel2, "raw", 2048);
-	iio_channel_attr_write_longlong(m_ad5625_channel3, "raw", 2048);
+	m_ad5625_dev->setDoubleValue(2, 2048, "raw", true);
+	m_ad5625_dev->setDoubleValue(3, 2048, "raw", true);
 
 	// Allow some time for the voltage to settle
-
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	const unsigned int num_samples = 1e5;
@@ -319,21 +306,17 @@ double M2kCalibration::adcGainChannel1() const
 
 void M2kCalibration::updateDacCorrections()
 {
-	iio_channel_attr_write_double(m_ad5625_channel0, "raw",
-				      m_dac_a_ch_offset);
-	iio_channel_attr_write_double(m_ad5625_channel1, "raw",
-				      m_dac_b_ch_offset);
+	m_ad5625_dev->setDoubleValue(0, m_dac_a_ch_offset, "raw", true);
+	m_ad5625_dev->setDoubleValue(1, m_dac_b_ch_offset, "raw", true);
 
-	m_m2k_dac_a->setDacCalibVlsb(dacAvlsb());
-	m_m2k_dac_b->setDacCalibVlsb(dacBvlsb());
+	m_m2k_dac->setDacCalibVlsb(0, dacAvlsb());
+	m_m2k_dac->setDacCalibVlsb(1, dacBvlsb());
 }
 
 void M2kCalibration::updateAdcCorrections()
 {
-	iio_channel_attr_write_double(m_ad5625_channel2, "raw",
-				      m_adc_ch0_offset);
-	iio_channel_attr_write_double(m_ad5625_channel3, "raw",
-				      m_adc_ch1_offset);
+	m_ad5625_dev->setDoubleValue(2, m_adc_ch0_offset, "raw", true);
+	m_ad5625_dev->setDoubleValue(3, m_adc_ch1_offset, "raw", true);
 
 	m_m2k_adc->setAdcCalibGain(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
 				   m_adc_ch0_gain);
@@ -395,10 +378,8 @@ bool M2kCalibration::fine_tune(size_t span, int16_t centerVal0, int16_t centerVa
 	for (i = 0; i < span + 1; i++) {
 		candidateOffsets0[i] = offset0;
 		candidateOffsets1[i] = offset1;
-		iio_channel_attr_write_double(m_ad5625_channel2, "raw",
-			offset0);
-		iio_channel_attr_write_double(m_ad5625_channel3, "raw",
-			offset1);
+		m_ad5625_dev->setDoubleValue(2, offset0, "raw", true);
+		m_ad5625_dev->setDoubleValue(3, offset1, "raw", true);
 		offset0++;
 		offset1++;
 
@@ -437,10 +418,8 @@ bool M2kCalibration::fine_tune(size_t span, int16_t centerVal0, int16_t centerVa
 	m_adc_ch0_offset = candidateOffsets0[i0];
 	m_adc_ch1_offset = candidateOffsets1[i1];
 
-	iio_channel_attr_write_longlong(m_ad5625_channel2, "raw",
-		m_adc_ch0_offset);
-	iio_channel_attr_write_longlong(m_ad5625_channel3, "raw",
-		m_adc_ch1_offset);
+	m_ad5625_dev->setDoubleValue(2, m_adc_ch0_offset, "raw", true);
+	m_ad5625_dev->setDoubleValue(3, m_adc_ch1_offset, "raw", true);
 
 out_cleanup:
 	delete[] candidateOffsets0;
@@ -484,18 +463,27 @@ bool M2kCalibration::calibrateDACoffset()
 	setCalibrationMode(DAC);
 
 	// Set DAC offset channels to middle scale
-	iio_channel_attr_write_longlong(m_ad5625_channel0, "raw", 2048);
-	iio_channel_attr_write_longlong(m_ad5625_channel1, "raw", 2048);
+	m_ad5625_dev->setDoubleValue(0, 2048, "raw", true);
+	m_ad5625_dev->setDoubleValue(1, 2048, "raw", true);
 
 	// write to DAC
 	std::vector<short> vec_data(256, 0);
+	std::vector<std::vector<short>> vec_data_all;
 	try {
-		m_m2k_dac_a->setSyncedStart(false);
-		m_m2k_dac_b->setSyncedStart(false);
-		m_m2k_dac_a->enableChannel(0, true);
-		m_m2k_dac_b->enableChannel(0, true);
-		m_m2k_dac_a->push(vec_data, true);
-		m_m2k_dac_b->push(vec_data, true);
+		vec_data_all.push_back(vec_data);
+		vec_data_all.push_back(vec_data);
+
+		//powerdown true before, false after->to start it,
+		// should set synced all?
+		m_m2k_dac->setSyncedDma(true);
+		m_m2k_dac->enableChannel(0, true);
+		m_m2k_dac->enableChannel(1, true);
+
+		m_m2k_dac->push(vec_data_all, true);
+
+		m_m2k_dac->setSyncedDma(false);
+		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
+		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 
 
 	} catch (std::runtime_error &e) {
@@ -534,17 +522,13 @@ bool M2kCalibration::calibrateDACoffset()
 	m_dac_a_ch_offset = (int)(2048 - ((voltage0 * 9.06 ) / 0.002658));
 	m_dac_b_ch_offset = (int)(2048 - ((voltage1 * 9.06 ) / 0.002658));
 
-	iio_channel_attr_write_longlong(m_ad5625_channel0, "raw",
-		m_dac_a_ch_offset);
-	iio_channel_attr_write_longlong(m_ad5625_channel1, "raw",
-		m_dac_b_ch_offset);
-
-	m_m2k_dac_a->stopOutput();
-	m_m2k_dac_b->stopOutput();
+	m_ad5625_dev->setDoubleValue(0, m_dac_a_ch_offset, "raw", true);
+	m_ad5625_dev->setDoubleValue(1, m_dac_b_ch_offset, "raw", true);
 
 	try {
-		m_m2k_dac_a->enableChannel(0, false);
-		m_m2k_dac_b->enableChannel(0, false);
+		m_m2k_dac->stopOutput();
+		m_m2k_dac->enableChannel(0, false);
+		m_m2k_dac->enableChannel(1, false);
 	} catch (std::runtime_error &e) {
 		throw std::runtime_error(e.what());
 	}
@@ -568,13 +552,22 @@ bool M2kCalibration::calibrateDACgain()
 
 	// Use the positive half scale point for gain calibration
 	std::vector<short> vec_data(256, 1024);
+	std::vector<std::vector<short>> vec_data_all;
 	try {
-		m_m2k_dac_a->setSyncedStart(false);
-		m_m2k_dac_b->setSyncedStart(false);
-		m_m2k_dac_a->enableChannel(0, true);
-		m_m2k_dac_b->enableChannel(0, true);
-		m_m2k_dac_a->push(vec_data, true);
-		m_m2k_dac_b->push(vec_data, true);
+		vec_data_all.push_back(vec_data);
+		vec_data_all.push_back(vec_data);
+
+		//powerdown true before, false after->to start it,
+		// should set synced all?
+		m_m2k_dac->setSyncedDma(true);
+		m_m2k_dac->enableChannel(0, true);
+		m_m2k_dac->enableChannel(1, true);
+
+		m_m2k_dac->push(vec_data_all, true);
+
+		m_m2k_dac->setSyncedDma(false);
+		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
+		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception("DAC gain calibration failed: "
 						  + std::string(e.what()));
@@ -615,12 +608,10 @@ bool M2kCalibration::calibrateDACgain()
 	m_dac_a_ch_vlsb = voltage0 / 1024;
 	m_dac_b_ch_vlsb = voltage1 / 1024;
 
-	m_m2k_dac_a->stopOutput();
-	m_m2k_dac_b->stopOutput();
-
 	try {
-		m_m2k_dac_a->enableChannel(0, false);
-		m_m2k_dac_b->enableChannel(0, false);
+		m_m2k_dac->stopOutput();
+		m_m2k_dac->enableChannel(0, false);
+		m_m2k_dac->enableChannel(1, false);
 	} catch (std::runtime_error &e) {
 		throw std::runtime_error(e.what());
 	}
@@ -660,14 +651,17 @@ void M2kCalibration::dacOutputDC(struct iio_device *dac,
 
 void M2kCalibration::dacAOutputDCVolts(int16_t dac_a_volts)
 {
-	int dac_a_raw;
+	short dac_a_raw;
 	setCalibrationMode(NONE);
-	setChannelEnableState(m_dac_a_channel, true);
-//	iio_device_attr_write_bool(m_m2k_dac_a, "dma_sync", true);
+	m_m2k_dac->enableChannel(0, true);
+	m_m2k_dac->setSyncedDma(0, true);
 	dac_a_raw = (dac_a_volts / m_dac_a_ch_vlsb);
-	dacAOutputDC(dac_a_raw);
+	dac_a_raw = (-dac_a_raw) << 4; // This should go away once channel type gets
+	// changed from 'le:S16/16>>0' to 'le:S12/16>>4'
 
-//	iio_device_attr_write_bool(m_m2k_dac_a, "dma_sync", false);
+	std::vector<short> vec_data(256, dac_a_raw);
+	std::vector<std::vector<short>> vec_data_all;
+	m_m2k_dac->setSyncedDma(0, false);
 
 	iio_channel_attr_write_bool(m_dac_a_fabric, "powerdown", false);
 }
@@ -693,8 +687,7 @@ void M2kCalibration::dacAOutputDC(int16_t value)
 
 void M2kCalibration::dacOutputStop()
 {
-	m_m2k_dac_a->stopOutput();
-	m_m2k_dac_b->stopOutput();
+	m_m2k_dac->stopOutput();
 
 	setCalibrationMode(NONE);
 }
@@ -859,7 +852,8 @@ bool M2kCalibration::setCalibrationMode(int mode)
 	default:
 		return false;
 	}
-	iio_device_attr_write(m_m2k_fabric, "calibration_mode", strMode.c_str());
+	m_m2k_fabric->setStringValue("calibration_mode", strMode);
+//	iio_device_attr_write(m_m2k_fabric, "calibration_mode", strMode.c_str());
 	m_calibration_mode = mode;
 	return true;
 }

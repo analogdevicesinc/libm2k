@@ -22,6 +22,7 @@
 
 #include "libm2k/m2kglobal.hpp"
 #include "libm2k/genericdevice.hpp"
+#include "libm2k/device.hpp"
 #include <iostream>
 
 extern "C" {
@@ -61,7 +62,7 @@ public:
 	std::shared_ptr<libm2k::analog::M2kPowerSupply> getPowerSupply();
 	std::shared_ptr<libm2k::analog::M2kAnalogIn> getAnalogIn(unsigned int index);
 	std::shared_ptr<libm2k::analog::M2kAnalogIn> getAnalogIn(std::string);
-	std::shared_ptr<libm2k::analog::M2kAnalogOut> getAnalogOut(std::string dev_name);
+	std::shared_ptr<libm2k::analog::M2kAnalogOut> getAnalogOut();
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> getAllAnalogIn();
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> getAllAnalogOut();
 	int getDacBCalibrationOffset();
@@ -70,9 +71,9 @@ public:
 	double getDacACalibrationGain();
 	int getAdcCalibrationOffset(unsigned int chn);
 	double getAdcCalibrationGain(unsigned int chn);
-	void startSyncedDacs();
 private:
 	M2kCalibration* m_calibration;
+	std::vector<std::shared_ptr<utils::Device>> m_instancesAnalogOut;
 	void initialize();
 };
 }

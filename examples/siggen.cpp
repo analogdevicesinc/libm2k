@@ -57,6 +57,8 @@ int main(int argc, char **argv) {
 
 	float amplitude = 5;
 
+
+	std::vector<std::vector<double>> data_all;
 	std::vector<double> data;
 	double angle = 0.0;
 	for (size_t i = 0; i < buffer_size; ++i) {
@@ -64,23 +66,14 @@ int main(int argc, char **argv) {
 		float value = amplitude * static_cast<float>(std::sin(angle));
 		data.push_back(static_cast<double>(value));
 	}
+	data_all.push_back(data);
 
-	std::shared_ptr<M2kAnalogOut> maOut = m2k_device->getAnalogOut("m2k-dac-a");
+	std::shared_ptr<M2kAnalogOut> maOut = m2k_device->getAnalogOut();
 	m2k_device->calibrateDAC();
-	maOut->setSampleRate(sample_rate);
-	maOut->setOversamplingRatio(1);
+	maOut->setSamplerate(0, sample_rate);
+	maOut->setOversamplingRatio(0, 1);
 	maOut->enableChannel(0, true);
-	maOut->setSyncedStart(true);
-	maOut->push(data, true);
-
-	std::shared_ptr<M2kAnalogOut> mbOut = m2k_device->getAnalogOut("m2k-dac-b");
-	mbOut->setSampleRate(sample_rate);
-	mbOut->setOversamplingRatio(1);
-	mbOut->enableChannel(0, true);
-	mbOut->setSyncedStart(true);
-	mbOut->push(data, true);
-
-	m2k_device->startSyncedDacs();
+	maOut->push(data_all);
 
 	std::cout << "Sine wave generated; Sleeping 3 seconds before stopping" << std::endl;
 
