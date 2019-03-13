@@ -10,6 +10,8 @@
 #include "libm2k/m2kanalogout.hpp"
 #include "libm2k/m2k.hpp"
 
+#define M_PI 3.14159
+
 using namespace libm2k::devices;
 using namespace libm2k::analog;
 using namespace libm2k::digital;

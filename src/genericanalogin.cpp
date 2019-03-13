@@ -29,7 +29,7 @@ using namespace libm2k::utils;
 using namespace libm2k::analog;
 using namespace std;
 
-GenericAnalogIn::GenericAnalogIn(iio_context *ctx, std::__cxx11::string adc_dev) :
+GenericAnalogIn::GenericAnalogIn(iio_context *ctx, std::string adc_dev) :
 	m_ctx(ctx)
 {
 	if (m_ctx) {

@@ -36,7 +36,7 @@ Channel::Channel(iio_device *device, unsigned int channel)
 	}
 }
 
-Channel::Channel(iio_device *device, std::__cxx11::string channel_name, bool output)
+Channel::Channel(iio_device *device, std::string channel_name, bool output)
 {
 	m_device = device;
 	if (m_device) {

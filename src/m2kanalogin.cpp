@@ -33,7 +33,7 @@ using namespace libm2k::utils;
 using namespace std;
 
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
-			 std::__cxx11::string adc_dev) :
+			 std::string adc_dev) :
 	GenericAnalogIn(ctx, adc_dev),
 	m_need_processing(false)
 {
