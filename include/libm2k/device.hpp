@@ -23,6 +23,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <functional>
 
 using namespace std;
 
@@ -43,6 +44,9 @@ public:
 	void push(std::vector<double> &data, unsigned int channel);
 	void stop();
 
+	std::vector<std::vector<double> > getSamples(int nb_samples,
+					std::function<double (int16_t, unsigned int)> process);
+
 	std::string getName();
 	double getDoubleValue(std::string attr);
 	double getDoubleValue(unsigned int, std::string attr, bool output=false);
@@ -55,9 +59,19 @@ public:
 	bool setBoolValue(unsigned int chn_idx, bool value, std::string attr, bool output=false);
 
 	std::string setStringValue(std::string attr, std::string value);
+	std::string setStringValue(unsigned int chn, std::string attr,
+				   std::string value, bool output=false);
 	std::string getStringValue(std::string attr);
+	std::string getStringValue(unsigned int chn, std::string attr, bool output=false);
 
 	std::vector<double> getAvailableSamplerates();
+
+	void writeRegister(uint32_t address, uint32_t value);
+	std::string getHardwareRevision();
+	unsigned int getNbChannels();
+
+	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
+	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
 private:
 	struct iio_context *m_context;
 	struct iio_device *m_dev; //or a list of iio_Devices? in the case of m2k-dac-a and m2k-dac-b

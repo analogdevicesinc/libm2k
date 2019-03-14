@@ -23,6 +23,7 @@
 #include "libm2k/utils.hpp"
 #include "libm2k/m2kexceptions.hpp"
 #include <algorithm>
+#include <cstring>
 
 using namespace std;
 using namespace libm2k::utils;
@@ -125,6 +126,20 @@ void Device::stop()
 		throw invalid_parameter_exception("Device: No available device that should be stopped");
 	}
 	m_buffer->stop();
+}
+
+std::vector<std::vector<double> > Device::getSamples(int nb_samples,
+				std::function<double(int16_t, unsigned int)> process)
+{
+	if (!m_buffer) {
+		throw invalid_parameter_exception("Device: Can not refill; device not buffer capable");
+	}
+	try {
+		m_buffer->setChannels(m_channel_list);
+		return m_buffer->getSamples(nb_samples, process);
+	} catch (invalid_parameter_exception &e) {
+		throw invalid_parameter_exception(e.what());
+	}
 }
 
 string Device::getName()
@@ -308,6 +323,28 @@ string Device::setStringValue(string attr, string value)
 	return getStringValue(attr);
 }
 
+string Device::setStringValue(unsigned int chn_idx, string attr, string value, bool output)
+{
+	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
+	std::string dev_name = getName();
+	if (chn_idx >= nb_channels) {
+		throw invalid_parameter_exception(dev_name +
+				" has no such channel");
+	}
+
+	std::string name = "voltage" + std::to_string(chn_idx);
+	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+	if (Utils::iioChannelHasAttribute(chn, attr)) {
+		iio_channel_attr_write(chn, attr.c_str(), value.c_str());
+	} else {
+		throw invalid_parameter_exception(dev_name +
+				" has no " +
+				attr +
+				" attribute for the selected channel");
+	}
+	return getStringValue(chn_idx, attr, output);
+}
+
 string Device::getStringValue(string attr)
 {
 	char value[100];
@@ -323,6 +360,31 @@ string Device::getStringValue(string attr)
 				"attribute");
 	}
 	return std::string(value);
+}
+
+string Device::getStringValue(unsigned int chn_idx, string attr, bool output)
+{
+	char value[100];
+	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
+	std::string dev_name = getName();
+
+	if (chn_idx >= nb_channels) {
+		throw invalid_parameter_exception(dev_name +
+				" has no such channel");
+	}
+
+	std::string name = "voltage" + std::to_string(chn_idx);
+	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+	if (Utils::iioChannelHasAttribute(chn, attr)) {
+		iio_channel_attr_read(chn, attr.c_str(),
+				value, sizeof(value));
+	} else {
+		throw invalid_parameter_exception(dev_name +
+				" has no " +
+				attr +
+				" attribute for the selected channel");
+	}
+	return value;
 }
 
 std::vector<double> Device::getAvailableSamplerates()
@@ -363,6 +425,58 @@ std::vector<double> Device::getAvailableSamplerates()
 
 	std::sort(values.begin(), values.end());
 	return values;
+}
+
+void Device::writeRegister(uint32_t address, uint32_t value)
+{
+	int ret = iio_device_reg_write(m_dev, address, value);
+	if (ret) {
+		throw invalid_parameter_exception("Device: can't write register" +
+						  std::string(std::strerror(-ret)));
+	}
+}
+
+std::string Device::getHardwareRevision()
+{
+	const char *hw_rev_attr_val = iio_context_get_attr_value(m_context,
+			"hw_model");
+	std::string rev;
+
+	if (hw_rev_attr_val) {
+		std::string const s = hw_rev_attr_val;
+		std::string const key = "Rev.";
+		int n = s.find(key);
+
+		n += key.length();
+		rev =  s.substr(n, 1);
+	} else {
+		rev = "A";
+	}
+
+	return rev;
+}
+
+unsigned int Device::getNbChannels()
+{
+	return m_channel_list.size();
+}
+
+void Device::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src)
+{
+	if (chn_idx < m_channel_list.size()) {
+		m_channel_list.at(chn_idx)->convert(avg, src);
+	} else {
+		throw invalid_parameter_exception("Device: No such channel");
+	}
+}
+
+void Device::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src)
+{
+	if (chn_idx < m_channel_list.size()) {
+		m_channel_list.at(chn_idx)->convert(avg, src);
+	} else {
+		throw invalid_parameter_exception("Device: No such channel");
+	}
 }
 
 
