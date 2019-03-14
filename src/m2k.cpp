@@ -66,7 +66,7 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 	scanAllDigital();
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> lstIn = getAllAnalogIn();
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> lstOut = getAllAnalogOut();
-	m_calibration = new M2kCalibration(lstIn, lstOut);
+	m_calibration = new M2kCalibration(ctx, lstIn, lstOut);
 }
 
 M2K::~M2K()

@@ -28,13 +28,6 @@
 #include <memory>
 #include <vector>
 
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-	struct iio_buffer;
-}
-
 namespace libm2k {
 namespace analog {
 class M2kAnalogIn;
@@ -58,7 +51,8 @@ public:
 		HIGH
 	};
 
-	M2kCalibration(std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>>& analogIn,
+	M2kCalibration(struct iio_context* ctx,
+		       std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>>& analogIn,
 		       std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>>& analogOut);
 	~M2kCalibration();
 
@@ -92,8 +86,6 @@ public:
 	void updateAdcCorrections();
 	void updateDacCorrections();
 
-	static void setChannelEnableState(struct iio_channel *chn, bool en);
-
 	bool setCalibrationMode(int);
 	bool setGainMode(int ch, int);
 	void dacAOutputDCVolts(int16_t volts);
@@ -116,26 +108,6 @@ private:
 	struct iio_context *m_ctx;
 	std::shared_ptr<libm2k::analog::M2kAnalogIn> m_m2k_adc;
 	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac;
-	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac_b;
-	struct iio_device *m2k_ad5625;
-	std::shared_ptr<libm2k::utils::Device> m_m2k_fabric;
-
-	struct iio_channel *m_adc_channel0;
-	struct iio_channel *m_adc_channel1;
-
-	struct iio_channel *m_dac_a_channel;
-	struct iio_channel *m_dac_b_channel;
-
-	struct iio_channel *m_dac_a_fabric;
-	struct iio_channel *m_dac_b_fabric;
-
-	struct iio_channel *m_ad5625_channel0;
-	struct iio_channel *m_ad5625_channel1;
-	struct iio_channel *m_ad5625_channel2;
-	struct iio_channel *m_ad5625_channel3;
-
-	struct iio_buffer *m_dac_a_buffer;
-	struct iio_buffer *m_dac_b_buffer;
 
 	int m_adc_ch0_offset;
 	int m_adc_ch1_offset;
@@ -163,6 +135,7 @@ private:
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> m_analogIn;
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> m_analogOut;
 	std::shared_ptr<libm2k::utils::Device> m_ad5625_dev;
+	std::shared_ptr<libm2k::utils::Device> m_m2k_fabric;
 };
 
 }

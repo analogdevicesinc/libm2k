@@ -35,20 +35,18 @@ using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 
-M2kCalibration::M2kCalibration(std::vector<std::shared_ptr<M2kAnalogIn>>& analogIn,
+M2kCalibration::M2kCalibration(struct iio_context* ctx, std::vector<std::shared_ptr<M2kAnalogIn>>& analogIn,
 			       std::vector<std::shared_ptr<M2kAnalogOut>>& analogOut):
 	m_analogIn(analogIn),
 	m_analogOut(analogOut),
-	m_dac_a_buffer(NULL),
-	m_dac_b_buffer(NULL),
 	m_adc_calibrated(false),
 	m_dac_calibrated(false),
 	m_initialized(false),
 	m_cancel(false),
-	m_ad5625_dev(nullptr)
+	m_ad5625_dev(nullptr),
+	m_ctx(ctx)
 {
 	m_m2k_adc = m_analogIn.at(0);
-	m_ctx = m_m2k_adc->getContext();
 	m_m2k_dac = m_analogOut.at(0);
 	m_ad5625_dev = make_shared<Device>(m_ctx, "ad5625");
 }
@@ -69,14 +67,6 @@ bool M2kCalibration::initialize()
 	m_m2k_fabric = make_shared<Device>(m_ctx, "m2k-fabric");
 	if (!m_m2k_fabric) {
 		return false;
-	}
-
-	// IIO channels
-	try {
-		m_adc_channel0 = m_m2k_adc->getChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_1);
-		m_adc_channel1 = m_m2k_adc->getChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_2);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
 	}
 
 	m_adc_ch0_gain = 1;
@@ -106,7 +96,7 @@ void M2kCalibration::setAdcInCalibMode()
 						 M2kHardwareTrigger::ALWAYS);
 
 		/* Save the previous values for sampling frequency and oversampling ratio */
-		adc_sampl_freq = m_m2k_adc->getSampleRate();
+		adc_sampl_freq = m_m2k_adc->getSamplerate();
 		adc_oversampl = m_m2k_adc->getOversamplingRatio();
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
@@ -135,7 +125,7 @@ void M2kCalibration::restoreAdcFromCalibMode()
 					  m_trigger1_mode);
 
 		/* Restore the previous values for sampling frequency and oversampling ratio */
-		m_m2k_adc->setSampleRate(adc_sampl_freq);
+		m_m2k_adc->setSamplerate(adc_sampl_freq);
 		m_m2k_adc->setOversamplingRatio(adc_oversampl);
 
 	} catch (std::runtime_error &e) {
@@ -159,7 +149,7 @@ void M2kCalibration::configAdcSamplerate()
 {
 	// Make sure we calibrate at the highest sample rate
 	try {
-		double sampleRate = m_m2k_adc->setSampleRate(1e8);
+		double sampleRate = m_m2k_adc->setSamplerate(1e8);
 		m_m2k_adc->setOversamplingRatio(1);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
@@ -217,11 +207,9 @@ bool M2kCalibration::calibrateADCoffset()
 	int16_t tmp;
 
 	tmp = ch0_avg;
-	iio_channel_convert(m_adc_channel0, (void *)&ch0_avg,
-		(const void *)&tmp);
+	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
 	tmp = ch1_avg;
-	iio_channel_convert(m_adc_channel1, (void *)&ch1_avg,
-		(const void *)&tmp);
+	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
 	voltage0 = m_m2k_adc->convertRawToVolts(ch0_avg, 1, 1);
 	voltage1 = m_m2k_adc->convertRawToVolts(ch1_avg, 1, 1);
@@ -266,9 +254,9 @@ bool M2kCalibration::calibrateADCgain()
 	avg1 = Utils::average(ch_data.at(1).data(), num_samples);
 
 	tmp = avg0;
-	iio_channel_convert(m_adc_channel0, (void *)&avg0, (const void *)&tmp);
+	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_1, &avg0, &tmp);
 	tmp = avg1;
-	iio_channel_convert(m_adc_channel1, (void *)&avg0, (const void *)&tmp);
+	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_2, &avg1, &tmp);
 
 	avg0 = m_m2k_adc->convertRawToVolts(avg0, 1, 1);
 	avg1 = m_m2k_adc->convertRawToVolts(avg1, 1, 1);
@@ -350,14 +338,6 @@ bool M2kCalibration::resetCalibration()
 	m_adc_calibrated = false;
 	m_dac_calibrated = false;
 	return true;
-}
-
-void M2kCalibration::setChannelEnableState(struct iio_channel *chn, bool en)
-{
-	if (en)
-		iio_channel_enable(chn);
-	else
-		iio_channel_disable(chn);
 }
 
 bool M2kCalibration::fine_tune(size_t span, int16_t centerVal0, int16_t centerVal1,
@@ -508,11 +488,9 @@ bool M2kCalibration::calibrateDACoffset()
 	int16_t ch1_avg = Utils::average(ch_data.at(1).data(), num_samples);
 
 	tmp = ch0_avg;
-	iio_channel_convert(m_adc_channel0, (void *)&ch0_avg,
-		(const void *)&tmp);
+	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
 	tmp = ch1_avg;
-	iio_channel_convert(m_adc_channel1, (void *)&ch1_avg,
-		(const void *)&tmp);
+	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
 	double voltage0 = m_m2k_adc->convertRawToVolts(
 				ch0_avg, m_adc_ch0_gain, 1);
@@ -590,11 +568,9 @@ bool M2kCalibration::calibrateDACgain()
 	int16_t ch1_avg = Utils::average(ch_data.at(1).data(), num_samples);
 
 	tmp = ch0_avg;
-	iio_channel_convert(m_adc_channel0, (void *)&ch0_avg,
-		(const void *)&tmp);
+	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
 	tmp = ch1_avg;
-	iio_channel_convert(m_adc_channel1, (void *)&ch1_avg,
-		(const void *)&tmp);
+	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
 	double voltage0 = m_m2k_adc->convertRawToVolts(
 				ch0_avg, m_adc_ch0_gain, 1);
@@ -624,6 +600,7 @@ bool M2kCalibration::calibrateDACgain()
 	return calibrated;
 }
 
+/*
 void M2kCalibration::dacOutputDC(struct iio_device *dac,
 	struct iio_channel *channel, struct iio_buffer** buffer, size_t value)
 {
@@ -696,6 +673,7 @@ void M2kCalibration::dacBOutputDC(int16_t value)
 {
 //	dacOutputDC(m_m2k_dac_b, m_dac_b_channel, &m_dac_b_buffer, value);
 }
+*/
 
 bool M2kCalibration::calibrateADC()
 {
@@ -853,7 +831,6 @@ bool M2kCalibration::setCalibrationMode(int mode)
 		return false;
 	}
 	m_m2k_fabric->setStringValue("calibration_mode", strMode);
-//	iio_device_attr_write(m_m2k_fabric, "calibration_mode", strMode.c_str());
 	m_calibration_mode = mode;
 	return true;
 }
