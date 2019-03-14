@@ -23,6 +23,7 @@
 #include "libm2k/utils.hpp"
 
 #include <iostream>
+#include <functional>
 #include <thread>
 #include <chrono>
 #include <iio.h>
@@ -31,37 +32,35 @@
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std;
+using namespace std::placeholders;
 
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 			 std::string adc_dev) :
-	GenericAnalogIn(ctx, adc_dev),
+	Device(ctx, adc_dev),
 	m_need_processing(false)
 {
-	applyM2kFixes();
-
-	setOversamplingRatio(1);
-	m_m2k_fabric = iio_context_find_device(m_ctx, "m2k-fabric");
-	if (m_m2k_fabric) {
-		auto chn0 = iio_device_find_channel(m_m2k_fabric, "voltage0", false);
-		auto chn1 = iio_device_find_channel(m_m2k_fabric, "voltage1", false);
-		if (chn0 && chn1) {
-			m_m2k_fabric_channels.push_back(chn0);
-			m_m2k_fabric_channels.push_back(chn1);
-		}
+	try {
+		m_ad9963 = make_shared<Device>(ctx, "ad9963");
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(string(e.what()) + " ad9963");
 	}
 
-	m_ad5625 = iio_context_find_device(m_ctx, "ad5625");
-	if (m_ad5625) {
-		auto chn0 = iio_device_find_channel(m_ad5625, "voltage2", true);
-		auto chn1 = iio_device_find_channel(m_ad5625, "voltage3", true);
-		if (chn0 && chn1) {
-			m_ad5625_channels.push_back(chn0);
-			m_ad5625_channels.push_back(chn1);
-		}
+	setOversamplingRatio(1);
+
+	try {
+		m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(string(e.what()) + " m2k-fabric");
 	}
 
 	try {
-		m_trigger = new M2kHardwareTrigger(m_ctx);
+		m_ad5625 = make_shared<Device>(ctx, "ad5625");
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(string(e.what()) + " ad5625");
+	}
+
+	try {
+		m_trigger = new M2kHardwareTrigger(ctx);
 	} catch (std::exception& e){
 		throw no_device_exception("Disabling hardware trigger support.");
 	}
@@ -75,7 +74,7 @@ M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 	m_filter_compensation_table[1E4] = 1.20;
 	m_filter_compensation_table[1E3] = 1.26;
 
-	for (unsigned int i = 0; i < m_nb_channels; i++) {
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		m_input_range.push_back(PLUS_MINUS_25V);
 		m_adc_calib_offset.push_back(0);
 		m_adc_calib_gain.push_back(1);
@@ -126,7 +125,8 @@ std::vector<std::vector<double>> M2kAnalogIn::getSamples(int nb_samples,
 		if (processed) {
 			m_need_processing = true;
 		}
-		return GenericAnalogIn::getSamples(nb_samples);
+		auto fp = std::bind(&M2kAnalogIn::processSample, this, _1, _2);
+		return Device::getSamples(nb_samples, fp);
 		if (processed) {
 			m_need_processing = false;
 		}
@@ -141,7 +141,7 @@ double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
 		return convertRawToVolts(sample,
 					 m_adc_calib_gain.at(channel),
 					 getValueForRange(m_input_range.at(channel)),
-					 getFilterCompensation(getSampleRate()),
+					 getFilterCompensation(getSamplerate()),
 					 m_adc_hw_offset.at(channel));
 	} else {
 		return (double)sample;
@@ -153,42 +153,18 @@ double M2kAnalogIn::getScalingFactor(M2kAnalogIn::ANALOG_IN_CHANNEL ch)
 	return (0.78 / ((1 << 11) * 1.3 *
 		getValueForRange(m_input_range.at(ch))) *
 		m_adc_calib_gain.at(ch) *
-		getFilterCompensation(getSampleRate()));
+		getFilterCompensation(getSamplerate()));
 }
 
 void M2kAnalogIn::openAnalogIn()
 {
-	std::cout << "Opened analog in for " << m_dev_name << "\n";
+	std::cout << "Opened analog in for " << getName() << "\n";
 }
 
 void M2kAnalogIn::closeAnalogIn()
 {
-	std::cout << "Opened analog in for " << m_dev_name << "\n";
+	std::cout << "Opened analog in for " << getName() << "\n";
 }
-
-void M2kAnalogIn::applyM2kFixes()
-{
-//	std::string hw_rev = Utils::getHardwareRevision(m_ctx);
-
-//	struct iio_device *dev = iio_context_find_device(m_ctx, "ad9963");
-
-//	int config1 = 0x05;
-//	int config2 = 0x05;
-
-//	if (hw_rev == "A") {
-//		config1 = 0x1B; // IGAIN1 +-6db  0.25db steps
-//		config2 = 0x1B;
-//	}
-
-//	/* Configure TX path */
-//	iio_device_reg_write(dev, 0x68, config1);
-//	iio_device_reg_write(dev, 0x6B, config2);
-//	iio_device_reg_write(dev, 0x69, 0x1C);  // IGAIN2 +-2.5%
-//	iio_device_reg_write(dev, 0x6C, 0x1C);
-//	iio_device_reg_write(dev, 0x6A, 0x20);  // IRSET +-20%
-//	iio_device_reg_write(dev, 0x6D, 0x20);
-}
-
 
 int M2kAnalogIn::getTriggerDelay()
 {
@@ -271,11 +247,6 @@ void M2kAnalogIn::setSource(M2kHardwareTrigger::source src)
 	m_trigger->setSource(src);
 }
 
-unsigned int M2kAnalogIn::numChannels() const
-{
-	return m_nb_channels;
-}
-
 void M2kAnalogIn::setSourceChannel(ANALOG_IN_CHANNEL channel)
 {
 	try {
@@ -327,8 +298,11 @@ void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 		str_gain_mode = "low";
 	}
 
-	iio_channel_attr_write_raw(m_m2k_fabric_channels[channel], "gain",
-				   str_gain_mode, strlen(str_gain_mode));
+	try {
+		m_m2k_fabric->setStringValue(channel, "gain", std::string(str_gain_mode));
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
 }
 
 void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, double min, double max)
@@ -364,7 +338,7 @@ std::vector<M2kAnalogIn::M2K_RANGE> M2kAnalogIn::getAvailableRanges()
 double M2kAnalogIn::getOversamplingRatio()
 {
 	try {
-		return Utils::getDoubleValue(m_dev, "oversampling_ratio");
+		return getDoubleValue("oversampling_ratio");
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -373,8 +347,7 @@ double M2kAnalogIn::getOversamplingRatio()
 double M2kAnalogIn::getOversamplingRatio(unsigned int chn_idx)
 {
 	try {
-		return Utils::getDoubleValue(m_dev, chn_idx,
-					     "oversampling_ratio");
+		return getDoubleValue(chn_idx, "oversampling_ratio");
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -383,8 +356,7 @@ double M2kAnalogIn::getOversamplingRatio(unsigned int chn_idx)
 double M2kAnalogIn::setOversamplingRatio(double oversampling_ratio)
 {
 	try {
-		return Utils::setDoubleValue(m_dev, oversampling_ratio,
-					    "oversampling_ratio");
+		return setDoubleValue(oversampling_ratio, "oversampling_ratio");
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -393,29 +365,46 @@ double M2kAnalogIn::setOversamplingRatio(double oversampling_ratio)
 double M2kAnalogIn::setOversamplingRatio(unsigned int chn_idx, double oversampling_ratio)
 {
 	try {
-		return Utils::setDoubleValue(m_dev, chn_idx,
-					    oversampling_ratio,
-					    "oversampling_ratio");
+		return setDoubleValue(chn_idx, oversampling_ratio, "oversampling_ratio");
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
 }
 
-iio_channel *M2kAnalogIn::getChannel(M2kAnalogIn::ANALOG_IN_CHANNEL chn_idx)
+
+double M2kAnalogIn::getSamplerate()
 {
-	if (chn_idx < m_channel_list.size()) {
-		return m_channel_list.at(chn_idx);
-	} else {
-		throw invalid_parameter_exception("No such ADC channel");
+	try {
+		return getDoubleValue("sampling_frequency");
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
 	}
 }
 
-iio_channel *M2kAnalogIn::getAuxChannel(unsigned int chn_idx)
+double M2kAnalogIn::getSamplerate(unsigned int chn_idx)
 {
-	if (chn_idx < m_ad5625_channels.size()) {
-		return m_ad5625_channels.at(chn_idx);
-	} else {
-		throw invalid_parameter_exception("No such ad5625 channel");
+	try {
+		return getDoubleValue(chn_idx, "sampling_frequency");
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+double M2kAnalogIn::setSamplerate(double samplerate)
+{
+	try {
+		return setDoubleValue(samplerate, "sampling_frequency");
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+double M2kAnalogIn::setSamplerate(unsigned int chn_idx, double samplerate)
+{
+	try {
+		return setDoubleValue(chn_idx, samplerate, "sampling_frequency");
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
 	}
 }
 

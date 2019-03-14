@@ -90,7 +90,7 @@ M2K::~M2K()
 void M2K::scanAllAnalogIn()
 {
 	try {
-		std::shared_ptr<GenericAnalogIn> aIn = std::make_shared<libm2k::analog::M2kAnalogIn>(ctx(), "m2k-adc");
+		std::shared_ptr<Device> aIn = std::make_shared<libm2k::analog::M2kAnalogIn>(ctx(), "m2k-adc");
 		m_instancesAnalogIn.push_back(aIn);
 	} catch (std::runtime_error& e) {
 		std::cout << e.what() << std::endl;
@@ -162,7 +162,7 @@ bool M2K::calibrateDAC()
 
 double M2K::getAdcCalibrationGain(unsigned int chn)
 {
-	if (chn >= getAnalogIn(0)->numChannels()) {
+	if (chn >= getAnalogIn(0)->getNbChannels()) {
 		throw std::runtime_error("No such ADC channel");
 	}
 	if (chn == 0) {
@@ -174,7 +174,7 @@ double M2K::getAdcCalibrationGain(unsigned int chn)
 
 int M2K::getAdcCalibrationOffset(unsigned int chn)
 {
-	if (chn >= getAnalogIn(0)->numChannels()) {
+	if (chn >= getAnalogIn(0)->getNbChannels()) {
 		throw std::runtime_error("No such ADC channel");
 	}
 	if (chn == 0) {
@@ -217,8 +217,8 @@ std::shared_ptr<M2kAnalogIn> M2K::getAnalogIn(unsigned int index)
 
 std::shared_ptr<M2kAnalogIn> M2K::getAnalogIn(string dev_name)
 {
-	for (std::shared_ptr<GenericAnalogIn> d : m_instancesAnalogIn) {
-		if (d->getDeviceName() == dev_name) {
+	for (std::shared_ptr<Device> d : m_instancesAnalogIn) {
+		if (d->getName() == dev_name) {
 			std::shared_ptr<libm2k::analog::M2kAnalogIn> analogIn =
 				dynamic_pointer_cast<libm2k::analog::M2kAnalogIn>(d);
 			if (analogIn) {
@@ -262,7 +262,7 @@ std::shared_ptr<M2kAnalogOut> M2K::getAnalogOut()
 std::vector<std::shared_ptr<M2kAnalogIn>> M2K::getAllAnalogIn()
 {
 	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> allAnalogIn = {};
-	for (std::shared_ptr<GenericAnalogIn> inst : m_instancesAnalogIn) {
+	for (std::shared_ptr<Device> inst : m_instancesAnalogIn) {
 		try {
 			std::shared_ptr<libm2k::analog::M2kAnalogIn> analogIn =
 				dynamic_pointer_cast<M2kAnalogIn>(inst);

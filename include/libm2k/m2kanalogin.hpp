@@ -26,15 +26,10 @@
 #include <vector>
 #include <map>
 
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-}
-
+using namespace libm2k::utils;
 namespace libm2k {
 namespace analog {
-class LIBM2K_API M2kAnalogIn : public GenericAnalogIn
+class LIBM2K_API M2kAnalogIn : public Device
 {
 public:	
 	enum ANALOG_IN_CHANNEL {
@@ -53,7 +48,6 @@ public:
 
 	std::vector<std::vector<double>> getSamples(int nb_samples,
 						    bool processed=false);
-//	std::vector<std::vector<double>> getProcessedSamples(int nb_samples);
 	void openAnalogIn();
 	void closeAnalogIn();
 
@@ -74,6 +68,11 @@ public:
 	double getOversamplingRatio(unsigned int);
 	double setOversamplingRatio(double oversampling);
 	double setOversamplingRatio(unsigned int chn_idx, double oversampling);
+
+	double getSamplerate();
+	double getSamplerate(unsigned int);
+	double setSamplerate(double samplerate);
+	double setSamplerate(unsigned int chn_idx, double samplerate);
 
 	struct iio_channel* getChannel(ANALOG_IN_CHANNEL);
 	struct iio_channel* getAuxChannel(unsigned int);
@@ -98,8 +97,6 @@ public:
 	M2kHardwareTrigger::source getSource() const;
 	void setSource(M2kHardwareTrigger::source src);
 
-	unsigned int numChannels() const;
-
 	ANALOG_IN_CHANNEL getSourceChannel();
 	void setSourceChannel(ANALOG_IN_CHANNEL chnIdx);
 
@@ -122,16 +119,14 @@ public:
 	void setStreamingFlag(bool);
 	bool getStreamingFlag();
 private:
-	void applyM2kFixes();
+	std::shared_ptr<Device> m_ad9963;
+	std::shared_ptr<Device> m_m2k_fabric;
+	std::shared_ptr<Device> m_ad5625;
 	bool m_need_processing;
 
 	libm2k::analog::M2kHardwareTrigger *m_trigger;
 	std::vector<M2K_RANGE> m_input_range;
 
-	struct iio_device* m_m2k_fabric;
-	struct iio_device* m_ad5625;
-	std::vector<struct iio_channel*> m_m2k_fabric_channels;
-	std::vector<struct iio_channel*> m_ad5625_channels;
 	std::vector<double> m_adc_calib_gain;
 	std::vector<double> m_adc_calib_offset;
 	std::vector<double> m_adc_hw_offset;

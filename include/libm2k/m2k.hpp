@@ -74,6 +74,7 @@ public:
 private:
 	M2kCalibration* m_calibration;
 	std::vector<std::shared_ptr<utils::Device>> m_instancesAnalogOut;
+	std::vector<std::shared_ptr<utils::Device>> m_instancesAnalogIn;
 	void initialize();
 };
 }
