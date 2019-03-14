@@ -21,18 +21,15 @@
 #define GENERICANALOGIN_HPP
 
 #include "m2kglobal.hpp"
+#include "libm2k/device.hpp"
 #include <string>
 #include <vector>
 
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-}
+using namespace libm2k::utils;
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API GenericAnalogIn {
+class LIBM2K_API GenericAnalogIn : public Device {
 public:
 	GenericAnalogIn(struct iio_context* ctx, std::string adc_dev);
 	virtual ~GenericAnalogIn();
@@ -48,40 +45,13 @@ public:
 	double setSampleRate(unsigned int chn_idx, double sampleRate);
 	std::vector<double> getAvailableSamplerates();
 
-	virtual std::string getChannelName(unsigned int);
+	static double processSample(int16_t sample, unsigned int channel);
 
-	virtual double processSample(int16_t sample, unsigned int channel);
-
-	struct iio_context* getContext();
 	void enableChannel(unsigned int index, bool enable);
 	std::string getDeviceName();
 
-	//iterator
-	//if we use a stl container just forward definitions to that container
-	typedef std::vector<std::vector<double>>::iterator iterator;
-
-	iterator begin()
-	{
-		return m_data.begin();
-	}
-
-	iterator end()
-	{
-		return m_data.end();
-	}
-
-	std::vector<double>* data()
-	{
-		return m_data.data();
-	}
-
 protected:
-	struct iio_context* m_ctx;
-	struct iio_device* m_dev;
 	std::string m_dev_name;
-	std::vector<unsigned long> m_available_samplerates;
-	std::vector<struct iio_channel*> m_channel_list;
-	std::vector<std::vector<double>> m_data;
 	unsigned int m_nb_channels;
 	bool m_cyclic;
 };
