@@ -173,6 +173,8 @@ int main(int argc, char **argv)
 					}
 
 					bool ret = dev->resetCalibration();
+					aIn->enableChannel(0, true);
+					aIn->enableChannel(1, true);
 					auto samps = aIn->getSamples(20);
 					for (int i = 0; i < 20; i++) {
 						std::cout << samps[0][i] << " ";
@@ -211,10 +213,10 @@ int main(int argc, char **argv)
 					maIn->setLevel(M2kAnalogIn::ANALOG_IN_CHANNEL_1, 1);
 					maIn->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::ALWAYS);
 					maIn->setAnalogCondition(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::FALLING_EDGE);
-					samps = maIn->getSamples(48, true);
-					for (int i = 0; i < 48; i++) {
-						std::cout << samps[0][i] << " ";
-						std::cout << samps[1][i] << " ";
+					samps = maIn->getSamples(64, true);
+					for (int i = 0; i < 64; i++) {
+						std::cout << samps[0][i] << "\t ";
+						std::cout << samps[1][i] << "\n ";
 					}
 
 					for (auto s : aIn->getAvailableSamplerates()) {
