@@ -87,6 +87,14 @@ bool Channel::isOutput()
 	return iio_channel_is_output(m_channel);
 }
 
+bool Channel::isEnabled()
+{
+	if (!m_channel) {
+		throw no_device_exception("Channel: Can not find associated channel");
+	}
+	return iio_channel_is_enabled(m_channel);
+}
+
 void Channel::enableChannel(bool enable)
 {
 	if (!m_channel) {
@@ -98,6 +106,11 @@ void Channel::enableChannel(bool enable)
 	} else {
 		iio_channel_disable(m_channel);
 	}
+}
+
+uintptr_t Channel::getFirst(iio_buffer *buffer)
+{
+	return (uintptr_t)iio_buffer_first(buffer, m_channel);
 }
 
 void Channel::write(struct iio_buffer* buffer, std::vector<short> &data)

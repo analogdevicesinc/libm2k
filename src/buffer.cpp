@@ -23,6 +23,9 @@
 #include "libm2k/m2kexceptions.hpp"
 #include "libm2k/utils.hpp"
 
+#include <iostream>
+#include <algorithm>
+
 using namespace std;
 using namespace libm2k::utils;
 
@@ -36,7 +39,7 @@ Buffer::Buffer(struct iio_device *dev)
 	}
 
 	unsigned int dev_count = iio_device_get_buffer_attrs_count(m_dev);
-	if (dev_count < 0) {
+	if (dev_count <= 0) {
 		throw no_device_exception("Buffer: Device is not buffer capable, no buffer can be created");
 	}
 	m_buffer = nullptr;
@@ -81,10 +84,7 @@ void Buffer::push(std::vector<short> &data, unsigned int channel)
 		throw no_device_exception("Device not found, so no buffer was created");
 	}
 
-	if (m_buffer) {
-		iio_buffer_destroy(m_buffer);
-		m_buffer = nullptr;
-	}
+	destroy();
 
 	m_buffer = iio_device_create_buffer(m_dev, size, true);
 
@@ -108,10 +108,7 @@ void Buffer::push(std::vector<double> &data, unsigned int channel)
 		throw no_device_exception("Device not found, so no buffer was created");
 	}
 
-	if (m_buffer) {
-		iio_buffer_destroy(m_buffer);
-		m_buffer = nullptr;
-	}
+	destroy();
 
 	m_buffer = iio_device_create_buffer(m_dev, size, true);
 
@@ -127,10 +124,71 @@ void Buffer::push(std::vector<double> &data, unsigned int channel)
 	}
 }
 
-//void Buffer::refill()
-//{
+std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
+				std::function<double(int16_t, unsigned int)> process)
+{
+	std::vector<bool> channels_enabled;
+//	std::vector<std::vector<int16_t>> ch_data;
+	if (Utils::getIioDeviceDirection(m_dev) != Utils::INPUT) {
+		throw no_device_exception("Device not found, so no buffer was created");
+	}
 
-//}
+	if (m_buffer) {
+		iio_buffer_destroy(m_buffer);
+		m_buffer = nullptr;
+	}
+
+	m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
+	if (!m_buffer) {
+		throw invalid_parameter_exception("Buffer: Can't create the RX buffer");
+	}
+
+	int ret = iio_buffer_refill(m_buffer);
+
+	if (ret < 0) {
+		destroy();
+//		for (unsigned int i = 0; i < m_nb_channels; i++) {
+//			enableChannel(i, channels_enabled.at(i));
+//		}
+
+		throw instrument_already_in_use_exception(
+			"Buffer: Cannot refill RX buffer");
+	}
+
+	m_data.clear();
+
+	for (auto chn : m_channel_list) {
+		bool en  = chn->isEnabled();
+		channels_enabled.push_back(en);
+		std::vector<double> data {};
+		for (int j = 0; j < nb_samples; j++) {
+			data.push_back(0);
+		}
+		m_data.push_back(data);
+	}
+
+
+	ptrdiff_t p_inc = iio_buffer_step(m_buffer);
+	uintptr_t p_dat;
+	uintptr_t p_end = (uintptr_t)iio_buffer_end(m_buffer);
+	unsigned int i;
+	for (i = 0, p_dat = m_channel_list.at(0)->getFirst(m_buffer);
+			p_dat < p_end; p_dat += p_inc, i++)
+	{
+		for (int ch = 0; ch < m_data.size(); ch++) {
+			m_data[ch][i] = process(((int16_t*)p_dat)[ch], ch);
+		}
+	}
+
+	destroy();
+
+
+//	// Restore channels enable states
+//	for (unsigned int i = 0; i < m_nb_channels; i++) {
+//		enableChannel(i, channels_enabled.at(i));
+//	}
+	return m_data;
+}
 
 void Buffer::stop()
 {
@@ -139,6 +197,11 @@ void Buffer::stop()
 //		throw no_device_exception("Device not found, so no buffer was created");
 	}
 
+	destroy();
+}
+
+void Buffer::destroy()
+{
 	if (m_buffer) {
 		iio_buffer_destroy(m_buffer);
 		m_buffer = nullptr;

@@ -37,9 +37,11 @@ public:
 	std::string getId();
 	unsigned int getIndex();
 	bool isOutput();
+	bool isEnabled();
 	void write(struct iio_buffer* buffer, std::vector<short> &data);
 	void write(struct iio_buffer* buffer, std::vector<double> &data);
 	void enableChannel(bool enable);
+	uintptr_t getFirst(struct iio_buffer* buffer);
 private:
 	struct iio_device *m_device;
 	struct iio_channel *m_channel;

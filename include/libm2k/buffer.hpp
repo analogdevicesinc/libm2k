@@ -23,6 +23,7 @@
 #include <iio.h>
 #include <vector>
 #include <string>
+#include <functional>
 
 namespace libm2k {
 namespace utils {
@@ -37,14 +38,17 @@ public:
 	void push(std::vector<double> &data, unsigned int channel = 0);
 	void push(std::vector<std::vector<short>> &data);
 	void setChannels(std::vector<Channel*> channels);
-//	void refill();
+	std::vector<std::vector<double>> getSamples(int nb_samples,
+					std::function<double(int16_t, unsigned int)> process);
 	void stop();
 
-
+private:
+	void destroy();
 private:
 	struct iio_device* m_dev;
 	struct iio_buffer* m_buffer;
 	std::vector<Channel*> m_channel_list;
+	std::vector<std::vector<double>> m_data;
 };
 }
 }
