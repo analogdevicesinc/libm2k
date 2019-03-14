@@ -295,23 +295,10 @@ std::vector<std::shared_ptr<M2kAnalogOut>> M2K::getAllAnalogOut()
 
 void M2K::initialize()
 {
-	/* Pre-init call to setup M2k */
-	struct iio_device *m2k_fabric = iio_context_find_device(ctx(), "m2k-fabric");
-	if (m2k_fabric) {
-		auto chn0 = iio_device_find_channel(m2k_fabric, "voltage0", false);
-		auto chn1 = iio_device_find_channel(m2k_fabric, "voltage1", false);
-		if (chn0 && chn1) {
-			iio_channel_attr_write_bool(chn0, "powerdown", false);
-			iio_channel_attr_write_bool(chn1, "powerdown", false);
-		}
-		iio_device_attr_write_bool(m2k_fabric, "clk_powerdown", false);
-	}
-
-	/* Apply M2k fixes */
 	std::string hw_rev = Utils::getHardwareRevision(ctx());
 
-	struct iio_device *dev = iio_context_find_device(ctx(), "ad9963");
-
+	std::shared_ptr<Device> m_ad9963 = make_shared<Device>(ctx(), "ad9963");
+	std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(ctx(), "m2k-fabric");
 	int config1 = 0x05;
 	int config2 = 0x05;
 
@@ -321,10 +308,19 @@ void M2K::initialize()
 	}
 
 	/* Configure TX path */
-	iio_device_reg_write(dev, 0x68, config1);
-	iio_device_reg_write(dev, 0x6B, config2);
-	iio_device_reg_write(dev, 0x69, 0x1C);  // IGAIN2 +-2.5%
-	iio_device_reg_write(dev, 0x6C, 0x1C);
-	iio_device_reg_write(dev, 0x6A, 0x20);  // IRSET +-20%
-	iio_device_reg_write(dev, 0x6D, 0x20);
+	try {
+		m_ad9963->writeRegister(0x68, config1);
+		m_ad9963->writeRegister(0x6B, config2);
+		m_ad9963->writeRegister(0x69, 0x1C);  // IGAIN2 +-2.5%
+		m_ad9963->writeRegister(0x6C, 0x1C);
+		m_ad9963->writeRegister(0x6A, 0x20);  // IRSET +-20%
+		m_ad9963->writeRegister(0x6D, 0x20);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+
+	/* Pre-init call to setup M2k */
+	m_m2k_fabric->setBoolValue(0, false, "powerdown", false);
+	m_m2k_fabric->setBoolValue(1, false, "powerdown", false);
+	m_m2k_fabric->setBoolValue(false, "clk_powerdown");
 }
