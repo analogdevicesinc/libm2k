@@ -134,3 +134,19 @@ void Channel::write(struct iio_buffer* buffer, std::vector<double> &data)
 	size_t ret = iio_channel_write(m_channel, buffer, data.data(),
 				       size * sizeof(double));
 }
+
+void Channel::convert(int16_t *avg, int16_t *src)
+{
+	if (!m_channel) {
+		throw  no_device_exception("channel: Can not find associated channel");
+	}
+	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
+}
+
+void Channel::convert(double *avg, int16_t *src)
+{
+	if (!m_channel) {
+		throw  no_device_exception("channel: Can not find associated channel");
+	}
+	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
+}
