@@ -22,19 +22,13 @@ FILE(GLOB HEADERS_LIST
         ${CMAKE_SOURCE_DIR}/src/devices/*/*.hpp
         ${CMAKE_SOURCE_DIR}/src/*.hpp)
 
-FILE(GLOB BOOST_INTERPROCESS ${CMAKE_SOURCE_DIR}/src/interprocess/*.hpp
-                             ${CMAKE_SOURCE_DIR}/src/interprocess/*/*.hpp
-                             ${CMAKE_SOURCE_DIR}/src/interprocess/*/*/*.hpp
-                             )
-
 FILE(GLOB DEVICES ${CMAKE_SOURCE_DIR}/src/devices/*/*.cpp)
 
 
 add_library(m2k SHARED
 			${SRC_LIST}
                         ${HEADERS_LIST}
-                        ${DEVICES}
-                        ${BOOST_INTERPROCESS})
+			${DEVICES})
 
 if (WIN32 OR ENABLE_APPLICATION_BUNDLE)
 	set_target_properties(m2k PROPERTIES OUTPUT_NAME m2k)
