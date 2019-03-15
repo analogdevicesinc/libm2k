@@ -136,6 +136,19 @@ std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
 	return dev;
 }
 
+/* Connect to the first usb device that was found
+TODO: try to use the "local" context,
+before trying the "usb" one. */
+std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen()
+{
+	auto lst = listDevices();
+	if (lst.size() > 0) {
+		return deviceOpen(lst.at(0).c_str());
+	} else {
+		throw invalid_parameter_exception("No available board");
+	}
+}
+
 void DeviceBuilder::deviceClose(std::shared_ptr<GenericDevice> device)
 {
 	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),

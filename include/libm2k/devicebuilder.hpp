@@ -46,8 +46,9 @@ public:
 	explicit DeviceBuilder();
 	~DeviceBuilder();
 	static std::vector<std::string> listDevices();
-	static std::shared_ptr<GenericDevice> deviceOpen(const char*); //should ret GenericDevice
-	static void deviceClose(std::shared_ptr<GenericDevice>); //should return GenericDevice
+	static std::shared_ptr<GenericDevice> deviceOpen(const char*);
+	static std::shared_ptr<GenericDevice> deviceOpen();
+	static void deviceClose(std::shared_ptr<GenericDevice>);
 	static DeviceTypes identifyDevice(iio_context *ctx);
 	static std::shared_ptr<GenericDevice> buildDevice(DeviceTypes type,
 							  std::string uri,

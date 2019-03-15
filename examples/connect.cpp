@@ -133,7 +133,8 @@ int main(int argc, char **argv)
 		try {
 //			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
 //			std::shared_ptr<GenericDevice> d2 = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
-			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen(l.c_str());
+			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen();//l.c_str());
+
 			std::shared_ptr<M2K> dev = d->toM2k();
 			if (!dev) { // PLUTO
 				std::shared_ptr<GenericAnalogOut> plutoOut = d->getAnalogOut(0);
