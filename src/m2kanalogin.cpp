@@ -126,10 +126,11 @@ std::vector<std::vector<double>> M2kAnalogIn::getSamples(int nb_samples,
 			m_need_processing = true;
 		}
 		auto fp = std::bind(&M2kAnalogIn::processSample, this, _1, _2);
-		return Device::getSamples(nb_samples, fp);
+		auto samps = Device::getSamples(nb_samples, fp);
 		if (processed) {
 			m_need_processing = false;
 		}
+		return samps;
 	} catch (std::runtime_error &e) {
 		throw e;
 	}
@@ -145,6 +146,97 @@ double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
 					 m_adc_hw_offset.at(channel));
 	} else {
 		return (double)sample;
+	}
+}
+
+uint16_t M2kAnalogIn::getVoltageRaw(unsigned int ch)
+{
+	M2kAnalogIn::ANALOG_IN_CHANNEL chn = static_cast<M2kAnalogIn::ANALOG_IN_CHANNEL>(ch);
+	try {
+		getVoltageRaw(chn);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+uint16_t M2kAnalogIn::getVoltageRaw(M2kAnalogIn::ANALOG_IN_CHANNEL ch)
+{
+	size_t num_samples = 100;
+	if (ch >= getNbChannels()) {
+		throw invalid_parameter_exception("M2kAnalogIn: no such channel");
+	}
+
+	try {
+		enableChannel(ch, true);
+		auto samps = getSamples(num_samples);
+		double avg = Utils::average(samps.at(ch).data(), num_samples);
+		return (uint16_t)avg;
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+std::vector<uint16_t> M2kAnalogIn::getVoltageRaw()
+{
+	size_t num_samples = 100;
+	std::vector<uint16_t> avgs;
+	try {
+		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			enableChannel(i, true);
+		}
+		auto samps = getSamples(num_samples);
+		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			uint16_t avg = (uint16_t)(Utils::average(samps.at(i).data(), num_samples));
+			avgs.push_back(avg);
+		}
+		return avgs;
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+double M2kAnalogIn::getVoltage(unsigned int ch)
+{
+	M2kAnalogIn::ANALOG_IN_CHANNEL chn = static_cast<M2kAnalogIn::ANALOG_IN_CHANNEL>(ch);
+	try {
+		getVoltage(chn);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+double M2kAnalogIn::getVoltage(ANALOG_IN_CHANNEL ch)
+{
+	size_t num_samples = 100;
+	if (ch >= getNbChannels()) {
+		throw invalid_parameter_exception("M2kAnalogIn: no such channel");
+	}
+
+	try {
+		enableChannel(ch, true);
+		auto samps = getSamples(num_samples, true);
+		double avg = Utils::average(samps.at(ch).data(), num_samples);
+		return avg;
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+std::vector<double> M2kAnalogIn::getVoltage()
+{
+	size_t num_samples = 100;
+	std::vector<double> avgs;
+	try {
+		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			enableChannel(i, true);
+		}
+		auto samps = getSamples(num_samples, true);
+		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			avgs.push_back(Utils::average(samps.at(i).data(), num_samples));
+		}
+		return avgs;
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
 	}
 }
 

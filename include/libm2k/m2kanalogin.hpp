@@ -53,8 +53,14 @@ public:
 
 	double processSample(int16_t sample, unsigned int channel);
 
+	uint16_t getVoltageRaw(unsigned int ch);
+	double getVoltage(unsigned int ch);
+
 	uint16_t getVoltageRaw(ANALOG_IN_CHANNEL ch);
 	double getVoltage(ANALOG_IN_CHANNEL ch);
+
+	std::vector<uint16_t> getVoltageRaw();
+	std::vector<double> getVoltage();
 
 	double getScalingFactor(ANALOG_IN_CHANNEL ch);
 

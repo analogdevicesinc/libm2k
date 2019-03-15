@@ -219,6 +219,16 @@ int main(int argc, char **argv)
 						std::cout << samps[1][i] << "\n ";
 					}
 
+					auto avgs = maIn->getVoltage();
+					auto avgs2 = maIn->getVoltageRaw();
+
+					std::cout << "Average voltage  " << avgs.at(0) << " " << avgs.at(1) << "\n";
+					std::cout << "Average voltage  " << avgs2.at(0) << " " << avgs2.at(1) << "\n";
+					std::cout << "Average voltage  " << maIn->getVoltage(0) << " " << maIn->getVoltage(1) << "\n";
+					std::cout << "Average voltage  " << maIn->getVoltageRaw(0) << " " << maIn->getVoltageRaw(1) << "\n";
+					std::cout << "Average voltage  " << maIn->getVoltage(M2kAnalogIn::ANALOG_IN_CHANNEL_1) << " "
+						  << maIn->getVoltage(M2kAnalogIn::ANALOG_IN_CHANNEL_2) << "\n";
+
 					for (auto s : aIn->getAvailableSamplerates()) {
 						std::cout << " s " << s << std::endl;
 					}
