@@ -53,6 +53,10 @@ public:
 	void setSyncedDma(bool en, int chn = -1);
 	bool getSyncedDma(int chn = -1);
 
+	void setCyclic(bool en);
+	void setCyclic(bool en, unsigned int chn);
+	bool getCyclic(unsigned int chn);
+
 	double getScalingFactor(unsigned int chn);
 	double getFilterCompensation(double samplerate);
 
@@ -72,6 +76,7 @@ private:
 	short processSample(double value, unsigned int channel, bool raw);
 	std::shared_ptr<Device> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;
+	std::vector<bool> m_cyclic;
 	bool m_sync_start;
 
 	std::map<double, double> m_filter_compensation_table;

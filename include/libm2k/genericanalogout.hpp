@@ -43,16 +43,17 @@ public:
 	std::vector<double> getAvailableSamplerates();
 
 	bool isChannelEnabled(unsigned int index);
-	std::string getDeviceName();
 
+	void setCyclic(bool en);
+	void setCyclic(bool en, unsigned int chn);
+	bool getCyclic(unsigned int chn);
 
 	void push(std::vector<double>& data, unsigned int chn_idx = 0, bool cyclic = true);
 	void push(std::vector<short>& data, unsigned int chn_idx = 0, bool cyclic = true);
 	void stopOutput();
 
-protected:
-	std::string m_dev_name;
-	unsigned int m_nb_channels;
+private:
+	std::vector<bool> m_cyclic;
 };
 }
 }

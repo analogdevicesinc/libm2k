@@ -145,7 +145,7 @@ std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(unsigned int index
 std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(std::string dev_name)
 {
 	for (std::shared_ptr<GenericAnalogOut> d : m_instancesAnalogOut) {
-		if (d->getDeviceName() == dev_name) {
+		if (d->getName() == dev_name) {
 			return d;
 		}
 	}

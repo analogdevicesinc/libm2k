@@ -87,9 +87,27 @@ bool GenericAnalogOut::isChannelEnabled(unsigned int index)
 	return  true;
 }
 
-std::string GenericAnalogOut::getDeviceName()
+void GenericAnalogOut::setCyclic(bool en)
 {
-	return m_dev_name;
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		m_cyclic.at(i) = en;
+	}
+}
+
+void GenericAnalogOut::setCyclic(bool en, unsigned int chn)
+{
+	if (chn >= getNbChannels()) {
+		throw invalid_parameter_exception("Generic Analog Out: No such channel");
+	}
+	m_cyclic.at(chn) = en;
+}
+
+bool GenericAnalogOut::getCyclic(unsigned int chn)
+{
+	if (chn >= getNbChannels()) {
+		throw invalid_parameter_exception("Generic Analog Out: No such channel");
+	}
+	return m_cyclic.at(chn);
 }
 
 void GenericAnalogOut::push(std::vector<short> &data, unsigned int chn_idx,

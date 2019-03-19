@@ -54,6 +54,10 @@ M2kAnalogOut::M2kAnalogOut(iio_context *ctx, std::vector<std::string> dac_devs):
 	m_filter_compensation_table[75E3] = 1.776357;
 	m_filter_compensation_table[75E2] = 1.355253;
 	m_filter_compensation_table[75E1] = 1.033976;
+
+	for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
+		m_cyclic.push_back(true);
+	}
 }
 
 M2kAnalogOut::~M2kAnalogOut()
@@ -188,6 +192,29 @@ bool M2kAnalogOut::getSyncedDma(int chn)
 	}
 
 	return m_dac_devices.at(chn)->getBoolValue("dma_sync");
+}
+
+void M2kAnalogOut::setCyclic(bool en)
+{
+	for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
+		m_cyclic.at(i) = en;
+	}
+}
+
+void M2kAnalogOut::setCyclic(bool en, unsigned int chn)
+{
+	if (chn >= m_dac_devices.size()) {
+		throw invalid_parameter_exception("Analog Out: No such channel");
+	}
+	m_cyclic.at(chn) = en;
+}
+
+bool M2kAnalogOut::getCyclic(unsigned int chn)
+{
+	if (chn >= m_dac_devices.size()) {
+		throw invalid_parameter_exception("Analog Out: No such channel");
+	}
+	return m_cyclic.at(chn);
 }
 
 int M2kAnalogOut::convertVoltsToRaw(double voltage, double vlsb,
