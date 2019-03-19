@@ -79,7 +79,7 @@ void GenericDevice::scanAllAnalogIn()
 					(getIioDeviceType(dev) == Utils::ANALOG) &&
 					getIioDeviceDirection(dev) == Utils::INPUT) {
 				try {
-					auto aIn = std::make_shared<GenericAnalogIn>(m_ctx, dev);
+					auto aIn = new GenericAnalogIn(m_ctx, dev);
 					m_instancesAnalogIn.push_back(aIn);
 				} catch (std::runtime_error& e) {
 					std::cout << e.what() << std::endl;
@@ -99,7 +99,7 @@ void GenericDevice::scanAllAnalogOut()
 			if (isIioDeviceBufferCapable(dev) &&
 					(getIioDeviceType(dev) == Utils::ANALOG) &&
 					getIioDeviceDirection(dev) == Utils::OUTPUT) {
-				auto aOut = std::make_shared<GenericAnalogOut>(m_ctx, dev);
+				auto aOut = new GenericAnalogOut(m_ctx, dev);
 				m_instancesAnalogOut.push_back(aOut);
 			}
 		} catch (std::runtime_error &e) {
@@ -113,7 +113,7 @@ void GenericDevice::scanAllDigital()
 
 }
 
-std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(unsigned int index)
+GenericAnalogIn* GenericDevice::getAnalogIn(unsigned int index)
 {
 	if (index < m_instancesAnalogIn.size()) {
 		return m_instancesAnalogIn.at(index);
@@ -123,9 +123,9 @@ std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(unsigned int index)
 	}
 }
 
-std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(std::string dev_name)
+GenericAnalogIn* GenericDevice::getAnalogIn(std::string dev_name)
 {
-	for (std::shared_ptr<GenericAnalogIn> d : m_instancesAnalogIn) {
+	for (GenericAnalogIn* d : m_instancesAnalogIn) {
 		if (d->getDeviceName() == dev_name) {
 			return d;
 		}
@@ -133,7 +133,7 @@ std::shared_ptr<GenericAnalogIn> GenericDevice::getAnalogIn(std::string dev_name
 	return nullptr;
 }
 
-std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(unsigned int index)
+GenericAnalogOut* GenericDevice::getAnalogOut(unsigned int index)
 {
 	if (index < m_instancesAnalogOut.size()) {
 		return m_instancesAnalogOut.at(index);
@@ -142,9 +142,9 @@ std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(unsigned int index
 	}
 }
 
-std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(std::string dev_name)
+GenericAnalogOut* GenericDevice::getAnalogOut(std::string dev_name)
 {
-	for (std::shared_ptr<GenericAnalogOut> d : m_instancesAnalogOut) {
+	for (GenericAnalogOut* d : m_instancesAnalogOut) {
 		if (d->getName() == dev_name) {
 			return d;
 		}
@@ -152,7 +152,7 @@ std::shared_ptr<GenericAnalogOut> GenericDevice::getAnalogOut(std::string dev_na
 	return nullptr;
 }
 
-std::shared_ptr<DMM> GenericDevice::getDMM(unsigned int index)
+DMM* GenericDevice::getDMM(unsigned int index)
 {
 	if (index < m_instancesDMM.size()) {
 		return m_instancesDMM.at(index);
@@ -161,9 +161,9 @@ std::shared_ptr<DMM> GenericDevice::getDMM(unsigned int index)
 	}
 }
 
-std::shared_ptr<DMM> GenericDevice::getDMM(std::string dev_name)
+DMM* GenericDevice::getDMM(std::string dev_name)
 {
-	for (std::shared_ptr<DMM> d : m_instancesDMM) {
+	for (DMM* d : m_instancesDMM) {
 		if (d->getDeviceName() == dev_name) {
 			return d;
 		}
@@ -171,7 +171,7 @@ std::shared_ptr<DMM> GenericDevice::getDMM(std::string dev_name)
 	return nullptr;
 }
 
-std::vector<std::shared_ptr<DMM>> GenericDevice::getAllDmm()
+std::vector<DMM*> GenericDevice::getAllDmm()
 {
 	return m_instancesDMM;
 }
@@ -242,7 +242,7 @@ void GenericDevice::scanAllDMM()
 		try {
 			if (getIioDeviceDirection(dev.first) != Utils::OUTPUT) {
 				if (!getDMM(dev.first)) {
-					auto dmm = std::make_shared<DMM>(m_ctx, dev.first);
+					auto dmm = new DMM(m_ctx, dev.first);
 					m_instancesDMM.push_back(dmm);
 				}
 			}
@@ -285,10 +285,9 @@ std::string GenericDevice::getContextAttributes()
 //	}
 }
 
-std::shared_ptr<libm2k::devices::M2K> GenericDevice::toM2k()
+libm2k::devices::M2K* GenericDevice::toM2k()
 {
-	std::shared_ptr<libm2k::devices::M2K> dev =
-		std::dynamic_pointer_cast<libm2k::devices::M2K>(shared_from_this());
+	libm2k::devices::M2K* dev = dynamic_cast<libm2k::devices::M2K*>(this);
 	if(dev) {
 		return dev;
 	} else {

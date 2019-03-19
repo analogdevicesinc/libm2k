@@ -25,8 +25,8 @@ int main(int argc, char **argv) {
 	}
 
 	// GenericDeviced::sptr device
-	std::shared_ptr<GenericDevice> device = DeviceBuilder::deviceOpen(deviceList[0].c_str());
-	std::shared_ptr<M2K> m2k_device = device->toM2k();
+	GenericDevice* device = DeviceBuilder::deviceOpen(deviceList[0].c_str());
+	M2K* m2k_device = device->toM2k();
 
 	if (!m2k_device) {
 		std::cout << "Need to plug in an m2k device!" << std::endl;
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 	}
 	data_all.push_back(data);
 
-	std::shared_ptr<M2kAnalogOut> maOut = m2k_device->getAnalogOut();
+	M2kAnalogOut* maOut = m2k_device->getAnalogOut();
 	m2k_device->calibrateDAC();
 	maOut->setSamplerate(0, sample_rate);
 	maOut->setOversamplingRatio(0, 1);

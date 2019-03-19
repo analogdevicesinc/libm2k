@@ -35,10 +35,10 @@ using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 
-M2kCalibration::M2kCalibration(struct iio_context* ctx, std::vector<std::shared_ptr<M2kAnalogIn>>& analogIn,
-			       std::vector<std::shared_ptr<M2kAnalogOut>>& analogOut):
-	m_analogIn(analogIn),
-	m_analogOut(analogOut),
+M2kCalibration::M2kCalibration(struct iio_context* ctx, M2kAnalogIn* analogIn,
+			       M2kAnalogOut* analogOut):
+	m_m2k_adc(analogIn),
+	m_m2k_dac(analogOut),
 	m_adc_calibrated(false),
 	m_dac_calibrated(false),
 	m_initialized(false),
@@ -46,15 +46,11 @@ M2kCalibration::M2kCalibration(struct iio_context* ctx, std::vector<std::shared_
 	m_ad5625_dev(nullptr),
 	m_ctx(ctx)
 {
-	m_m2k_adc = m_analogIn.at(0);
-	m_m2k_dac = m_analogOut.at(0);
 	m_ad5625_dev = make_shared<Device>(m_ctx, "ad5625");
 }
 
 M2kCalibration::~M2kCalibration()
 {
-	m_analogIn.clear();
-	m_analogOut.clear();
 }
 
 bool M2kCalibration::initialize()
@@ -242,7 +238,7 @@ bool M2kCalibration::calibrateADCgain()
 	setCalibrationMode(ADC_REF1);
 
 	try {
-		ch_data = m_analogIn.at(0)->getSamples(num_samples);
+		ch_data = m_m2k_adc->getSamples(num_samples);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -367,7 +363,7 @@ bool M2kCalibration::fine_tune(size_t span, int16_t centerVal0, int16_t centerVa
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		try {
-			ch_data = m_analogIn.at(0)->getSamples(num_samples);
+			ch_data = m_m2k_adc->getSamples(num_samples);
 		} catch (std::runtime_error &e) {
 			throw invalid_parameter_exception(e.what());
 		}

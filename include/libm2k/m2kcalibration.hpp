@@ -51,9 +51,8 @@ public:
 		HIGH
 	};
 
-	M2kCalibration(struct iio_context* ctx,
-		       std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>>& analogIn,
-		       std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>>& analogOut);
+	M2kCalibration(struct iio_context* ctx, libm2k::analog::M2kAnalogIn* analogIn,
+		       libm2k::analog::M2kAnalogOut* analogOut);
 	~M2kCalibration();
 
 	bool initialize();
@@ -106,8 +105,8 @@ private:
 	bool m_cancel;
 
 	struct iio_context *m_ctx;
-	std::shared_ptr<libm2k::analog::M2kAnalogIn> m_m2k_adc;
-	std::shared_ptr<libm2k::analog::M2kAnalogOut> m_m2k_dac;
+	libm2k::analog::M2kAnalogIn* m_m2k_adc;
+	libm2k::analog::M2kAnalogOut* m_m2k_dac;
 
 	int m_adc_ch0_offset;
 	int m_adc_ch1_offset;
@@ -132,8 +131,6 @@ private:
 	bool m_initialized;
 	int m_calibration_mode;
 
-	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> m_analogIn;
-	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> m_analogOut;
 	std::shared_ptr<libm2k::utils::Device> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::Device> m_m2k_fabric;
 };

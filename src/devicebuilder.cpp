@@ -32,7 +32,7 @@
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
-std::vector<std::shared_ptr<GenericDevice>> DeviceBuilder::s_connectedDevices = {};
+std::vector<GenericDevice*> DeviceBuilder::s_connectedDevices = {};
 std::map<DeviceTypes, std::vector<std::string>> DeviceBuilder::m_dev_map = {
 	{DeviceTypes::DevFMCOMMS, {"cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy"}},
 	{DeviceTypes::DevM2K, {"m2k-adc", "m2k-dac-a",
@@ -98,23 +98,23 @@ out_destroy_context:
 	return uris;
 }
 
-std::shared_ptr<GenericDevice> DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
+GenericDevice* DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
 			struct iio_context* ctx) // enum Device Name
 {
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
 //		case DevFMCOMMS: return new FMCOMMS(uri, ctx, name);
-		case DevM2K: return std::make_shared<M2K>(uri, ctx, name);
+		case DevM2K: return new M2K(uri, ctx, name);
 
 		case Other:
 		default:
-		return std::make_shared<GenericDevice>(uri, ctx, name);
+		return new GenericDevice(uri, ctx, name);
 	}
 }
 
-std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
+GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 {
-	for (std::shared_ptr<GenericDevice> dev : s_connectedDevices) {
+	for (GenericDevice* dev : s_connectedDevices) {
 		if (dev->getUri() == std::string(uri)) {
 			return dev;
 		}
@@ -130,7 +130,7 @@ std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
 	DeviceTypes dev_type = DeviceBuilder::identifyDevice(ctx);
 	std::cout << m_dev_name_map.at(dev_type) << std::endl;
 
-	std::shared_ptr<GenericDevice> dev = buildDevice(dev_type, std::string(uri), ctx);
+	GenericDevice* dev = buildDevice(dev_type, std::string(uri), ctx);
 	s_connectedDevices.push_back(dev);
 
 	return dev;
@@ -139,7 +139,7 @@ std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen(const char *uri)
 /* Connect to the first usb device that was found
 TODO: try to use the "local" context,
 before trying the "usb" one. */
-std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen()
+GenericDevice* DeviceBuilder::deviceOpen()
 {
 	auto lst = listDevices();
 	if (lst.size() > 0) {
@@ -149,12 +149,11 @@ std::shared_ptr<GenericDevice> DeviceBuilder::deviceOpen()
 	}
 }
 
-void DeviceBuilder::deviceClose(std::shared_ptr<GenericDevice> device)
+void DeviceBuilder::deviceClose(GenericDevice* device)
 {
 	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),
 					     s_connectedDevices.end(),
 					     device), s_connectedDevices.end());
-	device.reset();
 }
 
 DeviceTypes DeviceBuilder::identifyDevice(iio_context *ctx)

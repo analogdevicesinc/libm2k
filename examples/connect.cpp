@@ -133,11 +133,11 @@ int main(int argc, char **argv)
 		try {
 //			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
 //			std::shared_ptr<GenericDevice> d2 = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
-			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen();//l.c_str());
+			GenericDevice* d = DeviceBuilder::deviceOpen();//l.c_str());
 
-			std::shared_ptr<M2K> dev = d->toM2k();
+			M2K* dev = d->toM2k();
 			if (!dev) { // PLUTO
-				std::shared_ptr<GenericAnalogOut> plutoOut = d->getAnalogOut(0);
+				GenericAnalogOut* plutoOut = d->getAnalogOut(0);
 				plutoOut->enableChannel(0, true);
 				plutoOut->enableChannel(1, true);
 				plutoOut->setSamplerate(0, 3840000);
@@ -161,14 +161,14 @@ int main(int argc, char **argv)
 
 			if (dev) { // M2K
 				try {
-					std::shared_ptr<GenericAnalogIn> aIn = d->getAnalogIn(0);
+					GenericAnalogIn* aIn = d->getAnalogIn(0);
 					aIn->setSampleRate(1000);
 
-					std::shared_ptr<M2kAnalogIn> maIn = dev->getAnalogIn(0);
+					M2kAnalogIn* maIn = dev->getAnalogIn();
 					maIn->setRange(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
 						       M2kAnalogIn::PLUS_MINUS_25V);
 
-					std::shared_ptr<DMM> dmm = d->getDMM(0);
+					DMM* dmm = d->getDMM(0);
 					std::vector<DMM::dmm_reading> readings = dmm->readAll();
 					for (DMM::dmm_reading read : readings) {
 						std::cout << read.name << " " << read.value << " " << read.unit;
@@ -187,8 +187,7 @@ int main(int argc, char **argv)
 					ret = dev->calibrateADC();
 
 					// Analog Out
-					std::shared_ptr<M2kAnalogOut> maOut = dev->getAnalogOut();
-					//				std::shared_ptr<M2kAnalogOut> mbOut = dev->getAnalogOut("m2k-dac-b");
+					M2kAnalogOut* maOut = dev->getAnalogOut();
 					ret = dev->calibrateDAC();
 					maOut->setSamplerate(0, 75e6);
 					maOut->setSamplerate(1, 75e6);
@@ -236,14 +235,14 @@ int main(int argc, char **argv)
 						std::cout << " s " << s << std::endl;
 					}
 
-					std::shared_ptr<M2kPowerSupply> psupply = dev->getPowerSupply();
+					M2kPowerSupply* psupply = dev->getPowerSupply();
 					psupply->pushChannel(0, 3);
 					psupply->enableChannel(0, true);
 					psupply->enableChannel(0, false);
 
 
 					// DIO
-					std::shared_ptr<M2kDigital> logic = dev->getDigital();
+					M2kDigital* logic = dev->getDigital();
 					logic->enableChannelIn(M2kDigital::DIO_CHANNEL_1, true);
 					logic->enableChannelIn(M2kDigital::DIO_CHANNEL_2, true);
 					//				logic->setTrigger(M2kDigital::DIO_CHANNEL_1, M2kHardwareTrigger::RISING_EDGE);

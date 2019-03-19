@@ -40,19 +40,19 @@ enum DeviceTypes {
 namespace libm2k {
 namespace devices {
 class LIBM2K_API DeviceBuilder {
-	static std::vector<std::shared_ptr<GenericDevice>> s_connectedDevices; //should be GenericDevice
+	static std::vector<GenericDevice*> s_connectedDevices; //should be GenericDevice
 public:
 
 	explicit DeviceBuilder();
 	~DeviceBuilder();
 	static std::vector<std::string> listDevices();
-	static std::shared_ptr<GenericDevice> deviceOpen(const char*);
-	static std::shared_ptr<GenericDevice> deviceOpen();
-	static void deviceClose(std::shared_ptr<GenericDevice>);
+	static GenericDevice* deviceOpen(const char*);
+	static GenericDevice* deviceOpen();
+	static void deviceClose(GenericDevice*);
 	static DeviceTypes identifyDevice(iio_context *ctx);
-	static std::shared_ptr<GenericDevice> buildDevice(DeviceTypes type,
-							  std::string uri,
-							  struct iio_context *ctx);
+	static GenericDevice* buildDevice(DeviceTypes type,
+					std::string uri,
+					struct iio_context *ctx);
 private:
 	static std::map<DeviceTypes, std::vector<std::string>> m_dev_map;
 	static std::map<DeviceTypes, std::string> m_dev_name_map;

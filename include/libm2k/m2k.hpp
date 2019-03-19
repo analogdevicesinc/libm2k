@@ -58,13 +58,13 @@ public:
 	bool calibrateDAC();
 	bool resetCalibration();
 
-	std::shared_ptr<libm2k::digital::M2kDigital> getDigital();
-	std::shared_ptr<libm2k::analog::M2kPowerSupply> getPowerSupply();
-	std::shared_ptr<libm2k::analog::M2kAnalogIn> getAnalogIn(unsigned int index);
-	std::shared_ptr<libm2k::analog::M2kAnalogIn> getAnalogIn(std::string);
-	std::shared_ptr<libm2k::analog::M2kAnalogOut> getAnalogOut();
-	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> getAllAnalogIn();
-	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> getAllAnalogOut();
+	libm2k::digital::M2kDigital* getDigital();
+	libm2k::analog::M2kPowerSupply* getPowerSupply();
+	libm2k::analog::M2kAnalogIn* getAnalogIn();
+	libm2k::analog::M2kAnalogIn* getAnalogIn(std::string);
+	libm2k::analog::M2kAnalogOut* getAnalogOut();
+	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
+	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
 	int getDacBCalibrationOffset();
 	int getDacACalibrationOffset();
 	double getDacBCalibrationGain();
@@ -73,8 +73,8 @@ public:
 	double getAdcCalibrationGain(unsigned int chn);
 private:
 	M2kCalibration* m_calibration;
-	std::vector<std::shared_ptr<utils::Device>> m_instancesAnalogOut;
-	std::vector<std::shared_ptr<utils::Device>> m_instancesAnalogIn;
+	std::vector<utils::Device*> m_instancesAnalogOut;
+	std::vector<utils::Device*> m_instancesAnalogIn;
 	void initialize();
 };
 }

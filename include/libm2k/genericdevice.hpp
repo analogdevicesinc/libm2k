@@ -73,25 +73,25 @@ public:
 	void scanAllDMM();
 	std::string getUri();
 
-	std::shared_ptr<libm2k::analog::GenericAnalogIn> getAnalogIn(unsigned int);
-	std::shared_ptr<libm2k::analog::GenericAnalogIn> getAnalogIn(std::string);
-	std::shared_ptr<libm2k::analog::GenericAnalogOut> getAnalogOut(unsigned int);
-	std::shared_ptr<libm2k::analog::GenericAnalogOut> getAnalogOut(std::string);
-	std::shared_ptr<libm2k::analog::DMM> getDMM(unsigned int);
-	std::shared_ptr<libm2k::analog::DMM> getDMM(std::string);
-	std::vector<std::shared_ptr<libm2k::analog::DMM> > getAllDmm();
+	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
+	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
+	libm2k::analog::GenericAnalogOut* getAnalogOut(unsigned int);
+	libm2k::analog::GenericAnalogOut* getAnalogOut(std::string);
+	libm2k::analog::DMM* getDMM(unsigned int);
+	libm2k::analog::DMM* getDMM(std::string);
+	std::vector<libm2k::analog::DMM*> getAllDmm();
 
 	void blinkLed();
 	struct iio_context* ctx();
 	std::string getContextAttributes();
 
-	std::shared_ptr<libm2k::devices::M2K> toM2k();
+	libm2k::devices::M2K* toM2k();
 protected:
-	std::vector<std::shared_ptr<libm2k::analog::GenericAnalogIn>> m_instancesAnalogIn;
-	std::vector<std::shared_ptr<libm2k::analog::GenericAnalogOut>> m_instancesAnalogOut;
-	std::vector<std::shared_ptr<libm2k::analog::DMM>> m_instancesDMM;
-	std::vector<std::shared_ptr<libm2k::analog::PowerSupply>> m_instancesPowerSupply;
-	std::vector<std::shared_ptr<libm2k::digital::GenericDigital>> m_instancesDigital;
+	std::vector<libm2k::analog::GenericAnalogIn*> m_instancesAnalogIn;
+	std::vector<libm2k::analog::GenericAnalogOut*> m_instancesAnalogOut;
+	std::vector<libm2k::analog::DMM*> m_instancesDMM;
+	std::vector<libm2k::analog::PowerSupply*> m_instancesPowerSupply;
+	std::vector<libm2k::digital::GenericDigital*> m_instancesDigital;
 private:
 	bool isIioDeviceBufferCapable(std::string);
 	libm2k::utils::Utils::DEVICE_TYPE getIioDeviceType(std::string);

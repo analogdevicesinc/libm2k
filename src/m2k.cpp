@@ -47,8 +47,6 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 
 	LOG("BOOOMMM");
 
-
-
 	/* Initialize the AnalogIn list */
 //	for (auto aIn : s_instancesAnalogIn) {
 //	}
@@ -64,9 +62,8 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 	scanAllAnalogOut();
 	scanAllPowerSupply();
 	scanAllDigital();
-	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> lstIn = getAllAnalogIn();
-	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> lstOut = getAllAnalogOut();
-	m_calibration = new M2kCalibration(ctx, lstIn, lstOut);
+
+	m_calibration = new M2kCalibration(ctx, getAnalogIn(), getAnalogOut());
 }
 
 M2K::~M2K()
@@ -90,7 +87,7 @@ M2K::~M2K()
 void M2K::scanAllAnalogIn()
 {
 	try {
-		std::shared_ptr<Device> aIn = std::make_shared<libm2k::analog::M2kAnalogIn>(ctx(), "m2k-adc");
+		Device* aIn = new libm2k::analog::M2kAnalogIn(ctx(), "m2k-adc");
 		m_instancesAnalogIn.push_back(aIn);
 	} catch (std::runtime_error& e) {
 		std::cout << e.what() << std::endl;
@@ -101,7 +98,7 @@ void M2K::scanAllAnalogOut()
 {
 	try {
 		std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
-		std::shared_ptr<Device> aOut = std::make_shared<libm2k::analog::M2kAnalogOut>(ctx(), devs);
+		Device* aOut = new libm2k::analog::M2kAnalogOut(ctx(), devs);
 		m_instancesAnalogOut.push_back(aOut);
 	} catch (std::runtime_error& e) {
 		std::cout << e.what() << std::endl;
@@ -111,7 +108,7 @@ void M2K::scanAllAnalogOut()
 void M2K::scanAllPowerSupply()
 {
 	try {
-		std::shared_ptr<PowerSupply> pSupply = std::make_shared<libm2k::analog::M2kPowerSupply>(ctx(), "ad5627", "ad9963");
+		PowerSupply* pSupply = new libm2k::analog::M2kPowerSupply(ctx(), "ad5627", "ad9963");
 		m_instancesPowerSupply.push_back(pSupply);
 	} catch (std::runtime_error &e) {
 		std::cout << e.what() << std::endl;
@@ -121,7 +118,7 @@ void M2K::scanAllPowerSupply()
 void M2K::scanAllDigital()
 {
 	try {
-		std::shared_ptr<GenericDigital> logic = std::make_shared<libm2k::digital::M2kDigital>(ctx(), "m2k-logic-analyzer");
+		GenericDigital* logic = new libm2k::digital::M2kDigital(ctx(), "m2k-logic-analyzer");
 		m_instancesDigital.push_back(logic);
 	} catch (std::runtime_error &e) {
 		std::cout << e.what() << std::endl;
@@ -204,23 +201,23 @@ int M2K::getDacBCalibrationOffset()
 	return m_calibration->dacBoffset();
 }
 
-std::shared_ptr<M2kAnalogIn> M2K::getAnalogIn(unsigned int index)
+M2kAnalogIn* M2K::getAnalogIn()
 {
-	if (index < m_instancesAnalogIn.size()) {
-		return dynamic_pointer_cast<libm2k::analog::M2kAnalogIn>(
-					m_instancesAnalogIn.at(index));
+	auto aIn = dynamic_cast<libm2k::analog::M2kAnalogIn*>(
+				m_instancesAnalogIn.at(0));
+	if (aIn) {
+		return aIn;
 	} else {
 		throw no_device_exception("No such analog in");
-//		return nullptr;
 	}
 }
 
-std::shared_ptr<M2kAnalogIn> M2K::getAnalogIn(string dev_name)
+M2kAnalogIn* M2K::getAnalogIn(string dev_name)
 {
-	for (std::shared_ptr<Device> d : m_instancesAnalogIn) {
+	for (Device* d : m_instancesAnalogIn) {
 		if (d->getName() == dev_name) {
-			std::shared_ptr<libm2k::analog::M2kAnalogIn> analogIn =
-				dynamic_pointer_cast<libm2k::analog::M2kAnalogIn>(d);
+			libm2k::analog::M2kAnalogIn* analogIn =
+				dynamic_cast<libm2k::analog::M2kAnalogIn*>(d);
 			if (analogIn) {
 				return analogIn;
 			}
@@ -229,29 +226,29 @@ std::shared_ptr<M2kAnalogIn> M2K::getAnalogIn(string dev_name)
 	return nullptr;
 }
 
-std::shared_ptr<M2kPowerSupply> M2K::getPowerSupply()
+M2kPowerSupply* M2K::getPowerSupply()
 {
-	std::shared_ptr<M2kPowerSupply> pSupply = dynamic_pointer_cast<M2kPowerSupply>(m_instancesPowerSupply.at(0));
+	M2kPowerSupply* pSupply = dynamic_cast<M2kPowerSupply*>(m_instancesPowerSupply.at(0));
 	if (pSupply) {
 		return pSupply;
 	}
 	throw no_device_exception("No M2K power supply");
 }
 
-std::shared_ptr<M2kDigital> M2K::getDigital()
+M2kDigital* M2K::getDigital()
 {
-	std::shared_ptr<M2kDigital> logic = dynamic_pointer_cast<M2kDigital>(m_instancesDigital.at(0));
+	M2kDigital* logic = dynamic_cast<M2kDigital*>(m_instancesDigital.at(0));
 	if (logic) {
 		return logic;
 	}
 	throw no_device_exception("No M2K digital device found");
 }
 
-std::shared_ptr<M2kAnalogOut> M2K::getAnalogOut()
+M2kAnalogOut* M2K::getAnalogOut()
 {
-	for (std::shared_ptr<Device> d : m_instancesAnalogOut) {
-		std::shared_ptr<libm2k::analog::M2kAnalogOut> analogOut =
-				dynamic_pointer_cast<M2kAnalogOut>(d);
+	for (Device* d : m_instancesAnalogOut) {
+		libm2k::analog::M2kAnalogOut* analogOut =
+				dynamic_cast<M2kAnalogOut*>(d);
 		if (analogOut) {
 			return analogOut;
 		}
@@ -259,13 +256,13 @@ std::shared_ptr<M2kAnalogOut> M2K::getAnalogOut()
 	return nullptr;
 }
 
-std::vector<std::shared_ptr<M2kAnalogIn>> M2K::getAllAnalogIn()
+std::vector<M2kAnalogIn*> M2K::getAllAnalogIn()
 {
-	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogIn>> allAnalogIn = {};
-	for (std::shared_ptr<Device> inst : m_instancesAnalogIn) {
+	std::vector<libm2k::analog::M2kAnalogIn*> allAnalogIn = {};
+	for (Device* inst : m_instancesAnalogIn) {
 		try {
-			std::shared_ptr<libm2k::analog::M2kAnalogIn> analogIn =
-				dynamic_pointer_cast<M2kAnalogIn>(inst);
+			libm2k::analog::M2kAnalogIn* analogIn =
+				dynamic_cast<M2kAnalogIn*>(inst);
 			if (analogIn) {
 				allAnalogIn.push_back(analogIn);
 			}
@@ -276,13 +273,13 @@ std::vector<std::shared_ptr<M2kAnalogIn>> M2K::getAllAnalogIn()
 	return allAnalogIn;
 }
 
-std::vector<std::shared_ptr<M2kAnalogOut>> M2K::getAllAnalogOut()
+std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
 {
-	std::vector<std::shared_ptr<libm2k::analog::M2kAnalogOut>> allAnalogOut;
-	for (std::shared_ptr<Device> inst : m_instancesAnalogOut) {
+	std::vector<libm2k::analog::M2kAnalogOut*> allAnalogOut;
+	for (Device* inst : m_instancesAnalogOut) {
 		try {
-			std::shared_ptr<libm2k::analog::M2kAnalogOut> analogOut =
-				dynamic_pointer_cast<libm2k::analog::M2kAnalogOut>(inst);
+			libm2k::analog::M2kAnalogOut* analogOut =
+				dynamic_cast<libm2k::analog::M2kAnalogOut*>(inst);
 			if (analogOut) {
 				allAnalogOut.push_back(analogOut);
 			}
