@@ -37,14 +37,14 @@ using namespace libm2k::utils;
 
 M2kCalibration::M2kCalibration(struct iio_context* ctx, M2kAnalogIn* analogIn,
 			       M2kAnalogOut* analogOut):
+	m_cancel(false),
+	m_ctx(ctx),
 	m_m2k_adc(analogIn),
 	m_m2k_dac(analogOut),
 	m_adc_calibrated(false),
 	m_dac_calibrated(false),
 	m_initialized(false),
-	m_cancel(false),
-	m_ad5625_dev(nullptr),
-	m_ctx(ctx)
+	m_ad5625_dev(nullptr)
 {
 	m_ad5625_dev = make_shared<Device>(m_ctx, "ad5625");
 }
