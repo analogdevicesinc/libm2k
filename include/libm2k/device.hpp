@@ -40,8 +40,8 @@ public:
 
 	Channel *getChannel(unsigned int chnIdx);
 	virtual void enableChannel(unsigned int chnIdx, bool enable);
-	void push(std::vector<short> &data, unsigned int channel);
-	void push(std::vector<double> &data, unsigned int channel);
+	void push(std::vector<short> &data, unsigned int channel, bool cyclic = true);
+	void push(std::vector<double> &data, unsigned int channel, bool cyclic = true);
 	void stop();
 
 	std::vector<std::vector<double> > getSamples(int nb_samples,

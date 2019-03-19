@@ -154,6 +154,7 @@ int main(int argc, char **argv)
 //					data.push_back(static_cast<double>(value));
 //				}
 
+				plutoOut->setCyclic(true);
 				plutoOut->push(data, 0);
 				std::this_thread::sleep_for(std::chrono::milliseconds(20000));
 			}
@@ -203,6 +204,7 @@ int main(int argc, char **argv)
 					vec_all.push_back(vec_a);
 					vec_all.push_back(vec_b);
 
+					maOut->setCyclic(true);
 					maOut->enableChannel(0, true);
 					maOut->enableChannel(1, true);
 					maOut->push(vec_all);

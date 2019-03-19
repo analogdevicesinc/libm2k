@@ -459,7 +459,8 @@ bool M2kCalibration::calibrateDACoffset()
 		m_m2k_dac->enableChannel(0, true);
 		m_m2k_dac->enableChannel(1, true);
 
-		m_m2k_dac->push(vec_data_all, true);
+		m_m2k_dac->setCyclic(true);
+		m_m2k_dac->push(vec_data_all);
 
 		m_m2k_dac->setSyncedDma(false);
 		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
@@ -541,7 +542,8 @@ bool M2kCalibration::calibrateDACgain()
 		m_m2k_dac->enableChannel(0, true);
 		m_m2k_dac->enableChannel(1, true);
 
-		m_m2k_dac->push(vec_data_all, true);
+		m_m2k_dac->setCyclic(true);
+		m_m2k_dac->push(vec_data_all);
 
 		m_m2k_dac->setSyncedDma(false);
 		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);

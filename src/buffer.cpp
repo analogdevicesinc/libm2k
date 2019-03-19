@@ -77,7 +77,7 @@ void Buffer::setChannels(std::vector<Channel*> channels)
 }
 
 //push on a certain channel
-void Buffer::push(std::vector<short> &data, unsigned int channel)
+void Buffer::push(std::vector<short> &data, unsigned int channel, bool cyclic)
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) != Utils::OUTPUT) {
@@ -86,7 +86,7 @@ void Buffer::push(std::vector<short> &data, unsigned int channel)
 
 	destroy();
 
-	m_buffer = iio_device_create_buffer(m_dev, size, true);
+	m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
 	if (!m_buffer) {
 		throw invalid_parameter_exception("Buffer: Can't create the TX buffer");
@@ -101,7 +101,7 @@ void Buffer::push(std::vector<short> &data, unsigned int channel)
 }
 
 //push on a certain channel
-void Buffer::push(std::vector<double> &data, unsigned int channel)
+void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) != Utils::OUTPUT) {
@@ -110,7 +110,7 @@ void Buffer::push(std::vector<double> &data, unsigned int channel)
 
 	destroy();
 
-	m_buffer = iio_device_create_buffer(m_dev, size, true);
+	m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
 	if (!m_buffer) {
 		throw invalid_parameter_exception("Buffer: Can't create the TX buffer");

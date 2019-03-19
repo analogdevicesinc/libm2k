@@ -65,10 +65,8 @@ public:
 
 	void setDacCalibVlsb(unsigned int chn, double vlsb);
 
-	void push(std::vector<std::vector<double>>& data, bool cyclic = true,
-		  unsigned int chn_idx = 0);
-	void push(std::vector<std::vector<short>>& data, bool cyclic = true,
-		  unsigned int chn_idx = 0);
+	void push(std::vector<std::vector<double>>& data);
+	void push(std::vector<std::vector<short>>& data);
 	void stopOutput();
 
 	void enableChannel(unsigned int chnIdx, bool enable);

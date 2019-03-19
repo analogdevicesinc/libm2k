@@ -230,8 +230,7 @@ void M2kAnalogOut::setDacCalibVlsb(unsigned int chn_idx, double vlsb)
 	m_calib_vlsb[chn_idx] = vlsb;
 }
 
-void M2kAnalogOut::push(std::vector<std::vector<short>> &data, bool cyclic,
-			unsigned int chn_idx)
+void M2kAnalogOut::push(std::vector<std::vector<short>> &data)
 {
 	//check data size
 	std::vector<std::vector<short>> data_buffers;
@@ -242,15 +241,14 @@ void M2kAnalogOut::push(std::vector<std::vector<short>> &data, bool cyclic,
 		for (int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, true));
 		}
-		m_dac_devices.at(chn)->push(raw_data_buffer, 0);
+		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 	}
 	setSyncedDma(false);
 	m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
 	m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 }
 
-void M2kAnalogOut::push(std::vector<std::vector<double>> &data, bool cyclic,
-			unsigned int chn_idx)
+void M2kAnalogOut::push(std::vector<std::vector<double>> &data)
 {
 	std::vector<std::vector<short>> data_buffers;
 	setSyncedDma(true);
@@ -260,7 +258,7 @@ void M2kAnalogOut::push(std::vector<std::vector<double>> &data, bool cyclic,
 		for (int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, false));
 		}
-		m_dac_devices.at(chn)->push(raw_data_buffer, 0);
+		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		data_buffers.push_back(raw_data_buffer);
 	}
 	setSyncedDma(false);

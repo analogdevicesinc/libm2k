@@ -34,8 +34,8 @@ class Buffer
 public:
 	Buffer(struct iio_device *dev);
 	~Buffer();
-	void push(std::vector<short> &data, unsigned int channel = 0);
-	void push(std::vector<double> &data, unsigned int channel = 0);
+	void push(std::vector<short> &data, unsigned int channel = 0, bool cyclic = true);
+	void push(std::vector<double> &data, unsigned int channel = 0, bool cyclic = true);
 	void push(std::vector<std::vector<short>> &data);
 	void setChannels(std::vector<Channel*> channels);
 	std::vector<std::vector<double>> getSamples(int nb_samples,

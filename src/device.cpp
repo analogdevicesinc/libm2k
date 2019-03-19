@@ -94,27 +94,27 @@ void Device::enableChannel(unsigned int chnIdx, bool enable)
 }
 
 
-void Device::push(std::vector<short> &data, unsigned int channel)
+void Device::push(std::vector<short> &data, unsigned int channel, bool cyclic)
 {
 	if (!m_buffer) {
 		throw invalid_parameter_exception("Device: Can not push; device not buffer capable");
 	}
 	try {
 		m_buffer->setChannels(m_channel_list);
-		m_buffer->push(data, channel);
+		m_buffer->push(data, channel, cyclic);
 	} catch (invalid_parameter_exception &e) {
 		throw invalid_parameter_exception(e.what());
 	}
 }
 
-void Device::push(std::vector<double> &data, unsigned int channel)
+void Device::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 {
 	if (!m_buffer) {
 		throw invalid_parameter_exception("Device: Can not push; device not buffer capable");
 	}
 	try {
 		m_buffer->setChannels(m_channel_list);
-		m_buffer->push(data, channel);
+		m_buffer->push(data, channel, cyclic);
 	} catch (invalid_parameter_exception &e) {
 		throw invalid_parameter_exception(e.what());
 	}
