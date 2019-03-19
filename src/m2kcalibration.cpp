@@ -501,7 +501,7 @@ bool M2kCalibration::calibrateDACoffset()
 	m_ad5625_dev->setDoubleValue(1, m_dac_b_ch_offset, "raw", true);
 
 	try {
-		m_m2k_dac->stopOutput();
+		m_m2k_dac->stop();
 		m_m2k_dac->enableChannel(0, false);
 		m_m2k_dac->enableChannel(1, false);
 	} catch (std::runtime_error &e) {
@@ -583,7 +583,7 @@ bool M2kCalibration::calibrateDACgain()
 	m_dac_b_ch_vlsb = voltage1 / 1024;
 
 	try {
-		m_m2k_dac->stopOutput();
+		m_m2k_dac->stop();
 		m_m2k_dac->enableChannel(0, false);
 		m_m2k_dac->enableChannel(1, false);
 	} catch (std::runtime_error &e) {
@@ -662,7 +662,7 @@ void M2kCalibration::dacAOutputDC(int16_t value)
 
 void M2kCalibration::dacOutputStop()
 {
-	m_m2k_dac->stopOutput();
+	m_m2k_dac->stop();
 
 	setCalibrationMode(NONE);
 }

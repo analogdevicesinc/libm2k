@@ -140,7 +140,7 @@ void libm2k::analog::GenericAnalogOut::closeAnalogOut()
 
 }
 
-void GenericAnalogOut::stopOutput()
+void GenericAnalogOut::stop()
 {
-	stop();
+	Device::stop();
 }

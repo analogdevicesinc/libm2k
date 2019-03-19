@@ -67,7 +67,8 @@ public:
 
 	void push(std::vector<std::vector<double>>& data);
 	void push(std::vector<std::vector<short>>& data);
-	void stopOutput();
+	void stop();
+	void stop(unsigned int chn);
 
 	void enableChannel(unsigned int chnIdx, bool enable);
 private:

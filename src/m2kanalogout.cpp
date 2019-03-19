@@ -62,7 +62,7 @@ M2kAnalogOut::M2kAnalogOut(iio_context *ctx, std::vector<std::string> dac_devs):
 
 M2kAnalogOut::~M2kAnalogOut()
 {
-	stopOutput();
+	stop();
 }
 
 void M2kAnalogOut::openAnalogOut()
@@ -280,7 +280,7 @@ double M2kAnalogOut::getFilterCompensation(double samplerate)
 	return m_filter_compensation_table.at(samplerate);
 }
 
-void M2kAnalogOut::stopOutput()
+void M2kAnalogOut::stop()
 {
 	m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
 	m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
@@ -288,6 +288,15 @@ void M2kAnalogOut::stopOutput()
 	for (Device* dev : m_dac_devices) {
 		dev->stop();
 	}
+}
+
+void M2kAnalogOut::stop(unsigned int chn)
+{
+	if (chn >= m_dac_devices.size()) {
+		throw invalid_parameter_exception("Analog Out stop: No such channel");
+	}
+	m_m2k_fabric->setBoolValue(chn, true, "powerdown", true);
+	m_dac_devices.at(chn)->stop();
 }
 
 short M2kAnalogOut::processSample(double value, unsigned int channel, bool raw)

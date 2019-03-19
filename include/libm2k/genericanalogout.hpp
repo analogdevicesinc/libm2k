@@ -50,7 +50,7 @@ public:
 
 	void push(std::vector<double>& data, unsigned int chn_idx = 0);
 	void push(std::vector<short>& data, unsigned int chn_idx = 0);
-	void stopOutput();
+	void stop();
 
 private:
 	std::vector<bool> m_cyclic;
