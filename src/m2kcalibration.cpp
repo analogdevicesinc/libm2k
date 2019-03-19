@@ -132,10 +132,10 @@ void M2kCalibration::restoreAdcFromCalibMode()
 void M2kCalibration::restoreDacFromCalibMode()
 {
 	try {
-		double samplerate_a = m_m2k_dac->setSamplerate(0, dac_a_sampl_freq);
-		double oversampl_a = m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
-		double samplerate_b = m_m2k_dac->setSamplerate(1, dac_b_sampl_freq);
-		double oversampl_b = m_m2k_dac->setOversamplingRatio(1, dac_b_oversampl);
+		m_m2k_dac->setSamplerate(0, dac_a_sampl_freq);
+		m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
+		m_m2k_dac->setSamplerate(1, dac_b_sampl_freq);
+		m_m2k_dac->setOversamplingRatio(1, dac_b_oversampl);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -145,7 +145,7 @@ void M2kCalibration::configAdcSamplerate()
 {
 	// Make sure we calibrate at the highest sample rate
 	try {
-		double sampleRate = m_m2k_adc->setSamplerate(1e8);
+		m_m2k_adc->setSamplerate(1e8);
 		m_m2k_adc->setOversamplingRatio(1);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
@@ -155,10 +155,10 @@ void M2kCalibration::configAdcSamplerate()
 void M2kCalibration::configDacSamplerate()
 {
 	try {
-		double samplerate_a = m_m2k_dac->setSamplerate(0, 75E6);
-		double oversampl_a = m_m2k_dac->setOversamplingRatio(0, 1);
-		double samplerate_b = m_m2k_dac->setSamplerate(1, 75E6);
-		double oversampl_b = m_m2k_dac->setOversamplingRatio(1, 1);
+		m_m2k_dac->setSamplerate(0, 75E6);
+		m_m2k_dac->setOversamplingRatio(0, 1);
+		m_m2k_dac->setSamplerate(1, 75E6);
+		m_m2k_dac->setOversamplingRatio(1, 1);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -227,7 +227,6 @@ bool M2kCalibration::calibrateADCgain()
 	double vref1 = 0.46172;
 	const unsigned int num_samples = 1e5;
 	double avg0, avg1;
-	bool ret;
 	bool calibrated = false;
 	std::vector<std::vector<double>> ch_data = {};
 
