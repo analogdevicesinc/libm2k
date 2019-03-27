@@ -230,19 +230,60 @@ void M2kAnalogOut::setDacCalibVlsb(unsigned int chn_idx, double vlsb)
 	m_calib_vlsb[chn_idx] = vlsb;
 }
 
+void M2kAnalogOut::push(std::vector<short> &data, unsigned int chnIdx)
+{
+	if (chnIdx >= m_dac_devices.size()) {
+		throw invalid_parameter_exception("M2K Analog Out: No such channel");
+	}
+	m_m2k_fabric->setBoolValue(chnIdx, true, "powerdown", true);
+	setSyncedDma(true, chnIdx);
+
+	size_t size = data.size();
+	std::vector<short> raw_data_buffer = {};
+	for (int i = 0; i < size; i++) {
+		raw_data_buffer.push_back(processSample(data.at(i), chnIdx, true));
+	}
+	m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
+
+	setSyncedDma(false, chnIdx);
+	m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
+}
+
+void M2kAnalogOut::push(std::vector<double> &data, unsigned int chnIdx)
+{
+	if (chnIdx >= m_dac_devices.size()) {
+		throw invalid_parameter_exception("M2K Analog Out: No such channel");
+	}
+	m_m2k_fabric->setBoolValue(chnIdx, true, "powerdown", true);
+	setSyncedDma(true, chnIdx);
+
+	size_t size = data.size();
+	std::vector<short> raw_data_buffer = {};
+	for (int i = 0; i < size; i++) {
+		raw_data_buffer.push_back(processSample(data.at(i), chnIdx, false));
+	}
+	m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
+
+	setSyncedDma(false, chnIdx);
+	m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
+}
+
 void M2kAnalogOut::push(std::vector<std::vector<short>> &data)
 {
-	//check data size
 	std::vector<std::vector<short>> data_buffers;
+	m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
+	m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 	setSyncedDma(true);
+
 	for (int chn = 0; chn < data.size(); chn++) {
 		size_t size = data.at(chn).size();
-		std::vector<short> raw_data_buffer;
+		std::vector<short> raw_data_buffer = {};
 		for (int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, true));
 		}
 		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 	}
+
 	setSyncedDma(false);
 	m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
 	m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
@@ -251,16 +292,20 @@ void M2kAnalogOut::push(std::vector<std::vector<short>> &data)
 void M2kAnalogOut::push(std::vector<std::vector<double>> &data)
 {
 	std::vector<std::vector<short>> data_buffers;
+	m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
+	m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 	setSyncedDma(true);
+
 	for (int chn = 0; chn < data.size(); chn++) {
 		size_t size = data.at(chn).size();
-		std::vector<short> raw_data_buffer;
+		std::vector<short> raw_data_buffer = {};
 		for (int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, false));
 		}
 		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		data_buffers.push_back(raw_data_buffer);
 	}
+
 	setSyncedDma(false);
 	m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
 	m_m2k_fabric->setBoolValue(1, false, "powerdown", true);

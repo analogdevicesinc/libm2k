@@ -88,6 +88,13 @@ void Buffer::push(std::vector<short> &data, unsigned int channel,
 
 	destroy();
 
+	/* If the data vector is empty, then it means we want
+	 * to remove what was pushed earlier to the device, so
+	 * we destroy the buffer */
+	if (data.size() == 0) {
+		return;
+	}
+
 	m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
 	if (!m_buffer) {
@@ -122,6 +129,13 @@ void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 	}
 
 	destroy();
+
+	/* If the data vector is empty, then it means we want
+	 * to remove what was pushed earlier to the device, so
+	 * we destroy the buffer */
+	if (data.size() == 0) {
+		return;
+	}
 
 	m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
