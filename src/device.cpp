@@ -101,14 +101,15 @@ void Device::enableChannel(unsigned int chnIdx, bool enable)
 }
 
 
-void Device::push(std::vector<short> &data, unsigned int channel, bool cyclic)
+void Device::push(std::vector<short> &data, unsigned int channel,
+		  bool cyclic, bool multiplex)
 {
 	if (!m_buffer) {
 		throw invalid_parameter_exception("Device: Can not push; device not buffer capable");
 	}
 	try {
 		m_buffer->setChannels(m_channel_list);
-		m_buffer->push(data, channel, cyclic);
+		m_buffer->push(data, channel, cyclic, multiplex);
 	} catch (invalid_parameter_exception &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -128,11 +129,17 @@ void Device::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 }
 
 void Device::stop()
+std::vector<unsigned short> Device::getSamples(int nb_samples)
 {
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Device: No available device that should be stopped");
+		throw invalid_parameter_exception("Device: Can not refill; device not buffer capable");
 	}
-	m_buffer->stop();
+	try {
+		m_buffer->setChannels(m_channel_list);
+		return m_buffer->getSamples(nb_samples);
+	} catch (invalid_parameter_exception &e) {
+		throw invalid_parameter_exception(e.what());
+	}
 }
 
 std::vector<std::vector<double> > Device::getSamples(int nb_samples,
