@@ -19,36 +19,20 @@
 
 #include "libm2k/dmm.hpp"
 #include "libm2k/m2kexceptions.hpp"
+#include <libm2k/channel.hpp>
 #include <iio.h>
 #include <iostream>
 
 using namespace libm2k::analog;
 
-DMM::DMM(struct iio_context *ctx, std::string dev)
+DMM::DMM(struct iio_context *ctx, std::string dev) :
+	Device(ctx, dev, true)
 {
-	m_ctx = ctx;
-	if (m_ctx) {
-		m_dev  = iio_context_find_device(m_ctx, dev.c_str());
-	}
-
-	if (!m_dev) {
-		m_dev = nullptr;
-		throw no_device_exception("DMM device not found");
-	}
-
-	m_dev_name = dev;
-	m_nb_channels = iio_device_get_channels_count(m_dev);
-
-	for (unsigned int i = 0; i < m_nb_channels; i++) {
-		struct iio_channel* chn = iio_device_get_channel(m_dev, i);
-		if (isValidDmmChannel(chn)) {
-			std::string id = std::string(iio_channel_get_id(chn));
-			m_channel_list.push_back(chn);
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		if (isValidDmmChannel(i)) {
+			m_channel_id_list.insert(std::pair<std::string, unsigned int>
+						    (getChannel(i)->getId(), i));
 		}
-	}
-
-	if (m_channel_list.size() != m_nb_channels) {
-		m_nb_channels = m_channel_list.size();
 	}
 }
 
@@ -57,35 +41,15 @@ DMM::~DMM()
 
 }
 
-bool DMM::isValidDmmChannel(struct iio_channel* chn)
+DMM::dmm_reading DMM::readChannel(unsigned int index)
 {
-	if (iio_channel_is_output(chn)) {
-		return false;
+	std::string chn_name = "";
+	for (auto pair : m_channel_id_list) {
+		if (pair.second == index) {
+			chn_name = pair.first;
+			break;
+		}
 	}
-
-	if (iio_channel_find_attr(chn, "raw")  != NULL ||
-			iio_channel_find_attr(chn, "input")  != NULL ||
-			iio_channel_find_attr(chn, "processed") != NULL) {
-
-		return true;
-	}
-	return false;
-}
-
-double DMM::getAttrValue(struct iio_channel *chn, std::string attr)
-{
-	double value = 0;
-	unsigned int ret = iio_channel_attr_read_double(
-				chn, attr.c_str(), &value);
-	if (ret < 0) {
-		throw invalid_parameter_exception("Cannot read " + attr);
-	}
-	return value;
-}
-
-DMM::dmm_reading DMM::readChannel(struct iio_channel *chn)
-{
-	std::string chn_name = iio_channel_get_id(chn);
 	try {
 		return readChannel(chn_name);
 	} catch (std::runtime_error &e) {
@@ -93,23 +57,13 @@ DMM::dmm_reading DMM::readChannel(struct iio_channel *chn)
 	}
 }
 
-struct iio_channel* DMM::getChannel(std::string chn_name)
-{
-	for (struct iio_channel* chn : m_channel_list) {
-		if (iio_channel_get_id(chn) == chn_name) {
-			return chn;
-		}
-	}
-	throw invalid_parameter_exception("No channel with this id");
-}
-
 std::vector<std::string> DMM::getAllChannels()
 {
-	std::vector<std::string> channel_names = {};
-	for (struct iio_channel* chn : m_channel_list) {
-		channel_names.push_back(iio_channel_get_id(chn));
+	std::vector<std::string> ids = {};
+	for (auto pair : m_channel_id_list) {
+		ids.push_back(pair.first);
 	}
-	return channel_names;
+	return ids;
 }
 
 DMM::dmm_reading DMM::readChannel(std::string chn_name)
@@ -117,25 +71,27 @@ DMM::dmm_reading DMM::readChannel(std::string chn_name)
 	dmm_reading result;
 	double value = 0;
 	std::string key = "";
-	struct iio_channel *chn = iio_device_find_channel(m_dev, chn_name.c_str(), false);
+	unsigned int index = m_channel_id_list.at(chn_name);
 	try {
-		if (iio_channel_find_attr(chn, "raw") != NULL) {
-			value = getAttrValue(chn, "raw");
-		} else if (iio_channel_find_attr(chn, "processed") != NULL) {
-			value = getAttrValue(chn, "processed");
-		} else if (iio_channel_find_attr(chn, "input") != NULL) {
-			value = getAttrValue(chn, "input");
+		auto channel = getChannel(index);
+		if (channel->hasAttribute("raw")) {
+			value = channel->getDoubleValue("raw");
+		} else if (channel->hasAttribute("processed")) {
+			value = channel->getDoubleValue("processed");
+		} else if (channel->hasAttribute("input")) {
+			value = channel->getDoubleValue("input");
 		} else {
-			throw invalid_parameter_exception("Cannot read channel");
+			throw invalid_parameter_exception("DMM: Cannot read channel" + chn_name);
 		}
 
-		if (iio_channel_find_attr(chn, "offset") != NULL) {
-			value += getAttrValue(chn, "offset");
+		if (channel->hasAttribute("offset")) {
+			value += channel->getDoubleValue("offset");
 		}
 
-		if (iio_channel_find_attr(chn, "scale") != NULL) {
-			value *= getAttrValue(chn, "scale");
+		if (channel->hasAttribute("scale")) {
+			value *= channel->getDoubleValue("scale");
 		}
+
 
 		if (chn_name.find("voltage") != std::string::npos) {
 			key = " Volts\n";
@@ -171,19 +127,13 @@ std::vector<DMM::dmm_reading> DMM::readAll()
 {
 	std::vector<dmm_reading> result = {};
 	try {
-		for (struct iio_channel* chn : m_channel_list) {
-			dmm_reading res = readChannel(chn);
+		for (auto pair : m_channel_id_list) {
+			dmm_reading res = readChannel(pair.first);
 			result.push_back(res);
 		}
 		return result;
 	} catch (std::runtime_error& e) {
-		throw std::invalid_argument("Cannot read dmm " + m_dev_name);
+		throw std::invalid_argument("Cannot read DMM: " + getName());
 	}
 }
-
-std::string DMM::getDeviceName()
-{
-	return m_dev_name;
-}
-
 

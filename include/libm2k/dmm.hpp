@@ -21,19 +21,16 @@
 #define GENERICDMM_HPP
 
 #include "libm2k/m2kglobal.hpp"
+#include <libm2k/device.hpp>
 #include <vector>
 #include <map>
 #include <string>
 
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-}
+using namespace libm2k::utils;
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API DMM {
+class LIBM2K_API DMM : public Device {
 public:
 	struct dmm_reading {
 		std::string name;
@@ -44,22 +41,13 @@ public:
 	DMM(struct iio_context *ctx, std::string dev);
 	virtual ~DMM();
 
-	struct iio_channel* getChannel(std::string chn_name);
 	std::vector<std::string> getAllChannels();
-	dmm_reading readChannel(struct iio_channel* chn);
+	dmm_reading readChannel(unsigned int index);
 	dmm_reading readChannel(std::string chn_name);
 	std::vector<dmm_reading> readAll();
-	std::string getDeviceName();
 
 private:
-	struct iio_context* m_ctx;
-	struct iio_device* m_dev;
-	std::string m_dev_name;
-	unsigned int m_nb_channels;
-	std::vector<struct iio_channel*> m_channel_list;
-
-	double getAttrValue(struct iio_channel* chn, std::string attr);
-	bool isValidDmmChannel(struct iio_channel* chn);
+	std::map<std::string, unsigned int> m_channel_id_list;
 };
 }
 }

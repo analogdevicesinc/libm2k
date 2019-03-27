@@ -174,6 +174,12 @@ int main(int argc, char **argv)
 						std::cout << read.name << " " << read.value << " " << read.unit;
 					}
 
+					dmm = d->getDMM(1);
+					readings = dmm->readAll();
+					for (DMM::dmm_reading read : readings) {
+						std::cout << read.name << " " << read.value << " " << read.unit;
+					}
+
 					bool ret = dev->resetCalibration();
 					aIn->enableChannel(0, true);
 					aIn->enableChannel(1, true);

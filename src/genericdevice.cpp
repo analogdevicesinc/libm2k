@@ -164,7 +164,7 @@ DMM* GenericDevice::getDMM(unsigned int index)
 DMM* GenericDevice::getDMM(std::string dev_name)
 {
 	for (DMM* d : m_instancesDMM) {
-		if (d->getDeviceName() == dev_name) {
+		if (d->getName() == dev_name) {
 			return d;
 		}
 	}
