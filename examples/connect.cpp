@@ -244,6 +244,8 @@ int main(int argc, char **argv)
 					M2kPowerSupply* psupply = dev->getPowerSupply();
 					psupply->pushChannel(0, 3);
 					psupply->enableChannel(0, true);
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+					std::cout << "Psupply read 3V " << psupply->readChannel(0) << std::endl;
 					psupply->enableChannel(0, false);
 
 
@@ -265,6 +267,16 @@ int main(int argc, char **argv)
 					logic->setValueRaw(M2kDigital::DIO_CHANNEL_4, M2kDigital::HIGH);
 					logic->setValueRaw(M2kDigital::DIO_CHANNEL_5, M2kDigital::HIGH);
 
+
+					logic->enableAllOut(true);
+					logic->setDirection(65535);
+					logic->enableChannelOut(M2kDigital::DIO_CHANNEL_1, true);
+					logic->enableChannelOut(M2kDigital::DIO_CHANNEL_0, true);
+					logic->enableChannelOut(M2kDigital::DIO_CHANNEL_2, true);
+					logic->enableChannelOut(M2kDigital::DIO_CHANNEL_3, true);
+					std::vector<short> vec_digital(512, 7);
+					logic->setCyclic(true);
+					logic->push(vec_digital);
 				} catch (std::runtime_error &e) {
 					std::cout << e.what() << "\n";
 				}

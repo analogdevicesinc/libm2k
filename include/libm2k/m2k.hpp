@@ -76,6 +76,7 @@ private:
 	std::vector<utils::Device*> m_instancesAnalogOut;
 	std::vector<utils::Device*> m_instancesAnalogIn;
 	std::vector<utils::Device*> m_instancesPowerSupply;
+	std::vector<utils::Device*> m_instancesDigital;
 	void initialize();
 };
 }

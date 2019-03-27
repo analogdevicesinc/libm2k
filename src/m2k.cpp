@@ -121,7 +121,7 @@ void M2K::scanAllPowerSupply()
 void M2K::scanAllDigital()
 {
 	try {
-		GenericDigital* logic = new libm2k::digital::M2kDigital(ctx(), "m2k-logic-analyzer");
+		Device* logic = new libm2k::digital::M2kDigital(ctx(), "m2k-logic-analyzer");
 		m_instancesDigital.push_back(logic);
 	} catch (std::runtime_error &e) {
 		std::cout << e.what() << std::endl;

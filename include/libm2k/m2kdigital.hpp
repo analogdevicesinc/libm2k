@@ -23,19 +23,15 @@
 #include "m2kglobal.hpp"
 #include "genericdigital.hpp"
 #include "m2khardwaretrigger.hpp"
+#include <libm2k/device.hpp>
 #include <string>
 #include <vector>
 
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-	struct iio_buffer;
-}
+using namespace libm2k::devices;
 
 namespace libm2k {
 namespace digital {
-class LIBM2K_API M2kDigital : public GenericDigital
+class LIBM2K_API M2kDigital : public Device
 {
 public:
 	enum DIO_CHANNEL {
@@ -67,20 +63,45 @@ public:
 		DIO_AND = 1,
 	};
 
+	enum DIO_DIRECTION {
+		DIO_INPUT = 0,
+		DIO_OUTPUT = 1,
+	};
+
+	enum level {
+		LOW = 0,
+		HIGH = 1,
+	};
+
+	struct channel {
+		struct iio_channel* m_channel;
+		DIO_DIRECTION m_direction;
+
+	};
+
 	M2kDigital(struct iio_context* ctx, std::string logic_dev);
 	virtual ~M2kDigital();
 
+	void setDirection(unsigned short mask);
+	void setDirection(unsigned int index, DIO_DIRECTION dir);
+	void setDirection(unsigned int index, bool dir);
+	void setDirection(DIO_CHANNEL index, bool dir);
 	void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir);
 	DIO_DIRECTION getDirection(DIO_CHANNEL index);
 
 	void setValueRaw(DIO_CHANNEL index, level);
 	level getValueRaw(DIO_CHANNEL index);
 
-	void push(std::vector<unsigned short>& data, bool cyclic = true);
+	void push(std::vector<short>& data);
+	void stop();
+
 	std::vector<unsigned short> getSamples(int nb_samples);
 
 	void enableChannelIn(DIO_CHANNEL index, bool enable);
 	void enableChannelOut(DIO_CHANNEL index, bool enable);
+	void enableAllIn(bool enable);
+	void enableAllOut(bool enable);
+
 	bool anyChannelEnabled(DIO_DIRECTION dir);
 
 	void setTrigger(DIO_CHANNEL, libm2k::analog::M2kHardwareTrigger::condition);
@@ -95,15 +116,14 @@ public:
 	void setOutputMode(DIO_CHANNEL, DIO_MODE);
 	DIO_MODE getOutputMode(DIO_CHANNEL);
 
+	bool getCyclic();
+	void setCyclic(bool cyclic);
 private:
-	struct iio_device* m_dev_read;
-	struct iio_device* m_dev_write;
+	bool m_cyclic;
+	std::shared_ptr<Device> m_dev_read;
+	std::shared_ptr<Device> m_dev_write;
 	std::string m_dev_name_read;
 	std::string m_dev_name_write;
-	iio_buffer* m_buffer_out;
-	iio_buffer* m_buffer_in;
-	std::vector<struct iio_channel*> m_channel_read_list;
-	std::vector<struct iio_channel*> m_channel_write_list;
 	static std::vector<std::string> m_output_mode;
 	static std::vector<std::string> m_trigger_logic_mode;
 };
