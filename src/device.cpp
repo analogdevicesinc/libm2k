@@ -149,6 +149,12 @@ void Device::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 }
 
 void Device::stop()
+{
+	if (m_buffer) {
+		m_buffer->stop();
+	}
+}
+
 std::vector<unsigned short> Device::getSamples(int nb_samples)
 {
 	if (!m_buffer) {
@@ -511,6 +517,14 @@ void Device::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t
 	} else {
 		throw invalid_parameter_exception("Device: No such channel");
 	}
+}
+
+void Device::setKernelBuffersCount(unsigned int count)
+{
+	if (!m_dev) {
+		throw invalid_parameter_exception("Device: no such device");
+	}
+	iio_device_set_kernel_buffers_count(m_dev, count);
 }
 
 bool Device::isValidDmmChannel(unsigned int chnIdx)

@@ -73,13 +73,16 @@ public:
 	std::vector<double> getAvailableSamplerates();
 
 	void writeRegister(uint32_t address, uint32_t value);
+
 	std::string getHardwareRevision();
 	unsigned int getNbChannels();
 
 	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
-private:
+
+	void setKernelBuffersCount(unsigned int count);
 	bool isValidDmmChannel(unsigned int chnIdx);
+protected:
 	struct iio_context *m_context;
 	struct iio_device *m_dev; //or a list of iio_Devices? in the case of m2k-dac-a and m2k-dac-b
 	std::vector<Channel*> m_channel_list;
