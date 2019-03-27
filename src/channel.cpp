@@ -161,3 +161,16 @@ void Channel::convert(double *avg, int16_t *src)
 	}
 	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
 }
+
+double Channel::getDoubleValue(std::string attr)
+{
+	if (!m_channel) {
+		throw  no_device_exception("channel: Can not find associated channel");
+	}
+	double value = 0.0;
+	unsigned int ret = iio_channel_attr_read_double(m_channel, attr.c_str(), &value);
+	if (ret < 0) {
+		throw invalid_parameter_exception("Channel: Cannot read " + attr);
+	}
+	return value;
+}
