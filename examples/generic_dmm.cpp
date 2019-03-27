@@ -29,7 +29,7 @@ int main (int argc, char **argv)
 		std::cout << device->getContextAttributes() << std::endl;
 		auto dmms = device->getAllDmm();
 		for (auto dmm : dmms) {
-			std::cout << "###  IIO Device name: " << dmm->getDeviceName() << std::endl;
+			std::cout << "###  IIO Device name: " << dmm->getName() << std::endl;
 			std::cout << "READ all channels: " << std::endl;
 			auto readings = dmm->readAll();
 			for (auto r : readings) {
