@@ -153,7 +153,7 @@ uint16_t M2kAnalogIn::getVoltageRaw(unsigned int ch)
 {
 	M2kAnalogIn::ANALOG_IN_CHANNEL chn = static_cast<M2kAnalogIn::ANALOG_IN_CHANNEL>(ch);
 	try {
-		getVoltageRaw(chn);
+		return getVoltageRaw(chn);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -199,7 +199,7 @@ double M2kAnalogIn::getVoltage(unsigned int ch)
 {
 	M2kAnalogIn::ANALOG_IN_CHANNEL chn = static_cast<M2kAnalogIn::ANALOG_IN_CHANNEL>(ch);
 	try {
-		getVoltage(chn);
+		return getVoltage(chn);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
