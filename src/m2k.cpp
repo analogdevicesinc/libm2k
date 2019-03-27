@@ -58,11 +58,14 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 	m_instancesAnalogOut.clear();
 	m_instancesPowerSupply.clear();
 
-	scanAllAnalogIn();
-	scanAllAnalogOut();
-	scanAllPowerSupply();
-	scanAllDigital();
-
+	try {
+		scanAllAnalogIn();
+		scanAllAnalogOut();
+		scanAllPowerSupply();
+		scanAllDigital();
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
 	m_calibration = new M2kCalibration(ctx, getAnalogIn(), getAnalogOut());
 }
 
@@ -108,7 +111,7 @@ void M2K::scanAllAnalogOut()
 void M2K::scanAllPowerSupply()
 {
 	try {
-		PowerSupply* pSupply = new libm2k::analog::M2kPowerSupply(ctx(), "ad5627", "ad9963");
+		Device* pSupply = new libm2k::analog::M2kPowerSupply(ctx(), "ad5627", "ad9963");
 		m_instancesPowerSupply.push_back(pSupply);
 	} catch (std::runtime_error &e) {
 		std::cout << e.what() << std::endl;

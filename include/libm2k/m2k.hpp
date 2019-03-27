@@ -75,6 +75,7 @@ private:
 	M2kCalibration* m_calibration;
 	std::vector<utils::Device*> m_instancesAnalogOut;
 	std::vector<utils::Device*> m_instancesAnalogIn;
+	std::vector<utils::Device*> m_instancesPowerSupply;
 	void initialize();
 };
 }
