@@ -32,33 +32,22 @@ using namespace std;
 
 
 GenericDigital::GenericDigital(iio_context *ctx, string logic_dev) :
+	Device(ctx, logic_dev),
 	m_ctx(ctx)
 {
-	if (m_ctx) {
-		m_dev = iio_context_find_device(m_ctx, logic_dev.c_str());
-	}
-
-	if (!m_dev) {
-		m_dev = nullptr;
-		throw no_device_exception("Digital In device not found");
-	}
 	m_dev_name = logic_dev;
-	m_nb_channels = iio_device_get_channels_count(m_dev);
-	for (unsigned int i = 0; i < m_nb_channels; i++) {
+
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		struct channel chn;
-		chn.m_channel = iio_device_get_channel(m_dev, i);
+		std::string name = "voltage" + std::to_string(i);
+		chn.m_channel = iio_device_find_channel(m_dev, name.c_str(), false);
 		chn.m_direction = GenericDigital::DIO_INPUT;
 		m_channel_list.push_back(chn);
-	}
-
-	if (m_channel_list.size() != m_nb_channels) {
-		m_nb_channels = m_channel_list.size();
 	}
 }
 
 GenericDigital::~GenericDigital()
 {
-	m_data.clear();
 }
 
 double GenericDigital::getSampleRate()
@@ -80,9 +69,19 @@ double GenericDigital::setSampleRate(double sampleRate)
 	}
 }
 
+void GenericDigital::setCyclic(bool cyclic)
+{
+	m_cyclic = cyclic;
+}
+
+bool GenericDigital::getCyclic()
+{
+	return m_cyclic;
+}
+
 void GenericDigital::enableChannel(unsigned int index, bool enable)
 {
-	if (index < m_nb_channels) {
+	if (index < getNbChannels()) {
 		if (enable) {
 			iio_channel_enable(m_channel_list.at(index).m_channel);
 		} else {
@@ -91,15 +90,5 @@ void GenericDigital::enableChannel(unsigned int index, bool enable)
 	} else {
 		throw invalid_parameter_exception("Cannot enable digital channel.");
 	}
-}
-
-unsigned int GenericDigital::nbChannels()
-{
-	return m_nb_channels;
-}
-
-iio_context *GenericDigital::ctx()
-{
-	return m_ctx;
 }
 

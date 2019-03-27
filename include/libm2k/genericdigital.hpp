@@ -21,6 +21,7 @@
 #define GENERICDIGITALIN_HPP
 
 #include "m2kglobal.hpp"
+#include <libm2k/device.hpp>
 #include <string>
 #include <vector>
 
@@ -31,9 +32,11 @@ extern "C" {
 	struct iio_buffer;
 }
 
+using namespace libm2k::utils;
+
 namespace libm2k {
 namespace digital {
-class LIBM2K_API GenericDigital {
+class LIBM2K_API GenericDigital : public Device {
 public:
 	GenericDigital(struct iio_context* ctx, std::string logic_dev);
 	virtual ~GenericDigital();
@@ -57,34 +60,15 @@ public:
 	double getSampleRate();
 	double setSampleRate(double sampleRate);
 
+	void setCyclic(bool cyclic);
+	bool getCyclic();
+
 	void enableChannel(unsigned int index, bool enable);
-	unsigned int nbChannels();
-	struct iio_context* ctx();
-
-	typedef std::vector<unsigned short>::iterator iterator;
-
-	iterator begin()
-	{
-		return m_data.begin();
-	}
-
-	iterator end()
-	{
-		return m_data.end();
-	}
-
-	unsigned short* data()
-	{
-		return m_data.data();
-	}
 
 protected:
 	struct iio_context* m_ctx;
-	struct iio_device* m_dev;
 	std::string m_dev_name;
 	std::vector<channel> m_channel_list;
-	std::vector<unsigned short> m_data;
-	unsigned int m_nb_channels;
 	bool m_cyclic;
 };
 }
