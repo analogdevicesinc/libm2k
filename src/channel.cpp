@@ -95,6 +95,17 @@ bool Channel::isEnabled()
 	return iio_channel_is_enabled(m_channel);
 }
 
+bool Channel::hasAttribute(std::string attr)
+{
+	if (!m_channel) {
+		throw no_device_exception("Channel: Can not find associated channel");
+	}
+	if (iio_channel_find_attr(m_channel, attr.c_str()) != NULL) {
+		return true;
+	}
+	return false;
+}
+
 void Channel::enableChannel(bool enable)
 {
 	if (!m_channel) {
