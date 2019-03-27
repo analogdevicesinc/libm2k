@@ -39,7 +39,7 @@ public:
 
 	enum M2K_RANGE {
 		PLUS_MINUS_25V = 0,
-		PLUS_MINUS_5V = 1 // should be 2.5 instead of 5V?
+		PLUS_MINUS_2_5V = 1
 	};
 
 

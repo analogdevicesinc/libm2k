@@ -34,6 +34,11 @@ using namespace libm2k::utils;
 using namespace std;
 using namespace std::placeholders;
 
+#define HIGH_MAX 2.5
+#define HIGH_MIN -2.5
+#define LOW_MAX 25
+#define LOW_MIN -25
+
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 			 std::string adc_dev) :
 	Device(ctx, adc_dev),
@@ -384,7 +389,7 @@ void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 	const char *str_gain_mode;
 
 	m_input_range[channel] = range;
-	if (range == PLUS_MINUS_5V) {
+	if (range == PLUS_MINUS_2_5V) {
 		str_gain_mode = "high";
 	} else {
 		str_gain_mode = "low";
@@ -400,8 +405,8 @@ void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, double min, double max)
 {
 
-	if ((min >= -5) && (max <= 5)) {
-		setRange(channel, PLUS_MINUS_5V);
+	if ((min >= HIGH_MIN) && (max <= HIGH_MAX)) {
+		setRange(channel, PLUS_MINUS_2_5V);
 	} else {
 		setRange(channel, PLUS_MINUS_25V);
 	}
@@ -415,9 +420,9 @@ M2kAnalogIn::M2K_RANGE M2kAnalogIn::getRange(ANALOG_IN_CHANNEL channel)
 std::pair<double, double> M2kAnalogIn::getRangeLimits(M2kAnalogIn::M2K_RANGE range)
 {
 	if (range == PLUS_MINUS_25V) {
-		return std::pair<double, double>(-25, 25);
+		return std::pair<double, double>(LOW_MIN, LOW_MAX);
 	} else {
-		return std::pair<double, double>(-5, 5);
+		return std::pair<double, double>(HIGH_MIN, HIGH_MAX);
 	}
 }
 
@@ -509,7 +514,7 @@ double M2kAnalogIn::getValueForRange(M2K_RANGE range)
 {
 	if (range == PLUS_MINUS_25V) {
 		return 0.02017;
-	} else if (range == PLUS_MINUS_5V) {
+	} else if (range == PLUS_MINUS_2_5V) {
 		return 0.21229;
 	} else {
 		return 0;
