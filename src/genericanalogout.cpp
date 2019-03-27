@@ -112,7 +112,6 @@ bool GenericAnalogOut::getCyclic(unsigned int chn)
 
 void GenericAnalogOut::push(std::vector<short> &data, unsigned int chn_idx)
 {
-	size_t size = data.size();
 	try {
 		Device::push(data, chn_idx, getCyclic(chn_idx));
 	} catch (std::runtime_error &e) {
@@ -122,7 +121,6 @@ void GenericAnalogOut::push(std::vector<short> &data, unsigned int chn_idx)
 
 void GenericAnalogOut::push(std::vector<double> &data, unsigned int chn_idx)
 {
-	size_t size = data.size();
 	try {
 		Device::push(data, chn_idx, getCyclic(chn_idx));
 	} catch (std::runtime_error &e) {
