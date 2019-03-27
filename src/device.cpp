@@ -91,10 +91,30 @@ Channel* Device::getChannel(unsigned int chnIdx)
 	}
 }
 
+bool Device::isChannel(unsigned int chnIdx, bool output)
+{
+	std::string name = "voltage" + to_string(chnIdx);
+	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+	if (chn) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 void Device::enableChannel(unsigned int chnIdx, bool enable)
 {
 	try {
 		getChannel(chnIdx)->enableChannel(enable);
+	} catch (std::runtime_error &e) {
+		throw invalid_parameter_exception(e.what());
+	}
+}
+
+bool Device::isChannelEnabled(unsigned int chnIdx)
+{
+	try {
+		return getChannel(chnIdx)->isEnabled();
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
@@ -491,6 +511,24 @@ void Device::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t
 	} else {
 		throw invalid_parameter_exception("Device: No such channel");
 	}
+}
+
+bool Device::isValidDmmChannel(unsigned int chnIdx)
+{
+	if (chnIdx >= m_channel_list.size()) {
+		throw invalid_parameter_exception("Device: no such DMM channel");
+	}
+
+	auto chn = m_channel_list.at(chnIdx);
+	if (chn->isOutput()) {
+		return false;
+	}
+
+	if (chn->hasAttribute("raw") || chn->hasAttribute("input") ||
+			chn->hasAttribute("processed")) {
+		return true;
+	}
+	return false;
 }
 
 

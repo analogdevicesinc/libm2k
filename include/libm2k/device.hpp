@@ -39,7 +39,11 @@ public:
 	virtual ~Device();
 
 	Channel *getChannel(unsigned int chnIdx);
+	bool isChannel(unsigned int chnIdx, bool output);
+
 	virtual void enableChannel(unsigned int chnIdx, bool enable);
+	bool isChannelEnabled(unsigned int chnIdx);
+
 	void push(std::vector<short> &data, unsigned int channel,
 		  bool cyclic = true, bool multiplex = false);
 	void push(std::vector<double> &data, unsigned int channel, bool cyclic = true);
@@ -75,6 +79,7 @@ public:
 	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
 private:
+	bool isValidDmmChannel(unsigned int chnIdx);
 	struct iio_context *m_context;
 	struct iio_device *m_dev; //or a list of iio_Devices? in the case of m2k-dac-a and m2k-dac-b
 	std::vector<Channel*> m_channel_list;
