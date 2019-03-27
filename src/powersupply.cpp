@@ -23,61 +23,30 @@
 #include <iostream>
 
 using namespace libm2k::analog;
+using namespace libm2k::utils;
 
 PowerSupply::PowerSupply(struct iio_context* ctx, std::string write_dev,
-			 std::string read_dev)
+			 std::string read_dev) :
+	Device(ctx, "")
 {
-	m_ctx = ctx;
-	if (!m_ctx) {
-		throw no_device_exception("Invalid IIO context");
-	}
-
 	if (write_dev != "") {
-		m_dev_write = iio_context_find_device(m_ctx, write_dev.c_str());
+		m_dev_write = make_shared<Device>(ctx, write_dev);
 		if (!m_dev_write) {
 			m_dev_write = nullptr;
-			throw no_device_exception("No device was found for writing");
+			throw invalid_parameter_exception("Power Supply: No device was found for writing");
 		}
 	}
 
 	if (read_dev != "") {
-		m_dev_read = iio_context_find_device(m_ctx, read_dev.c_str());
+		m_dev_read = make_shared<Device>(ctx, write_dev);
 		if (!m_dev_read) {
 			m_dev_read = nullptr;
-			throw no_device_exception("No device was found for reading");
+			throw invalid_parameter_exception("Power Supply: No device was found for reading");
 		}
 	}
-
-	m_dev_read_name = read_dev;
-	m_dev_write_name = write_dev;
-
-	m_nb_read_channels = iio_device_get_channels_count(m_dev_read);
-	m_nb_write_channels = iio_device_get_channels_count(m_dev_write);
 }
 
 PowerSupply::~PowerSupply()
 {
-	m_read_channels.clear();
-	m_write_channels.clear();
 }
 
-struct iio_context* PowerSupply::getContext()
-{
-	return m_ctx;
-}
-
-struct iio_device* PowerSupply::getReadDevice()
-{
-	if (!m_dev_read) {
-		throw no_device_exception("No such read device");
-	}
-	return m_dev_read;
-}
-
-struct iio_device* PowerSupply::getWriteDevice()
-{
-	if (!m_dev_write) {
-		throw no_device_exception("No such write device");
-	}
-	return m_dev_write;
-}
