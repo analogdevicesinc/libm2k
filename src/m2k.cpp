@@ -162,7 +162,7 @@ bool M2K::calibrateDAC()
 
 double M2K::getAdcCalibrationGain(unsigned int chn)
 {
-	if (chn >= getAnalogIn(0)->getNbChannels()) {
+	if (chn >= getAnalogIn()->getNbChannels()) {
 		throw std::runtime_error("No such ADC channel");
 	}
 	if (chn == 0) {
@@ -174,7 +174,7 @@ double M2K::getAdcCalibrationGain(unsigned int chn)
 
 int M2K::getAdcCalibrationOffset(unsigned int chn)
 {
-	if (chn >= getAnalogIn(0)->getNbChannels()) {
+	if (chn >= getAnalogIn()->getNbChannels()) {
 		throw std::runtime_error("No such ADC channel");
 	}
 	if (chn == 0) {
