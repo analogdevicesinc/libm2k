@@ -35,7 +35,7 @@ class Buffer;
 class Device
 {
 public:
-	Device(struct iio_context* context, std::string dev_name = "");
+	Device(struct iio_context* context, std::string dev_name = "", bool input = false);
 	virtual ~Device();
 
 	Channel *getChannel(unsigned int chnIdx);

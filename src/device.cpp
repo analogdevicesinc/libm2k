@@ -32,7 +32,7 @@ using namespace libm2k::utils;
 /*
  * Represents an iio_device
  */
-Device::Device(struct iio_context* context, std::string dev_name)
+Device::Device(struct iio_context* context, std::string dev_name, bool input)
 {
 	m_context = context;
 	m_dev = nullptr;
@@ -56,11 +56,18 @@ Device::Device(struct iio_context* context, std::string dev_name)
 			unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 			for (unsigned int i = 0; i < nb_channels; i++) {
 				Channel *chn = nullptr;
-				std::string name = "voltage" + std::to_string(i);
-				try {
-					chn = new Channel(m_dev, name.c_str(), true);
-				} catch (std::runtime_error &e) {
-					chn = new Channel(m_dev, name.c_str(), false);
+				if (input) {
+					chn = new Channel(m_dev, i);
+					if (chn->isOutput()) {
+						continue;
+					}
+				} else {
+					std::string name = "voltage" + std::to_string(i);
+					try {
+						chn = new Channel(m_dev, name.c_str(), true);
+					} catch (std::runtime_error &e) {
+						chn = new Channel(m_dev, name.c_str(), false);
+					}
 				}
 				m_channel_list.push_back(chn);
 			}
