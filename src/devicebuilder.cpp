@@ -22,7 +22,7 @@
 #include "libm2k/genericdevice.hpp"
 #include "libm2k/m2k.hpp"
 #include <iio.h>
-#include "libm2k/utils.hpp"
+#include "libm2k/utils/utils.hpp"
 #include <algorithm>
 #include <vector>
 #include <iostream>

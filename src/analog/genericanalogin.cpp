@@ -20,7 +20,7 @@
 #include <libm2k/analog/genericanalogin.hpp>
 #include <libm2k/m2kexceptions.hpp>
 
-#include "libm2k/utils.hpp"
+#include "libm2k/utils/utils.hpp"
 #include <iio.h>
 #include <iostream>
 #include <algorithm>

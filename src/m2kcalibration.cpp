@@ -21,7 +21,7 @@
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/m2kcalibration.hpp>
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/utils.hpp>
+#include <libm2k/utils/utils.hpp>
 
 #include <errno.h>
 #include <iio.h>

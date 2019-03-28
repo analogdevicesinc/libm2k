@@ -20,8 +20,8 @@
 #ifndef GENERICDEVICE_HPP
 #define GENERICDEVICE_HPP
 
-#include "m2kglobal.hpp"
-#include "libm2k/utils.hpp"
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/utils/enums.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -30,6 +30,7 @@ extern "C" {
 	struct iio_context;
 }
 
+using namespace libm2k::utils;
 namespace libm2k {
 namespace analog {
 	class GenericAnalogIn;
@@ -42,27 +43,10 @@ namespace digital {
 	class GenericDigital;
 }
 
-namespace utils {
-	class Utils;
-}
-
 namespace devices {
 class M2K;
 class LIBM2K_API GenericDevice : public std::enable_shared_from_this<GenericDevice> {
 public:
-//	enum DEVICE_TYPE {
-//		ANALOG = 1,
-//		DIGITAL = 2,
-//		NONE = 3
-//	};
-
-//	enum DEVICE_DIRECTION {
-//		INPUT = 1,
-//		OUTPUT = 2,
-//		BOTH = 3,
-//		NO_DIRECTION = 4
-//	};
-
 	GenericDevice(std::string uri, struct iio_context*, std::string name);
 	virtual ~GenericDevice();
 
@@ -94,8 +78,8 @@ protected:
 	std::vector<libm2k::digital::GenericDigital*> m_instancesDigital;
 private:
 	bool isIioDeviceBufferCapable(std::string);
-	libm2k::utils::Utils::DEVICE_TYPE getIioDeviceType(std::string);
-	libm2k::utils::Utils::DEVICE_DIRECTION getIioDeviceDirection(std::string);
+	DEVICE_TYPE getIioDeviceType(std::string);
+	DEVICE_DIRECTION getIioDeviceDirection(std::string);
 	std::string m_uri;
 	struct iio_context* m_ctx;
 

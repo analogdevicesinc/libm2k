@@ -20,7 +20,7 @@
 #include <libm2k/utils/device.hpp>
 #include <libm2k/utils/buffer.hpp>
 #include <libm2k/utils/channel.hpp>
-#include <libm2k/utils.hpp>
+#include <libm2k/utils/utils.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <algorithm>
 #include <cstring>

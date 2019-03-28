@@ -20,7 +20,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "libm2k/m2kglobal.hpp"
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/utils/enums.hpp>
 #include <string>
 #include <vector>
 #include <utility>
@@ -33,27 +34,6 @@ namespace libm2k {
 namespace utils {
 	class LIBM2K_API Utils {
 	public:
-
-		enum DEVICE_TYPE {
-			ANALOG = 1,
-			DIGITAL = 2,
-			NONE = 3
-		};
-
-		enum DEVICE_DIRECTION {
-			INPUT = 1,
-			OUTPUT = 2,
-			BOTH = 3,
-			NO_DIRECTION = 4
-		};
-
-
-		struct ini_device_struct {
-			std::string hw_name;
-			std::vector< std::pair< std::string,std::vector<std::string>>>
-				key_val_pairs;
-		};
-
 		static std::vector<std::string> getIioDevByGlobalAttrs(iio_context*, std::vector<std::string> attr_list);
 
 		/**
@@ -78,7 +58,7 @@ namespace utils {
 
                 static void blinkLed(iio_context* ctx, const double duration, bool blocking = false);
 
-		static std::vector<Utils::ini_device_struct> parseIniFile(std::string path);
+		static std::vector<ini_device_struct> parseIniFile(std::string path);
 
 		static std::unordered_set<std::string> getAllDevices(iio_context *ctx);
 
@@ -99,7 +79,7 @@ namespace utils {
 		static double setDoubleValue(struct iio_device*, unsigned int chn_idx,
 					    double value, std::string attr);
 
-		static Utils::DEVICE_DIRECTION getIioDeviceDirection(iio_device *dev);
+		static DEVICE_DIRECTION getIioDeviceDirection(iio_device *dev);
 		static std::vector<std::string> split(std::string, std::string);
 	private:
 		static std::string parseIniSection(std::string line);

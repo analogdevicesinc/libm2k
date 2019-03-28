@@ -23,6 +23,7 @@
 #include <libm2k/analog/genericanalogout.hpp>
 #include <libm2k/analog/powersupply.hpp>
 #include <libm2k/analog/dmm.hpp>
+#include <libm2k/utils/utils.hpp>
 #include <libm2k/m2k.hpp>
 #include <iio.h>
 #include <iostream>
@@ -76,8 +77,8 @@ void GenericDevice::scanAllAnalogIn()
 	for (auto dev : dev_list) {
 		try {
 			if (isIioDeviceBufferCapable(dev) &&
-					(getIioDeviceType(dev) == Utils::ANALOG) &&
-					getIioDeviceDirection(dev) == Utils::INPUT) {
+					(getIioDeviceType(dev) == ANALOG_DEV) &&
+					getIioDeviceDirection(dev) == INPUT) {
 				try {
 					auto aIn = new GenericAnalogIn(m_ctx, dev);
 					m_instancesAnalogIn.push_back(aIn);
@@ -97,8 +98,8 @@ void GenericDevice::scanAllAnalogOut()
 	for (auto dev : dev_list) {
 		try {
 			if (isIioDeviceBufferCapable(dev) &&
-					(getIioDeviceType(dev) == Utils::ANALOG) &&
-					getIioDeviceDirection(dev) == Utils::OUTPUT) {
+					(getIioDeviceType(dev) == ANALOG_DEV) &&
+					getIioDeviceDirection(dev) == OUTPUT) {
 				auto aOut = new GenericAnalogOut(m_ctx, dev);
 				m_instancesAnalogOut.push_back(aOut);
 			}
@@ -187,7 +188,7 @@ bool GenericDevice::isIioDeviceBufferCapable(std::string dev_name)
 	}
 }
 
-libm2k::utils::Utils::DEVICE_TYPE GenericDevice::getIioDeviceType(std::string dev_name)
+DEVICE_TYPE GenericDevice::getIioDeviceType(std::string dev_name)
 {
 	auto dev = iio_context_find_device(m_ctx, dev_name.c_str());
 	if (!dev) {
@@ -196,20 +197,20 @@ libm2k::utils::Utils::DEVICE_TYPE GenericDevice::getIioDeviceType(std::string de
 
 	auto chn = iio_device_get_channel(dev, 0);
 	if (!chn) {
-		return Utils::NONE;
+		return libm2k::utils::NONE;
 	}
 
 	const struct iio_data_format* data_format = iio_channel_get_data_format(chn);
 	if (data_format->bits == 1) {
-		return Utils::DIGITAL;
+		return DIGITAL_DEV;
 	} else {
-		return Utils::ANALOG;
+		return ANALOG_DEV;
 	}
 }
 
-libm2k::utils::Utils::DEVICE_DIRECTION GenericDevice::getIioDeviceDirection(std::string dev_name)
+DEVICE_DIRECTION GenericDevice::getIioDeviceDirection(std::string dev_name)
 {
-	Utils::DEVICE_DIRECTION dir = Utils::NO_DIRECTION;
+	DEVICE_DIRECTION dir = NO_DIRECTION;
 	auto dev = iio_context_find_device(m_ctx, dev_name.c_str());
 	if (!dev) {
 		throw no_device_exception("No device found with name: " + dev_name);
@@ -219,16 +220,16 @@ libm2k::utils::Utils::DEVICE_DIRECTION GenericDevice::getIioDeviceDirection(std:
 	for (unsigned int i = 0; i < chn_count; i++) {
 		auto chn = iio_device_get_channel(dev, i);
 		if (iio_channel_is_output(chn)) {
-			if (dir == Utils::INPUT) {
-				dir = Utils::BOTH;
-			} else if (dir != Utils::BOTH){
-				dir = Utils::OUTPUT;
+			if (dir == INPUT) {
+				dir = BOTH;
+			} else if (dir != BOTH){
+				dir = OUTPUT;
 			}
 		} else {
-			if (dir == Utils::OUTPUT) {
-				dir = Utils::BOTH;
-			} else if (dir != Utils::BOTH){
-				dir = Utils::INPUT;
+			if (dir == OUTPUT) {
+				dir = BOTH;
+			} else if (dir != BOTH){
+				dir = INPUT;
 			}
 		}
 	}
@@ -240,7 +241,7 @@ void GenericDevice::scanAllDMM()
 	auto dev_list = Utils::getIioDevByChannelAttrs(m_ctx, {"raw", "scale"});
 	for (auto dev : dev_list) {
 		try {
-			if (getIioDeviceDirection(dev.first) != Utils::OUTPUT) {
+			if (getIioDeviceDirection(dev.first) != OUTPUT) {
 				if (!getDMM(dev.first)) {
 					auto dmm = new DMM(m_ctx, dev.first);
 					m_instancesDMM.push_back(dmm);

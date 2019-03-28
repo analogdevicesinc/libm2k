@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/utils.hpp"
+#include "libm2k/utils/utils.hpp"
 #include <iio.h>
 #include <regex>
 #include <iostream>
@@ -236,7 +236,7 @@ void Utils::blinkLed(iio_context *ctx, const double duration, bool blocking)
 				   currentValue);
 }
 
-std::vector<Utils::ini_device_struct> Utils::parseIniFile(std::string path)
+std::vector<ini_device_struct> Utils::parseIniFile(std::string path)
 {
 	std::string line;
 	std::ifstream configFile(path);
@@ -338,7 +338,7 @@ std::unordered_set<std::string> Utils::getAllDevices(iio_context *ctx)
 	return device_list;
 }
 
-std::vector<string> Utils::valuesForIniConfigKey(const Utils::ini_device_struct &iniconf, const string &key)
+std::vector<string> Utils::valuesForIniConfigKey(const ini_device_struct &iniconf, const string &key)
 {
 	for (const auto &key_value_pair : iniconf.key_val_pairs) {
 		if (key_value_pair.first == key) {
@@ -512,7 +512,7 @@ double Utils::setDoubleValue(struct iio_device* dev, unsigned int chn_idx,
 	return getDoubleValue(dev, chn_idx, attr);
 }
 
-Utils::DEVICE_DIRECTION Utils::getIioDeviceDirection(struct iio_device* dev)
+DEVICE_DIRECTION Utils::getIioDeviceDirection(struct iio_device* dev)
 {
 	DEVICE_DIRECTION dir = NO_DIRECTION;
 

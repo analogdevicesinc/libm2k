@@ -21,7 +21,7 @@
 #include <libm2k/utils/buffer.hpp>
 #include <libm2k/utils/channel.hpp>
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/utils.hpp>
+#include <libm2k/utils/utils.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -82,7 +82,7 @@ void Buffer::push(std::vector<short> &data, unsigned int channel,
 		  bool cyclic, bool multiplex)
 {
 	size_t size = data.size();
-	if (Utils::getIioDeviceDirection(m_dev) != Utils::OUTPUT) {
+	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
 		throw no_device_exception("Device not found, so no buffer was created");
 	}
 
@@ -124,7 +124,7 @@ void Buffer::push(std::vector<short> &data, unsigned int channel,
 void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 {
 	size_t size = data.size();
-	if (Utils::getIioDeviceDirection(m_dev) == Utils::INPUT) {
+	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
 		throw no_device_exception("Device not found, so no buffer was created");
 	}
 
@@ -153,7 +153,7 @@ void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 
 std::vector<unsigned short> Buffer::getSamples(int nb_samples)
 {
-	if (Utils::getIioDeviceDirection(m_dev) == Utils::OUTPUT) {
+	if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
 		throw no_device_exception("Device not found, so no buffer was created");
 	}
 
@@ -195,7 +195,7 @@ std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
 {
 	std::vector<bool> channels_enabled;
 //	std::vector<std::vector<int16_t>> ch_data;
-	if (Utils::getIioDeviceDirection(m_dev) != Utils::INPUT) {
+	if (Utils::getIioDeviceDirection(m_dev) != INPUT) {
 		throw no_device_exception("Device not found, so no buffer was created");
 	}
 
@@ -255,7 +255,7 @@ std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
 
 void Buffer::stop()
 {
-	if (Utils::getIioDeviceDirection(m_dev) != Utils::OUTPUT) {
+	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
 		return;
 //		throw no_device_exception("Device not found, so no buffer was created");
 	}

@@ -19,7 +19,7 @@
 
 #include <libm2k/utils/channel.hpp>
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/utils.hpp>
+#include <libm2k/utils/utils.hpp>
 
 using namespace libm2k::utils;
 
