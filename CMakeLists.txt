@@ -24,9 +24,9 @@ include(FindGit OPTIONAL)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
 # generate docs by default
-option(WITH_DOC "Generate documentation with Doxygen" ON)
-
+option(ENABLE_DOC "Generate documentation with Doxygen" ON)
 option(BUILD_EXAMPLES "Build the default examples" ON)
+option(ENABLE_LOG "Build with logging support" ON)
 
 # build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
 add_definitions(-DLIBM2K_EXPORTS=1)
@@ -52,8 +52,10 @@ endif()
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
-include(findLog4Cpp)
-
+if (ENABLE_LOG)
+	add_definitions(-DLIBM2K_ENABLE_LOG)
+	include(findLog4Cpp)
+endif()
 
 if (NOT LIBM2K_VERSION_GIT)
 	set(LIBM2K_VERSION_GIT v${PROJECT_VERSION})

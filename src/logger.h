@@ -14,8 +14,11 @@
 #include <string>
 #include <iostream>
 
-
-#define LOG(x) libm2k::Logger::getInstance().warn(x)
+#ifdef LIBM2K_ENABLE_LOG
+	#define LOG(x) libm2k::Logger::getInstance().warn(x)
+#else
+	#define LOG(x) NULL
+#endif
 
 namespace libm2k {
 class Logger
