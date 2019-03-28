@@ -22,8 +22,11 @@ include(FindGit OPTIONAL)
 
 # build a shared library by default
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
+
 # generate docs by default
 option(WITH_DOC "Generate documentation with Doxygen" ON)
+
+option(BUILD_EXAMPLES "Build the default examples" ON)
 
 # build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
 add_definitions(-DLIBM2K_EXPORTS=1)
@@ -101,9 +104,11 @@ include_directories(
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
 
-
 add_subdirectory(src)
-add_subdirectory(examples)
+
+if (BUILD_EXAMPLES)
+	add_subdirectory(examples)
+endif()
 
 set(LIBM2K_PC ${CMAKE_CURRENT_BINARY_DIR}/libm2k.pc)
 configure_file(libm2k.pc.cmakein ${LIBM2K_PC} @ONLY)
