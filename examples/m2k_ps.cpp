@@ -1,7 +1,7 @@
-#include "libm2k/devicebuilder.hpp"
-#include "libm2k/devices.hpp"
-#include "libm2k/dmm.hpp"
-#include "libm2k/m2kpowersupply.hpp"
+#include <libm2k/devicebuilder.hpp>
+#include <libm2k/devices.hpp>
+#include <libm2k/analog/dmm.hpp>
+#include <libm2k/analog/m2kpowersupply.hpp>
 
 int main (int argc, char **argv)
 {

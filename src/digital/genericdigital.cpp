@@ -17,10 +17,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/genericdigital.hpp"
-#include "libm2k/m2kexceptions.hpp"
+#include <libm2k/digital/genericdigital.hpp>
+#include <libm2k/m2kexceptions.hpp>
 
-#include "libm2k/utils.hpp"
+#include <libm2k/utils.hpp>
 #include <iio.h>
 #include <iostream>
 #include <algorithm>
@@ -32,8 +32,7 @@ using namespace std;
 
 
 GenericDigital::GenericDigital(iio_context *ctx, string logic_dev) :
-	Device(ctx, logic_dev),
-	m_ctx(ctx)
+	Device(ctx, logic_dev)
 {
 	m_dev_name = logic_dev;
 

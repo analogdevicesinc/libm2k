@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/m2khardwaretrigger.hpp"
-#include "libm2k/m2kexceptions.hpp"
+#include <libm2k/analog/m2khardwaretrigger.hpp>
+#include <libm2k/m2kexceptions.hpp>
 #include <stdexcept>
 #include <algorithm>
 #include <iio.h>

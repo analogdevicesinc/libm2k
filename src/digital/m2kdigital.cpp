@@ -17,9 +17,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/m2kdigital.hpp"
-#include "libm2k/m2kexceptions.hpp"
-#include "libm2k/utils.hpp"
+#include <libm2k/digital/m2kdigital.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/utils.hpp>
 #include <iio.h>
 #include <iostream>
 #include <algorithm>

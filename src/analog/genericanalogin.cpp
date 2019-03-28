@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/genericanalogin.hpp"
-#include "libm2k/m2kexceptions.hpp"
+#include <libm2k/analog/genericanalogin.hpp>
+#include <libm2k/m2kexceptions.hpp>
 
 #include "libm2k/utils.hpp"
 #include <iio.h>

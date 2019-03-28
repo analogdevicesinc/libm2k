@@ -18,10 +18,10 @@
  */
 
 
-#include "libm2k/buffer.hpp"
-#include "libm2k/channel.hpp"
-#include "libm2k/m2kexceptions.hpp"
-#include "libm2k/utils.hpp"
+#include <libm2k/utils/buffer.hpp>
+#include <libm2k/utils/channel.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/utils.hpp>
 
 #include <iostream>
 #include <algorithm>

@@ -20,17 +20,10 @@
 #ifndef GENERICDIGITALIN_HPP
 #define GENERICDIGITALIN_HPP
 
-#include "m2kglobal.hpp"
-#include <libm2k/device.hpp>
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/utils/device.hpp>
 #include <string>
 #include <vector>
-
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-	struct iio_buffer;
-}
 
 using namespace libm2k::utils;
 
@@ -66,7 +59,6 @@ public:
 	void enableChannel(unsigned int index, bool enable);
 
 protected:
-	struct iio_context* m_ctx;
 	std::string m_dev_name;
 	std::vector<channel> m_channel_list;
 	bool m_cyclic;

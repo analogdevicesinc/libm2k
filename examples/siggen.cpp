@@ -6,9 +6,9 @@
 #include <thread>
 #include <chrono>
 
-#include "libm2k/devicebuilder.hpp"
-#include "libm2k/m2kanalogout.hpp"
-#include "libm2k/m2k.hpp"
+#include <libm2k/devicebuilder.hpp>
+#include <libm2k/analog/m2kanalogout.hpp>
+#include <libm2k/m2k.hpp>
 
 #define M_PI 3.14159
 

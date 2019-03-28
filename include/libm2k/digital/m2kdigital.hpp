@@ -20,14 +20,15 @@
 #ifndef M2KDIGITAL_HPP
 #define M2KDIGITAL_HPP
 
-#include "m2kglobal.hpp"
-#include "genericdigital.hpp"
-#include "m2khardwaretrigger.hpp"
-#include <libm2k/device.hpp>
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/digital/genericdigital.hpp>
+#include <libm2k/analog/m2khardwaretrigger.hpp>
+#include <libm2k/utils/device.hpp>
 #include <string>
 #include <vector>
 
 using namespace libm2k::devices;
+using namespace libm2k::utils;
 
 namespace libm2k {
 namespace digital {

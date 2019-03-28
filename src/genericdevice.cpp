@@ -17,13 +17,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/genericdevice.hpp"
-#include "libm2k/m2kexceptions.hpp"
-#include "libm2k/genericanalogin.hpp"
-#include "libm2k/genericanalogout.hpp"
-#include "libm2k/powersupply.hpp"
-#include "libm2k/dmm.hpp"
-#include "libm2k/m2k.hpp"
+#include <libm2k/genericdevice.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/analog/genericanalogin.hpp>
+#include <libm2k/analog/genericanalogout.hpp>
+#include <libm2k/analog/powersupply.hpp>
+#include <libm2k/analog/dmm.hpp>
+#include <libm2k/m2k.hpp>
 #include <iio.h>
 #include <iostream>
 #include <memory>

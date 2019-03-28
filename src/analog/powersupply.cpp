@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/powersupply.hpp"
-#include "libm2k/m2kexceptions.hpp"
+#include <libm2k/analog/powersupply.hpp>
+#include <libm2k/m2kexceptions.hpp>
 #include <iio.h>
 #include <iostream>
 

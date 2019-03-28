@@ -17,31 +17,40 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef POWERSUPPLY_HPP
-#define POWERSUPPLY_HPP
+#ifndef GENERICDMM_HPP
+#define GENERICDMM_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/device.hpp>
+#include <libm2k/utils/device.hpp>
 #include <vector>
+#include <map>
 #include <string>
-#include <memory>
 
 using namespace libm2k::utils;
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API PowerSupply : public Device
-{
+class LIBM2K_API DMM : public Device {
 public:
-	PowerSupply(struct iio_context* ctx, std::string write_dev = "",
-		     std::string read_dev = "");
-	virtual ~PowerSupply();
+	struct dmm_reading {
+		std::string name;
+		double value;
+		std::string unit;
+	};
+
+	DMM(struct iio_context *ctx, std::string dev);
+	virtual ~DMM();
+
+	std::vector<std::string> getAllChannels();
+	dmm_reading readChannel(unsigned int index);
+	dmm_reading readChannel(std::string chn_name);
+	std::vector<dmm_reading> readAll();
 
 private:
-	std::shared_ptr<Device> m_dev_write;
-	std::shared_ptr<Device> m_dev_read;
+	std::map<std::string, unsigned int> m_channel_id_list;
 };
 }
 }
 
-#endif //POWERSUPPLY_HPP
+
+#endif //GENERICDMM_HPP

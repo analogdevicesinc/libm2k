@@ -17,13 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/m2kanalogin.hpp"
-#include "libm2k/m2kanalogout.hpp"
-#include "libm2k/m2kcalibration.hpp"
-#include "libm2k/m2kexceptions.hpp"
-#include "libm2k/utils.hpp"
-//#include "osc_adc.h"
-//#include "hw_dac.h"
+#include <libm2k/analog/m2kanalogin.hpp>
+#include <libm2k/analog/m2kanalogout.hpp>
+#include <libm2k/m2kcalibration.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/utils.hpp>
 
 #include <errno.h>
 #include <iio.h>

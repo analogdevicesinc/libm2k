@@ -21,7 +21,7 @@
 #define M2KPOWERSUPPLY_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/device.hpp>
+#include <libm2k/utils/device.hpp>
 #include <vector>
 #include <memory>
 

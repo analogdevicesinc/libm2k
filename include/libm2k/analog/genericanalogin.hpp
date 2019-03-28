@@ -17,46 +17,45 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef GENERICANALOGOUT_HPP
-#define GENERICANALOGOUT_HPP
+#ifndef GENERICANALOGIN_HPP
+#define GENERICANALOGIN_HPP
 
-#include "m2kglobal.hpp"
-#include "libm2k/device.hpp"
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/utils/device.hpp>
 #include <string>
 #include <vector>
 
 using namespace libm2k::utils;
+
 namespace libm2k {
 namespace analog {
-class LIBM2K_API GenericAnalogOut : public Device {
+class LIBM2K_API GenericAnalogIn : public Device {
 public:
-	GenericAnalogOut(struct iio_context* ctx, std::string dac_dev);
-	virtual ~GenericAnalogOut();
+	GenericAnalogIn(struct iio_context* ctx, std::string adc_dev);
+	virtual ~GenericAnalogIn();
 
-	void openAnalogOut();
-	void closeAnalogOut();
+	virtual std::vector<std::vector<double>> getSamples(int nb_samples,
+							    bool processed=false);
+	virtual void openAnalogIn();
+	virtual void closeAnalogIn();
 
-	double getSamplerate();
-	double getSamplerate(unsigned int);
-	double setSamplerate(double sampleRate);
-	double setSamplerate(unsigned int chn_idx, double sampleRate);
+	double getSampleRate();
+	double getSampleRate(unsigned int);
+	double setSampleRate(double sampleRate);
+	double setSampleRate(unsigned int chn_idx, double sampleRate);
 	std::vector<double> getAvailableSamplerates();
 
-	bool isChannelEnabled(unsigned int index);
+	static double processSample(int16_t sample, unsigned int channel);
 
-	void setCyclic(bool en);
-	void setCyclic(bool en, unsigned int chn);
-	bool getCyclic(unsigned int chn);
+	void enableChannel(unsigned int index, bool enable);
+	std::string getDeviceName();
 
-	void push(std::vector<double>& data, unsigned int chn_idx = 0);
-	void push(std::vector<short>& data, unsigned int chn_idx = 0);
-	void stop();
-
-private:
-	std::vector<bool> m_cyclic;
+protected:
+	std::string m_dev_name;
+	unsigned int m_nb_channels;
+	bool m_cyclic;
 };
 }
 }
 
-
-#endif //GENERICANALOGOUT_HPP
+#endif // GENERICANALOGIN_HPP

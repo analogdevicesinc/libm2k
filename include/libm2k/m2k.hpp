@@ -20,9 +20,9 @@
 #ifndef M2K_H
 #define M2K_H
 
-#include "libm2k/m2kglobal.hpp"
-#include "libm2k/genericdevice.hpp"
-#include "libm2k/device.hpp"
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/genericdevice.hpp>
+#include <libm2k/utils/device.hpp>
 #include <iostream>
 
 extern "C" {

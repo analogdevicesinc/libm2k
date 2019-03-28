@@ -20,9 +20,9 @@
 #ifndef M2KANALOGIN_HPP
 #define M2KANALOGIN_HPP
 
-#include "libm2k/m2kglobal.hpp"
-#include "libm2k/genericanalogin.hpp"
-#include "m2khardwaretrigger.hpp"
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/analog/genericanalogin.hpp>
+#include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <vector>
 #include <map>
 

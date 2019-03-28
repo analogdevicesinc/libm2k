@@ -1,14 +1,14 @@
-#include "libm2k/devicebuilder.hpp"
-#include "libm2k/m2kexceptions.hpp"
-#include "libm2k/devices.hpp"
-#include "libm2k/genericanalogin.hpp"
-#include "libm2k/dmm.hpp"
+#include <libm2k/devicebuilder.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/devices.hpp>
+#include <libm2k/analog/genericanalogin.hpp>
+#include <libm2k/analog/dmm.hpp>
 
-#include "libm2k/m2k.hpp"
-#include "libm2k/m2kanalogin.hpp"
-#include "libm2k/m2kanalogout.hpp"
-#include "libm2k/m2kpowersupply.hpp"
-#include "libm2k/m2kdigital.hpp"
+#include <libm2k/m2k.hpp>
+#include <libm2k/analog/m2kanalogin.hpp>
+#include <libm2k/analog/m2kanalogout.hpp>
+#include <libm2k/analog/m2kpowersupply.hpp>
+#include <libm2k/digital/m2kdigital.hpp>
 #include <math.h>
 #include <iostream>
 #include <thread>

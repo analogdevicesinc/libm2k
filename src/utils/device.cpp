@@ -17,11 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/device.hpp"
-#include "libm2k/buffer.hpp"
-#include "libm2k/channel.hpp"
-#include "libm2k/utils.hpp"
-#include "libm2k/m2kexceptions.hpp"
+#include <libm2k/utils/device.hpp>
+#include <libm2k/utils/buffer.hpp>
+#include <libm2k/utils/channel.hpp>
+#include <libm2k/utils.hpp>
+#include <libm2k/m2kexceptions.hpp>
 #include <algorithm>
 #include <cstring>
 

@@ -1,6 +1,6 @@
-#include "libm2k/devicebuilder.hpp"
-#include "libm2k/devices.hpp"
-#include "libm2k/dmm.hpp"
+#include <libm2k/devicebuilder.hpp>
+#include <libm2k/devices.hpp>
+#include <libm2k/analog/dmm.hpp>
 
 int main (int argc, char **argv)
 {

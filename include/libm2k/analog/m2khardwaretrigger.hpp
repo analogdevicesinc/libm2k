@@ -20,8 +20,8 @@
 #ifndef M2KHARDWARETRIGGER_HPP
 #define M2KHARDWARETRIGGER_HPP
 
-#include "libm2k/m2kglobal.hpp"
-#include "m2k.hpp"
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/m2k.hpp>
 #include <vector>
 #include <memory>
 
