@@ -40,7 +40,7 @@ GenericDigital::GenericDigital(iio_context *ctx, string logic_dev) :
 		struct channel chn;
 		std::string name = "voltage" + std::to_string(i);
 		chn.m_channel = iio_device_find_channel(m_dev, name.c_str(), false);
-		chn.m_direction = GenericDigital::DIO_INPUT;
+		chn.m_direction = DIO_INPUT;
 		m_channel_list.push_back(chn);
 	}
 }

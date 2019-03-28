@@ -9,6 +9,7 @@
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/analog/m2kpowersupply.hpp>
 #include <libm2k/digital/m2kdigital.hpp>
+#include <libm2k/digital/enums.hpp>
 #include <math.h>
 #include <iostream>
 #include <thread>
@@ -251,8 +252,8 @@ int main(int argc, char **argv)
 
 					// DIO
 					M2kDigital* logic = dev->getDigital();
-					logic->enableChannelIn(M2kDigital::DIO_CHANNEL_1, true);
-					logic->enableChannelIn(M2kDigital::DIO_CHANNEL_2, true);
+					logic->enableChannelIn(DIO_CHANNEL_1, true);
+					logic->enableChannelIn(DIO_CHANNEL_2, true);
 					//				logic->setTrigger(M2kDigital::DIO_CHANNEL_1, M2kHardwareTrigger::RISING_EDGE);
 					auto data = logic->getSamples(32);
 					for (auto d : data) {
@@ -260,20 +261,20 @@ int main(int argc, char **argv)
 					}
 					std::cout << std::endl;
 
-					logic->setTriggerMode(M2kDigital::DIO_AND);
+					logic->setTriggerMode(DIO_AND);
 
-					logic->setDirection(M2kDigital::DIO_CHANNEL_4, M2kDigital::DIO_OUTPUT);
-					logic->setDirection(M2kDigital::DIO_CHANNEL_5, M2kDigital::DIO_OUTPUT);
-					logic->setValueRaw(M2kDigital::DIO_CHANNEL_4, M2kDigital::HIGH);
-					logic->setValueRaw(M2kDigital::DIO_CHANNEL_5, M2kDigital::HIGH);
+					logic->setDirection(DIO_CHANNEL_4, DIO_OUTPUT);
+					logic->setDirection(DIO_CHANNEL_5, DIO_OUTPUT);
+					logic->setValueRaw(DIO_CHANNEL_4, HIGH);
+					logic->setValueRaw(DIO_CHANNEL_5, HIGH);
 
 
 					logic->enableAllOut(true);
 					logic->setDirection(65535);
-					logic->enableChannelOut(M2kDigital::DIO_CHANNEL_1, true);
-					logic->enableChannelOut(M2kDigital::DIO_CHANNEL_0, true);
-					logic->enableChannelOut(M2kDigital::DIO_CHANNEL_2, true);
-					logic->enableChannelOut(M2kDigital::DIO_CHANNEL_3, true);
+					logic->enableChannelOut(DIO_CHANNEL_1, true);
+					logic->enableChannelOut(DIO_CHANNEL_0, true);
+					logic->enableChannelOut(DIO_CHANNEL_2, true);
+					logic->enableChannelOut(DIO_CHANNEL_3, true);
 					std::vector<short> vec_digital(512, 7);
 					logic->setCyclic(true);
 					logic->push(vec_digital);

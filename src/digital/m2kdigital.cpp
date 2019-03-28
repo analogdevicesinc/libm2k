@@ -79,13 +79,13 @@ M2kDigital::~M2kDigital()
 void M2kDigital::setDirection(unsigned short mask)
 {
 	try {
-		M2kDigital::DIO_DIRECTION direction;
+		DIO_DIRECTION direction;
 		bool dir = false;
 		unsigned int index = 0;
 		while (mask != 0 || index < m_dev_write->getNbChannels()) {
 			dir = mask & 1;
 			mask >>= 1;
-			direction = static_cast<M2kDigital::DIO_DIRECTION>(dir);
+			direction = static_cast<DIO_DIRECTION>(dir);
 			setDirection(index, direction);
 			index++;
 		}
@@ -97,7 +97,7 @@ void M2kDigital::setDirection(unsigned short mask)
 void M2kDigital::setDirection(DIO_CHANNEL index, bool dir)
 {
 	try {
-		M2kDigital::DIO_DIRECTION direction = static_cast<M2kDigital::DIO_DIRECTION>(dir);
+		DIO_DIRECTION direction = static_cast<DIO_DIRECTION>(dir);
 		setDirection(index, direction);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
@@ -108,14 +108,14 @@ void M2kDigital::setDirection(unsigned int index, bool dir)
 {
 	try {
 		DIO_CHANNEL chn = static_cast<DIO_CHANNEL>(index);
-		M2kDigital::DIO_DIRECTION direction = static_cast<M2kDigital::DIO_DIRECTION>(dir);
+		DIO_DIRECTION direction = static_cast<DIO_DIRECTION>(dir);
 		setDirection(chn, direction);
 	} catch (std::runtime_error &e) {
 		throw invalid_parameter_exception(e.what());
 	}
 }
 
-void M2kDigital::setDirection(unsigned int index, M2kDigital::DIO_DIRECTION dir)
+void M2kDigital::setDirection(unsigned int index, DIO_DIRECTION dir)
 {
 	try {
 		DIO_CHANNEL chn = static_cast<DIO_CHANNEL>(index);
@@ -125,7 +125,7 @@ void M2kDigital::setDirection(unsigned int index, M2kDigital::DIO_DIRECTION dir)
 	}
 }
 
-void M2kDigital::setDirection(DIO_CHANNEL index, M2kDigital::DIO_DIRECTION dir)
+void M2kDigital::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 {
 	if (index < getNbChannels()) {
 		std::string dir_str = "";
@@ -141,21 +141,21 @@ void M2kDigital::setDirection(DIO_CHANNEL index, M2kDigital::DIO_DIRECTION dir)
 
 }
 
-M2kDigital::DIO_DIRECTION M2kDigital::getDirection(DIO_CHANNEL index)
+DIO_DIRECTION M2kDigital::getDirection(DIO_CHANNEL index)
 {
 	if (index < getNbChannels()) {
 		std::string dir_str = getStringValue(index, "direction");
 		if (dir_str == "in") {
-			return M2kDigital::DIO_INPUT;
+			return DIO_INPUT;
 		} else {
-			return M2kDigital::DIO_OUTPUT;
+			return DIO_OUTPUT;
 		}
 	} else {
 		throw invalid_parameter_exception("No such digital channel");
 	}
 }
 
-void M2kDigital::setValueRaw(DIO_CHANNEL index, M2kDigital::level level)
+void M2kDigital::setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 {
 	if (index < getNbChannels()) {
 		long long val = static_cast<long long>(level);
@@ -165,13 +165,13 @@ void M2kDigital::setValueRaw(DIO_CHANNEL index, M2kDigital::level level)
 	}
 }
 
-M2kDigital::level M2kDigital::getValueRaw(DIO_CHANNEL index)
+DIO_LEVEL M2kDigital::getValueRaw(DIO_CHANNEL index)
 {
 	if (index < getNbChannels()) {
 		try {
 			long long val;
 			val = getDoubleValue(index, "raw");
-			return static_cast<level>(val);
+			return static_cast<DIO_LEVEL>(val);
 		} catch (std::runtime_error &e) {
 			throw invalid_parameter_exception("Cannot read value for channel");
 		}
@@ -279,14 +279,14 @@ bool M2kDigital::anyChannelEnabled(DIO_DIRECTION dir)
 	return false;
 }
 
-void M2kDigital::setTrigger(M2kDigital::DIO_CHANNEL chn,
+void M2kDigital::setTrigger(DIO_CHANNEL chn,
 			    libm2k::analog::M2kHardwareTrigger::condition cond)
 {
 	std::string trigger_val = M2kHardwareTrigger::getAvailableDigitalConditions()[cond];
 	m_dev_read->setStringValue(chn, "trigger", trigger_val, false);
 }
 
-M2kHardwareTrigger::condition M2kDigital::getTrigger(M2kDigital::DIO_CHANNEL chn)
+M2kHardwareTrigger::condition M2kDigital::getTrigger(DIO_CHANNEL chn)
 {
 	std::string trigger_val = m_dev_read->getStringValue(chn, "trigger", false);
 	std::vector<std::string> available_digital_conditions =
@@ -320,7 +320,7 @@ int M2kDigital::getTriggerDelay()
 	}
 }
 
-void M2kDigital::setTriggerMode(M2kDigital::DIO_TRIGGER_MODE trig_mode)
+void M2kDigital::setTriggerMode(DIO_TRIGGER_MODE trig_mode)
 {
 	try {
 		std::string trigger_mode = m_trigger_logic_mode[trig_mode];
@@ -330,7 +330,7 @@ void M2kDigital::setTriggerMode(M2kDigital::DIO_TRIGGER_MODE trig_mode)
 	}
 }
 
-M2kDigital::DIO_TRIGGER_MODE M2kDigital::getTriggerMode()
+DIO_TRIGGER_MODE M2kDigital::getTriggerMode()
 {
 	std::string trigger_mode = "";
 	try {
@@ -348,7 +348,7 @@ M2kDigital::DIO_TRIGGER_MODE M2kDigital::getTriggerMode()
 	return static_cast<DIO_TRIGGER_MODE>(it - m_trigger_logic_mode.begin());
 }
 
-void M2kDigital::setOutputMode(M2kDigital::DIO_CHANNEL chn, M2kDigital::DIO_MODE mode)
+void M2kDigital::setOutputMode(DIO_CHANNEL chn, DIO_MODE mode)
 {
 	try {
 		std::string output_mode = m_output_mode[mode];
@@ -358,7 +358,7 @@ void M2kDigital::setOutputMode(M2kDigital::DIO_CHANNEL chn, M2kDigital::DIO_MODE
 	}
 }
 
-M2kDigital::DIO_MODE M2kDigital::getOutputMode(M2kDigital::DIO_CHANNEL chn)
+DIO_MODE M2kDigital::getOutputMode(DIO_CHANNEL chn)
 {
 	std::string output_mode = "";
 	try {

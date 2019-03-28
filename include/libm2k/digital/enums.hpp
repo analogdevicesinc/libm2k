@@ -17,38 +17,58 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef GENERICDIGITALIN_HPP
-#define GENERICDIGITALIN_HPP
+#ifndef ENUMS_DIGITAL_HPP
+#define ENUMS_DIGITAL_HPP
 
-#include <libm2k/m2kglobal.hpp>
-#include <libm2k/utils/device.hpp>
-#include <libm2k/digital/enums.hpp>
-#include <string>
-#include <vector>
-
-using namespace libm2k::utils;
+#include <iio.h>
 
 namespace libm2k {
 namespace digital {
-class LIBM2K_API GenericDigital : public Device {
-public:
-	GenericDigital(struct iio_context* ctx, std::string logic_dev);
-	virtual ~GenericDigital();
+	enum DIO_DIRECTION {
+		DIO_INPUT = 0,
+		DIO_OUTPUT = 1,
+	};
 
-	double getSampleRate();
-	double setSampleRate(double sampleRate);
+	enum DIO_LEVEL {
+		LOW = 0,
+		HIGH = 1,
+	};
 
-	void setCyclic(bool cyclic);
-	bool getCyclic();
+	enum DIO_CHANNEL {
+		DIO_CHANNEL_0 = 0,
+		DIO_CHANNEL_1 = 1,
+		DIO_CHANNEL_2 = 2,
+		DIO_CHANNEL_3 = 3,
+		DIO_CHANNEL_4 = 4,
+		DIO_CHANNEL_5 = 5,
+		DIO_CHANNEL_6 = 6,
+		DIO_CHANNEL_7 = 7,
+		DIO_CHANNEL_8 = 8,
+		DIO_CHANNEL_9 = 9,
+		DIO_CHANNEL_10 = 10,
+		DIO_CHANNEL_11 = 11,
+		DIO_CHANNEL_12 = 12,
+		DIO_CHANNEL_13 = 13,
+		DIO_CHANNEL_14 = 14,
+		DIO_CHANNEL_15 = 15,
+	};
 
-	void enableChannel(unsigned int index, bool enable);
+	enum DIO_MODE {
+		DIO_OPENDRAIN = 0,
+		DIO_PUSHPULL = 1,
+	};
 
-protected:
-	std::string m_dev_name;
-	std::vector<channel> m_channel_list;
-	bool m_cyclic;
-};
+	enum DIO_TRIGGER_MODE {
+		DIO_OR = 0,
+		DIO_AND = 1,
+	};
+
+	struct channel {
+		struct iio_channel* m_channel;
+		DIO_DIRECTION m_direction;
+	};
 }
 }
 
-#endif //GENERICDIGITALIN_HPP
+
+#endif

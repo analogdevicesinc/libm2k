@@ -21,7 +21,7 @@
 #define M2KDIGITAL_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/digital/genericdigital.hpp>
+#include <libm2k/digital/enums.hpp>
 #include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <libm2k/utils/device.hpp>
 #include <string>
@@ -35,51 +35,6 @@ namespace digital {
 class LIBM2K_API M2kDigital : public Device
 {
 public:
-	enum DIO_CHANNEL {
-		DIO_CHANNEL_0 = 0,
-		DIO_CHANNEL_1 = 1,
-		DIO_CHANNEL_2 = 2,
-		DIO_CHANNEL_3 = 3,
-		DIO_CHANNEL_4 = 4,
-		DIO_CHANNEL_5 = 5,
-		DIO_CHANNEL_6 = 6,
-		DIO_CHANNEL_7 = 7,
-		DIO_CHANNEL_8 = 8,
-		DIO_CHANNEL_9 = 9,
-		DIO_CHANNEL_10 = 10,
-		DIO_CHANNEL_11 = 11,
-		DIO_CHANNEL_12 = 12,
-		DIO_CHANNEL_13 = 13,
-		DIO_CHANNEL_14 = 14,
-		DIO_CHANNEL_15 = 15,
-	};
-
-	enum DIO_MODE {
-		DIO_OPENDRAIN = 0,
-		DIO_PUSHPULL = 1,
-	};
-
-	enum DIO_TRIGGER_MODE {
-		DIO_OR = 0,
-		DIO_AND = 1,
-	};
-
-	enum DIO_DIRECTION {
-		DIO_INPUT = 0,
-		DIO_OUTPUT = 1,
-	};
-
-	enum level {
-		LOW = 0,
-		HIGH = 1,
-	};
-
-	struct channel {
-		struct iio_channel* m_channel;
-		DIO_DIRECTION m_direction;
-
-	};
-
 	M2kDigital(struct iio_context* ctx, std::string logic_dev);
 	virtual ~M2kDigital();
 
@@ -90,8 +45,8 @@ public:
 	void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir);
 	DIO_DIRECTION getDirection(DIO_CHANNEL index);
 
-	void setValueRaw(DIO_CHANNEL index, level);
-	level getValueRaw(DIO_CHANNEL index);
+	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL);
+	DIO_LEVEL getValueRaw(DIO_CHANNEL index);
 
 	void push(std::vector<short>& data);
 	void stop();
