@@ -279,14 +279,13 @@ bool M2kDigital::anyChannelEnabled(DIO_DIRECTION dir)
 	return false;
 }
 
-void M2kDigital::setTrigger(DIO_CHANNEL chn,
-			    libm2k::analog::M2kHardwareTrigger::condition cond)
+void M2kDigital::setTrigger(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION cond)
 {
 	std::string trigger_val = M2kHardwareTrigger::getAvailableDigitalConditions()[cond];
 	m_dev_read->setStringValue(chn, "trigger", trigger_val, false);
 }
 
-M2kHardwareTrigger::condition M2kDigital::getTrigger(DIO_CHANNEL chn)
+M2K_TRIGGER_CONDITION M2kDigital::getTrigger(DIO_CHANNEL chn)
 {
 	std::string trigger_val = m_dev_read->getStringValue(chn, "trigger", false);
 	std::vector<std::string> available_digital_conditions =
@@ -298,7 +297,7 @@ M2kHardwareTrigger::condition M2kDigital::getTrigger(DIO_CHANNEL chn)
 		throw invalid_argument("Cannot read channel attribute: trigger");
 	}
 
-	return static_cast<M2kHardwareTrigger::condition>
+	return static_cast<M2K_TRIGGER_CONDITION>
 			(it - available_digital_conditions.begin());
 }
 

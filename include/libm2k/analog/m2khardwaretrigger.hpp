@@ -20,6 +20,7 @@
 #ifndef M2KHARDWARETRIGGER_HPP
 #define M2KHARDWARETRIGGER_HPP
 
+#include <libm2k/analog/enums.hpp>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/m2k.hpp>
 #include <vector>
@@ -38,49 +39,6 @@ class M2kAnalogIn;
 class LIBM2K_API M2kHardwareTrigger
 {
 public:
-	enum condition {
-		RISING_EDGE = 0,
-		FALLING_EDGE = 1,
-		LOW = 3,
-		HIGH = 4,
-		ANY_EDGE = 5,
-		NONE = 6,
-	};
-
-	enum mode {
-		ALWAYS = 0,
-		ANALOG = 1,
-		DIGITAL = 2,
-		DIGITAL_OR_ANALOG = 3,
-		DIGITAL_AND_ANALOG = 4,
-		DIGITAL_XOR_ANALOG = 5,
-		N_DIGITAL_OR_ANALOG = 6,
-		N_DIGITAL_AND_ANALOG = 7,
-		N_DIGITAL_XOR_ANALOG = 8,
-	};
-
-	enum source {
-		CHANNEL_1 = 0,
-		CHANNEL_2 = 1,
-		CHANNEL_1_OR_CHANNEL_2 = 2,
-		CHANNEL_1_AND_CHANNEL_2 = 3,
-		CHANNEL_1_XOR_CHANNEL_2 = 4,
-	};
-
-	struct Settings {
-		std::vector<condition> analog_condition;
-		std::vector<condition> digital_condition;
-		std::vector<int> level;
-		std::vector<int> hysteresis;
-		std::vector<enum mode> mode;
-		source trigger_source;
-		int delay;
-	};
-
-	typedef std::unique_ptr<M2kHardwareTrigger::Settings> settings_uptr;
-
-public:
-
 	M2kHardwareTrigger(struct iio_context *ctx);
 
 	int getLevel(unsigned int chnIdx) const;
@@ -90,17 +48,17 @@ public:
 	int getHysteresis(unsigned int chnIdx) const;
 	void setHysteresis(unsigned int chnIdx, int histeresis);
 
-	condition getAnalogCondition(unsigned int chnIdx) const;
-	void setAnalogCondition(unsigned int chnIdx, condition cond);
+	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx) const;
+	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
 
-	condition getDigitalCondition(unsigned int chnIdx) const;
-	void setDigitalCondition(unsigned int chnIdx, condition cond);
+	M2K_TRIGGER_CONDITION getDigitalCondition(unsigned int chnIdx) const;
+	void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
 
-	mode getTriggerMode(unsigned int chnIdx) const;
-	void setTriggerMode(unsigned int chnIdx, mode mode);
+	M2K_TRIGGER_MODE getTriggerMode(unsigned int chnIdx) const;
+	void setTriggerMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode);
 
-	source getSource() const;
-	void setSource(source src);
+	M2K_TRIGGER_SOURCE getSource() const;
+	void setSource(M2K_TRIGGER_SOURCE src);
 
 	unsigned int numChannels() const;
 
@@ -111,8 +69,8 @@ public:
 	int getDelay() const;
 	void setDelay(int delay);
 
-	std::unique_ptr<struct Settings> getCurrentHwSettings();
-	void setHwTriggerSettings(struct Settings *settings);
+	settings_uptr getCurrentHwSettings();
+	void setHwTriggerSettings(struct SETTINGS *settings);
 
 	void setStreamingFlag(bool);
 	bool getStreamingFlag();

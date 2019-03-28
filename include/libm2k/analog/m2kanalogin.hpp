@@ -21,6 +21,7 @@
 #define M2KANALOGIN_HPP
 
 #include <libm2k/m2kglobal.hpp>
+#include <libm2k/analog/enums.hpp>
 #include <libm2k/analog/genericanalogin.hpp>
 #include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <vector>
@@ -32,17 +33,6 @@ namespace analog {
 class LIBM2K_API M2kAnalogIn : public Device
 {
 public:	
-	enum ANALOG_IN_CHANNEL {
-		ANALOG_IN_CHANNEL_1 = 0,
-		ANALOG_IN_CHANNEL_2 = 1
-	};
-
-	enum M2K_RANGE {
-		PLUS_MINUS_25V = 0,
-		PLUS_MINUS_2_5V = 1
-	};
-
-
 	M2kAnalogIn(struct iio_context*, std::string adc_dev);
 	~M2kAnalogIn();
 
@@ -91,17 +81,17 @@ public:
 	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL);
 
 
-	M2kHardwareTrigger::condition getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const;
-	void setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond);
+	M2K_TRIGGER_CONDITION getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const;
+	void setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond);
 
-	M2kHardwareTrigger::condition getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const;
-	void setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond);
+	M2K_TRIGGER_CONDITION getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const;
+	void setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond);
 
-	M2kHardwareTrigger::mode getTriggerMode(ANALOG_IN_CHANNEL chnIdx);
-	void setTriggerMode(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::mode mode);
+	M2K_TRIGGER_MODE getTriggerMode(ANALOG_IN_CHANNEL chnIdx);
+	void setTriggerMode(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_MODE mode);
 
-	M2kHardwareTrigger::source getSource() const;
-	void setSource(M2kHardwareTrigger::source src);
+	M2K_TRIGGER_SOURCE getSource() const;
+	void setSource(M2K_TRIGGER_SOURCE src);
 
 	ANALOG_IN_CHANNEL getSourceChannel();
 	void setSourceChannel(ANALOG_IN_CHANNEL chnIdx);

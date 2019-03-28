@@ -166,18 +166,18 @@ int main(int argc, char **argv)
 					aIn->setSampleRate(1000);
 
 					M2kAnalogIn* maIn = dev->getAnalogIn();
-					maIn->setRange(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
-						       M2kAnalogIn::PLUS_MINUS_25V);
+					maIn->setRange(ANALOG_IN_CHANNEL_1,
+						       PLUS_MINUS_25V);
 
 					DMM* dmm = d->getDMM(0);
-					std::vector<DMM::dmm_reading> readings = dmm->readAll();
-					for (DMM::dmm_reading read : readings) {
+					std::vector<DMM_READING> readings = dmm->readAll();
+					for (DMM_READING read : readings) {
 						std::cout << read.name << " " << read.value << " " << read.unit;
 					}
 
 					dmm = d->getDMM(1);
 					readings = dmm->readAll();
-					for (DMM::dmm_reading read : readings) {
+					for (DMM_READING read : readings) {
 						std::cout << read.name << " " << read.value << " " << read.unit;
 					}
 
@@ -217,11 +217,11 @@ int main(int argc, char **argv)
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-					maIn->setSourceChannel(M2kAnalogIn::ANALOG_IN_CHANNEL_1);
+					maIn->setSourceChannel(ANALOG_IN_CHANNEL_1);
 					maIn->setTriggerDelay(-10);
-					maIn->setLevel(M2kAnalogIn::ANALOG_IN_CHANNEL_1, 1);
-					maIn->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::ALWAYS);
-					maIn->setAnalogCondition(M2kAnalogIn::ANALOG_IN_CHANNEL_1, M2kHardwareTrigger::FALLING_EDGE);
+					maIn->setLevel(ANALOG_IN_CHANNEL_1, 1);
+					maIn->setTriggerMode(ANALOG_IN_CHANNEL_1, ALWAYS);
+					maIn->setAnalogCondition(ANALOG_IN_CHANNEL_1, FALLING_EDGE);
 					samps = maIn->getSamples(64, true);
 					for (int i = 0; i < 64; i++) {
 						std::cout << samps[0][i] << "\t ";
@@ -235,8 +235,8 @@ int main(int argc, char **argv)
 					std::cout << "Average voltage  " << avgs2.at(0) << " " << avgs2.at(1) << "\n";
 					std::cout << "Average voltage  " << maIn->getVoltage(0) << " " << maIn->getVoltage(1) << "\n";
 					std::cout << "Average voltage  " << maIn->getVoltageRaw(0) << " " << maIn->getVoltageRaw(1) << "\n";
-					std::cout << "Average voltage  " << maIn->getVoltage(M2kAnalogIn::ANALOG_IN_CHANNEL_1) << " "
-						  << maIn->getVoltage(M2kAnalogIn::ANALOG_IN_CHANNEL_2) << "\n";
+					std::cout << "Average voltage  " << maIn->getVoltage(ANALOG_IN_CHANNEL_1) << " "
+						  << maIn->getVoltage(ANALOG_IN_CHANNEL_2) << "\n";
 
 					for (auto s : aIn->getAvailableSamplerates()) {
 						std::cout << " s " << s << std::endl;
@@ -265,8 +265,8 @@ int main(int argc, char **argv)
 
 					logic->setDirection(DIO_CHANNEL_4, DIO_OUTPUT);
 					logic->setDirection(DIO_CHANNEL_5, DIO_OUTPUT);
-					logic->setValueRaw(DIO_CHANNEL_4, HIGH);
-					logic->setValueRaw(DIO_CHANNEL_5, HIGH);
+					logic->setValueRaw(DIO_CHANNEL_4, libm2k::digital::HIGH);
+					logic->setValueRaw(DIO_CHANNEL_5, libm2k::digital::HIGH);
 
 
 					logic->enableAllOut(true);

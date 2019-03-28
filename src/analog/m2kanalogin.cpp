@@ -156,7 +156,7 @@ double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
 
 uint16_t M2kAnalogIn::getVoltageRaw(unsigned int ch)
 {
-	M2kAnalogIn::ANALOG_IN_CHANNEL chn = static_cast<M2kAnalogIn::ANALOG_IN_CHANNEL>(ch);
+	ANALOG_IN_CHANNEL chn = static_cast<ANALOG_IN_CHANNEL>(ch);
 	try {
 		return getVoltageRaw(chn);
 	} catch (std::runtime_error &e) {
@@ -164,7 +164,7 @@ uint16_t M2kAnalogIn::getVoltageRaw(unsigned int ch)
 	}
 }
 
-uint16_t M2kAnalogIn::getVoltageRaw(M2kAnalogIn::ANALOG_IN_CHANNEL ch)
+uint16_t M2kAnalogIn::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 {
 	size_t num_samples = 100;
 	if (ch >= getNbChannels()) {
@@ -202,7 +202,7 @@ std::vector<uint16_t> M2kAnalogIn::getVoltageRaw()
 
 double M2kAnalogIn::getVoltage(unsigned int ch)
 {
-	M2kAnalogIn::ANALOG_IN_CHANNEL chn = static_cast<M2kAnalogIn::ANALOG_IN_CHANNEL>(ch);
+	ANALOG_IN_CHANNEL chn = static_cast<ANALOG_IN_CHANNEL>(ch);
 	try {
 		return getVoltage(chn);
 	} catch (std::runtime_error &e) {
@@ -245,7 +245,7 @@ std::vector<double> M2kAnalogIn::getVoltage()
 	}
 }
 
-double M2kAnalogIn::getScalingFactor(M2kAnalogIn::ANALOG_IN_CHANNEL ch)
+double M2kAnalogIn::getScalingFactor(ANALOG_IN_CHANNEL ch)
 {
 	return (0.78 / ((1 << 11) * 1.3 *
 		getValueForRange(m_input_range.at(ch))) *
@@ -293,13 +293,13 @@ void M2kAnalogIn::setHysteresis(ANALOG_IN_CHANNEL chnIdx, int hysteresis)
 	m_trigger->setHysteresis(chnIdx, hysteresis);
 }
 
-std::pair<double, double> M2kAnalogIn::getHysteresisRange(M2kAnalogIn::ANALOG_IN_CHANNEL chn)
+std::pair<double, double> M2kAnalogIn::getHysteresisRange(ANALOG_IN_CHANNEL chn)
 {
 	std::pair<double, double> m2k_range = getRangeLimits(getRange(chn));
 	return std::pair<double, double>(0, m2k_range.second / 10);
 }
 
-M2kHardwareTrigger::condition M2kAnalogIn::getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
+M2K_TRIGGER_CONDITION M2kAnalogIn::getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
 {
 	try {
 		return m_trigger->getAnalogCondition(chnIdx);
@@ -309,12 +309,12 @@ M2kHardwareTrigger::condition M2kAnalogIn::getAnalogCondition(ANALOG_IN_CHANNEL 
 	}
 }
 
-void M2kAnalogIn::setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond)
+void M2kAnalogIn::setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
 {
 	m_trigger->setAnalogCondition(chnIdx, cond);
 }
 
-M2kHardwareTrigger::condition M2kAnalogIn::getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const
+M2K_TRIGGER_CONDITION M2kAnalogIn::getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const
 {
 	try {
 		return m_trigger->getDigitalCondition(chnIdx);
@@ -324,12 +324,12 @@ M2kHardwareTrigger::condition M2kAnalogIn::getDigitalCondition(ANALOG_IN_CHANNEL
 	}
 }
 
-void M2kAnalogIn::setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2kHardwareTrigger::condition cond)
+void M2kAnalogIn::setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
 {
 	m_trigger->setDigitalCondition(chnIdx, cond);
 }
 
-M2kHardwareTrigger::source M2kAnalogIn::getSource() const
+M2K_TRIGGER_SOURCE M2kAnalogIn::getSource() const
 {
 	try {
 		return m_trigger->getSource();
@@ -339,7 +339,7 @@ M2kHardwareTrigger::source M2kAnalogIn::getSource() const
 	}
 }
 
-void M2kAnalogIn::setSource(M2kHardwareTrigger::source src)
+void M2kAnalogIn::setSource(M2K_TRIGGER_SOURCE src)
 {
 	m_trigger->setSource(src);
 }
@@ -354,7 +354,7 @@ void M2kAnalogIn::setSourceChannel(ANALOG_IN_CHANNEL channel)
 	}
 }
 
-M2kAnalogIn::ANALOG_IN_CHANNEL M2kAnalogIn::getSourceChannel()
+ANALOG_IN_CHANNEL M2kAnalogIn::getSourceChannel()
 {
 	int sourceChannel = m_trigger->getSourceChannel();
 	if (sourceChannel > 0) {
@@ -365,8 +365,8 @@ M2kAnalogIn::ANALOG_IN_CHANNEL M2kAnalogIn::getSourceChannel()
 	}
 }
 
-void M2kAnalogIn::setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel,
-				 M2kHardwareTrigger::mode mode)
+void M2kAnalogIn::setTriggerMode(ANALOG_IN_CHANNEL channel,
+				 M2K_TRIGGER_MODE mode)
 {
 	try {
 		m_trigger->setTriggerMode(channel, mode);
@@ -375,7 +375,7 @@ void M2kAnalogIn::setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel,
 	}
 }
 
-M2kHardwareTrigger::mode M2kAnalogIn::getTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL channel)
+M2K_TRIGGER_MODE M2kAnalogIn::getTriggerMode(ANALOG_IN_CHANNEL channel)
 {
 	try {
 		return m_trigger->getTriggerMode(channel);
@@ -412,12 +412,12 @@ void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, double min, double max)
 	}
 }
 
-M2kAnalogIn::M2K_RANGE M2kAnalogIn::getRange(ANALOG_IN_CHANNEL channel)
+M2K_RANGE M2kAnalogIn::getRange(ANALOG_IN_CHANNEL channel)
 {
 	return m_input_range[channel];
 }
 
-std::pair<double, double> M2kAnalogIn::getRangeLimits(M2kAnalogIn::M2K_RANGE range)
+std::pair<double, double> M2kAnalogIn::getRangeLimits(M2K_RANGE range)
 {
 	if (range == PLUS_MINUS_25V) {
 		return std::pair<double, double>(LOW_MIN, LOW_MAX);
@@ -426,9 +426,9 @@ std::pair<double, double> M2kAnalogIn::getRangeLimits(M2kAnalogIn::M2K_RANGE ran
 	}
 }
 
-std::vector<M2kAnalogIn::M2K_RANGE> M2kAnalogIn::getAvailableRanges()
+std::vector<M2K_RANGE> M2kAnalogIn::getAvailableRanges()
 {
-	std::vector<M2kAnalogIn::M2K_RANGE> ranges = {};
+	std::vector<M2K_RANGE> ranges = {};
 
 }
 

@@ -22,6 +22,7 @@
 
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/digital/enums.hpp>
+#include <libm2k/analog/enums.hpp>
 #include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <libm2k/utils/device.hpp>
 #include <string>
@@ -29,6 +30,7 @@
 
 using namespace libm2k::devices;
 using namespace libm2k::utils;
+using namespace libm2k::analog;
 
 namespace libm2k {
 namespace digital {
@@ -60,8 +62,8 @@ public:
 
 	bool anyChannelEnabled(DIO_DIRECTION dir);
 
-	void setTrigger(DIO_CHANNEL, libm2k::analog::M2kHardwareTrigger::condition);
-	libm2k::analog::M2kHardwareTrigger::condition getTrigger(DIO_CHANNEL);
+	void setTrigger(DIO_CHANNEL, M2K_TRIGGER_CONDITION);
+	M2K_TRIGGER_CONDITION getTrigger(DIO_CHANNEL);
 
 	void setTriggerDelay(int delay);
 	int getTriggerDelay();

@@ -41,7 +41,7 @@ DMM::~DMM()
 
 }
 
-DMM::dmm_reading DMM::readChannel(unsigned int index)
+DMM_READING DMM::readChannel(unsigned int index)
 {
 	std::string chn_name = "";
 	for (auto pair : m_channel_id_list) {
@@ -66,9 +66,9 @@ std::vector<std::string> DMM::getAllChannels()
 	return ids;
 }
 
-DMM::dmm_reading DMM::readChannel(std::string chn_name)
+DMM_READING DMM::readChannel(std::string chn_name)
 {
-	dmm_reading result;
+	DMM_READING result;
 	double value = 0;
 	std::string key = "";
 	unsigned int index = m_channel_id_list.at(chn_name);
@@ -123,12 +123,12 @@ DMM::dmm_reading DMM::readChannel(std::string chn_name)
 	}
 }
 
-std::vector<DMM::dmm_reading> DMM::readAll()
+std::vector<DMM_READING> DMM::readAll()
 {
-	std::vector<dmm_reading> result = {};
+	std::vector<DMM_READING> result = {};
 	try {
 		for (auto pair : m_channel_id_list) {
-			dmm_reading res = readChannel(pair.first);
+			DMM_READING res = readChannel(pair.first);
 			result.push_back(res);
 		}
 		return result;

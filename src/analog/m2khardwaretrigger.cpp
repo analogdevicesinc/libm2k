@@ -144,7 +144,7 @@ unsigned int M2kHardwareTrigger::numChannels() const
 	return m_num_channels;
 }
 
-M2kHardwareTrigger::condition M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
+M2K_TRIGGER_CONDITION M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
 		const
 {
 	if (chnIdx >= numChannels()) {
@@ -166,11 +166,11 @@ M2kHardwareTrigger::condition M2kHardwareTrigger::getAnalogCondition(unsigned in
 			"unexpected value read from attribute: trigger");
 	}
 
-	return static_cast<condition>(it - m_trigger_analog_cond.begin());
+	return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_analog_cond.begin());
 
 }
 
-void M2kHardwareTrigger::setAnalogCondition(unsigned int chnIdx, condition cond)
+void M2kHardwareTrigger::setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
 {
 	if (chnIdx >= numChannels()) {
 		throw std::invalid_argument("Channel index is out of range");
@@ -184,7 +184,7 @@ void M2kHardwareTrigger::setAnalogCondition(unsigned int chnIdx, condition cond)
 		m_trigger_analog_cond[cond].c_str());
 }
 
-M2kHardwareTrigger::condition M2kHardwareTrigger::getDigitalCondition(unsigned int chnIdx)
+M2K_TRIGGER_CONDITION M2kHardwareTrigger::getDigitalCondition(unsigned int chnIdx)
 		const
 {
 	if (chnIdx >= numChannels()) {
@@ -204,10 +204,10 @@ M2kHardwareTrigger::condition M2kHardwareTrigger::getDigitalCondition(unsigned i
 		throw std::invalid_argument("unexpected value read from attribute: trigger");
 	}
 
-	return static_cast<condition>(it - m_trigger_digital_cond.begin());
+	return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_digital_cond.begin());
 }
 
-void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, condition cond)
+void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
 {
 	if (chnIdx >= numChannels()) {
 		throw std::invalid_argument("Channel index is out of range");
@@ -270,7 +270,7 @@ void M2kHardwareTrigger::setHysteresis(unsigned int chnIdx, int histeresis)
 		"trigger_hysteresis", static_cast<long long>(histeresis));
 }
 
-M2kHardwareTrigger::mode M2kHardwareTrigger::getTriggerMode(unsigned int chnIdx) const
+M2K_TRIGGER_MODE M2kHardwareTrigger::getTriggerMode(unsigned int chnIdx) const
 {
 	if (chnIdx >= numChannels()) {
 		throw std::invalid_argument("Channel index is out of range");
@@ -290,10 +290,10 @@ M2kHardwareTrigger::mode M2kHardwareTrigger::getTriggerMode(unsigned int chnIdx)
 		throw ("unexpected value read from attribute: mode");
 	}
 
-	return static_cast<mode>(it - m_trigger_mode.begin());
+	return static_cast<M2K_TRIGGER_MODE>(it - m_trigger_mode.begin());
 }
 
-void M2kHardwareTrigger::setTriggerMode(unsigned int chnIdx, M2kHardwareTrigger::mode mode)
+void M2kHardwareTrigger::setTriggerMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode)
 {
 	if (chnIdx >= numChannels()) {
 		throw std::invalid_argument("Channel index is out of range");
@@ -303,7 +303,7 @@ void M2kHardwareTrigger::setTriggerMode(unsigned int chnIdx, M2kHardwareTrigger:
 		m_trigger_mode[mode].c_str());
 }
 
-M2kHardwareTrigger::source M2kHardwareTrigger::getSource() const
+M2K_TRIGGER_SOURCE M2kHardwareTrigger::getSource() const
 {
 	char buf[4096];
 
@@ -317,10 +317,10 @@ M2kHardwareTrigger::source M2kHardwareTrigger::getSource() const
 		throw "unexpected value read from attribute: logic_mode / source";
 	}
 
-	return static_cast<source>(it - m_trigger_source.begin());
+	return static_cast<M2K_TRIGGER_SOURCE>(it - m_trigger_source.begin());
 }
 
-void M2kHardwareTrigger::setSource(source src)
+void M2kHardwareTrigger::setSource(M2K_TRIGGER_SOURCE src)
 {
 	std::string src_str = m_trigger_source[src];
 	iio_channel_attr_write(m_delay_trigger, "logic_mode",
@@ -335,7 +335,7 @@ int M2kHardwareTrigger::getSourceChannel() const
 {
 	int chnIdx = -1;
 
-	source src = getSource();
+	M2K_TRIGGER_SOURCE src = getSource();
 
 	// Returning the channel index if a single channel is set as a source
 	// and -1 if multiple channels are set.
@@ -359,7 +359,7 @@ void M2kHardwareTrigger::setSourceChannel(unsigned int chnIdx)
 	// Currently we don't need trigger on multiple channels simultaneously
 	// Also options 'a_OR_b', 'a_AND_b' and 'a_XOR_b' don't scale well for
 	// 3, 4, .. channels (combinations rise exponentially).
-	source src = static_cast<source>(chnIdx);
+	M2K_TRIGGER_SOURCE src = static_cast<M2K_TRIGGER_SOURCE>(chnIdx);
 	setSource(src);
 }
 
@@ -393,9 +393,9 @@ std::vector<string> M2kHardwareTrigger::getAvailableDigitalConditions()
 	return m_trigger_digital_cond;
 }
 
-M2kHardwareTrigger::settings_uptr M2kHardwareTrigger::getCurrentHwSettings()
+settings_uptr M2kHardwareTrigger::getCurrentHwSettings()
 {
-	settings_uptr settings(new Settings);
+	settings_uptr settings(new SETTINGS);
 
 	for (unsigned int i = 0; i < numChannels(); i++) {
 		settings->analog_condition.push_back(getAnalogCondition(i));
@@ -410,7 +410,7 @@ M2kHardwareTrigger::settings_uptr M2kHardwareTrigger::getCurrentHwSettings()
 	return settings;
 }
 
-void M2kHardwareTrigger::setHwTriggerSettings(struct Settings *settings)
+void M2kHardwareTrigger::setHwTriggerSettings(struct SETTINGS *settings)
 {
 	for (unsigned int i = 0; i < numChannels(); i++) {
 		setAnalogCondition(i, settings->analog_condition[i]);

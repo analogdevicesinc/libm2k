@@ -22,6 +22,7 @@
 
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/device.hpp>
+#include <libm2k/analog/enums.hpp>
 #include <vector>
 #include <map>
 #include <string>
@@ -32,19 +33,13 @@ namespace libm2k {
 namespace analog {
 class LIBM2K_API DMM : public Device {
 public:
-	struct dmm_reading {
-		std::string name;
-		double value;
-		std::string unit;
-	};
-
 	DMM(struct iio_context *ctx, std::string dev);
 	virtual ~DMM();
 
 	std::vector<std::string> getAllChannels();
-	dmm_reading readChannel(unsigned int index);
-	dmm_reading readChannel(std::string chn_name);
-	std::vector<dmm_reading> readAll();
+	DMM_READING readChannel(unsigned int index);
+	DMM_READING readChannel(std::string chn_name);
+	std::vector<DMM_READING> readAll();
 
 private:
 	std::map<std::string, unsigned int> m_channel_id_list;

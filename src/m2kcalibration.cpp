@@ -82,12 +82,10 @@ void M2kCalibration::setAdcInCalibMode()
 {
 	// Make sure hardware triggers are disabled before calibrating
 	try {
-		m_trigger0_mode = m_m2k_adc->getTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1);
-		m_trigger1_mode = m_m2k_adc->getTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_2);
-		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
-						 M2kHardwareTrigger::ALWAYS);
-		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_2,
-						 M2kHardwareTrigger::ALWAYS);
+		m_trigger0_mode = m_m2k_adc->getTriggerMode(ANALOG_IN_CHANNEL_1);
+		m_trigger1_mode = m_m2k_adc->getTriggerMode(ANALOG_IN_CHANNEL_2);
+		m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_1, ALWAYS);
+		m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_2, ALWAYS);
 
 		/* Save the previous values for sampling frequency and oversampling ratio */
 		adc_sampl_freq = m_m2k_adc->getSamplerate();
@@ -112,11 +110,8 @@ void M2kCalibration::setDacInCalibMode()
 void M2kCalibration::restoreAdcFromCalibMode()
 {
 	try {
-		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
-					  m_trigger0_mode);
-
-		m_m2k_adc->setTriggerMode(M2kAnalogIn::ANALOG_IN_CHANNEL_2,
-					  m_trigger1_mode);
+		m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_1, m_trigger0_mode);
+		m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
 
 		/* Restore the previous values for sampling frequency and oversampling ratio */
 		m_m2k_adc->setSamplerate(adc_sampl_freq);
@@ -201,9 +196,9 @@ bool M2kCalibration::calibrateADCoffset()
 	int16_t tmp;
 
 	tmp = ch0_avg;
-	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
+	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
 	tmp = ch1_avg;
-	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
+	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
 	voltage0 = m_m2k_adc->convertRawToVolts(ch0_avg, 1, 1);
 	voltage1 = m_m2k_adc->convertRawToVolts(ch1_avg, 1, 1);
@@ -247,9 +242,9 @@ bool M2kCalibration::calibrateADCgain()
 	avg1 = Utils::average(ch_data.at(1).data(), num_samples);
 
 	tmp = avg0;
-	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_1, &avg0, &tmp);
+	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_1, &avg0, &tmp);
 	tmp = avg1;
-	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_2, &avg1, &tmp);
+	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &avg1, &tmp);
 
 	avg0 = m_m2k_adc->convertRawToVolts(avg0, 1, 1);
 	avg1 = m_m2k_adc->convertRawToVolts(avg1, 1, 1);
@@ -299,10 +294,8 @@ void M2kCalibration::updateAdcCorrections()
 	m_ad5625_dev->setDoubleValue(2, m_adc_ch0_offset, "raw", true);
 	m_ad5625_dev->setDoubleValue(3, m_adc_ch1_offset, "raw", true);
 
-	m_m2k_adc->setAdcCalibGain(M2kAnalogIn::ANALOG_IN_CHANNEL_1,
-				   m_adc_ch0_gain);
-	m_m2k_adc->setAdcCalibGain(M2kAnalogIn::ANALOG_IN_CHANNEL_2,
-				   m_adc_ch1_gain);
+	m_m2k_adc->setAdcCalibGain(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
+	m_m2k_adc->setAdcCalibGain(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
 }
 
 bool M2kCalibration::resetCalibration()
@@ -482,9 +475,9 @@ bool M2kCalibration::calibrateDACoffset()
 	int16_t ch1_avg = Utils::average(ch_data.at(1).data(), num_samples);
 
 	tmp = ch0_avg;
-	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
+	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
 	tmp = ch1_avg;
-	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
+	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
 	double voltage0 = m_m2k_adc->convertRawToVolts(
 				ch0_avg, m_adc_ch0_gain, 1);
@@ -563,9 +556,9 @@ bool M2kCalibration::calibrateDACgain()
 	int16_t ch1_avg = Utils::average(ch_data.at(1).data(), num_samples);
 
 	tmp = ch0_avg;
-	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
+	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
 	tmp = ch1_avg;
-	m_m2k_adc->convertChannelHostFormat(M2kAnalogIn::ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
+	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
 	double voltage0 = m_m2k_adc->convertRawToVolts(
 				ch0_avg, m_adc_ch0_gain, 1);

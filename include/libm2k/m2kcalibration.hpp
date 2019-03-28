@@ -21,6 +21,7 @@
 #define M2KCALIBRATION_HPP
 
 #include <libm2k/m2kglobal.hpp>
+#include <libm2k/analog/enums.hpp>
 #include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <cstdint>
 #include <cstdlib>
@@ -28,12 +29,8 @@
 #include <memory>
 #include <vector>
 
+using namespace libm2k::analog;
 namespace libm2k {
-namespace analog {
-class M2kAnalogIn;
-class M2kAnalogOut;
-class M2kHardwareTrigger;
-}
 
 class LIBM2K_API M2kCalibration
 {
@@ -117,8 +114,8 @@ private:
 	double m_dac_a_ch_vlsb;
 	double m_dac_b_ch_vlsb;
 
-	libm2k::analog::M2kHardwareTrigger::mode m_trigger0_mode;
-	libm2k::analog::M2kHardwareTrigger::mode m_trigger1_mode;
+	M2K_TRIGGER_MODE m_trigger0_mode;
+	M2K_TRIGGER_MODE m_trigger1_mode;
 	double adc_sampl_freq;
 	double adc_oversampl;
 	double dac_a_sampl_freq;
