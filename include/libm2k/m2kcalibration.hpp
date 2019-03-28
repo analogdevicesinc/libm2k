@@ -35,21 +35,8 @@ namespace libm2k {
 class LIBM2K_API M2kCalibration
 {
 public:
-	enum calibration_mode {
-		ADC_REF1,
-		ADC_REF2,
-		ADC_GND,
-		DAC,
-		NONE
-	};
-
-	enum gain_mode {
-		LOW,
-		HIGH
-	};
-
-	M2kCalibration(struct iio_context* ctx, libm2k::analog::M2kAnalogIn* analogIn,
-		       libm2k::analog::M2kAnalogOut* analogOut);
+	M2kCalibration(struct iio_context* ctx, M2kAnalogIn* analogIn,
+		       M2kAnalogOut* analogOut);
 	~M2kCalibration();
 
 	bool initialize();
@@ -102,8 +89,8 @@ private:
 	bool m_cancel;
 
 	struct iio_context *m_ctx;
-	libm2k::analog::M2kAnalogIn* m_m2k_adc;
-	libm2k::analog::M2kAnalogOut* m_m2k_dac;
+	M2kAnalogIn* m_m2k_adc;
+	M2kAnalogOut* m_m2k_dac;
 
 	int m_adc_ch0_offset;
 	int m_adc_ch1_offset;

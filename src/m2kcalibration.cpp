@@ -22,6 +22,7 @@
 #include <libm2k/m2kcalibration.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
+#include <libm2k/enums.hpp>
 
 #include <errno.h>
 #include <iio.h>
@@ -812,7 +813,7 @@ bool M2kCalibration::setCalibrationMode(int mode)
 	case DAC:
 		strMode = "dac";
 		break;
-	case NONE:
+	case libm2k::NONE:
 		strMode = "none";
 		break;
 	default:
