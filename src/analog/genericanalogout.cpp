@@ -37,54 +37,28 @@ GenericAnalogOut::~GenericAnalogOut()
 }
 double GenericAnalogOut::getSamplerate()
 {
-	try {
-		return getDoubleValue("sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getDoubleValue("sampling_frequency");
 }
 
 double GenericAnalogOut::getSamplerate(unsigned int chn_idx)
 {
-	try {
-		return getDoubleValue(chn_idx, "sampling_frequency", true);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getDoubleValue(chn_idx, "sampling_frequency", true);
 }
 
 double GenericAnalogOut::setSamplerate(double sampleRate)
 {
-	try {
-		return setDoubleValue(sampleRate, "sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return setDoubleValue(sampleRate, "sampling_frequency");
 }
 
 double GenericAnalogOut::setSamplerate(unsigned int chn_idx, double sampleRate)
 {
-	try {
-		return setDoubleValue(chn_idx, sampleRate,
-					    "sampling_frequency", true);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return setDoubleValue(chn_idx, sampleRate,
+			      "sampling_frequency", true);
 }
 
 std::vector<double> GenericAnalogOut::getAvailableSamplerates()
 {
 	return Device::getAvailableSamplerates();
-}
-
-bool GenericAnalogOut::isChannelEnabled(unsigned int index)
-{
-//	if (index < m_channel_list.size()) {
-//		return iio_channel_is_enabled(m_channel_list.at(index));
-//	} else {
-//		throw invalid_parameter_exception("No such channel for the AnalogOut");
-//	}
-	return  true;
 }
 
 void GenericAnalogOut::setCyclic(bool en)
@@ -97,7 +71,7 @@ void GenericAnalogOut::setCyclic(bool en)
 void GenericAnalogOut::setCyclic(bool en, unsigned int chn)
 {
 	if (chn >= getNbChannels()) {
-		throw invalid_parameter_exception("Generic Analog Out: No such channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
 	}
 	m_cyclic.at(chn) = en;
 }
@@ -105,27 +79,19 @@ void GenericAnalogOut::setCyclic(bool en, unsigned int chn)
 bool GenericAnalogOut::getCyclic(unsigned int chn)
 {
 	if (chn >= getNbChannels()) {
-		throw invalid_parameter_exception("Generic Analog Out: No such channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
 	}
 	return m_cyclic.at(chn);
 }
 
 void GenericAnalogOut::push(std::vector<short> &data, unsigned int chn_idx)
 {
-	try {
-		Device::push(data, chn_idx, getCyclic(chn_idx));
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	Device::push(data, chn_idx, getCyclic(chn_idx));
 }
 
 void GenericAnalogOut::push(std::vector<double> &data, unsigned int chn_idx)
 {
-	try {
-		Device::push(data, chn_idx, getCyclic(chn_idx));
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	Device::push(data, chn_idx, getCyclic(chn_idx));
 }
 
 void libm2k::analog::GenericAnalogOut::openAnalogOut()

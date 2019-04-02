@@ -27,6 +27,7 @@ set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 option(ENABLE_DOC "Generate documentation with Doxygen" ON)
 option(BUILD_EXAMPLES "Build the default examples" ON)
 option(ENABLE_LOG "Build with logging support" ON)
+option(ENABLE_EXCEPTIONS "Build with exception handling support" ON)
 
 # build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
 add_definitions(-DLIBM2K_EXPORTS=1)
@@ -52,13 +53,21 @@ endif()
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
+if (NOT LIBM2K_VERSION_GIT)
+	set(LIBM2K_VERSION_GIT v${PROJECT_VERSION})
+endif()
+
 if (ENABLE_LOG)
 	add_definitions(-DLIBM2K_ENABLE_LOG)
 	include(findLog4Cpp)
 endif()
 
-if (NOT LIBM2K_VERSION_GIT)
-	set(LIBM2K_VERSION_GIT v${PROJECT_VERSION})
+if (NOT ENABLE_EXCEPTIONS)
+	remove_definitions("-fexceptions")
+	add_definitions("-fno-exceptions")
+else()
+	remove_definitions("-fno-exceptions")
+	add_definitions("-fexceptions")
 endif()
 
 # Set the default install path to /usr

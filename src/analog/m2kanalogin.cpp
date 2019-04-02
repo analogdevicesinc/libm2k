@@ -44,31 +44,12 @@ M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 	Device(ctx, adc_dev),
 	m_need_processing(false)
 {
-	try {
-		m_ad9963 = make_shared<Device>(ctx, "ad9963");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(string(e.what()) + " ad9963");
-	}
-
+	m_ad9963 = make_shared<Device>(ctx, "ad9963");
 	setOversamplingRatio(1);
 
-	try {
-		m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(string(e.what()) + " m2k-fabric");
-	}
-
-	try {
-		m_ad5625 = make_shared<Device>(ctx, "ad5625");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(string(e.what()) + " ad5625");
-	}
-
-	try {
-		m_trigger = new M2kHardwareTrigger(ctx);
-	} catch (std::exception& e){
-		throw no_device_exception("Disabling hardware trigger support.");
-	}
+	m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
+	m_ad5625 = make_shared<Device>(ctx, "ad5625");
+	m_trigger = new M2kHardwareTrigger(ctx);
 
 	/* Filters applied while decimating affect the
 	/ amplitude of the received  data */
@@ -126,19 +107,15 @@ bool M2kAnalogIn::getStreamingFlag()
 std::vector<std::vector<double>> M2kAnalogIn::getSamples(int nb_samples,
 							 bool processed)
 {
-	try {
-		if (processed) {
-			m_need_processing = true;
-		}
-		auto fp = std::bind(&M2kAnalogIn::processSample, this, _1, _2);
-		auto samps = Device::getSamples(nb_samples, fp);
-		if (processed) {
-			m_need_processing = false;
-		}
-		return samps;
-	} catch (std::runtime_error &e) {
-		throw e;
+	if (processed) {
+		m_need_processing = true;
 	}
+	auto fp = std::bind(&M2kAnalogIn::processSample, this, _1, _2);
+	auto samps = Device::getSamples(nb_samples, fp);
+	if (processed) {
+		m_need_processing = false;
+	}
+	return samps;
 }
 
 double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
@@ -157,92 +134,69 @@ double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
 uint16_t M2kAnalogIn::getVoltageRaw(unsigned int ch)
 {
 	ANALOG_IN_CHANNEL chn = static_cast<ANALOG_IN_CHANNEL>(ch);
-	try {
-		return getVoltageRaw(chn);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getVoltageRaw(chn);
 }
 
 uint16_t M2kAnalogIn::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 {
 	size_t num_samples = 100;
 	if (ch >= getNbChannels()) {
-		throw invalid_parameter_exception("M2kAnalogIn: no such channel");
+		throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: no such channel");
 	}
 
-	try {
-		enableChannel(ch, true);
-		auto samps = getSamples(num_samples);
-		double avg = Utils::average(samps.at(ch).data(), num_samples);
-		return (uint16_t)avg;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	enableChannel(ch, true);
+	auto samps = getSamples(num_samples);
+	double avg = Utils::average(samps.at(ch).data(), num_samples);
+	return (uint16_t)avg;
 }
 
 std::vector<uint16_t> M2kAnalogIn::getVoltageRaw()
 {
 	size_t num_samples = 100;
 	std::vector<uint16_t> avgs;
-	try {
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
-			enableChannel(i, true);
-		}
-		auto samps = getSamples(num_samples);
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
-			uint16_t avg = (uint16_t)(Utils::average(samps.at(i).data(), num_samples));
-			avgs.push_back(avg);
-		}
-		return avgs;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		enableChannel(i, true);
 	}
+	auto samps = getSamples(num_samples);
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		uint16_t avg = (uint16_t)(Utils::average(samps.at(i).data(), num_samples));
+		avgs.push_back(avg);
+	}
+	return avgs;
 }
 
 double M2kAnalogIn::getVoltage(unsigned int ch)
 {
 	ANALOG_IN_CHANNEL chn = static_cast<ANALOG_IN_CHANNEL>(ch);
-	try {
-		return getVoltage(chn);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getVoltage(chn);
 }
 
 double M2kAnalogIn::getVoltage(ANALOG_IN_CHANNEL ch)
 {
 	size_t num_samples = 100;
 	if (ch >= getNbChannels()) {
-		throw invalid_parameter_exception("M2kAnalogIn: no such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogIn: no such channel");
 	}
 
-	try {
-		enableChannel(ch, true);
-		auto samps = getSamples(num_samples, true);
-		double avg = Utils::average(samps.at(ch).data(), num_samples);
-		return avg;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	enableChannel(ch, true);
+	auto samps = getSamples(num_samples, true);
+	double avg = Utils::average(samps.at(ch).data(), num_samples);
+	return avg;
 }
 
 std::vector<double> M2kAnalogIn::getVoltage()
 {
 	size_t num_samples = 100;
 	std::vector<double> avgs;
-	try {
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
-			enableChannel(i, true);
-		}
-		auto samps = getSamples(num_samples, true);
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
-			avgs.push_back(Utils::average(samps.at(i).data(), num_samples));
-		}
-		return avgs;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		enableChannel(i, true);
 	}
+	auto samps = getSamples(num_samples, true);
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		avgs.push_back(Utils::average(samps.at(i).data(), num_samples));
+	}
+	return avgs;
 }
 
 double M2kAnalogIn::getScalingFactor(ANALOG_IN_CHANNEL ch)
@@ -301,11 +255,11 @@ std::pair<double, double> M2kAnalogIn::getHysteresisRange(ANALOG_IN_CHANNEL chn)
 
 M2K_TRIGGER_CONDITION M2kAnalogIn::getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
 {
-	try {
+	__try {
 		return m_trigger->getAnalogCondition(chnIdx);
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error("M2K Analog In error: " +
-					 std::string(e.what()));
+	} __catch (exception_type &e) {
+		throw_exception(EXC_RUNTIME_ERROR, "M2KAnalogIn trigger condition error: "  +
+				string(e.what()));
 	}
 }
 
@@ -316,11 +270,11 @@ void M2kAnalogIn::setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDI
 
 M2K_TRIGGER_CONDITION M2kAnalogIn::getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const
 {
-	try {
+	__try {
 		return m_trigger->getDigitalCondition(chnIdx);
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error("M2K Analog In error: " +
-					 std::string(e.what()));
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger condition error: "  +
+				string(e.what()));
 	}
 }
 
@@ -331,11 +285,11 @@ void M2kAnalogIn::setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_COND
 
 M2K_TRIGGER_SOURCE M2kAnalogIn::getSource() const
 {
-	try {
+	__try {
 		return m_trigger->getSource();
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error("M2K Analog In error: " +
-					 std::string(e.what()));
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger source error: "  +
+				string(e.what()));
 	}
 }
 
@@ -346,11 +300,11 @@ void M2kAnalogIn::setSource(M2K_TRIGGER_SOURCE src)
 
 void M2kAnalogIn::setSourceChannel(ANALOG_IN_CHANNEL channel)
 {
-	try {
+	__try {
 		m_trigger->setSourceChannel(channel);
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error("M2K Analog In error: " +
-					 std::string(e.what()));
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn set trigger source error: "  +
+				string(e.what()));
 	}
 }
 
@@ -360,33 +314,35 @@ ANALOG_IN_CHANNEL M2kAnalogIn::getSourceChannel()
 	if (sourceChannel > 0) {
 		return static_cast<ANALOG_IN_CHANNEL>(sourceChannel);
 	} else {
-		throw std::runtime_error("M2K Analog In error: "
-					 " No trigger channel configured");
+		throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger source channel error: "  +
+				string(e.what()));
 	}
 }
 
 void M2kAnalogIn::setTriggerMode(ANALOG_IN_CHANNEL channel,
 				 M2K_TRIGGER_MODE mode)
 {
-	try {
+	__try {
 		m_trigger->setTriggerMode(channel, mode);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger mode error: "  +
+				string(e.what()));
 	}
 }
 
 M2K_TRIGGER_MODE M2kAnalogIn::getTriggerMode(ANALOG_IN_CHANNEL channel)
 {
-	try {
+	__try {
 		return m_trigger->getTriggerMode(channel);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger mode error: "  +
+				string(e.what()));
 	}
 }
 
 void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 {
-	const char *str_gain_mode;
+	const char *str_gain_mode = "";
 
 	m_input_range[channel] = range;
 	if (range == PLUS_MINUS_2_5V) {
@@ -395,11 +351,7 @@ void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 		str_gain_mode = "low";
 	}
 
-	try {
-		m_m2k_fabric->setStringValue(channel, "gain", std::string(str_gain_mode));
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	m_m2k_fabric->setStringValue(channel, "gain", std::string(str_gain_mode));
 }
 
 void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, double min, double max)
@@ -434,75 +386,43 @@ std::vector<M2K_RANGE> M2kAnalogIn::getAvailableRanges()
 
 double M2kAnalogIn::getOversamplingRatio()
 {
-	try {
-		return getDoubleValue("oversampling_ratio");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getDoubleValue("oversampling_ratio");
 }
 
 double M2kAnalogIn::getOversamplingRatio(unsigned int chn_idx)
 {
-	try {
-		return getDoubleValue(chn_idx, "oversampling_ratio");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getDoubleValue(chn_idx, "oversampling_ratio");
 }
 
 double M2kAnalogIn::setOversamplingRatio(double oversampling_ratio)
 {
-	try {
-		return setDoubleValue(oversampling_ratio, "oversampling_ratio");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return setDoubleValue(oversampling_ratio, "oversampling_ratio");
 }
 
 double M2kAnalogIn::setOversamplingRatio(unsigned int chn_idx, double oversampling_ratio)
 {
-	try {
-		return setDoubleValue(chn_idx, oversampling_ratio, "oversampling_ratio");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return setDoubleValue(chn_idx, oversampling_ratio, "oversampling_ratio");
 }
 
 
 double M2kAnalogIn::getSamplerate()
 {
-	try {
-		return getDoubleValue("sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getDoubleValue("sampling_frequency");
 }
 
 double M2kAnalogIn::getSamplerate(unsigned int chn_idx)
 {
-	try {
-		return getDoubleValue(chn_idx, "sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getDoubleValue(chn_idx, "sampling_frequency");
 }
 
 double M2kAnalogIn::setSamplerate(double samplerate)
 {
-	try {
-		return setDoubleValue(samplerate, "sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return setDoubleValue(samplerate, "sampling_frequency");
 }
 
 double M2kAnalogIn::setSamplerate(unsigned int chn_idx, double samplerate)
 {
-	try {
-		return setDoubleValue(chn_idx, samplerate, "sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return setDoubleValue(chn_idx, samplerate, "sampling_frequency");
 }
 
 double M2kAnalogIn::getFilterCompensation(double samplerate)

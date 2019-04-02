@@ -33,7 +33,7 @@ PowerSupply::PowerSupply(struct iio_context* ctx, std::string write_dev,
 		m_dev_write = make_shared<Device>(ctx, write_dev);
 		if (!m_dev_write) {
 			m_dev_write = nullptr;
-			throw invalid_parameter_exception("Power Supply: No device was found for writing");
+			throw_exception(EXC_INVALID_PARAMETER, "Power Supply: No device was found for writing");
 		}
 	}
 
@@ -41,7 +41,7 @@ PowerSupply::PowerSupply(struct iio_context* ctx, std::string write_dev,
 		m_dev_read = make_shared<Device>(ctx, write_dev);
 		if (!m_dev_read) {
 			m_dev_read = nullptr;
-			throw invalid_parameter_exception("Power Supply: No device was found for reading");
+			throw_exception(EXC_INVALID_PARAMETER, "Power Supply: No device was found for reading");
 		}
 	}
 }

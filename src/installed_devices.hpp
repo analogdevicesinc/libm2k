@@ -7,22 +7,15 @@
 #include <vector>
 #include <memory>
 
-#include "libm2k/genericdevice.hpp"
-#include "libm2k/m2k.hpp"
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/genericdevice.hpp>
+#include <libm2k/m2k.hpp>
 
 // generated includes for plugins
 
-#include "libm2k/fmcomms.hpp"
-//#include "devices/M2K/m2k.hpp"
+#include <libm2k/fmcomms.hpp>
 
 using namespace libm2k::devices;
-
-//enum DeviceTypes {
-//	DevFMCOMMS,
-//	DevM2K,
-
-//	Other
-//};
 
 static std::vector<std::string> devices_ini_file_path = {
 	{R"(C:\msys64\home\AlTrifan\libm2k\src\devices\FMCOMMS\fmcomms.ini)"},
@@ -39,10 +32,10 @@ static device_name_to_type_map dev_map = {
 DeviceTypes get_type_from_name(std::string name)
 {
 	DeviceTypes t = DeviceTypes::Other;
-	try {
+	__try {
 		t = dev_map.at(name);
 		return t;
-	} catch (std::out_of_range &e){
+	} __catch (exception_type &e){
 
 	}
 	return t;

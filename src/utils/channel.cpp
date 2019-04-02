@@ -32,7 +32,7 @@ Channel::Channel(iio_device *device, unsigned int channel)
 
 	if (!m_channel) {
 		m_channel = nullptr;
-		throw no_device_exception("Channel: Channel not found for this device");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Channel not found for this device");
 	}
 }
 
@@ -45,7 +45,8 @@ Channel::Channel(iio_device *device, std::string channel_name, bool output)
 
 	if (!m_channel) {
 		m_channel = nullptr;
-		throw no_device_exception("Channel: Channel not found for this device");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Channel not found for this device");
+
 	}
 
 }
@@ -58,7 +59,7 @@ Channel::~Channel()
 std::string Channel::getName()
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	return iio_channel_get_name(m_channel);
 }
@@ -66,7 +67,7 @@ std::string Channel::getName()
 std::string Channel::getId()
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	return iio_channel_get_id(m_channel);
 }
@@ -74,7 +75,7 @@ std::string Channel::getId()
 unsigned int Channel::getIndex()
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	return iio_channel_get_index(m_channel);
 }
@@ -82,7 +83,7 @@ unsigned int Channel::getIndex()
 bool Channel::isOutput()
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	return iio_channel_is_output(m_channel);
 }
@@ -90,7 +91,7 @@ bool Channel::isOutput()
 bool Channel::isEnabled()
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	return iio_channel_is_enabled(m_channel);
 }
@@ -98,7 +99,7 @@ bool Channel::isEnabled()
 bool Channel::hasAttribute(std::string attr)
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	if (iio_channel_find_attr(m_channel, attr.c_str()) != NULL) {
 		return true;
@@ -109,7 +110,7 @@ bool Channel::hasAttribute(std::string attr)
 void Channel::enableChannel(bool enable)
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Channel: Can not find associated channel");
 	}
 
 	if (enable) {
@@ -127,7 +128,7 @@ uintptr_t Channel::getFirst(iio_buffer *buffer)
 void Channel::write(struct iio_buffer* buffer, std::vector<short> &data)
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 
 	size_t size = data.size();
@@ -138,7 +139,7 @@ void Channel::write(struct iio_buffer* buffer, std::vector<short> &data)
 void Channel::write(struct iio_buffer* buffer, std::vector<double> &data)
 {
 	if (!m_channel) {
-		throw no_device_exception("Channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 
 	size_t size = data.size();
@@ -149,7 +150,7 @@ void Channel::write(struct iio_buffer* buffer, std::vector<double> &data)
 void Channel::convert(int16_t *avg, int16_t *src)
 {
 	if (!m_channel) {
-		throw  no_device_exception("channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
 }
@@ -157,7 +158,7 @@ void Channel::convert(int16_t *avg, int16_t *src)
 void Channel::convert(double *avg, int16_t *src)
 {
 	if (!m_channel) {
-		throw  no_device_exception("channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
 }
@@ -165,12 +166,12 @@ void Channel::convert(double *avg, int16_t *src)
 double Channel::getDoubleValue(std::string attr)
 {
 	if (!m_channel) {
-		throw  no_device_exception("channel: Can not find associated channel");
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
 	double value = 0.0;
-	unsigned int ret = iio_channel_attr_read_double(m_channel, attr.c_str(), &value);
+	int ret = iio_channel_attr_read_double(m_channel, attr.c_str(), &value);
 	if (ret < 0) {
-		throw invalid_parameter_exception("Channel: Cannot read " + attr);
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot read " + attr);
 	}
 	return value;
 }

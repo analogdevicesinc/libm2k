@@ -54,12 +54,8 @@ GenericDevice::GenericDevice(std::string uri, struct iio_context *ctx, std::stri
 
 GenericDevice::~GenericDevice()
 {
-//	for (auto aIn : s_instancesAnalogIn) {
-//	}
 	m_instancesAnalogIn.clear();
 
-//	for (int i = 0; i < s_instancesAnalogOut.size(); i++) {
-//	}
 	m_instancesAnalogOut.clear();
 
 	m_instancesDMM.clear();
@@ -75,19 +71,19 @@ void GenericDevice::scanAllAnalogIn()
 {
 	auto dev_list = Utils::getAllDevices(m_ctx);
 	for (auto dev : dev_list) {
-		try {
+		__try {
 			if (isIioDeviceBufferCapable(dev) &&
 					(getIioDeviceType(dev) == ANALOG_DEV) &&
 					getIioDeviceDirection(dev) == INPUT) {
-				try {
+				__try {
 					auto aIn = new GenericAnalogIn(m_ctx, dev);
 					m_instancesAnalogIn.push_back(aIn);
-				} catch (std::runtime_error& e) {
+				} __catch (std::runtime_error& e) {
 					std::cout << e.what() << std::endl;
 				}
 			}
-		} catch (std::runtime_error& e) {
-			throw std::runtime_error(e.what());
+		} __catch (std::runtime_error& e) {
+			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
 	}
 }
@@ -96,15 +92,15 @@ void GenericDevice::scanAllAnalogOut()
 {
 	auto dev_list = Utils::getAllDevices(m_ctx);
 	for (auto dev : dev_list) {
-		try {
+		__try {
 			if (isIioDeviceBufferCapable(dev) &&
 					(getIioDeviceType(dev) == ANALOG_DEV) &&
 					getIioDeviceDirection(dev) == OUTPUT) {
 				auto aOut = new GenericAnalogOut(m_ctx, dev);
 				m_instancesAnalogOut.push_back(aOut);
 			}
-		} catch (std::runtime_error &e) {
-			throw std::runtime_error(e.what());
+		} __catch (exception_type &e) {
+			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
 	}
 }
@@ -119,7 +115,6 @@ GenericAnalogIn* GenericDevice::getAnalogIn(unsigned int index)
 	if (index < m_instancesAnalogIn.size()) {
 		return m_instancesAnalogIn.at(index);
 	} else {
-//		throw no_device_exception("No such analog in");
 		return nullptr;
 	}
 }
@@ -192,7 +187,7 @@ DEVICE_TYPE GenericDevice::getIioDeviceType(std::string dev_name)
 {
 	auto dev = iio_context_find_device(m_ctx, dev_name.c_str());
 	if (!dev) {
-		throw no_device_exception("No device found with name: " + dev_name);
+		throw_exception(EXC_INVALID_PARAMETER, "No device found with name: " + dev_name);
 	}
 
 	auto chn = iio_device_get_channel(dev, 0);
@@ -213,7 +208,7 @@ DEVICE_DIRECTION GenericDevice::getIioDeviceDirection(std::string dev_name)
 	DEVICE_DIRECTION dir = NO_DIRECTION;
 	auto dev = iio_context_find_device(m_ctx, dev_name.c_str());
 	if (!dev) {
-		throw no_device_exception("No device found with name: " + dev_name);
+		throw_exception(EXC_INVALID_PARAMETER, "No device found with name: " + dev_name);
 	}
 
 	auto chn_count = iio_device_get_channels_count(dev);
@@ -240,14 +235,14 @@ void GenericDevice::scanAllDMM()
 {
 	auto dev_list = Utils::getIioDevByChannelAttrs(m_ctx, {"raw", "scale"});
 	for (auto dev : dev_list) {
-		try {
+		__try {
 			if (getIioDeviceDirection(dev.first) != OUTPUT) {
 				if (!getDMM(dev.first)) {
 					auto dmm = new DMM(m_ctx, dev.first);
 					m_instancesDMM.push_back(dmm);
 				}
 			}
-		} catch (std::runtime_error &e) {
+		} __catch (exception_type &e) {
 			std::cout << e.what() << std::endl;
 		}
 	}

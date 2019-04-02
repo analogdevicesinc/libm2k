@@ -26,10 +26,9 @@
 #include <libm2k/digital/m2kdigital.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/utils/device.hpp>
+#include <libm2k/logger.hpp>
 #include <iio.h>
 #include <iostream>
-
-#include "logger.h"
 
 using namespace std;
 using namespace libm2k::devices;
@@ -44,28 +43,16 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 
 	initialize();
 
-
 	LOG("BOOOMMM");
 
-	/* Initialize the AnalogIn list */
-//	for (auto aIn : s_instancesAnalogIn) {
-//	}
 	m_instancesAnalogIn.clear();
-
-	/* Initialize the AnalogOut list */
-//	for (auto aOut : s_instancesAnalogOut) {
-//	}
 	m_instancesAnalogOut.clear();
 	m_instancesPowerSupply.clear();
 
-	try {
-		scanAllAnalogIn();
-		scanAllAnalogOut();
-		scanAllPowerSupply();
-		scanAllDigital();
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	scanAllAnalogIn();
+	scanAllAnalogOut();
+	scanAllPowerSupply();
+	scanAllDigital();
 	m_calibration = new M2kCalibration(ctx, getAnalogIn(), getAnalogOut());
 }
 
@@ -89,41 +76,41 @@ M2K::~M2K()
 
 void M2K::scanAllAnalogIn()
 {
-	try {
+	__try {
 		Device* aIn = new libm2k::analog::M2kAnalogIn(ctx(), "m2k-adc");
 		m_instancesAnalogIn.push_back(aIn);
-	} catch (std::runtime_error& e) {
+	} __catch (exception_type &e) {
 		std::cout << e.what() << std::endl;
 	}
 }
 
 void M2K::scanAllAnalogOut()
 {
-	try {
+	__try {
 		std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
 		Device* aOut = new libm2k::analog::M2kAnalogOut(ctx(), devs);
 		m_instancesAnalogOut.push_back(aOut);
-	} catch (std::runtime_error& e) {
+	} __catch (exception_type &e) {
 		std::cout << e.what() << std::endl;
 	}
 }
 
 void M2K::scanAllPowerSupply()
 {
-	try {
+	__try {
 		Device* pSupply = new libm2k::analog::M2kPowerSupply(ctx(), "ad5627", "ad9963");
 		m_instancesPowerSupply.push_back(pSupply);
-	} catch (std::runtime_error &e) {
+	} __catch (exception_type &e) {
 		std::cout << e.what() << std::endl;
 	}
 }
 
 void M2K::scanAllDigital()
 {
-	try {
+	__try {
 		Device* logic = new libm2k::digital::M2kDigital(ctx(), "m2k-logic-analyzer");
 		m_instancesDigital.push_back(logic);
-	} catch (std::runtime_error &e) {
+	} __catch (exception_type &e) {
 		std::cout << e.what() << std::endl;
 	}
 }
@@ -135,35 +122,35 @@ void M2K::calibrate()
 
 bool M2K::resetCalibration()
 {
-	try {
+	__try {
 		return m_calibration->resetCalibration();
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error(e.what());
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, e.what());
 	}
 }
 
 bool M2K::calibrateADC()
 {
-	try {
+	__try {
 		return m_calibration->calibrateADC();
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error(e.what());
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, e.what());
 	}
 }
 
 bool M2K::calibrateDAC()
 {
-	try {
+	__try {
 		return m_calibration->calibrateDAC();
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error(e.what());
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, e.what());
 	}
 }
 
 double M2K::getAdcCalibrationGain(unsigned int chn)
 {
 	if (chn >= getAnalogIn()->getNbChannels()) {
-		throw std::runtime_error("No such ADC channel");
+		throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
 	}
 	if (chn == 0) {
 		return m_calibration->adcGainChannel0();
@@ -175,7 +162,7 @@ double M2K::getAdcCalibrationGain(unsigned int chn)
 int M2K::getAdcCalibrationOffset(unsigned int chn)
 {
 	if (chn >= getAnalogIn()->getNbChannels()) {
-		throw std::runtime_error("No such ADC channel");
+		throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
 	}
 	if (chn == 0) {
 		return m_calibration->adcOffsetChannel0();
@@ -211,7 +198,7 @@ M2kAnalogIn* M2K::getAnalogIn()
 	if (aIn) {
 		return aIn;
 	} else {
-		throw no_device_exception("No such analog in");
+		return nullptr;
 	}
 }
 
@@ -235,7 +222,7 @@ M2kPowerSupply* M2K::getPowerSupply()
 	if (pSupply) {
 		return pSupply;
 	}
-	throw no_device_exception("No M2K power supply");
+	throw_exception(EXC_INVALID_PARAMETER, "No M2K power supply");
 }
 
 M2kDigital* M2K::getDigital()
@@ -244,7 +231,7 @@ M2kDigital* M2K::getDigital()
 	if (logic) {
 		return logic;
 	}
-	throw no_device_exception("No M2K digital device found");
+	throw_exception(EXC_INVALID_PARAMETER, "No M2K digital device found");
 }
 
 M2kAnalogOut* M2K::getAnalogOut()
@@ -263,14 +250,10 @@ std::vector<M2kAnalogIn*> M2K::getAllAnalogIn()
 {
 	std::vector<libm2k::analog::M2kAnalogIn*> allAnalogIn = {};
 	for (Device* inst : m_instancesAnalogIn) {
-		try {
-			libm2k::analog::M2kAnalogIn* analogIn =
+		libm2k::analog::M2kAnalogIn* analogIn =
 				dynamic_cast<M2kAnalogIn*>(inst);
-			if (analogIn) {
-				allAnalogIn.push_back(analogIn);
-			}
-		} catch (std::runtime_error &e) {
-			throw no_device_exception(e.what());
+		if (analogIn) {
+			allAnalogIn.push_back(analogIn);
 		}
 	}
 	return allAnalogIn;
@@ -280,14 +263,10 @@ std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
 {
 	std::vector<libm2k::analog::M2kAnalogOut*> allAnalogOut;
 	for (Device* inst : m_instancesAnalogOut) {
-		try {
-			libm2k::analog::M2kAnalogOut* analogOut =
+		libm2k::analog::M2kAnalogOut* analogOut =
 				dynamic_cast<libm2k::analog::M2kAnalogOut*>(inst);
-			if (analogOut) {
-				allAnalogOut.push_back(analogOut);
-			}
-		} catch (std::runtime_error &e) {
-			throw no_device_exception(e.what());
+		if (analogOut) {
+			allAnalogOut.push_back(analogOut);
 		}
 	}
 	return allAnalogOut;
@@ -308,16 +287,12 @@ void M2K::initialize()
 	}
 
 	/* Configure TX path */
-	try {
-		m_ad9963->writeRegister(0x68, config1);
-		m_ad9963->writeRegister(0x6B, config2);
-		m_ad9963->writeRegister(0x69, 0x1C);  // IGAIN2 +-2.5%
-		m_ad9963->writeRegister(0x6C, 0x1C);
-		m_ad9963->writeRegister(0x6A, 0x20);  // IRSET +-20%
-		m_ad9963->writeRegister(0x6D, 0x20);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	m_ad9963->writeRegister(0x68, config1);
+	m_ad9963->writeRegister(0x6B, config2);
+	m_ad9963->writeRegister(0x69, 0x1C);  // IGAIN2 +-2.5%
+	m_ad9963->writeRegister(0x6C, 0x1C);
+	m_ad9963->writeRegister(0x6A, 0x20);  // IRSET +-20%
+	m_ad9963->writeRegister(0x6D, 0x20);
 
 	/* Pre-init call to setup M2k */
 	m_m2k_fabric->setBoolValue(0, false, "powerdown", false);

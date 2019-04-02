@@ -271,8 +271,7 @@ std::vector<ini_device_struct> Utils::parseIniFile(std::string path)
 				}
 
 			} else {
-				throw invalid_parameter_exception(
-					"Invalid configuration file: " + path);
+				throw_exception(EXC_INVALID_PARAMETER, "Invalid configuration file: " + path);
 			}
 		}
 		if (device.key_val_pairs.size() != 0) {
@@ -405,9 +404,9 @@ std::vector<double> Utils::getAvailableSamplerates(iio_device *dev)
 		str_values = Utils::split(buf, " ");
 
 		for (auto it : str_values) {
-			try {
+			__try {
 				values.push_back(std::stod(it));
-			} catch (invalid_argument &e) {
+			} __catch (exception_type &e) {
 				std::cout << "Not a valid samplerate " << e.what();
 			}
 
@@ -419,9 +418,9 @@ std::vector<double> Utils::getAvailableSamplerates(iio_device *dev)
 					   buf, sizeof(buf));
 
 		if (!ret) {
-			try {
+			__try {
 				values.push_back(std::stoul(buf));
-			} catch (invalid_argument &e) {
+			} __catch (exception_type &e) {
 				std::cout << "Not a valid samplerate " << e.what();
 			}
 		}
@@ -440,10 +439,8 @@ double Utils::getDoubleValue(struct iio_device* dev, std::string attr)
 		iio_device_attr_read_double(dev, attr.c_str(),
 			&value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				"attribute");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+				attr + "attribute");
 	}
 	return value;
 }
@@ -456,7 +453,7 @@ double Utils::getDoubleValue(struct iio_device* dev, unsigned int chn_idx,
 	std::string dev_name = iio_device_get_name(dev);
 
 	if (chn_idx >= nb_channels) {
-		throw invalid_parameter_exception(dev_name +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
 				" has no such channel");
 	}
 
@@ -465,10 +462,8 @@ double Utils::getDoubleValue(struct iio_device* dev, unsigned int chn_idx,
 		iio_channel_attr_read_double(chn, attr.c_str(),
 			&value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				" attribute for the selected channel");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+				attr + " attribute for the selected channel");
 	}
 	return value;
 }
@@ -481,10 +476,8 @@ double Utils::setDoubleValue(struct iio_device* dev, double value,
 		iio_device_attr_write_double(dev, attr.c_str(),
 			value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				" attribute");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+				attr + " attribute");
 	}
 	return getDoubleValue(dev, attr);
 }
@@ -495,7 +488,7 @@ double Utils::setDoubleValue(struct iio_device* dev, unsigned int chn_idx,
 	unsigned int nb_channels = iio_device_get_channels_count(dev);
 	std::string dev_name = iio_device_get_name(dev);
 	if (chn_idx >= nb_channels) {
-		throw invalid_parameter_exception(dev_name +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
 				" has no such channel");
 	}
 
@@ -504,9 +497,8 @@ double Utils::setDoubleValue(struct iio_device* dev, unsigned int chn_idx,
 		iio_channel_attr_write_double(chn, attr.c_str(),
 			value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr +
 				" attribute for the selected channel");
 	}
 	return getDoubleValue(dev, chn_idx, attr);
@@ -535,13 +527,3 @@ DEVICE_DIRECTION Utils::getIioDeviceDirection(struct iio_device* dev)
 	}
 	return dir;
 }
-
-
-//std::string Utils::getIioDevByPartialName(std::string dev)
-//{
-//	unsigned int nb_devices = iio_context_get_devices_count(m_ctx);
-//	for (unsigned int i = 0; i < nb_devices; i++) {
-//		auto dev = iio_context_get_device(m_ctx, i);
-//		std::cout << iio_device_get_name(dev) << std::endl;
-//	}
-//}

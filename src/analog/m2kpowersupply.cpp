@@ -30,79 +30,75 @@ M2kPowerSupply::M2kPowerSupply(iio_context *ctx, std::string write_dev,
 	m_neg_powerdown_idx(3),
 	m_individual_powerdown(false)
 {
-	try {
-		if (write_dev != "") {
-			m_dev_write = make_shared<Device>(ctx, write_dev);
-			if (!m_dev_write) {
-				m_dev_write = nullptr;
-				throw invalid_parameter_exception("M2K Power Supply: No device was found for writing");
-			}
+	if (write_dev != "") {
+		m_dev_write = make_shared<Device>(ctx, write_dev);
+		if (!m_dev_write) {
+			m_dev_write = nullptr;
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: No device was found for writing");
 		}
-
-		if (read_dev != "") {
-			m_dev_read = make_shared<Device>(ctx, read_dev);
-			if (!m_dev_read) {
-				m_dev_read = nullptr;
-				throw invalid_parameter_exception("M2K Power Supply: No device was found for reading");
-			}
-		}
-
-		if (m_dev_read->isChannel(2, false)) {
-			m_read_channel_idx.push_back(2);
-		} else {
-			throw invalid_parameter_exception("M2K Power Supply: Unable to find 1st read channel");
-		}
-
-		if (m_dev_read->isChannel(1, false)) {
-			m_read_channel_idx.push_back(1);
-		} else {
-			throw invalid_parameter_exception("M2K Power Supply: Unable to find 2nd read channels");
-		}
-
-		if (m_dev_write->isChannel(0, true)) {
-			m_write_channel_idx.push_back(0);
-		} else {
-			throw invalid_parameter_exception("M2K Power Supply: Unable to find 1st write channel");
-		}
-
-		if (m_dev_write->isChannel(1, true)) {
-			m_write_channel_idx.push_back(1);
-		} else {
-			throw invalid_parameter_exception("M2K Power Supply: Unable to find 2nd write channels");
-		}
-
-		m_channels_enabled.push_back(false);
-		m_channels_enabled.push_back(false);
-
-
-		m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
-		if (!m_m2k_fabric) {
-			throw invalid_parameter_exception("M2K Power supply: Can not find m2k fabric device");
-		}
-
-		if (!m_m2k_fabric->isChannel(2, true)) {
-			throw invalid_parameter_exception("M2K Power supply: Can not find powerdown channels");
-		}
-
-		/* If neg powerdown channel is available */
-		if (m_m2k_fabric->isChannel(3, true)) {
-			m_individual_powerdown = true;
-		}
-
-		powerDownDacs(true);
-		loadCalibrationCoefficients();
-
-		for (unsigned int i : m_write_channel_idx) {
-			m_dev_write->setDoubleValue(i, 0.0, "raw", true);
-		}
-
-		m_write_coefficients.push_back(4095.0 / (5.02 * 1.2 ));
-		m_write_coefficients.push_back(4095.0 / (-5.1 * 1.2 ));
-		m_read_coefficients.push_back(6.4 / 4095.0);
-		m_read_coefficients.push_back((-6.4)  / 4095.0);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
 	}
+
+	if (read_dev != "") {
+		m_dev_read = make_shared<Device>(ctx, read_dev);
+		if (!m_dev_read) {
+			m_dev_read = nullptr;
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: No device was found for reading");
+		}
+	}
+
+	if (m_dev_read->isChannel(2, false)) {
+		m_read_channel_idx.push_back(2);
+	} else {
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 1st read channel");
+	}
+
+	if (m_dev_read->isChannel(1, false)) {
+		m_read_channel_idx.push_back(1);
+	} else {
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 2nd read channels");
+	}
+
+	if (m_dev_write->isChannel(0, true)) {
+		m_write_channel_idx.push_back(0);
+	} else {
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 1st write channel");
+	}
+
+	if (m_dev_write->isChannel(1, true)) {
+		m_write_channel_idx.push_back(1);
+	} else {
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 2nd write channels");
+	}
+
+	m_channels_enabled.push_back(false);
+	m_channels_enabled.push_back(false);
+
+
+	m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
+	if (!m_m2k_fabric) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Can not find m2k fabric device");
+	}
+
+	if (!m_m2k_fabric->isChannel(2, true)) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Can not find powerdown channels");
+	}
+
+	/* If neg powerdown channel is available */
+	if (m_m2k_fabric->isChannel(3, true)) {
+		m_individual_powerdown = true;
+	}
+
+	powerDownDacs(true);
+	loadCalibrationCoefficients();
+
+	for (unsigned int i : m_write_channel_idx) {
+		m_dev_write->setDoubleValue(i, 0.0, "raw", true);
+	}
+
+	m_write_coefficients.push_back(4095.0 / (5.02 * 1.2 ));
+	m_write_coefficients.push_back(4095.0 / (-5.1 * 1.2 ));
+	m_read_coefficients.push_back(6.4 / 4095.0);
+	m_read_coefficients.push_back((-6.4)  / 4095.0);
 }
 
 M2kPowerSupply::~M2kPowerSupply()
@@ -113,10 +109,10 @@ M2kPowerSupply::~M2kPowerSupply()
 void M2kPowerSupply::powerDownDacs(bool powerdown)
 {
 	m_m2k_fabric->setBoolValue(m_pos_powerdown_idx, powerdown,
-				   "user_supply_powerdown", true);
+				"user_supply_powerdown", true);
 	if (m_individual_powerdown) {
 		m_m2k_fabric->setBoolValue(m_neg_powerdown_idx, powerdown,
-					   "user_supply_powerdown", true);
+				"user_supply_powerdown", true);
 	}
 
 	for (unsigned int i : m_write_channel_idx) {
@@ -127,7 +123,7 @@ void M2kPowerSupply::powerDownDacs(bool powerdown)
 void M2kPowerSupply::enableChannel(unsigned int chnIdx, bool en)
 {
 	if (chnIdx >= m_write_channel_idx.size()) {
-		throw invalid_parameter_exception("Can't enable channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel");
 	}
 	m_dev_write->setBoolValue(m_write_channel_idx.at(chnIdx), !en, "powerdown", true);
 
@@ -182,7 +178,7 @@ double M2kPowerSupply::getCalibrationCoefficient(std::string key)
 			return calib_pair.second;
 		}
 	}
-	throw invalid_parameter_exception("M2k Power Supply: No such calibration coefficient");
+	throw_exception(EXC_INVALID_PARAMETER, "M2k Power Supply: No such calibration coefficient");
 }
 
 void M2kPowerSupply::enableAll(bool en)
@@ -198,10 +194,10 @@ double M2kPowerSupply::readChannel(unsigned int idx)
 	double value = 0;
 
 	if (idx >= m_read_channel_idx.size()) {
-		throw invalid_parameter_exception("Can't read value from channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel");
 	}
 
-	try {
+	__try {
 		if (idx == 0) {
 			offset = getCalibrationCoefficient("offset_pos_dac");
 			gain = getCalibrationCoefficient("gain_pos_dac");
@@ -215,8 +211,8 @@ double M2kPowerSupply::readChannel(unsigned int idx)
 		value = ((val * m_read_coefficients.at(idx)) + offset) * gain;
 
 		return value;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, e.what());
 	}
 }
 
@@ -227,29 +223,25 @@ void M2kPowerSupply::pushChannel(unsigned int chnIdx, double value)
 	double val;
 
 	if (chnIdx >= m_write_channel_idx.size()) {
-		throw invalid_parameter_exception("Can't write value to channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel");
 	}
 
 	if (abs(value) > 5) {
-		throw invalid_parameter_exception("M2K power supplies are limited to 5V");
+		throw_exception(EXC_INVALID_PARAMETER, "M2K power supplies are limited to 5V");
 	}
 
-	try {
-		if (chnIdx == 0) {
-			offset = getCalibrationCoefficient("offset_pos_dac");
-			gain = getCalibrationCoefficient("gain_pos_dac");
-		} else {
-			offset = getCalibrationCoefficient("offset_neg_dac");
-			gain = getCalibrationCoefficient("gain_neg_dac");
-		}
-
-		val = (value * gain + offset) * m_write_coefficients.at(chnIdx);
-		if (val < 0) {
-			val = 0;
-		}
-
-		m_dev_write->setDoubleValue(m_write_channel_idx.at(chnIdx), val, "raw", true);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	if (chnIdx == 0) {
+		offset = getCalibrationCoefficient("offset_pos_dac");
+		gain = getCalibrationCoefficient("gain_pos_dac");
+	} else {
+		offset = getCalibrationCoefficient("offset_neg_dac");
+		gain = getCalibrationCoefficient("gain_neg_dac");
 	}
+
+	val = (value * gain + offset) * m_write_coefficients.at(chnIdx);
+	if (val < 0) {
+		val = 0;
+	}
+
+	m_dev_write->setDoubleValue(m_write_channel_idx.at(chnIdx), val, "raw", true);
 }

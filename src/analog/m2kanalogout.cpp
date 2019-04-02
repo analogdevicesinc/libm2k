@@ -41,7 +41,7 @@ M2kAnalogOut::M2kAnalogOut(iio_context *ctx, std::vector<std::string> dac_devs):
 
 	m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
 	if (!m_m2k_fabric) {
-		throw invalid_parameter_exception("Analog out: Can not find m2k fabric device");
+		throw_exception(EXC_INVALID_PARAMETER, "Analog out: Can not find m2k fabric device");
 	}
 	m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
 	m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
@@ -77,98 +77,66 @@ void M2kAnalogOut::closeAnalogOut()
 
 std::vector<double> M2kAnalogOut::getOversamplingRatio()
 {
-	try {
-		std::vector<double> values = {};
-		for (int i = 0; i < m_dac_devices.size(); i++) {
-			double val = m_dac_devices.at(i)->getDoubleValue("oversampling_ratio");
-			values.push_back(val);
-		}
-		return values;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	std::vector<double> values = {};
+	for (int i = 0; i < m_dac_devices.size(); i++) {
+		double val = m_dac_devices.at(i)->getDoubleValue("oversampling_ratio");
+		values.push_back(val);
 	}
+	return values;
 }
 
 double M2kAnalogOut::getOversamplingRatio(unsigned int chn_idx)
 {
-	try {
-		return m_dac_devices.at(chn_idx)->getDoubleValue("oversampling_ratio");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return m_dac_devices.at(chn_idx)->getDoubleValue("oversampling_ratio");
 }
 
 std::vector<double> M2kAnalogOut::setOversamplingRatio(std::vector<double> oversampling_ratio)
 {
-	try {
-		std::vector<double> values = {};
-		for (int i = 0; i < oversampling_ratio.size(); i++) {
-			double val = m_dac_devices.at(i)->setDoubleValue(oversampling_ratio.at(i),
-									 "oversampling_ratio");
-			values.push_back(val);
-		}
-		return values;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	std::vector<double> values = {};
+	for (int i = 0; i < oversampling_ratio.size(); i++) {
+		double val = m_dac_devices.at(i)->setDoubleValue(oversampling_ratio.at(i),
+								 "oversampling_ratio");
+		values.push_back(val);
 	}
+	return values;
 }
 
 double M2kAnalogOut::setOversamplingRatio(unsigned int chn_idx, double oversampling_ratio)
 {
-	try {
-		return m_dac_devices.at(chn_idx)->setDoubleValue(oversampling_ratio,
-								 "oversampling_ratio");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return m_dac_devices.at(chn_idx)->setDoubleValue(oversampling_ratio,
+							"oversampling_ratio");
 }
 
 std::vector<double> M2kAnalogOut::getSamplerate()
 {
-	try {
-		std::vector<double> values = {};
-		for (int i = 0; i < m_dac_devices.size(); i++) {
-			double val = m_dac_devices.at(i)->getDoubleValue("sampling_frequency");
-			values.push_back(val);
-		}
-		return values;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	std::vector<double> values = {};
+	for (int i = 0; i < m_dac_devices.size(); i++) {
+		double val = m_dac_devices.at(i)->getDoubleValue("sampling_frequency");
+		values.push_back(val);
 	}
+	return values;
 }
 
 double M2kAnalogOut::getSamplerate(unsigned int chn_idx)
 {
-	try {
-		return m_dac_devices.at(chn_idx)->getDoubleValue("sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return m_dac_devices.at(chn_idx)->getDoubleValue("sampling_frequency");
 }
 
 std::vector<double> M2kAnalogOut::setSamplerate(std::vector<double> samplerates)
 {
-	try {
-		std::vector<double> values = {};
-		for (int i = 0; i < samplerates.size(); i++) {
-			double val = m_dac_devices.at(i)->setDoubleValue(samplerates.at(i),
-									 "sampling_frequency");
-			values.push_back(val);
-		}
-		return values;
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	std::vector<double> values = {};
+	for (int i = 0; i < samplerates.size(); i++) {
+		double val = m_dac_devices.at(i)->setDoubleValue(samplerates.at(i),
+								 "sampling_frequency");
+		values.push_back(val);
 	}
+	return values;
 }
 
 double M2kAnalogOut::setSamplerate(unsigned int chn_idx, double samplerate)
 {
-	try {
-		return m_dac_devices.at(chn_idx)->setDoubleValue(samplerate,
-								 "sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return m_dac_devices.at(chn_idx)->setDoubleValue(samplerate,
+							 "sampling_frequency");
 }
 
 void M2kAnalogOut::setSyncedDma(bool en, int chn)
@@ -179,7 +147,7 @@ void M2kAnalogOut::setSyncedDma(bool en, int chn)
 		}
 	} else {
 		if (chn >= m_dac_devices.size()) {
-			throw invalid_parameter_exception("Analog Out: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 		}
 		m_dac_devices.at(chn)->setBoolValue(en, "dma_sync");
 	}
@@ -188,7 +156,7 @@ void M2kAnalogOut::setSyncedDma(bool en, int chn)
 bool M2kAnalogOut::getSyncedDma(int chn)
 {
 	if (chn >= m_dac_devices.size()) {
-		throw invalid_parameter_exception("Analog Out: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 	}
 
 	return m_dac_devices.at(chn)->getBoolValue("dma_sync");
@@ -204,7 +172,7 @@ void M2kAnalogOut::setCyclic(bool en)
 void M2kAnalogOut::setCyclic(bool en, unsigned int chn)
 {
 	if (chn >= m_dac_devices.size()) {
-		throw invalid_parameter_exception("Analog Out: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 	}
 	m_cyclic.at(chn) = en;
 }
@@ -212,7 +180,7 @@ void M2kAnalogOut::setCyclic(bool en, unsigned int chn)
 bool M2kAnalogOut::getCyclic(unsigned int chn)
 {
 	if (chn >= m_dac_devices.size()) {
-		throw invalid_parameter_exception("Analog Out: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 	}
 	return m_cyclic.at(chn);
 }
@@ -233,7 +201,7 @@ void M2kAnalogOut::setDacCalibVlsb(unsigned int chn_idx, double vlsb)
 void M2kAnalogOut::push(std::vector<short> &data, unsigned int chnIdx)
 {
 	if (chnIdx >= m_dac_devices.size()) {
-		throw invalid_parameter_exception("M2K Analog Out: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 	}
 	m_m2k_fabric->setBoolValue(chnIdx, true, "powerdown", true);
 	setSyncedDma(true, chnIdx);
@@ -252,7 +220,7 @@ void M2kAnalogOut::push(std::vector<short> &data, unsigned int chnIdx)
 void M2kAnalogOut::push(std::vector<double> &data, unsigned int chnIdx)
 {
 	if (chnIdx >= m_dac_devices.size()) {
-		throw invalid_parameter_exception("M2K Analog Out: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 	}
 	m_m2k_fabric->setBoolValue(chnIdx, true, "powerdown", true);
 	setSyncedDma(true, chnIdx);
@@ -314,7 +282,7 @@ void M2kAnalogOut::push(std::vector<std::vector<double>> &data)
 double M2kAnalogOut::getScalingFactor(unsigned int chn)
 {
 	if (chn >= m_calib_vlsb.size()) {
-		throw invalid_parameter_exception("No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "No such channel");
 	}
 	return (-1 * (1 / m_calib_vlsb.at(chn)) * 16) /
 			getFilterCompensation(getSamplerate(chn));
@@ -338,7 +306,7 @@ void M2kAnalogOut::stop()
 void M2kAnalogOut::stop(unsigned int chn)
 {
 	if (chn >= m_dac_devices.size()) {
-		throw invalid_parameter_exception("Analog Out stop: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Analog Out stop: No such channel");
 	}
 	m_m2k_fabric->setBoolValue(chn, true, "powerdown", true);
 	m_dac_devices.at(chn)->stop();
@@ -363,7 +331,7 @@ short M2kAnalogOut::processSample(double value, unsigned int channel, bool raw)
 void M2kAnalogOut::enableChannel(unsigned int chnIdx, bool enable)
 {
 	if (chnIdx >= m_dac_devices.size()) {
-		throw invalid_parameter_exception("No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel");
 	}
 
 	m_dac_devices.at(chnIdx)->enableChannel(0, enable);

@@ -20,10 +20,20 @@
 #ifndef M2KEXCEPTIONS_H
 #define M2KEXCEPTIONS_H
 
-#include "m2kglobal.hpp"
-
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/logger.hpp>
+#include <libm2k/enums.hpp>
 #include <stdexcept>
 #include <string>
+#include <iostream>
+using namespace std;
+using namespace libm2k;
+
+#if __cpp_exceptions
+	#define exception_type std::exception
+#else
+	#define exception_type
+#endif
 
 class LIBM2K_API no_device_exception: public std::runtime_error {
 public:
@@ -60,6 +70,29 @@ public:
 		runtime_error(what) {}
 	~timeout_exception() {}
 };
+
+static std::exception e;
+
+static void throw_exception(M2K_EXCEPTION exc_type, std::string exception)
+{
+#if __cpp_exceptions
+	switch (exc_type) {
+	case EXC_OUT_OF_RANGE: {
+		throw std::out_of_range("ERR: Out of range - " + exception);
+	}
+	case EXC_RUNTIME_ERROR: {
+		throw std::runtime_error("ERR: Runtime - " + exception);
+	}
+	case EXC_INVALID_PARAMETER: {
+		throw std::invalid_argument("ERR: Invalid argument - " + exception);
+	}
+	}
+#else
+	LOG("exception");
+
+	std::cout << "Exception: " << exception << std::endl;
+#endif
+}
 
 
 

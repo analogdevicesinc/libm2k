@@ -1,9 +1,11 @@
 #include <libm2k/devicebuilder.hpp>
 #include <libm2k/devices.hpp>
 #include <libm2k/analog/dmm.hpp>
+#include <libm2k/m2kexceptions.hpp>
 
 int main (int argc, char **argv)
 {
+	std::exception e;
 	bool detectDevices = false;
 	std::string uri = "";
 	if (argc < 2) {
@@ -36,10 +38,10 @@ int main (int argc, char **argv)
 				std::cout << "	" << r.name << " " << r.value << " " << r.unit;
 			}
 
-			try {
+			__try {
 				auto r = dmm->readChannel("voltage0");
 				std::cout << "READ one channel: " <<  r.name << " " << r.value << " " << r.unit;
-			} catch (std::runtime_error &e) {
+			} __catch (exception_type &e) {
 				std::cout << e.what() << std::endl;
 			}
 		}

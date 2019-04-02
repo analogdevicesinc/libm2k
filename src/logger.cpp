@@ -1,4 +1,4 @@
-#include "logger.h"
+#include <libm2k/logger.hpp>
 
 using namespace libm2k;
 
@@ -17,7 +17,7 @@ void Logger::warn(std::string message)
 
 	root << log4cpp::Priority::WARN << message;
 #else
-	std::cout << message << std::endl;
+	std::cerr << message << std::endl;
 #endif
 }
 

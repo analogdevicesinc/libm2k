@@ -22,7 +22,7 @@ using namespace libm2k::analog;
 using namespace libm2k::digital;
 
 void test() {
-	throw no_device_exception("no device found!");
+	throw_exception(EXC_RUNTIME_ERROR, "no device found");
 }
 
 
@@ -128,10 +128,10 @@ int main(int argc, char **argv)
 
 
 
-	std::string e = "";
+	std::exception e ;
 	std::vector<std::string> lst = DeviceBuilder::listDevices();
 	for (auto l : lst) {
-		try {
+		__try {
 //			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
 //			std::shared_ptr<GenericDevice> d2 = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
 			GenericDevice* d = DeviceBuilder::deviceOpen();//l.c_str());
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
 			}
 
 			if (dev) { // M2K
-				try {
+				__try {
 					GenericAnalogIn* aIn = d->getAnalogIn(0);
 					aIn->setSampleRate(1000);
 
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
 					std::vector<short> vec_digital(512, 7);
 					logic->setCyclic(true);
 					logic->push(vec_digital);
-				} catch (std::runtime_error &e) {
+				} __catch (exception_type &e) {
 					std::cout << e.what() << "\n";
 				}
 				//			auto anIn = d->openAnalogIn();
@@ -288,7 +288,7 @@ int main(int argc, char **argv)
 //				DeviceBuilder::deviceClose(d2);
 				DeviceBuilder::deviceClose(d);
 			}
-		} catch (std::runtime_error &e) {
+		} __catch (exception_type &e) {
 			std::cout << "Err on connect: " << e.what() << std::endl;
 			continue;
 
@@ -301,9 +301,9 @@ int main(int argc, char **argv)
 
 //	delete fm;
 //	delete m2kd;
-//	try {
+//	__try {
 //		test();
-//	} catch(no_device_exception& e) {
+//	} __catch(no_device_exception& e) {
 //		std::cout << e.what() << std::endl;
 //	}
 

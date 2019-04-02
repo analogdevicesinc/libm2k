@@ -46,27 +46,27 @@ M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev) :
 	m_dev_name_read = logic_dev + "-rx";
 
 	if (m_dev_name_write != "") {
-		try {
+		__try {
 			m_dev_write = make_shared<Device>(ctx, m_dev_name_write);
-		} catch (std::runtime_error &e) {
+		} __catch (exception_type &e) {
 			m_dev_write = nullptr;
-			throw invalid_parameter_exception("M2K Digital: No device was found for writing");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for writing");
 		}
 	}
 
 	if (m_dev_name_read != "") {
-		try {
+		__try {
 			m_dev_read = make_shared<Device>(ctx, m_dev_name_read);
-		} catch (std::runtime_error &e) {
+		} __catch (exception_type &e) {
 			m_dev_read = nullptr;
-			throw invalid_parameter_exception("M2K Digital: No device was found for reading");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for reading");
 		}
 	}
 
 	if (!m_dev_read || !m_dev_write) {
 		m_dev_read = nullptr;
 		m_dev_write = nullptr;
-		throw no_device_exception("M2K Digital: logic device not found");
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: logic device not found");
 	}
 
 	m_dev_read->setKernelBuffersCount(25);
@@ -78,51 +78,35 @@ M2kDigital::~M2kDigital()
 
 void M2kDigital::setDirection(unsigned short mask)
 {
-	try {
-		DIO_DIRECTION direction;
-		bool dir = false;
-		unsigned int index = 0;
-		while (mask != 0 || index < m_dev_write->getNbChannels()) {
-			dir = mask & 1;
-			mask >>= 1;
-			direction = static_cast<DIO_DIRECTION>(dir);
-			setDirection(index, direction);
-			index++;
-		}
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	DIO_DIRECTION direction;
+	bool dir = false;
+	unsigned int index = 0;
+	while (mask != 0 || index < m_dev_write->getNbChannels()) {
+		dir = mask & 1;
+		mask >>= 1;
+		direction = static_cast<DIO_DIRECTION>(dir);
+		setDirection(index, direction);
+		index++;
 	}
 }
 
 void M2kDigital::setDirection(DIO_CHANNEL index, bool dir)
 {
-	try {
-		DIO_DIRECTION direction = static_cast<DIO_DIRECTION>(dir);
-		setDirection(index, direction);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	DIO_DIRECTION direction = static_cast<DIO_DIRECTION>(dir);
+	setDirection(index, direction);
 }
 
 void M2kDigital::setDirection(unsigned int index, bool dir)
 {
-	try {
-		DIO_CHANNEL chn = static_cast<DIO_CHANNEL>(index);
-		DIO_DIRECTION direction = static_cast<DIO_DIRECTION>(dir);
-		setDirection(chn, direction);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	DIO_CHANNEL chn = static_cast<DIO_CHANNEL>(index);
+	DIO_DIRECTION direction = static_cast<DIO_DIRECTION>(dir);
+	setDirection(chn, direction);
 }
 
 void M2kDigital::setDirection(unsigned int index, DIO_DIRECTION dir)
 {
-	try {
-		DIO_CHANNEL chn = static_cast<DIO_CHANNEL>(index);
-		setDirection(chn, dir);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	DIO_CHANNEL chn = static_cast<DIO_CHANNEL>(index);
+	setDirection(chn, dir);
 }
 
 void M2kDigital::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
@@ -136,7 +120,7 @@ void M2kDigital::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 		}
 		setStringValue(index, "direction", dir_str);
 	} else {
-		throw invalid_parameter_exception("No such digital channel.");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel.");
 	}
 
 }
@@ -151,7 +135,7 @@ DIO_DIRECTION M2kDigital::getDirection(DIO_CHANNEL index)
 			return DIO_OUTPUT;
 		}
 	} else {
-		throw invalid_parameter_exception("No such digital channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 	}
 }
 
@@ -161,37 +145,28 @@ void M2kDigital::setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 		long long val = static_cast<long long>(level);
 		setDoubleValue(index, val, "raw");
 	} else {
-		throw invalid_parameter_exception("No such digital channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 	}
 }
 
 DIO_LEVEL M2kDigital::getValueRaw(DIO_CHANNEL index)
 {
 	if (index < getNbChannels()) {
-		try {
-			long long val;
-			val = getDoubleValue(index, "raw");
-			return static_cast<DIO_LEVEL>(val);
-		} catch (std::runtime_error &e) {
-			throw invalid_parameter_exception("Cannot read value for channel");
-		}
+		long long val;
+		val = getDoubleValue(index, "raw");
+		return static_cast<DIO_LEVEL>(val);
 	} else {
-		throw invalid_parameter_exception("No such digital channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 	}
 }
 
 void M2kDigital::push(std::vector<short> &data)
 {
-	try {
-		if (!anyChannelEnabled(DIO_OUTPUT)) {
-			throw invalid_parameter_exception("No TX channel enabled.");
-		}
-
-		m_dev_write->push(data, 0, getCyclic(), true);
-
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	if (!anyChannelEnabled(DIO_OUTPUT)) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.");
 	}
+
+	m_dev_write->push(data, 0, getCyclic(), true);
 }
 
 void M2kDigital::stop()
@@ -201,10 +176,10 @@ void M2kDigital::stop()
 
 std::vector<unsigned short> M2kDigital::getSamples(int nb_samples)
 {
-
-	try {
+	__try {
 		if (!anyChannelEnabled(DIO_INPUT)) {
-			throw invalid_parameter_exception("No RX channel enabled.");
+			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
+
 		}
 
 		/* There is a restriction in the HDL that the buffer size must
@@ -213,8 +188,8 @@ std::vector<unsigned short> M2kDigital::getSamples(int nb_samples)
 		nb_samples = ((nb_samples + 3) / 4) * 4;
 		return m_dev_read->getSamples(nb_samples);
 
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception("M2K Digital: " + string(e.what()));
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
 	}
 }
 
@@ -223,19 +198,15 @@ void M2kDigital::enableChannelIn(DIO_CHANNEL index, bool enable)
 	if (index < getNbChannels()) {
 		m_dev_read->enableChannel(index, enable);
 	} else {
-		throw invalid_parameter_exception("Cannot enable digital channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital channel");
 	}
 }
 
 void M2kDigital::enableAllIn(bool enable)
 {
-	try {
-		for (unsigned int i = 0; i < m_dev_read->getNbChannels(); i++) {
-			DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(i);
-			enableChannelIn(idx, enable);
-		}
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	for (unsigned int i = 0; i < m_dev_read->getNbChannels(); i++) {
+		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(i);
+		enableChannelIn(idx, enable);
 	}
 }
 
@@ -244,25 +215,20 @@ void M2kDigital::enableChannelOut(DIO_CHANNEL index, bool enable)
 	if (index < getNbChannels()) {
 		m_dev_write->enableChannel(index, enable);
 	} else {
-		throw invalid_parameter_exception("Cannot enable digital channel");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital channel");
 	}
 }
 
 void M2kDigital::enableAllOut(bool enable)
 {
-	try {
-		for (unsigned int i = 0; i < m_dev_write->getNbChannels(); i++) {
-			DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(i);
-			enableChannelOut(idx, enable);
-		}
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	for (unsigned int i = 0; i < m_dev_write->getNbChannels(); i++) {
+		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(i);
+		enableChannelOut(idx, enable);
 	}
 }
 
 bool M2kDigital::anyChannelEnabled(DIO_DIRECTION dir)
 {
-
 	if (dir == DIO_INPUT) {
 		for (unsigned int i = 0; i < m_dev_read->getNbChannels(); i++) {
 			if (m_dev_read->isChannelEnabled(i)) {
@@ -294,7 +260,7 @@ M2K_TRIGGER_CONDITION M2kDigital::getTrigger(DIO_CHANNEL chn)
 	auto it = std::find(available_digital_conditions.begin(),
 			    available_digital_conditions.end(), trigger_val.c_str());
 	if (it == available_digital_conditions.end()) {
-		throw invalid_argument("Cannot read channel attribute: trigger");
+		throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: Cannot read channel attribute: trigger");
 	}
 
 	return static_cast<M2K_TRIGGER_CONDITION>
@@ -303,73 +269,53 @@ M2K_TRIGGER_CONDITION M2kDigital::getTrigger(DIO_CHANNEL chn)
 
 void M2kDigital::setTriggerDelay(int delay)
 {
-	try {
+	__try {
 		m_dev_read->setDoubleValue(DIO_CHANNEL_0, delay, "trigger_delay", false);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
+	} __catch (exception_type &e) {
+		throw_exception(EXC_INVALID_PARAMETER, e.what());
 	}
 }
 
 int M2kDigital::getTriggerDelay()
 {
-	try {
-		return (int)m_dev_read->getDoubleValue(DIO_CHANNEL_0, "trigger_delay", false);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return (int)m_dev_read->getDoubleValue(DIO_CHANNEL_0, "trigger_delay", false);
 }
 
 void M2kDigital::setTriggerMode(DIO_TRIGGER_MODE trig_mode)
 {
-	try {
-		std::string trigger_mode = m_trigger_logic_mode[trig_mode];
-		m_dev_read->setStringValue(DIO_CHANNEL_0, "trigger_logic_mode", trigger_mode, false);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	std::string trigger_mode = m_trigger_logic_mode[trig_mode];
+	m_dev_read->setStringValue(DIO_CHANNEL_0, "trigger_logic_mode", trigger_mode, false);
 }
 
 DIO_TRIGGER_MODE M2kDigital::getTriggerMode()
 {
 	std::string trigger_mode = "";
-	try {
-		trigger_mode = m_dev_read->getStringValue(DIO_CHANNEL_0,
-					      "trigger_logic_mode", false);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	trigger_mode = m_dev_read->getStringValue(DIO_CHANNEL_0,
+					"trigger_logic_mode", false);
 
 	auto it = std::find(m_trigger_logic_mode.begin(), m_trigger_logic_mode.end(),
 			    trigger_mode.c_str());
 	if (it == m_trigger_logic_mode.end()) {
-		throw invalid_argument("Cannot read channel attribute: trigger logic mode");
+		throw_exception(EXC_OUT_OF_RANGE, "Cannot read channel attribute: trigger logic mode");
 	}
 	return static_cast<DIO_TRIGGER_MODE>(it - m_trigger_logic_mode.begin());
 }
 
 void M2kDigital::setOutputMode(DIO_CHANNEL chn, DIO_MODE mode)
 {
-	try {
-		std::string output_mode = m_output_mode[mode];
-		setStringValue(chn, "outputmode", output_mode);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	std::string output_mode = m_output_mode[mode];
+	setStringValue(chn, "outputmode", output_mode);
 }
 
 DIO_MODE M2kDigital::getOutputMode(DIO_CHANNEL chn)
 {
 	std::string output_mode = "";
-	try {
 		output_mode = getStringValue(chn, "outputmode");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
 
 	auto it = std::find(m_output_mode.begin(), m_output_mode.end(),
 			    output_mode.c_str());
 	if (it == m_output_mode.end()) {
-		throw invalid_argument("Cannot read channel attribute: trigger");
+		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot read channel attribute: trigger");
 	}
 
 	return static_cast<DIO_MODE>(it - m_output_mode.begin());

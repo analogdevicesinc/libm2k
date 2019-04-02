@@ -28,7 +28,6 @@
 using namespace std;
 using namespace libm2k::utils;
 
-
 /*
  * Represents an iio_device
  */
@@ -42,17 +41,17 @@ Device::Device(struct iio_context* context, std::string dev_name, bool input)
 	if (dev_name != "") {
 		m_dev = iio_context_find_device(context, dev_name.c_str());
 		if (!m_dev) {
-			throw invalid_argument("Device: No such device");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: No such device");
 		}
 
-		try {
+		__try {
 			m_buffer = new Buffer(m_dev);
-		} catch (std::runtime_error &e) {
+		} __catch (exception_type &e) {
 			delete m_buffer;
 			m_buffer = nullptr;
 		}
 
-		try {
+		__try {
 			unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 			for (unsigned int i = 0; i < nb_channels; i++) {
 				Channel *chn = nullptr;
@@ -63,16 +62,16 @@ Device::Device(struct iio_context* context, std::string dev_name, bool input)
 					}
 				} else {
 					std::string name = "voltage" + std::to_string(i);
-					try {
+					__try {
 						chn = new Channel(m_dev, name.c_str(), true);
-					} catch (std::runtime_error &e) {
+					} __catch (exception_type &e) {
 						chn = new Channel(m_dev, name.c_str(), false);
 					}
 				}
 				m_channel_list.push_back(chn);
 			}
-		} catch (std::runtime_error &e) {
-			// throw?
+		} catch (std::exception &e) {
+
 		}
 	}
 }
@@ -87,7 +86,7 @@ Channel* Device::getChannel(unsigned int chnIdx)
 	if (chnIdx < m_channel_list.size()) {
 		return m_channel_list.at(chnIdx);
 	} else {
-		throw invalid_parameter_exception("Device: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel: " + to_string(chnIdx));
 	}
 }
 
@@ -104,20 +103,12 @@ bool Device::isChannel(unsigned int chnIdx, bool output)
 
 void Device::enableChannel(unsigned int chnIdx, bool enable)
 {
-	try {
-		getChannel(chnIdx)->enableChannel(enable);
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	getChannel(chnIdx)->enableChannel(enable);
 }
 
 bool Device::isChannelEnabled(unsigned int chnIdx)
 {
-	try {
-		return getChannel(chnIdx)->isEnabled();
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getChannel(chnIdx)->isEnabled();
 }
 
 
@@ -125,27 +116,19 @@ void Device::push(std::vector<short> &data, unsigned int channel,
 		  bool cyclic, bool multiplex)
 {
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Device: Can not push; device not buffer capable");
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
 	}
-	try {
-		m_buffer->setChannels(m_channel_list);
-		m_buffer->push(data, channel, cyclic, multiplex);
-	} catch (invalid_parameter_exception &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->push(data, channel, cyclic, multiplex);
 }
 
 void Device::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 {
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Device: Can not push; device not buffer capable");
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
 	}
-	try {
-		m_buffer->setChannels(m_channel_list);
-		m_buffer->push(data, channel, cyclic);
-	} catch (invalid_parameter_exception &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->push(data, channel, cyclic);
 }
 
 void Device::stop()
@@ -158,34 +141,27 @@ void Device::stop()
 std::vector<unsigned short> Device::getSamples(int nb_samples)
 {
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Device: Can not refill; device not buffer capable");
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
 	}
-	try {
-		m_buffer->setChannels(m_channel_list);
-		return m_buffer->getSamples(nb_samples);
-	} catch (invalid_parameter_exception &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	m_buffer->setChannels(m_channel_list);
+	return m_buffer->getSamples(nb_samples);
+
 }
 
 std::vector<std::vector<double> > Device::getSamples(int nb_samples,
 				std::function<double(int16_t, unsigned int)> process)
 {
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Device: Can not refill; device not buffer capable");
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
 	}
-	try {
-		m_buffer->setChannels(m_channel_list);
-		return m_buffer->getSamples(nb_samples, process);
-	} catch (invalid_parameter_exception &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	m_buffer->setChannels(m_channel_list);
+	return m_buffer->getSamples(nb_samples, process);
 }
 
 string Device::getName()
 {
 	if (!m_dev) {
-		throw no_device_exception("Device: No available device");
+		throw_exception(EXC_INVALID_PARAMETER, "Device: No available device");
 	}
 	return iio_device_get_name(m_dev);
 }
@@ -199,10 +175,8 @@ double Device::getDoubleValue(std::string attr)
 		iio_device_attr_read_double(m_dev, attr.c_str(),
 			&value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				"attribute");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+				attr + " attribute");
 	}
 	return value;
 }
@@ -214,20 +188,16 @@ double Device::getDoubleValue(unsigned int chn_idx, std::string attr, bool outpu
 	std::string dev_name = getName();
 
 	if (chn_idx >= nb_channels) {
-		throw invalid_parameter_exception(dev_name +
-				" has no such channel");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no such channel");
 	}
 
 	std::string name = "voltage" + std::to_string(chn_idx);
 	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
 	if (Utils::iioChannelHasAttribute(chn, attr)) {
-		iio_channel_attr_read_double(chn, attr.c_str(),
-			&value);
+		iio_channel_attr_read_double(chn, attr.c_str(), &value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				" attribute for the selected channel");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+				attr + " attribute for the selected channel");
 	}
 	return value;
 }
@@ -239,10 +209,8 @@ double Device::setDoubleValue(double value, std::string attr)
 		iio_device_attr_write_double(m_dev, attr.c_str(),
 			value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				" attribute");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+				attr + " attribute");
 	}
 	return getDoubleValue(attr);
 }
@@ -252,7 +220,7 @@ double Device::setDoubleValue(unsigned int chn_idx, double value, std::string at
 	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 	std::string dev_name = getName();
 	if (chn_idx >= nb_channels) {
-		throw invalid_parameter_exception(dev_name +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
 				" has no such channel");
 	}
 
@@ -262,9 +230,8 @@ double Device::setDoubleValue(unsigned int chn_idx, double value, std::string at
 		iio_channel_attr_write_double(chn, attr.c_str(),
 			value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr +
 				" attribute for the selected channel");
 	}
 	return getDoubleValue(chn_idx, attr, output);
@@ -279,10 +246,8 @@ bool Device::getBoolValue(string attr)
 		iio_device_attr_read_bool(m_dev, attr.c_str(),
 			&value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				"attribute");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr + " attribute");
 	}
 	return value;
 }
@@ -294,7 +259,7 @@ bool Device::getBoolValue(unsigned int chn_idx, string attr, bool output)
 	std::string dev_name = getName();
 
 	if (chn_idx >= nb_channels) {
-		throw invalid_parameter_exception(dev_name +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
 				" has no such channel");
 	}
 
@@ -304,9 +269,8 @@ bool Device::getBoolValue(unsigned int chn_idx, string attr, bool output)
 		iio_channel_attr_read_bool(chn, attr.c_str(),
 			&value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr +
 				" attribute for the selected channel");
 	}
 	return value;
@@ -318,9 +282,8 @@ bool Device::setBoolValue(bool value, string attr)
 	if (Utils::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write_bool(m_dev, attr.c_str(), value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr +
 				" attribute");
 	}
 	return getBoolValue(attr);
@@ -331,7 +294,7 @@ bool Device::setBoolValue(unsigned int chn_idx, bool value, string attr, bool ou
 	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 	std::string dev_name = getName();
 	if (chn_idx >= nb_channels) {
-		throw invalid_parameter_exception(dev_name +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
 				" has no such channel");
 	}
 
@@ -341,9 +304,8 @@ bool Device::setBoolValue(unsigned int chn_idx, bool value, string attr, bool ou
 		iio_channel_attr_write_bool(chn, attr.c_str(),
 			value);
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr +
 				" attribute for the selected channel");
 	}
 	return getBoolValue(chn_idx, attr, output);
@@ -355,10 +317,8 @@ string Device::setStringValue(string attr, string value)
 	if (Utils::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write(m_dev, attr.c_str(), value.c_str());
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				" attribute");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr + " attribute");
 	}
 	return getStringValue(attr);
 }
@@ -368,7 +328,7 @@ string Device::setStringValue(unsigned int chn_idx, string attr, string value, b
 	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 	std::string dev_name = getName();
 	if (chn_idx >= nb_channels) {
-		throw invalid_parameter_exception(dev_name +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
 				" has no such channel");
 	}
 
@@ -377,9 +337,8 @@ string Device::setStringValue(unsigned int chn_idx, string attr, string value, b
 	if (Utils::iioChannelHasAttribute(chn, attr)) {
 		iio_channel_attr_write(chn, attr.c_str(), value.c_str());
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr +
 				" attribute for the selected channel");
 	}
 	return getStringValue(chn_idx, attr, output);
@@ -394,10 +353,8 @@ string Device::getStringValue(string attr)
 		iio_device_attr_read(m_dev, attr.c_str(),
 			value, sizeof(value));
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
-				"attribute");
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr + " attribute");
 	}
 	return std::string(value);
 }
@@ -409,7 +366,7 @@ string Device::getStringValue(unsigned int chn_idx, string attr, bool output)
 	std::string dev_name = getName();
 
 	if (chn_idx >= nb_channels) {
-		throw invalid_parameter_exception(dev_name +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
 				" has no such channel");
 	}
 
@@ -419,9 +376,8 @@ string Device::getStringValue(unsigned int chn_idx, string attr, bool output)
 		iio_channel_attr_read(chn, attr.c_str(),
 				value, sizeof(value));
 	} else {
-		throw invalid_parameter_exception(dev_name +
-				" has no " +
-				attr +
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+				" has no " + attr +
 				" attribute for the selected channel");
 	}
 	return value;
@@ -441,12 +397,7 @@ std::vector<double> Device::getAvailableSamplerates()
 		str_values = Utils::split(buf, " ");
 
 		for (auto it : str_values) {
-			try {
-				values.push_back(std::stod(it));
-			} catch (invalid_argument &e) {
-				std::cout << "Not a valid samplerate " << e.what();
-			}
-
+			values.push_back(std::stod(it));
 		}
 	}
 
@@ -455,10 +406,11 @@ std::vector<double> Device::getAvailableSamplerates()
 					   buf, sizeof(buf));
 
 		if (!ret) {
-			try {
+			__try {
 				values.push_back(std::stoul(buf));
-			} catch (invalid_argument &e) {
-				std::cout << "Not a valid samplerate " << e.what();
+			} __catch (exception_type &e) {
+				throw_exception(EXC_INVALID_PARAMETER, "Device: Not a valid samplerate.");
+//				std::cout << "Not a valid samplerate " << e.what();
 			}
 		}
 	}
@@ -471,15 +423,14 @@ void Device::writeRegister(uint32_t address, uint32_t value)
 {
 	int ret = iio_device_reg_write(m_dev, address, value);
 	if (ret) {
-		throw invalid_parameter_exception("Device: can't write register" +
+		throw_exception(EXC_INVALID_PARAMETER, "Device: can't write register" +
 						  std::string(std::strerror(-ret)));
 	}
 }
 
 std::string Device::getHardwareRevision()
 {
-	const char *hw_rev_attr_val = iio_context_get_attr_value(m_context,
-			"hw_model");
+	const char *hw_rev_attr_val = iio_context_get_attr_value(m_context, "hw_model");
 	std::string rev;
 
 	if (hw_rev_attr_val) {
@@ -506,7 +457,7 @@ void Device::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_
 	if (chn_idx < m_channel_list.size()) {
 		m_channel_list.at(chn_idx)->convert(avg, src);
 	} else {
-		throw invalid_parameter_exception("Device: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel");
 	}
 }
 
@@ -515,14 +466,14 @@ void Device::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t
 	if (chn_idx < m_channel_list.size()) {
 		m_channel_list.at(chn_idx)->convert(avg, src);
 	} else {
-		throw invalid_parameter_exception("Device: No such channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel");
 	}
 }
 
 void Device::setKernelBuffersCount(unsigned int count)
 {
 	if (!m_dev) {
-		throw invalid_parameter_exception("Device: no such device");
+		throw_exception(EXC_RUNTIME_ERROR, "Device: no such device");
 	}
 	iio_device_set_kernel_buffers_count(m_dev, count);
 }
@@ -530,7 +481,7 @@ void Device::setKernelBuffersCount(unsigned int count)
 bool Device::isValidDmmChannel(unsigned int chnIdx)
 {
 	if (chnIdx >= m_channel_list.size()) {
-		throw invalid_parameter_exception("Device: no such DMM channel");
+		throw_exception(EXC_OUT_OF_RANGE, "Device: no such DMM channel");
 	}
 
 	auto chn = m_channel_list.at(chnIdx);

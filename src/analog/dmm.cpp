@@ -50,11 +50,7 @@ DMM_READING DMM::readChannel(unsigned int index)
 			break;
 		}
 	}
-	try {
-		return readChannel(chn_name);
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error(e.what());
-	}
+	return readChannel(chn_name);
 }
 
 std::vector<std::string> DMM::getAllChannels()
@@ -72,68 +68,60 @@ DMM_READING DMM::readChannel(std::string chn_name)
 	double value = 0;
 	std::string key = "";
 	unsigned int index = m_channel_id_list.at(chn_name);
-	try {
-		auto channel = getChannel(index);
-		if (channel->hasAttribute("raw")) {
-			value = channel->getDoubleValue("raw");
-		} else if (channel->hasAttribute("processed")) {
-			value = channel->getDoubleValue("processed");
-		} else if (channel->hasAttribute("input")) {
-			value = channel->getDoubleValue("input");
-		} else {
-			throw invalid_parameter_exception("DMM: Cannot read channel" + chn_name);
-		}
-
-		if (channel->hasAttribute("offset")) {
-			value += channel->getDoubleValue("offset");
-		}
-
-		if (channel->hasAttribute("scale")) {
-			value *= channel->getDoubleValue("scale");
-		}
-
-
-		if (chn_name.find("voltage") != std::string::npos) {
-			key = " Volts\n";
-			value = value / 1000;
-		} else if (chn_name.find("temp") != std::string::npos) {
-			key = " \xB0\C\n";
-			value = value / 1000;
-		} else if (chn_name.find("current") != std::string::npos) {
-			key = " Milliampere\n";
-		} else if (chn_name.find("accel") != std::string::npos) {
-			key = " m/s²\n";
-		} else if (chn_name.find("anglvel") != std::string::npos) {
-			key = " rad/s\n";
-		} else if (chn_name.find("pressure") != std::string::npos) {
-			key = " kPa\n";
-		} else if (chn_name.find("magn") != std::string::npos) {
-			key = " Gauss\n";
-		} else {
-			key = " \n";
-		}
-
-		result.name = chn_name;
-		result.unit = key;
-		result.value = value;
-		return result;
-
-	} catch (std::runtime_error &e) {
-		throw std::runtime_error(e.what());
+	auto channel = getChannel(index);
+	if (channel->hasAttribute("raw")) {
+		value = channel->getDoubleValue("raw");
+	} else if (channel->hasAttribute("processed")) {
+		value = channel->getDoubleValue("processed");
+	} else if (channel->hasAttribute("input")) {
+		value = channel->getDoubleValue("input");
+	} else {
+		throw_exception(EXC_INVALID_PARAMETER, "DMM: Cannot read channel " +
+				getName() + " : " + chn_name);
 	}
+
+	if (channel->hasAttribute("offset")) {
+		value += channel->getDoubleValue("offset");
+	}
+
+	if (channel->hasAttribute("scale")) {
+		value *= channel->getDoubleValue("scale");
+	}
+
+
+	if (chn_name.find("voltage") != std::string::npos) {
+		key = " Volts\n";
+		value = value / 1000;
+	} else if (chn_name.find("temp") != std::string::npos) {
+		key = " \xB0\C\n";
+		value = value / 1000;
+	} else if (chn_name.find("current") != std::string::npos) {
+		key = " Milliampere\n";
+	} else if (chn_name.find("accel") != std::string::npos) {
+		key = " m/s²\n";
+	} else if (chn_name.find("anglvel") != std::string::npos) {
+		key = " rad/s\n";
+	} else if (chn_name.find("pressure") != std::string::npos) {
+		key = " kPa\n";
+	} else if (chn_name.find("magn") != std::string::npos) {
+		key = " Gauss\n";
+	} else {
+		key = " \n";
+	}
+
+	result.name = chn_name;
+	result.unit = key;
+	result.value = value;
+	return result;
 }
 
 std::vector<DMM_READING> DMM::readAll()
 {
 	std::vector<DMM_READING> result = {};
-	try {
-		for (auto pair : m_channel_id_list) {
-			DMM_READING res = readChannel(pair.first);
-			result.push_back(res);
-		}
-		return result;
-	} catch (std::runtime_error& e) {
-		throw std::invalid_argument("Cannot read DMM: " + getName());
+	for (auto pair : m_channel_id_list) {
+		DMM_READING res = readChannel(pair.first);
+		result.push_back(res);
 	}
+	return result;
 }
 

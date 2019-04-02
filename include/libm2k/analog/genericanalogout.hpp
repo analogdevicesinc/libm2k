@@ -42,8 +42,6 @@ public:
 	double setSamplerate(unsigned int chn_idx, double sampleRate);
 	std::vector<double> getAvailableSamplerates();
 
-	bool isChannelEnabled(unsigned int index);
-
 	void setCyclic(bool en);
 	void setCyclic(bool en, unsigned int chn);
 	bool getCyclic(unsigned int chn);

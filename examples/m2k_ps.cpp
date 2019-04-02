@@ -5,6 +5,7 @@
 
 int main (int argc, char **argv)
 {
+	std::exception e;
 	bool detectDevices = false;
 	std::string uri = "";
 	if (argc < 2) {
@@ -33,10 +34,10 @@ int main (int argc, char **argv)
 		ps->enableChannel(0, true);
 		ps->enableChannel(1, true);
 		std::cout << "value read " << ps->readChannel(0) << std::endl;
-		try {
+		__try {
 			ps->pushChannel(1, -2);
 			std::cout << "value read " << ps->readChannel(1) << std::endl;
-		} catch (std::exception &e) {
+		} __catch (exception_type &e) {
 			std::cout << "ERROR " << e.what() << std::endl;
 		}
 

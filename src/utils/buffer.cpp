@@ -35,12 +35,12 @@ Buffer::Buffer(struct iio_device *dev)
 
 	if (!m_dev) {
 		m_dev = nullptr;
-		throw no_device_exception("Buffer: Device not found, so no buffer can be created");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device not found, so no buffer can be created");
 	}
 
 	unsigned int dev_count = iio_device_get_buffer_attrs_count(m_dev);
 	if (dev_count <= 0) {
-		throw no_device_exception("Buffer: Device is not buffer capable, no buffer can be created");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device is not buffer capable, no buffer can be created");
 	}
 	m_buffer = nullptr;
 }
@@ -60,7 +60,7 @@ void Buffer::push(std::vector<std::vector<short>> &data)
 	size_t data_ch_nb = data.size();
 
 	if (data_ch_nb > m_channel_list.size()) {
-		throw invalid_parameter_exception("Buffer: Please setup channels before pushing data");
+		throw_exception(EXC_OUT_OF_RANGE, "Buffer: Please setup channels before pushing data");
 	}
 
 	for (unsigned int i = 0; i < data_ch_nb; i++) {
@@ -83,7 +83,7 @@ void Buffer::push(std::vector<short> &data, unsigned int channel,
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-		throw no_device_exception("Device not found, so no buffer was created");
+		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 	}
 
 	destroy();
@@ -98,7 +98,7 @@ void Buffer::push(std::vector<short> &data, unsigned int channel,
 	m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Buffer: Can't create the TX buffer");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
 	}
 
 	if (channel < m_channel_list.size() ) {
@@ -116,16 +116,16 @@ void Buffer::push(std::vector<short> &data, unsigned int channel,
 		}
 		iio_buffer_push(m_buffer);
 	} else {
-		throw invalid_parameter_exception("Buffer: Please setup channels before pushing data");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+
 	}
 }
 
-//push on a certain channel
 void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-		throw no_device_exception("Device not found, so no buffer was created");
+		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 	}
 
 	destroy();
@@ -140,21 +140,21 @@ void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 	m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Buffer: Can't create the TX buffer");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
 	}
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data);
 		iio_buffer_push(m_buffer);
 	} else {
-		throw invalid_parameter_exception("Buffer: Please setup channels before pushing data");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
 	}
 }
 
 std::vector<unsigned short> Buffer::getSamples(int nb_samples)
 {
 	if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
-		throw no_device_exception("Device not found, so no buffer was created");
+		throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created");
 	}
 
 	if (m_buffer) {
@@ -164,15 +164,14 @@ std::vector<unsigned short> Buffer::getSamples(int nb_samples)
 
 	m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Buffer: Can't create the RX buffer");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
 	}
 
 	int ret = iio_buffer_refill(m_buffer);
 
 	if (ret < 0) {
 		destroy();
-		throw instrument_already_in_use_exception(
-			"Buffer: Cannot refill RX buffer");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 	}
 
 	m_data_short.clear();
@@ -194,9 +193,8 @@ std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
 				std::function<double(int16_t, unsigned int)> process)
 {
 	std::vector<bool> channels_enabled;
-//	std::vector<std::vector<int16_t>> ch_data;
 	if (Utils::getIioDeviceDirection(m_dev) != INPUT) {
-		throw no_device_exception("Device not found, so no buffer was created");
+		throw_exception(EXC_INVALID_PARAMETER, "Device not found, so no buffer was created");
 	}
 
 	if (m_buffer) {
@@ -206,16 +204,14 @@ std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
 
 	m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
 	if (!m_buffer) {
-		throw invalid_parameter_exception("Buffer: Can't create the RX buffer");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the RX buffer");
 	}
 
 	int ret = iio_buffer_refill(m_buffer);
 
 	if (ret < 0) {
 		destroy();
-
-		throw instrument_already_in_use_exception(
-			"Buffer: Cannot refill RX buffer");
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 	}
 
 	m_data.clear();
@@ -244,12 +240,6 @@ std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
 	}
 
 	destroy();
-
-
-//	// Restore channels enable states
-//	for (unsigned int i = 0; i < m_nb_channels; i++) {
-//		enableChannel(i, channels_enabled.at(i));
-//	}
 	return m_data;
 }
 
@@ -257,7 +247,6 @@ void Buffer::stop()
 {
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
 		return;
-//		throw no_device_exception("Device not found, so no buffer was created");
 	}
 
 	destroy();

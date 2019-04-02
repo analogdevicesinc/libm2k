@@ -51,21 +51,13 @@ GenericDigital::~GenericDigital()
 
 double GenericDigital::getSampleRate()
 {
-	try {
-		return Utils::getDoubleValue(m_dev, "sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return getDoubleValue("sampling_frequency");
 }
 
 double GenericDigital::setSampleRate(double sampleRate)
 {
-	try {
-		return Utils::setDoubleValue(m_dev, sampleRate,
-					     "sampling_frequency");
-	} catch (std::runtime_error &e) {
-		throw invalid_parameter_exception(e.what());
-	}
+	return setDoubleValue(sampleRate,
+				     "sampling_frequency");
 }
 
 void GenericDigital::setCyclic(bool cyclic)
@@ -81,13 +73,9 @@ bool GenericDigital::getCyclic()
 void GenericDigital::enableChannel(unsigned int index, bool enable)
 {
 	if (index < getNbChannels()) {
-		if (enable) {
-			iio_channel_enable(m_channel_list.at(index).m_channel);
-		} else {
-			iio_channel_disable(m_channel_list.at(index).m_channel);
-		}
+		enableChannel(index, enable);
 	} else {
-		throw invalid_parameter_exception("Cannot enable digital channel.");
+		throw_exception(EXC_OUT_OF_RANGE, "Cannot enable digital channel.");
 	}
 }
 

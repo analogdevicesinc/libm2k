@@ -37,6 +37,13 @@ namespace libm2k {
 		LOW,
 		HIGH
 	};
+
+	enum M2K_EXCEPTION {
+		EXC_OUT_OF_RANGE,
+		EXC_RUNTIME_ERROR,
+		EXC_INVALID_PARAMETER,
+		EXC_TIMEOUT
+	};
 }
 
 

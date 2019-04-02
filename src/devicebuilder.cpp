@@ -62,17 +62,6 @@ std::vector<std::string> DeviceBuilder::listDevices()
 	unsigned int nb_contexts;
 	std::vector<std::string> uris;
 
-//	for (Utils::ini_device_struct device_info : devices_info) {
-//		if (device_info.hw_name == "") {
-//			std::cout << "error" << std::endl;
-//		} else {
-//			std::cout << device_info.hw_name << " " << device_info.key_val_pairs.at(0).first << std::endl;
-//			for (auto i : device_info.key_val_pairs.at(0).second) {
-//				std::cout << i << ", ";
-//			}
-//		}
-//	}
-
 	struct iio_scan_context *scan_ctx = iio_create_scan_context("usb", 0);
 
 	if (!scan_ctx) {
@@ -103,7 +92,6 @@ GenericDevice* DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
 {
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
-//		case DevFMCOMMS: return new FMCOMMS(uri, ctx, name);
 		case DevM2K: return new M2K(uri, ctx, name);
 
 		case Other:
@@ -123,7 +111,7 @@ GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 	struct iio_context* ctx = iio_create_context_from_uri(uri);
 	if (!ctx) {
 		std::string str = std::string(uri);
-		throw no_device_exception("No device found for uri: " + str);
+		throw_exception(EXC_INVALID_PARAMETER, "No device found for uri: " + str);
 	}
 	std::cout << "creating IIO context\n";
 
@@ -145,7 +133,7 @@ GenericDevice* DeviceBuilder::deviceOpen()
 	if (lst.size() > 0) {
 		return deviceOpen(lst.at(0).c_str());
 	} else {
-		throw invalid_parameter_exception("No available board");
+		throw_exception(EXC_INVALID_PARAMETER, "No available board");
 	}
 }
 
