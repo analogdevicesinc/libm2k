@@ -192,9 +192,27 @@ std::vector<unsigned short> Buffer::getSamples(int nb_samples)
 std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
 				std::function<double(int16_t, unsigned int)> process)
 {
+	bool anyChannelEnabled = false;
 	std::vector<bool> channels_enabled;
 	if (Utils::getIioDeviceDirection(m_dev) != INPUT) {
 		throw_exception(EXC_INVALID_PARAMETER, "Device not found, so no buffer was created");
+	}
+
+	m_data.clear();
+
+	for (auto chn : m_channel_list) {
+		bool en  = chn->isEnabled();
+		channels_enabled.push_back(en);
+		anyChannelEnabled = en ? true : anyChannelEnabled;
+		std::vector<double> data {};
+		for (int j = 0; j < nb_samples; j++) {
+			data.push_back(0);
+		}
+		m_data.push_back(data);
+	}
+
+	if (!anyChannelEnabled) {
+		throw_exception(EXC_INVALID_PARAMETER, "Buffer: No channel enabled for RX buffer");
 	}
 
 	if (m_buffer) {
@@ -213,19 +231,6 @@ std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
 		destroy();
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 	}
-
-	m_data.clear();
-
-	for (auto chn : m_channel_list) {
-		bool en  = chn->isEnabled();
-		channels_enabled.push_back(en);
-		std::vector<double> data {};
-		for (int j = 0; j < nb_samples; j++) {
-			data.push_back(0);
-		}
-		m_data.push_back(data);
-	}
-
 
 	ptrdiff_t p_inc = iio_buffer_step(m_buffer);
 	uintptr_t p_dat;

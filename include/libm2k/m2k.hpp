@@ -21,13 +21,9 @@
 #define M2K_H
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/genericdevice.hpp>
+#include <libm2k/context.hpp>
 #include <libm2k/utils/device.hpp>
 #include <iostream>
-
-extern "C" {
-	struct iio_context;
-}
 
 namespace libm2k {
 namespace analog {
@@ -43,7 +39,7 @@ class M2kDigital;
 class M2kCalibration;
 namespace devices {
 
-class LIBM2K_API M2K : public libm2k::devices::GenericDevice
+class LIBM2K_API M2K : public Context
 {
 public:
 	M2K(std::string uri, iio_context* ctx, std::string name);
@@ -73,6 +69,7 @@ public:
 	double getAdcCalibrationGain(unsigned int chn);
 
 	void setTimeout(unsigned int timeout);
+	void blinkLed(const double duration = 4, bool blocking = false);
 private:
 	M2kCalibration* m_calibration;
 	std::vector<utils::Device*> m_instancesAnalogOut;

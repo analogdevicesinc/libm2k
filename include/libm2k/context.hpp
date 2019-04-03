@@ -17,11 +17,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef GENERICDEVICE_HPP
-#define GENERICDEVICE_HPP
+#ifndef CONTEXT_HPP
+#define CONTEXT_HPP
 
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/enums.hpp>
+#include <libm2k/utils/utils.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -35,8 +36,8 @@ namespace libm2k {
 namespace analog {
 	class GenericAnalogIn;
 	class GenericAnalogOut;
-	class PowerSupply;
 	class DMM;
+	class PowerSupply;
 }
 
 namespace digital {
@@ -45,17 +46,20 @@ namespace digital {
 
 namespace devices {
 class M2K;
-class LIBM2K_API GenericDevice : public std::enable_shared_from_this<GenericDevice> {
-public:
-	GenericDevice(std::string uri, struct iio_context*, std::string name);
-	virtual ~GenericDevice();
 
-	virtual void scanAllAnalogIn();
-	virtual void scanAllAnalogOut();
+class LIBM2K_API Context {
+public:
+	Context(std::string uri, struct iio_context*, std::string name);
+	virtual ~Context();
+
+	std::vector<std::string> scanAllAnalogIn();
+	std::vector<std::string> scanAllAnalogOut();
 	virtual void scanAllPowerSupply();
 	virtual void scanAllDigital();
-	void scanAllDMM();
+	virtual void scanAllDMM();
+
 	std::string getUri();
+	std::string getName();
 
 	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
 	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
@@ -65,26 +69,31 @@ public:
 	libm2k::analog::DMM* getDMM(std::string);
 	std::vector<libm2k::analog::DMM*> getAllDmm();
 
-	void blinkLed();
-	struct iio_context* ctx();
 	std::string getContextAttributes();
+	std::unordered_set<std::string> getAllDevices(iio_context *ctx);
 
 	libm2k::devices::M2K* toM2k();
+
+	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
+	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);
 protected:
 	std::vector<libm2k::analog::GenericAnalogIn*> m_instancesAnalogIn;
 	std::vector<libm2k::analog::GenericAnalogOut*> m_instancesAnalogOut;
 	std::vector<libm2k::analog::DMM*> m_instancesDMM;
 	std::vector<libm2k::analog::PowerSupply*> m_instancesPowerSupply;
 	std::vector<libm2k::digital::GenericDigital*> m_instancesDigital;
-private:
-	bool isIioDeviceBufferCapable(std::string);
-	DEVICE_TYPE getIioDeviceType(std::string);
-	DEVICE_DIRECTION getIioDeviceDirection(std::string);
+
+	std::vector<std::pair<std::string, std::string>> getIioDevByChannelAttrs(std::vector<std::string> attr_list);
+	bool isIioDeviceBufferCapable(std::string dev_name);
+	DEVICE_TYPE getIioDeviceType(std::string dev_name);
+	DEVICE_DIRECTION getIioDeviceDirection(std::string dev_name);
+
 	std::string m_uri;
-	struct iio_context* m_ctx;
+	std::string m_name;
+	struct iio_context* m_context;
 
 };
 }
 }
 
-#endif // GENERICDEVICE_HPP
+#endif // CONTEXT_HPP

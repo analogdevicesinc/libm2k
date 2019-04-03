@@ -22,14 +22,10 @@
 
 #include <vector>
 #include <string>
-#include "m2kglobal.hpp"
-#include "genericdevice.hpp"
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/context.hpp>
 #include <unordered_set>
 #include <map>
-
-extern "C" {
-	struct iio_context;
-}
 
 enum DeviceTypes {
 	DevFMCOMMS,
@@ -40,17 +36,17 @@ enum DeviceTypes {
 namespace libm2k {
 namespace devices {
 class LIBM2K_API DeviceBuilder {
-	static std::vector<GenericDevice*> s_connectedDevices; //should be GenericDevice
+	static std::vector<Context*> s_connectedDevices;
 public:
 
 	explicit DeviceBuilder();
 	~DeviceBuilder();
 	static std::vector<std::string> listDevices();
-	static GenericDevice* deviceOpen(const char*);
-	static GenericDevice* deviceOpen();
-	static void deviceClose(GenericDevice*);
+	static Context* deviceOpen(const char*);
+	static Context* deviceOpen();
+	static void deviceClose(Context*);
 	static DeviceTypes identifyDevice(iio_context *ctx);
-	static GenericDevice* buildDevice(DeviceTypes type,
+	static Context* buildDevice(DeviceTypes type,
 					std::string uri,
 					struct iio_context *ctx);
 private:

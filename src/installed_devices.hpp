@@ -8,7 +8,7 @@
 #include <memory>
 
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/genericdevice.hpp>
+#include <libm2k/context.hpp>
 #include <libm2k/m2k.hpp>
 
 // generated includes for plugins
@@ -41,7 +41,7 @@ DeviceTypes get_type_from_name(std::string name)
 	return t;
 }
 
-GenericDevice* buildDevice(std::string name, std::string uri,
+Context* buildDevice(std::string name, std::string uri,
 			struct iio_context* ctx) // enum Device Name
 {
 	DeviceTypes t = get_type_from_name(name);
@@ -51,7 +51,7 @@ GenericDevice* buildDevice(std::string name, std::string uri,
 
 		case Other:
 		default:
-		return new GenericDevice(uri, ctx, name);
+		return new Context(uri, ctx, name);
 	}
 }
 

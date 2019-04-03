@@ -22,11 +22,13 @@
 #include <libm2k/utils/channel.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/context.hpp>
 #include <algorithm>
 #include <cstring>
 
 using namespace std;
 using namespace libm2k::utils;
+using namespace libm2k::devices;
 
 /*
  * Represents an iio_device
@@ -94,6 +96,8 @@ Channel* Device::getChannel(std::string id)
 {
 	for (auto ch : m_channel_list) {
 		if (id == ch->getName()) {
+			return ch;
+		} else if (id == ch->getId()) {
 			return ch;
 		}
 	}
@@ -181,7 +185,7 @@ double Device::getDoubleValue(std::string attr)
 	double value = 0;
 	std::string dev_name = getName();
 
-	if (Utils::iioDevHasAttribute(m_dev, attr)) {
+	if (Context::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_read_double(m_dev, attr.c_str(),
 			&value);
 	} else {
@@ -203,7 +207,7 @@ double Device::getDoubleValue(unsigned int chn_idx, std::string attr, bool outpu
 
 	std::string name = "voltage" + std::to_string(chn_idx);
 	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
-	if (Utils::iioChannelHasAttribute(chn, attr)) {
+	if (Context::iioChannelHasAttribute(chn, attr)) {
 		iio_channel_attr_read_double(chn, attr.c_str(), &value);
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
@@ -215,7 +219,7 @@ double Device::getDoubleValue(unsigned int chn_idx, std::string attr, bool outpu
 double Device::setDoubleValue(double value, std::string attr)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
-	if (Utils::iioDevHasAttribute(m_dev, attr)) {
+	if (Context::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write_double(m_dev, attr.c_str(),
 			value);
 	} else {
@@ -236,7 +240,7 @@ double Device::setDoubleValue(unsigned int chn_idx, double value, std::string at
 
 	std::string name = "voltage" + std::to_string(chn_idx);
 	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
-	if (Utils::iioChannelHasAttribute(chn, attr)) {
+	if (Context::iioChannelHasAttribute(chn, attr)) {
 		iio_channel_attr_write_double(chn, attr.c_str(),
 			value);
 	} else {
@@ -252,7 +256,7 @@ bool Device::getBoolValue(string attr)
 	bool value = 0;
 	std::string dev_name = getName();
 
-	if (Utils::iioDevHasAttribute(m_dev, attr)) {
+	if (Context::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_read_bool(m_dev, attr.c_str(),
 			&value);
 	} else {
@@ -275,7 +279,7 @@ bool Device::getBoolValue(unsigned int chn_idx, string attr, bool output)
 
 	std::string name = "voltage" + std::to_string(chn_idx);
 	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
-	if (Utils::iioChannelHasAttribute(chn, attr)) {
+	if (Context::iioChannelHasAttribute(chn, attr)) {
 		iio_channel_attr_read_bool(chn, attr.c_str(),
 			&value);
 	} else {
@@ -289,7 +293,7 @@ bool Device::getBoolValue(unsigned int chn_idx, string attr, bool output)
 bool Device::setBoolValue(bool value, string attr)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
-	if (Utils::iioDevHasAttribute(m_dev, attr)) {
+	if (Context::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write_bool(m_dev, attr.c_str(), value);
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, dev_name +
@@ -310,7 +314,7 @@ bool Device::setBoolValue(unsigned int chn_idx, bool value, string attr, bool ou
 
 	std::string name = "voltage" + std::to_string(chn_idx);
 	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
-	if (Utils::iioChannelHasAttribute(chn, attr)) {
+	if (Context::iioChannelHasAttribute(chn, attr)) {
 		iio_channel_attr_write_bool(chn, attr.c_str(),
 			value);
 	} else {
@@ -324,7 +328,7 @@ bool Device::setBoolValue(unsigned int chn_idx, bool value, string attr, bool ou
 string Device::setStringValue(string attr, string value)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
-	if (Utils::iioDevHasAttribute(m_dev, attr)) {
+	if (Context::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write(m_dev, attr.c_str(), value.c_str());
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, dev_name +
@@ -344,7 +348,7 @@ string Device::setStringValue(unsigned int chn_idx, string attr, string value, b
 
 	std::string name = "voltage" + std::to_string(chn_idx);
 	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
-	if (Utils::iioChannelHasAttribute(chn, attr)) {
+	if (Context::iioChannelHasAttribute(chn, attr)) {
 		iio_channel_attr_write(chn, attr.c_str(), value.c_str());
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, dev_name +
@@ -359,7 +363,7 @@ string Device::getStringValue(string attr)
 	char value[100];
 	std::string dev_name = getName();
 
-	if (Utils::iioDevHasAttribute(m_dev, attr)) {
+	if (Context::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_read(m_dev, attr.c_str(),
 			value, sizeof(value));
 	} else {
@@ -382,7 +386,7 @@ string Device::getStringValue(unsigned int chn_idx, string attr, bool output)
 
 	std::string name = "voltage" + std::to_string(chn_idx);
 	auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
-	if (Utils::iioChannelHasAttribute(chn, attr)) {
+	if (Context::iioChannelHasAttribute(chn, attr)) {
 		iio_channel_attr_read(chn, attr.c_str(),
 				value, sizeof(value));
 	} else {

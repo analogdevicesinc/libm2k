@@ -17,12 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "libm2k/devicebuilder.hpp"
-#include "libm2k/m2kexceptions.hpp"
-#include "libm2k/genericdevice.hpp"
-#include "libm2k/m2k.hpp"
+#include <libm2k/m2k.hpp>
+#include <libm2k/devicebuilder.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/utils/utils.hpp>
 #include <iio.h>
-#include "libm2k/utils/utils.hpp"
 #include <algorithm>
 #include <vector>
 #include <iostream>
@@ -32,7 +31,7 @@
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
-std::vector<GenericDevice*> DeviceBuilder::s_connectedDevices = {};
+std::vector<Context*> DeviceBuilder::s_connectedDevices = {};
 std::map<DeviceTypes, std::vector<std::string>> DeviceBuilder::m_dev_map = {
 	{DeviceTypes::DevFMCOMMS, {"cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy"}},
 	{DeviceTypes::DevM2K, {"m2k-adc", "m2k-dac-a",
@@ -87,7 +86,7 @@ out_destroy_context:
 	return uris;
 }
 
-GenericDevice* DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
+Context* DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
 			struct iio_context* ctx) // enum Device Name
 {
 	std::string name = m_dev_name_map.at(type);
@@ -96,13 +95,13 @@ GenericDevice* DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
 
 		case Other:
 		default:
-		return new GenericDevice(uri, ctx, name);
+		return new Context(uri, ctx, name);
 	}
 }
 
-GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
+Context* DeviceBuilder::deviceOpen(const char *uri)
 {
-	for (GenericDevice* dev : s_connectedDevices) {
+	for (Context* dev : s_connectedDevices) {
 		if (dev->getUri() == std::string(uri)) {
 			return dev;
 		}
@@ -118,7 +117,7 @@ GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 	DeviceTypes dev_type = DeviceBuilder::identifyDevice(ctx);
 	std::cout << m_dev_name_map.at(dev_type) << std::endl;
 
-	GenericDevice* dev = buildDevice(dev_type, std::string(uri), ctx);
+	Context* dev = buildDevice(dev_type, std::string(uri), ctx);
 	s_connectedDevices.push_back(dev);
 
 	return dev;
@@ -127,17 +126,16 @@ GenericDevice* DeviceBuilder::deviceOpen(const char *uri)
 /* Connect to the first usb device that was found
 TODO: try to use the "local" context,
 before trying the "usb" one. */
-GenericDevice* DeviceBuilder::deviceOpen()
+Context* DeviceBuilder::deviceOpen()
 {
 	auto lst = listDevices();
-	if (lst.size() > 0) {
-		return deviceOpen(lst.at(0).c_str());
-	} else {
+	if (lst.size() <= 0) {
 		throw_exception(EXC_INVALID_PARAMETER, "No available board");
 	}
+	return deviceOpen(lst.at(0).c_str());
 }
 
-void DeviceBuilder::deviceClose(GenericDevice* device)
+void DeviceBuilder::deviceClose(Context* device)
 {
 	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),
 					     s_connectedDevices.end(),

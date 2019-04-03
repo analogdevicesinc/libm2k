@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 	}
 
 	// GenericDeviced::sptr device
-	GenericDevice* device = DeviceBuilder::deviceOpen(deviceList[0].c_str());
+	Context* device = DeviceBuilder::deviceOpen(deviceList[0].c_str());
 	M2K* m2k_device = device->toM2k();
 
 	if (!m2k_device) {

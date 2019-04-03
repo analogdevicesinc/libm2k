@@ -18,6 +18,7 @@
  */
 
 #include <libm2k/m2k.hpp>
+#include <libm2k/utils/channel.hpp>
 #include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/m2kexceptions.hpp>
@@ -29,6 +30,7 @@
 #include <libm2k/logger.hpp>
 #include <iio.h>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace libm2k::devices;
@@ -37,7 +39,7 @@ using namespace libm2k::digital;
 using namespace libm2k::utils;
 
 M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
-	GenericDevice(uri, ctx, name)
+	Context(uri, ctx, name)
 {
 	std::cout << "I am M2K device " << std::endl;
 
@@ -59,66 +61,45 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 
 M2K::~M2K()
 {
-	/* Pre-init call to setup M2k */
-	struct iio_device *m2k_fabric = iio_context_find_device(ctx(), "m2k-fabric");
-	if (m2k_fabric) {
-		auto chn0 = iio_device_find_channel(m2k_fabric, "voltage0", false);
-		auto chn1 = iio_device_find_channel(m2k_fabric, "voltage1", false);
-		if (chn0 && chn1) {
-			iio_channel_attr_write_bool(chn0, "powerdown", true);
-			iio_channel_attr_write_bool(chn1, "powerdown", true);
-		}
+	std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+	if (m_m2k_fabric) {
+		m_m2k_fabric->setBoolValue(0, true, "powerdown", false);
+		m_m2k_fabric->setBoolValue(1, true, "powerdown", false);
 
 		/* ADF4360 global clock power down */
-		iio_device_attr_write_bool(m2k_fabric, "clk_powerdown", true);
+		m_m2k_fabric->setBoolValue(true, "powerdown");
 	}
 	delete m_calibration;
 }
 
 void M2K::setTimeout(unsigned int timeout)
 {
-	iio_context_set_timeout(ctx(), timeout);
+	iio_context_set_timeout(m_context, timeout);
 }
 
 void M2K::scanAllAnalogIn()
 {
-	__try {
-		Device* aIn = new libm2k::analog::M2kAnalogIn(ctx(), "m2k-adc");
-		m_instancesAnalogIn.push_back(aIn);
-	} __catch (exception_type &e) {
-		std::cout << e.what() << std::endl;
-	}
+	Device* aIn = new libm2k::analog::M2kAnalogIn(m_context, "m2k-adc");
+	m_instancesAnalogIn.push_back(aIn);
 }
 
 void M2K::scanAllAnalogOut()
 {
-	__try {
-		std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
-		Device* aOut = new libm2k::analog::M2kAnalogOut(ctx(), devs);
-		m_instancesAnalogOut.push_back(aOut);
-	} __catch (exception_type &e) {
-		std::cout << e.what() << std::endl;
-	}
+	std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
+	Device* aOut = new libm2k::analog::M2kAnalogOut(m_context, devs);
+	m_instancesAnalogOut.push_back(aOut);
 }
 
 void M2K::scanAllPowerSupply()
 {
-	__try {
-		Device* pSupply = new libm2k::analog::M2kPowerSupply(ctx(), "ad5627", "ad9963");
-		m_instancesPowerSupply.push_back(pSupply);
-	} __catch (exception_type &e) {
-		std::cout << e.what() << std::endl;
-	}
+	Device* pSupply = new libm2k::analog::M2kPowerSupply(m_context, "ad5627", "ad9963");
+	m_instancesPowerSupply.push_back(pSupply);
 }
 
 void M2K::scanAllDigital()
 {
-	__try {
-		Device* logic = new libm2k::digital::M2kDigital(ctx(), "m2k-logic-analyzer");
-		m_instancesDigital.push_back(logic);
-	} __catch (exception_type &e) {
-		std::cout << e.what() << std::endl;
-	}
+	Device* logic = new libm2k::digital::M2kDigital(m_context, "m2k-logic-analyzer");
+	m_instancesDigital.push_back(logic);
 }
 
 void M2K::calibrate()
@@ -128,29 +109,17 @@ void M2K::calibrate()
 
 bool M2K::resetCalibration()
 {
-	__try {
-		return m_calibration->resetCalibration();
-	} __catch (exception_type &e) {
-		throw_exception(EXC_INVALID_PARAMETER, e.what());
-	}
+	return m_calibration->resetCalibration();
 }
 
 bool M2K::calibrateADC()
 {
-	__try {
-		return m_calibration->calibrateADC();
-	} __catch (exception_type &e) {
-		throw_exception(EXC_INVALID_PARAMETER, e.what());
-	}
+	return m_calibration->calibrateADC();
 }
 
 bool M2K::calibrateDAC()
 {
-	__try {
-		return m_calibration->calibrateDAC();
-	} __catch (exception_type &e) {
-		throw_exception(EXC_INVALID_PARAMETER, e.what());
-	}
+	return m_calibration->calibrateDAC();
 }
 
 double M2K::getAdcCalibrationGain(unsigned int chn)
@@ -280,10 +249,10 @@ std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
 
 void M2K::initialize()
 {
-	std::string hw_rev = Utils::getHardwareRevision(ctx());
+	std::string hw_rev = Utils::getHardwareRevision(m_context);
 
-	std::shared_ptr<Device> m_ad9963 = make_shared<Device>(ctx(), "ad9963");
-	std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(ctx(), "m2k-fabric");
+	std::shared_ptr<Device> m_ad9963 = make_shared<Device>(m_context, "ad9963");
+	std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
 	int config1 = 0x05;
 	int config2 = 0x05;
 
@@ -304,4 +273,32 @@ void M2K::initialize()
 	m_m2k_fabric->setBoolValue(0, false, "powerdown", false);
 	m_m2k_fabric->setBoolValue(1, false, "powerdown", false);
 	m_m2k_fabric->setBoolValue(false, "clk_powerdown");
+}
+
+void M2K::blinkLed(const double duration, bool blocking)
+{
+	std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+	if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
+		bool currentValue = m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
+
+		const double blinkInterval = 0.05;
+		double remainingTime = duration;
+		std::thread th([=](double remainingTime, double blinkInterval){
+			while(remainingTime > 0) {
+				bool value;
+				value = m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
+				m_m2k_fabric->setBoolValue(4, !value, "done_led_overwrite_powerdown", true);
+				remainingTime -= blinkInterval;
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			}
+		}, remainingTime, blinkInterval);
+
+		if (blocking) {
+			th.join();
+		} else if (th.joinable()) {
+			th.detach();
+		}
+		//restore the state of the LED
+		m_m2k_fabric->setBoolValue(4, currentValue, "done_led_overwrite_powerdown", true);
+	}
 }

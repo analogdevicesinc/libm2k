@@ -45,16 +45,6 @@ namespace utils {
 		 * The list can also contain pairs of type <device_name, "">, which means
 		 * all the required attributes were found as global attributes for the device <device_name>.
 		 */
-		static std::vector<std::pair<std::string, std::string>>
-			getIioDevByChannelAttrs(iio_context*, std::vector<std::string> attr_list);
-
-		static bool iioDevHasAttribute(iio_device* dev, std::string const& attr);
-
-		static bool iioChannelHasAttribute(iio_channel* chn, std::string const& attr);
-
-		static bool isInputChannel(iio_context*, std::string const& dev, std::string const& chn);
-
-		static double getIioDevTemp(iio_context* ctx, const std::string& d_name);
 
                 static void blinkLed(iio_context* ctx, const double duration, bool blocking = false);
 

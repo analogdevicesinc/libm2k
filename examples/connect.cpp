@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 		__try {
 //			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
 //			std::shared_ptr<GenericDevice> d2 = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
-			GenericDevice* d = DeviceBuilder::deviceOpen();//l.c_str());
+			Context* d = DeviceBuilder::deviceOpen();//l.c_str());
 
 			M2K* dev = d->toM2k();
 			if (!dev) { // PLUTO
@@ -291,7 +291,7 @@ int main(int argc, char **argv)
 					std::cout << e.what() << "\n";
 				}
 				//			auto anIn = d->openAnalogIn();
-				d->blinkLed();
+				dev->blinkLed();
 				//			d->closeAnalogIn()
 //				DeviceBuilder::deviceClose(d);
 //				DeviceBuilder::deviceClose(d2);
