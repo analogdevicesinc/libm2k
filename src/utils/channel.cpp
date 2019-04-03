@@ -61,7 +61,12 @@ std::string Channel::getName()
 	if (!m_channel) {
 		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
 	}
-	return iio_channel_get_name(m_channel);
+	std::string name = "";
+	auto n = iio_channel_get_name(m_channel);
+	if (n) {
+		name = string(n);
+	}
+	return name;
 }
 
 std::string Channel::getId()
