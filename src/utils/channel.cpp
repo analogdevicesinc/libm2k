@@ -175,3 +175,49 @@ double Channel::getDoubleValue(std::string attr)
 	}
 	return value;
 }
+
+void Channel::setDoubleValue(std::string attr, double val)
+{
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+	}
+	int ret = iio_channel_attr_write_double(m_channel, attr.c_str(), val);
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
+}
+
+void Channel::setLongValue(std::string attr, long long val)
+{
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+	}
+	int ret = iio_channel_attr_write_longlong(m_channel, attr.c_str(), val);
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
+}
+
+void Channel::setStringValue(string attr, string val)
+{
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+	}
+	int ret = iio_channel_attr_write(m_channel, attr.c_str(), val.c_str());
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
+}
+
+string Channel::getStringValue(string attr)
+{
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+	}
+	char value[1024];
+	int ret = iio_channel_attr_read(m_channel, attr.c_str(), value, sizeof(value));
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
+	return std::string(value);
+}

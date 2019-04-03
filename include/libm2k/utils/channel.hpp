@@ -44,7 +44,14 @@ public:
 	void convert(int16_t *avg, int16_t *src);
 	void convert(double *avg, int16_t *src);
 
+	void setDoubleValue(std::string attr, double val);
 	double getDoubleValue(std::string attr);
+
+	void setStringValue(std::string attr, std::string val);
+	std::string getStringValue(std::string attr);
+
+	void setLongValue(std::string attr, long long val);
+
 	void enableChannel(bool enable);
 	uintptr_t getFirst(struct iio_buffer* buffer);
 private:
