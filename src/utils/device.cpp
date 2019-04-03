@@ -90,6 +90,16 @@ Channel* Device::getChannel(unsigned int chnIdx)
 	}
 }
 
+Channel* Device::getChannel(std::string id)
+{
+	for (auto ch : m_channel_list) {
+		if (id == ch->getName()) {
+			return ch;
+		}
+	}
+	return nullptr;
+}
+
 bool Device::isChannel(unsigned int chnIdx, bool output)
 {
 	std::string name = "voltage" + to_string(chnIdx);
