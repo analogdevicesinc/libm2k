@@ -18,6 +18,7 @@
  */
 
 #include <libm2k/analog/m2khardwaretrigger.hpp>
+#include <libm2k/utils/channel.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <stdexcept>
 #include <algorithm>
@@ -62,43 +63,34 @@ std::vector<std::string> M2kHardwareTrigger::m_trigger_source = {
 	"a_XOR_b",
 };
 
-typedef std::pair<struct iio_channel *, std::string> channel_pair;
+typedef std::pair<Channel *, std::string> channel_pair;
 
 M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx) :
-	m_ctx(ctx)
+	Device(ctx, "m2k-adc-trigger")
 {
-	m_trigger_device = iio_context_find_device(m_ctx, "m2k-adc-trigger");
-
-	if (!m_trigger_device) {
-		throw_exception(EXC_INVALID_PARAMETER, "trigger device is null");
-	}
-
-	// Get all channels and sort them ascending by name
-	std::vector<std::pair<struct iio_channel *, std::string>> channels;
-	for (unsigned int i = 0; i < iio_device_get_channels_count(m_trigger_device); i++) {
-		struct iio_channel *chn = iio_device_get_channel(m_trigger_device, i);
-
-		if (iio_channel_is_output(chn)) {
+	std::vector<std::pair<Channel*, std::string>> channels;
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		Channel* ch = getChannel(i);
+		if (ch->isOutput()) {
 			continue;
 		}
 
-		std::string name = std::string(iio_channel_get_id(chn));
-		std::pair<struct iio_channel *, std::string> chn_pair(chn, name);
+		std::string name = ch->getId();
+		std::pair<Channel*, std::string> chn_pair(ch, name);
 		channels.push_back(chn_pair);
 	}
+
 	std::sort(channels.begin(), channels.end(),
 		[](channel_pair a, channel_pair b)
 			{ return a.second < b.second; });
 
 	// Pick the analog, digital, trigger_logic and delay channels
 	for (int i = 0; i < channels.size(); i++) {
-		struct iio_channel *chn = channels[i].first;
-		bool mode = iio_channel_find_attr(chn, "mode");
-		bool trigger = iio_channel_find_attr(chn, "trigger");
-		bool trigger_level = iio_channel_find_attr(chn,
-				"trigger_level");
-		bool trigger_hysteresis = iio_channel_find_attr(chn,
-				"trigger_hysteresis");
+		Channel* chn = channels[i].first;
+		bool mode = chn->hasAttribute("mode");
+		bool trigger = chn->hasAttribute("trigger");
+		bool trigger_level = chn->hasAttribute("trigger_level");
+		bool trigger_hysteresis = chn->hasAttribute("trigger_hysteresis");
 
 		if (trigger) {
 			if (trigger_level && trigger_hysteresis) {
@@ -113,8 +105,7 @@ M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx) :
 		}
 	}
 
-	m_delay_trigger = iio_device_find_channel(m_trigger_device, "trigger",
-			false);
+	m_delay_trigger = getChannel("trigger");
 
 	m_num_channels = m_analog_channels.size();
 
@@ -139,31 +130,17 @@ M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx) :
 	setStreamingFlag(false);
 }
 
-unsigned int M2kHardwareTrigger::numChannels() const
-{
-	return m_num_channels;
-}
-
 M2K_TRIGGER_CONDITION M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
-		const
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
-	ssize_t ret;
-	char buf[4096];
-
-	ret = iio_channel_attr_read(m_analog_channels[chnIdx], "trigger", buf,
-		sizeof(buf));
-	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "failed to read attribute: trigger");
-	}
+	std::string buf = m_analog_channels[chnIdx]->getStringValue("trigger");
 	auto it = std::find(m_trigger_analog_cond.begin(),
-		m_trigger_analog_cond.end(), buf);
+		m_trigger_analog_cond.end(), buf.c_str());
 	if  (it == m_trigger_analog_cond.end()) {
-		throw_exception(EXC_OUT_OF_RANGE,
-			"unexpected value read from attribute: trigger");
+		throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
 	}
 
 	return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_analog_cond.begin());
@@ -172,37 +149,26 @@ M2K_TRIGGER_CONDITION M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx
 
 void M2kHardwareTrigger::setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
 {
-	if (chnIdx >= numChannels()) {
-		throw_exception(EXC_OUT_OF_RANGE,
-				"Channel index is out of range");
+	if (chnIdx >= getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
 	if (cond == ANY_EDGE) {
 		return; //or throw?
 	}
 
-	iio_channel_attr_write(m_analog_channels[chnIdx], "trigger",
-		m_trigger_analog_cond[cond].c_str());
+	m_analog_channels[chnIdx]->setStringValue("trigger", m_trigger_analog_cond[cond]);
 }
 
 M2K_TRIGGER_CONDITION M2kHardwareTrigger::getDigitalCondition(unsigned int chnIdx)
-		const
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
-
-	ssize_t ret;
-	char buf[4096];
-
-	ret = iio_channel_attr_read(m_digital_channels[chnIdx], "trigger", buf,
-		sizeof(buf));
-	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "failed to read attribute: trigger");
-	}
+	std::string buf = m_digital_channels[chnIdx]->getStringValue("trigger");
 
 	auto it = std::find(m_trigger_digital_cond.begin(),
-		m_trigger_digital_cond.end(), buf);
+		m_trigger_digital_cond.end(), buf.c_str());
 	if  (it == m_trigger_digital_cond.end()) {
 		throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
 	}
@@ -212,37 +178,31 @@ M2K_TRIGGER_CONDITION M2kHardwareTrigger::getDigitalCondition(unsigned int chnId
 
 void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
-	iio_channel_attr_write(m_digital_channels[chnIdx], "trigger",
-		m_trigger_digital_cond[cond].c_str());
+	m_digital_channels[chnIdx]->setStringValue("trigger", m_trigger_digital_cond[cond]);
 }
 
-int M2kHardwareTrigger::getLevel(unsigned int chnIdx) const
+int M2kHardwareTrigger::getLevel(unsigned int chnIdx)
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
-
 	}
 
-	long long val;
-
-	iio_channel_attr_read_longlong(m_analog_channels[chnIdx],
-		"trigger_level", &val);
+	double val = m_analog_channels[chnIdx]->getDoubleValue("trigger_level");
 
 	return static_cast<int>(val);
 }
 
 void M2kHardwareTrigger::setLevel(unsigned int chnIdx, int level)
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
-	iio_channel_attr_write_longlong(m_analog_channels[chnIdx],
-					"trigger_level", static_cast<long long> (level));
+	m_analog_channels[chnIdx]->setLongValue("trigger_level", static_cast<long long>(level));
 }
 
 void M2kHardwareTrigger::setLevelVolts(unsigned int chnIdx, double v_level)
@@ -250,46 +210,34 @@ void M2kHardwareTrigger::setLevelVolts(unsigned int chnIdx, double v_level)
 	int rawValue = 0;
 }
 
-int M2kHardwareTrigger::getHysteresis(unsigned int chnIdx) const
+int M2kHardwareTrigger::getHysteresis(unsigned int chnIdx)
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
-	long long val;
-
-	iio_channel_attr_read_longlong(m_analog_channels[chnIdx],
-		"trigger_hysteresis", &val);
-
+	double val = m_analog_channels[chnIdx]->getDoubleValue("trigger_hysteresis");
 	return static_cast<int>(val);
 }
 
 void M2kHardwareTrigger::setHysteresis(unsigned int chnIdx, int histeresis)
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
-	iio_channel_attr_write_longlong(m_analog_channels[chnIdx],
-		"trigger_hysteresis", static_cast<long long>(histeresis));
+	m_analog_channels[chnIdx]->setLongValue("trigger_hysteresis", static_cast<long long>(histeresis));
 }
 
-M2K_TRIGGER_MODE M2kHardwareTrigger::getTriggerMode(unsigned int chnIdx) const
+M2K_TRIGGER_MODE M2kHardwareTrigger::getTriggerMode(unsigned int chnIdx)
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
-	ssize_t ret;
-	char buf[4096];
-
-	ret = iio_channel_attr_read(m_logic_channels[chnIdx], "mode", buf,
-		sizeof(buf));
-	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "failed to read attribute: mode");
-	}
+	std::string buf = m_logic_channels[chnIdx]->getStringValue("mode");
 	auto it = std::find(m_trigger_mode.begin(),
-		m_trigger_mode.end(), buf);
+		m_trigger_mode.end(), buf.c_str());
 	if  (it == m_trigger_mode.end()) {
 		throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: mode");
 	}
@@ -299,26 +247,19 @@ M2K_TRIGGER_MODE M2kHardwareTrigger::getTriggerMode(unsigned int chnIdx) const
 
 void M2kHardwareTrigger::setTriggerMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode)
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
-	iio_channel_attr_write(m_logic_channels[chnIdx], "mode",
-		m_trigger_mode[mode].c_str());
+	m_logic_channels[chnIdx]->setStringValue("mode", m_trigger_mode[mode].c_str());
 }
 
-M2K_TRIGGER_SOURCE M2kHardwareTrigger::getSource() const
+M2K_TRIGGER_SOURCE M2kHardwareTrigger::getSource()
 {
-	char buf[4096];
-
-	int ret = iio_channel_attr_read(m_delay_trigger, "logic_mode", buf, sizeof(buf));
-
-	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "failed to read attribute: logic_mode");
-	}
+	std::string buf = m_delay_trigger->getStringValue("logic_mode");
 
 	auto it = std::find(m_trigger_source.begin(),
-		m_trigger_source.end(), buf);
+		m_trigger_source.end(), buf.c_str());
 	if  (it == m_trigger_source.end()) {
 		throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source");
 	}
@@ -329,15 +270,14 @@ M2K_TRIGGER_SOURCE M2kHardwareTrigger::getSource() const
 void M2kHardwareTrigger::setSource(M2K_TRIGGER_SOURCE src)
 {
 	std::string src_str = m_trigger_source[src];
-	iio_channel_attr_write(m_delay_trigger, "logic_mode",
-			       src_str.c_str());
+	m_delay_trigger->setStringValue("logic_mode", src_str);
 }
 
 /*
  * Convenience function to be used when willing to use the trigger for only one
  * channel at a time.
  */
-int M2kHardwareTrigger::getSourceChannel() const
+int M2kHardwareTrigger::getSourceChannel()
 {
 	int chnIdx = -1;
 
@@ -358,7 +298,7 @@ int M2kHardwareTrigger::getSourceChannel() const
  */
 void M2kHardwareTrigger::setSourceChannel(unsigned int chnIdx)
 {
-	if (chnIdx >= numChannels()) {
+	if (chnIdx >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "Source channel index is out of range");
 	}
 
@@ -371,22 +311,19 @@ void M2kHardwareTrigger::setSourceChannel(unsigned int chnIdx)
 
 int M2kHardwareTrigger::getDelay() const
 {
-	long long delay;
-
-	iio_channel_attr_read_longlong(m_delay_trigger, "delay", &delay);
-
+	double delay = m_delay_trigger->getDoubleValue("delay");
 	return static_cast<int>(delay);
 }
 
 void M2kHardwareTrigger::setDelay(int delay)
 {
-	iio_channel_attr_write_longlong(m_delay_trigger, "delay", delay);
+	m_delay_trigger->setLongValue("delay", delay);
 }
 
 void M2kHardwareTrigger::setStreamingFlag(bool val)
 {
 	m_streaming_flag = val;
-	iio_device_attr_write_bool(m_trigger_device, "streaming", val);
+	setBoolValue(val, "streaming");
 }
 
 bool M2kHardwareTrigger::getStreamingFlag()
@@ -403,7 +340,7 @@ settings_uptr M2kHardwareTrigger::getCurrentHwSettings()
 {
 	settings_uptr settings(new SETTINGS);
 
-	for (unsigned int i = 0; i < numChannels(); i++) {
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		settings->analog_condition.push_back(getAnalogCondition(i));
 		settings->digital_condition.push_back(getDigitalCondition(i));
 		settings->level.push_back(getLevel(i));
@@ -418,7 +355,7 @@ settings_uptr M2kHardwareTrigger::getCurrentHwSettings()
 
 void M2kHardwareTrigger::setHwTriggerSettings(struct SETTINGS *settings)
 {
-	for (unsigned int i = 0; i < numChannels(); i++) {
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		setAnalogCondition(i, settings->analog_condition[i]);
 		setDigitalCondition(i, settings->digital_condition[i]);
 		setLevel(i, settings->level[i]);

@@ -26,43 +26,35 @@
 #include <vector>
 #include <memory>
 
-extern "C" {
-	struct iio_context;
-	struct iio_device;
-	struct iio_channel;
-}
-
 namespace libm2k {
 namespace analog {
 class M2kAnalogIn;
 
-class LIBM2K_API M2kHardwareTrigger
+class LIBM2K_API M2kHardwareTrigger : public Device
 {
 public:
 	M2kHardwareTrigger(struct iio_context *ctx);
 
-	int getLevel(unsigned int chnIdx) const;
+	int getLevel(unsigned int chnIdx);
 	void setLevel(unsigned int chnIdx, int level);
 	void setLevelVolts(unsigned int chnIdx, double v_level);
 
-	int getHysteresis(unsigned int chnIdx) const;
+	int getHysteresis(unsigned int chnIdx);
 	void setHysteresis(unsigned int chnIdx, int histeresis);
 
-	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx) const;
+	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx);
 	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
 
-	M2K_TRIGGER_CONDITION getDigitalCondition(unsigned int chnIdx) const;
+	M2K_TRIGGER_CONDITION getDigitalCondition(unsigned int chnIdx);
 	void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
 
-	M2K_TRIGGER_MODE getTriggerMode(unsigned int chnIdx) const;
+	M2K_TRIGGER_MODE getTriggerMode(unsigned int chnIdx);
 	void setTriggerMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode);
 
-	M2K_TRIGGER_SOURCE getSource() const;
+	M2K_TRIGGER_SOURCE getSource();
 	void setSource(M2K_TRIGGER_SOURCE src);
 
-	unsigned int numChannels() const;
-
-	int getSourceChannel() const;
+	int getSourceChannel();
 	void setSourceChannel(unsigned int chnIdx);
 
 
@@ -78,12 +70,11 @@ public:
 	static std::vector<std::string> getAvailableDigitalConditions();
 
 private:
-	struct iio_context *m_ctx;
 	struct iio_device *m_trigger_device;
-	std::vector<struct iio_channel *> m_analog_channels;
-	std::vector<struct iio_channel *> m_digital_channels;
-	std::vector<struct iio_channel *> m_logic_channels;
-	struct iio_channel *m_delay_trigger;
+	std::vector<Channel *> m_analog_channels;
+	std::vector<Channel *> m_digital_channels;
+	std::vector<Channel *> m_logic_channels;
+	Channel *m_delay_trigger;
 	bool m_streaming_flag;
 
 	unsigned int m_num_channels;
