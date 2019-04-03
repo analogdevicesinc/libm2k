@@ -42,7 +42,8 @@ using namespace std::placeholders;
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 			 std::string adc_dev) :
 	Device(ctx, adc_dev),
-	m_need_processing(false)
+	m_need_processing(false),
+	m_trigger(nullptr)
 {
 	m_ad9963 = make_shared<Device>(ctx, "ad9963");
 	setOversamplingRatio(1);
@@ -102,6 +103,11 @@ void M2kAnalogIn::setStreamingFlag(bool en)
 bool M2kAnalogIn::getStreamingFlag()
 {
 	return m_trigger->getStreamingFlag();
+}
+
+M2kHardwareTrigger *M2kAnalogIn::getTrigger()
+{
+	return m_trigger;
 }
 
 std::vector<std::vector<double>> M2kAnalogIn::getSamples(int nb_samples,
@@ -217,12 +223,12 @@ void M2kAnalogIn::closeAnalogIn()
 	std::cout << "Opened analog in for " << getName() << "\n";
 }
 
-int M2kAnalogIn::getTriggerDelay()
+int M2kAnalogIn::getDelay()
 {
 	return m_trigger->getDelay();
 }
 
-void M2kAnalogIn::setTriggerDelay(int delay)
+void M2kAnalogIn::setDelay(int delay)
 {
 	m_trigger->setDelay(delay);
 }
@@ -325,7 +331,7 @@ void M2kAnalogIn::setTriggerMode(ANALOG_IN_CHANNEL channel,
 	__try {
 		m_trigger->setTriggerMode(channel, mode);
 	} __catch (exception_type &e) {
-		throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger mode error: "  +
+		throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn set trigger mode error: "  +
 				string(e.what()));
 	}
 }

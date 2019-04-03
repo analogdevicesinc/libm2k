@@ -217,11 +217,20 @@ int main(int argc, char **argv)
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-					maIn->setSourceChannel(ANALOG_IN_CHANNEL_1);
-					maIn->setTriggerDelay(-10);
-					maIn->setLevel(ANALOG_IN_CHANNEL_1, 1);
-					maIn->setTriggerMode(ANALOG_IN_CHANNEL_1, ALWAYS);
-					maIn->setAnalogCondition(ANALOG_IN_CHANNEL_1, FALLING_EDGE);
+					auto trigger = maIn->getTrigger();
+					if (trigger) {
+						trigger->setSourceChannel(0);
+						trigger->setDelay(-10);
+						trigger->setLevel(ANALOG_IN_CHANNEL_1, 1);
+						trigger->setTriggerMode(ANALOG_IN_CHANNEL_1, ANALOG);
+						trigger->setAnalogCondition(0, FALLING_EDGE);
+					} else {
+						maIn->setSourceChannel(ANALOG_IN_CHANNEL_1);
+						maIn->setDelay(-10);
+						maIn->setLevel(ANALOG_IN_CHANNEL_1, 1);
+						maIn->setTriggerMode(ANALOG_IN_CHANNEL_1, ALWAYS);
+						maIn->setAnalogCondition(ANALOG_IN_CHANNEL_1, FALLING_EDGE);
+					}
 					samps = maIn->getSamples(64, true);
 					for (int i = 0; i < 64; i++) {
 						std::cout << samps[0][i] << "\t ";

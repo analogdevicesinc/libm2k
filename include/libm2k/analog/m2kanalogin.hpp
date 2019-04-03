@@ -96,8 +96,8 @@ public:
 	ANALOG_IN_CHANNEL getSourceChannel();
 	void setSourceChannel(ANALOG_IN_CHANNEL chnIdx);
 
-	int getTriggerDelay();
-	void setTriggerDelay(int delay);
+	int getDelay();
+	void setDelay(int delay);
 
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
 	double getFilterCompensation(double samplerate);
@@ -114,6 +114,8 @@ public:
 
 	void setStreamingFlag(bool);
 	bool getStreamingFlag();
+
+	M2kHardwareTrigger* getTrigger();
 private:
 	std::shared_ptr<Device> m_ad9963;
 	std::shared_ptr<Device> m_m2k_fabric;
