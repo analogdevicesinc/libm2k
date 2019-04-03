@@ -42,6 +42,7 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 	std::cout << "I am M2K device " << std::endl;
 
 	initialize();
+	setTimeout(UINT_MAX);
 
 	LOG("BOOOMMM");
 
@@ -72,6 +73,11 @@ M2K::~M2K()
 		iio_device_attr_write_bool(m2k_fabric, "clk_powerdown", true);
 	}
 	delete m_calibration;
+}
+
+void M2K::setTimeout(unsigned int timeout)
+{
+	iio_context_set_timeout(ctx(), timeout);
 }
 
 void M2K::scanAllAnalogIn()

@@ -71,6 +71,8 @@ public:
 	double getDacACalibrationGain();
 	int getAdcCalibrationOffset(unsigned int chn);
 	double getAdcCalibrationGain(unsigned int chn);
+
+	void setTimeout(unsigned int timeout);
 private:
 	M2kCalibration* m_calibration;
 	std::vector<utils::Device*> m_instancesAnalogOut;
