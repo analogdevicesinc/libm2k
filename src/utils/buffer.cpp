@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Analog Devices, Inc.
+ * Copyright 2019 Analog Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,37 +18,16 @@
  */
 
 
-#include <libm2k/utils/buffer.hpp>
-#include <libm2k/utils/channel.hpp>
-#include <libm2k/m2kexceptions.hpp>
-#include <libm2k/utils/utils.hpp>
+#include "private/buffer_impl.cpp"
 
-#include <iostream>
-#include <algorithm>
-
-using namespace std;
-using namespace libm2k::utils;
-
-Buffer::Buffer(struct iio_device *dev)
+Buffer::Buffer(struct iio_device *dev) :
+	m_pimpl(std::unique_ptr<BufferImpl>(new BufferImpl(dev)))
 {
-	m_dev = dev;
-
-	if (!m_dev) {
-		m_dev = nullptr;
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device not found, so no buffer can be created");
-	}
-
-	unsigned int dev_count = iio_device_get_buffer_attrs_count(m_dev);
-	if (dev_count <= 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device is not buffer capable, no buffer can be created");
-	}
-	m_buffer = nullptr;
 }
 
 Buffer::~Buffer()
 {
-	m_data.clear();
-	m_data_short.clear();
+	m_pimpl.reset();
 }
 
 /* push on multiple channels
@@ -57,210 +36,38 @@ Buffer::~Buffer()
  */
 void Buffer::push(std::vector<std::vector<short>> &data)
 {
-	size_t data_ch_nb = data.size();
-
-	if (data_ch_nb > m_channel_list.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Buffer: Please setup channels before pushing data");
-	}
-
-	for (unsigned int i = 0; i < data_ch_nb; i++) {
-		push(data.at(i), i);
-	}
+	m_pimpl->push(data);
 }
 
 void Buffer::setChannels(std::vector<Channel*> channels)
 {
-	//if (m_buffer) //this means the output is running, should we change the channels now?
-	//{
-	//throw exception
-	//}
-	m_channel_list = channels;
+	m_pimpl->setChannels(channels);
 }
 
 //push on a certain channel
 void Buffer::push(std::vector<short> &data, unsigned int channel,
 		  bool cyclic, bool multiplex)
 {
-	size_t size = data.size();
-	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
-	}
-
-	destroy();
-
-	/* If the data vector is empty, then it means we want
-	 * to remove what was pushed earlier to the device, so
-	 * we destroy the buffer */
-	if (data.size() == 0) {
-		return;
-	}
-
-	m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
-	}
-
-	if (channel < m_channel_list.size() ) {
-		if (!multiplex) {
-				m_channel_list.at(channel)->write(m_buffer, data);
-		} else {
-			short *p_dat;
-			int i = 0;
-
-			for (p_dat = (short *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
-			     (unsigned short*)p_dat++, i++) {
-				*p_dat = data[i];
-			}
-
-		}
-		iio_buffer_push(m_buffer);
-	} else {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
-
-	}
+	m_pimpl->push(data, channel, cyclic, multiplex);
 }
 
 void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 {
-	size_t size = data.size();
-	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
-	}
-
-	destroy();
-
-	/* If the data vector is empty, then it means we want
-	 * to remove what was pushed earlier to the device, so
-	 * we destroy the buffer */
-	if (data.size() == 0) {
-		return;
-	}
-
-	m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
-	}
-
-	if (channel < m_channel_list.size() ) {
-		m_channel_list.at(channel)->write(m_buffer, data);
-		iio_buffer_push(m_buffer);
-	} else {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
-	}
+	m_pimpl->push(data, channel, cyclic);
 }
 
 std::vector<unsigned short> Buffer::getSamples(int nb_samples)
 {
-	if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created");
-	}
-
-	if (m_buffer) {
-		iio_buffer_destroy(m_buffer);
-		m_buffer = nullptr;
-	}
-
-	m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
-	}
-
-	int ret = iio_buffer_refill(m_buffer);
-
-	if (ret < 0) {
-		destroy();
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
-	}
-
-	m_data_short.clear();
-
-	for (int j = 0; j < nb_samples; j++) {
-		m_data_short.push_back(0);
-	}
-
-	unsigned short* data = (unsigned short*)iio_buffer_start(m_buffer);
-	for (int i = 0; i < nb_samples; i++) {
-		m_data_short[i] = data[i];
-	}
-
-	destroy();
-	return m_data_short;
+	return m_pimpl->getSamples(nb_samples);
 }
 
 std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
 				std::function<double(int16_t, unsigned int)> process)
 {
-	bool anyChannelEnabled = false;
-	std::vector<bool> channels_enabled;
-	if (Utils::getIioDeviceDirection(m_dev) != INPUT) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device not found, so no buffer was created");
-	}
-
-	m_data.clear();
-
-	for (auto chn : m_channel_list) {
-		bool en  = chn->isEnabled();
-		channels_enabled.push_back(en);
-		anyChannelEnabled = en ? true : anyChannelEnabled;
-		std::vector<double> data {};
-		for (int j = 0; j < nb_samples; j++) {
-			data.push_back(0);
-		}
-		m_data.push_back(data);
-	}
-
-	if (!anyChannelEnabled) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: No channel enabled for RX buffer");
-	}
-
-	if (m_buffer) {
-		iio_buffer_destroy(m_buffer);
-		m_buffer = nullptr;
-	}
-
-	m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the RX buffer");
-	}
-
-	int ret = iio_buffer_refill(m_buffer);
-
-	if (ret < 0) {
-		destroy();
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
-	}
-
-	ptrdiff_t p_inc = iio_buffer_step(m_buffer);
-	uintptr_t p_dat;
-	uintptr_t p_end = (uintptr_t)iio_buffer_end(m_buffer);
-	unsigned int i;
-	for (i = 0, p_dat = m_channel_list.at(0)->getFirst(m_buffer);
-			p_dat < p_end; p_dat += p_inc, i++)
-	{
-		for (int ch = 0; ch < m_data.size(); ch++) {
-			m_data[ch][i] = process(((int16_t*)p_dat)[ch], ch);
-		}
-	}
-
-	destroy();
-	return m_data;
+	return m_pimpl->getSamples(nb_samples, process);
 }
 
 void Buffer::stop()
 {
-	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-		return;
-	}
-
-	destroy();
-}
-
-void Buffer::destroy()
-{
-	if (m_buffer) {
-		iio_buffer_destroy(m_buffer);
-		m_buffer = nullptr;
-	}
+	m_pimpl->stop();
 }

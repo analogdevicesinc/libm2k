@@ -23,6 +23,7 @@
 #include <iio.h>
 #include <vector>
 #include <string>
+#include <memory>
 #include <functional>
 
 namespace libm2k {
@@ -43,15 +44,10 @@ public:
 	std::vector<std::vector<double>> getSamples(int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
 	void stop();
+private:
 
-private:
-	void destroy();
-private:
-	struct iio_device* m_dev;
-	struct iio_buffer* m_buffer;
-	std::vector<Channel*> m_channel_list;
-	std::vector<std::vector<double>> m_data;
-	std::vector<unsigned short> m_data_short;
+	class BufferImpl;
+	std::unique_ptr<BufferImpl> m_pimpl;
 };
 }
 }
