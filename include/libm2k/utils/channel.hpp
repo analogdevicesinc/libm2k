@@ -23,6 +23,7 @@
 #include <iio.h>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace libm2k {
 namespace utils {
@@ -55,8 +56,9 @@ public:
 	void enableChannel(bool enable);
 	uintptr_t getFirst(struct iio_buffer* buffer);
 private:
-	struct iio_device *m_device;
-	struct iio_channel *m_channel;
+	class ChannelImpl;
+	std::unique_ptr<ChannelImpl> m_pimpl;
+
 
 };
 }
