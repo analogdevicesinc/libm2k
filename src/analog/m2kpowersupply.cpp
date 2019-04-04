@@ -162,11 +162,14 @@ void M2kPowerSupply::loadCalibrationCoefficients()
 	const char *value;
 	m_calib_coefficients.clear();
 	for (int i = 4; i < 12; i++) {
-		if (!iio_context_get_attr(m_context, i, &name, &value)) {
-			std::pair<std::string, double> calib_pair;
-			calib_pair.first = std::string(name + 4);
-			calib_pair.second = std::stod(std::string(value));
+		std::pair<std::string, double> calib_pair;
+		try {
+			auto pair = getContextAttr(i);
+			calib_pair.first = std::string(pair.first.c_str() + 4);
+			calib_pair.second = std::stod(pair.second);
 			m_calib_coefficients.push_back(calib_pair);
+		} catch (exception_type &e) {
+			continue;
 		}
 	}
 }

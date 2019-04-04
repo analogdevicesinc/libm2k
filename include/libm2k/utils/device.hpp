@@ -24,6 +24,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include <memory>
 
 using namespace std;
 
@@ -35,10 +36,13 @@ class Buffer;
 class Device
 {
 public:
+	class DeviceImpl;
+
 	Device(struct iio_context* context, std::string dev_name = "", bool input = false);
-	virtual ~Device();
+	~Device();
 
 	Channel *getChannel(unsigned int chnIdx);
+	Channel *getChannel(std::string id);
 	bool isChannel(unsigned int chnIdx, bool output);
 
 	virtual void enableChannel(unsigned int chnIdx, bool enable);
@@ -82,12 +86,12 @@ public:
 
 	void setKernelBuffersCount(unsigned int count);
 	bool isValidDmmChannel(unsigned int chnIdx);
-	Channel *getChannel(std::string id);
+
+	std::pair<std::string, std::string> getContextAttr(unsigned int attrIdx);
+
 protected:
-	struct iio_context *m_context;
-	struct iio_device *m_dev; //or a list of iio_Devices? in the case of m2k-dac-a and m2k-dac-b
-	std::vector<Channel*> m_channel_list;
-	Buffer* m_buffer;
+	std::unique_ptr<DeviceImpl> m_pimpl;
+	Device(DeviceImpl*);
 };
 }
 }

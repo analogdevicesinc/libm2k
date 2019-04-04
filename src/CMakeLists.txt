@@ -16,7 +16,7 @@ include_directories(
 )
 
 
-FILE(GLOB SRC_LIST  *.cpp *.cc */*.cpp)
+FILE(GLOB SRC_LIST  *.cpp *.cc */*.cpp */*/*.cpp)
 FILE(GLOB HEADERS_LIST
 	${CMAKE_SOURCE_DIR}/include/libm2k/*/*.hpp
         ${CMAKE_SOURCE_DIR}/include/libm2k/*.hpp

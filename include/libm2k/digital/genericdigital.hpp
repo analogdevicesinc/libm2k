@@ -45,7 +45,7 @@ public:
 
 protected:
 	std::string m_dev_name;
-	std::vector<channel> m_channel_list;
+	std::vector<Channel*> m_channel_list;
 	bool m_cyclic;
 };
 }
