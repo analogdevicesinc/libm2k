@@ -25,6 +25,7 @@
 #include <libm2k/digital/enums.hpp>
 #include <string>
 #include <vector>
+#include <memory>
 
 using namespace libm2k::utils;
 
@@ -43,10 +44,9 @@ public:
 
 	void enableChannel(unsigned int index, bool enable);
 
-protected:
-	std::string m_dev_name;
-	std::vector<Channel*> m_channel_list;
-	bool m_cyclic;
+private:
+	class GenericDigitalImpl;
+	std::unique_ptr<GenericDigitalImpl> m_pimpl;
 };
 }
 }

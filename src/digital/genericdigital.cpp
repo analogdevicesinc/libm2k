@@ -17,65 +17,46 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <libm2k/digital/genericdigital.hpp>
-#include <libm2k/m2kexceptions.hpp>
-
-#include <libm2k/utils/utils.hpp>
-#include <iio.h>
-#include <iostream>
-#include <algorithm>
+#include "private/genericdigital_impl.cpp"
 
 using namespace libm2k::utils;
 using namespace libm2k::digital;
 using namespace std;
 
-
-
 GenericDigital::GenericDigital(iio_context *ctx, string logic_dev) :
-	Device(ctx, logic_dev)
+	Device(new GenericDigitalImpl(ctx, logic_dev))
 {
-	m_dev_name = logic_dev;
-
-	for (unsigned int i = 0; i < getNbChannels(); i++) {
-		std::string name = "voltage" + std::to_string(i);
-		Channel* channel = getChannel(name);
-		if (channel) {
-			m_channel_list.push_back(channel);
-		}
-	}
+	m_pimpl = std::unique_ptr<GenericDigitalImpl>(
+			static_cast<GenericDigitalImpl*>(Device::m_pimpl.get()));
 }
 
 GenericDigital::~GenericDigital()
 {
+	m_pimpl.reset();
 }
 
 double GenericDigital::getSampleRate()
 {
-	return getDoubleValue("sampling_frequency");
+	return m_pimpl->getSampleRate();
 }
 
 double GenericDigital::setSampleRate(double sampleRate)
 {
-	return setDoubleValue(sampleRate,
-				     "sampling_frequency");
+	return m_pimpl->setSampleRate(sampleRate);
 }
 
 void GenericDigital::setCyclic(bool cyclic)
 {
-	m_cyclic = cyclic;
+	m_pimpl->setCyclic(cyclic);
 }
 
 bool GenericDigital::getCyclic()
 {
-	return m_cyclic;
+	return m_pimpl->getCyclic();
 }
 
 void GenericDigital::enableChannel(unsigned int index, bool enable)
 {
-	if (index < getNbChannels()) {
-		enableChannel(index, enable);
-	} else {
-		throw_exception(EXC_OUT_OF_RANGE, "Cannot enable digital channel.");
-	}
+	m_pimpl->enableChannel(index, enable);
 }
 

@@ -76,14 +76,10 @@ public:
 
 	bool getCyclic();
 	void setCyclic(bool cyclic);
+
 private:
-	bool m_cyclic;
-	std::shared_ptr<Device> m_dev_read;
-	std::shared_ptr<Device> m_dev_write;
-	std::string m_dev_name_read;
-	std::string m_dev_name_write;
-	static std::vector<std::string> m_output_mode;
-	static std::vector<std::string> m_trigger_logic_mode;
+	class M2kDigitalImpl;
+	std::unique_ptr<M2kDigitalImpl> m_pimpl;
 };
 }
 }
