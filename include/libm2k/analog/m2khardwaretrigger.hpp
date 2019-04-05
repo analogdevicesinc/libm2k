@@ -34,6 +34,7 @@ class LIBM2K_API M2kHardwareTrigger : public Device
 {
 public:
 	M2kHardwareTrigger(struct iio_context *ctx);
+	~M2kHardwareTrigger();
 
 	int getLevel(unsigned int chnIdx);
 	void setLevel(unsigned int chnIdx, int level);

@@ -130,6 +130,28 @@ M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx) :
 	setStreamingFlag(false);
 }
 
+M2kHardwareTrigger::~M2kHardwareTrigger()
+{
+	for (auto a : m_analog_channels) {
+		delete a;
+	}
+	m_analog_channels.clear();
+
+	for (auto l : m_logic_channels) {
+		delete l;
+	}
+	m_logic_channels.clear();
+
+	for (auto d : m_digital_channels) {
+		delete d;
+	}
+	m_digital_channels.clear();
+
+	if (m_delay_trigger) {
+		delete m_delay_trigger;
+	}
+}
+
 M2K_TRIGGER_CONDITION M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
 {
 	if (chnIdx >= getNbChannels()) {

@@ -47,6 +47,7 @@ public:
 	}
 
 	~BufferImpl() {
+		destroy();
 		m_data.clear();
 		m_data_short.clear();
 	}

@@ -52,8 +52,7 @@ public:
 
 	}
 
-	~ChannelImpl() {
-
+	virtual ~ChannelImpl() {
 	}
 
 	std::string getName()

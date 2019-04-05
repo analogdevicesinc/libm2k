@@ -63,6 +63,10 @@ M2kAnalogOut::M2kAnalogOut(iio_context *ctx, std::vector<std::string> dac_devs):
 M2kAnalogOut::~M2kAnalogOut()
 {
 	stop();
+	for (auto d : m_dac_devices) {
+		delete d;
+	}
+	m_dac_devices.clear();
 }
 
 void M2kAnalogOut::openAnalogOut()

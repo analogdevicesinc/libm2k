@@ -61,7 +61,18 @@ Context::Context(std::string uri, struct iio_context *ctx, std::string name)
 
 Context::~Context()
 {
+	for (auto d : m_instancesDMM) {
+		delete d;
+	}
+	for (auto ain : m_instancesAnalogIn) {
+		delete ain;
+	}
+	for (auto aout : m_instancesAnalogOut) {
+		delete aout;
+	}
 	m_instancesDMM.clear();
+	m_instancesAnalogIn.clear();
+	m_instancesAnalogOut.clear();
 
 	if (m_context) {
 		iio_context_destroy(m_context);

@@ -48,6 +48,15 @@ M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
 
 	LOG("BOOOMMM");
 
+	for (auto ain : m_instancesAnalogIn) {
+		delete ain;
+	}
+	for (auto aout : m_instancesAnalogOut) {
+		delete aout;
+	}
+	for (auto ps : m_instancesPowerSupply) {
+		delete ps;
+	}
 	m_instancesAnalogIn.clear();
 	m_instancesAnalogOut.clear();
 	m_instancesPowerSupply.clear();
@@ -70,6 +79,22 @@ M2K::~M2K()
 		m_m2k_fabric->setBoolValue(true, "powerdown");
 	}
 	delete m_calibration;
+
+	for (auto ain : m_instancesAnalogIn) {
+		delete ain;
+	}
+	for (auto aout : m_instancesAnalogOut) {
+		delete aout;
+	}
+	for (auto ps : m_instancesPowerSupply) {
+		delete ps;
+	}
+	for (auto d : m_instancesDigital) {
+		delete d;
+	}
+	m_instancesAnalogIn.clear();
+	m_instancesAnalogOut.clear();
+	m_instancesPowerSupply.clear();
 }
 
 void M2K::setTimeout(unsigned int timeout)

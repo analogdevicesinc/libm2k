@@ -140,6 +140,7 @@ void DeviceBuilder::deviceClose(Context* device)
 	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),
 					     s_connectedDevices.end(),
 					     device), s_connectedDevices.end());
+	delete device;
 }
 
 DeviceTypes DeviceBuilder::identifyDevice(iio_context *ctx)
