@@ -48,6 +48,7 @@ public:
 	DIO_DIRECTION getDirection(DIO_CHANNEL index);
 
 	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL);
+	void setValueRaw(DIO_CHANNEL index, bool level);
 	DIO_LEVEL getValueRaw(DIO_CHANNEL index);
 
 	void push(std::vector<short>& data);

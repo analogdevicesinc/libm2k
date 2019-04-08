@@ -70,6 +70,12 @@ void M2kDigital::setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 	m_pimpl->setValueRaw(index, level);
 }
 
+void M2kDigital::setValueRaw(DIO_CHANNEL index, bool level)
+{
+	DIO_LEVEL lvl = static_cast<DIO_LEVEL>(level);
+	m_pimpl->setValueRaw(index, lvl);
+}
+
 DIO_LEVEL M2kDigital::getValueRaw(DIO_CHANNEL index)
 {
 	return m_pimpl->getValueRaw(index);
