@@ -39,7 +39,7 @@ public:
 	class DeviceImpl;
 
 	Device(struct iio_context* context, std::string dev_name = "", bool input = false);
-	~Device();
+	virtual ~Device();
 
 	Channel *getChannel(unsigned int chnIdx);
 	Channel *getChannel(std::string id);
@@ -90,7 +90,7 @@ public:
 	std::pair<std::string, std::string> getContextAttr(unsigned int attrIdx);
 
 protected:
-	std::unique_ptr<DeviceImpl> m_pimpl;
+	std::shared_ptr<DeviceImpl> m_pimpl;
 	Device(DeviceImpl*);
 };
 }

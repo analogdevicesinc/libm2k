@@ -26,13 +26,11 @@ using namespace std;
 GenericDigital::GenericDigital(iio_context *ctx, string logic_dev) :
 	Device(new GenericDigitalImpl(ctx, logic_dev))
 {
-	m_pimpl = std::unique_ptr<GenericDigitalImpl>(
-			static_cast<GenericDigitalImpl*>(Device::m_pimpl.get()));
+	m_pimpl = dynamic_pointer_cast<GenericDigitalImpl>(Device::m_pimpl);
 }
 
 GenericDigital::~GenericDigital()
 {
-	m_pimpl.reset();
 }
 
 double GenericDigital::getSampleRate()

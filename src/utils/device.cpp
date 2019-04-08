@@ -27,18 +27,17 @@ using namespace libm2k::devices;
  * Represents an iio_device
  */
 Device::Device(struct iio_context* context, std::string dev_name, bool input) :
-	m_pimpl(std::unique_ptr<DeviceImpl>(new DeviceImpl(context, dev_name, input)))
+	m_pimpl(std::shared_ptr<DeviceImpl>(new DeviceImpl(context, dev_name, input)))
 {
 }
 
 Device::Device(Device::DeviceImpl *impl)
 {
-	m_pimpl = std::unique_ptr<DeviceImpl>(impl);
+	m_pimpl = std::shared_ptr<DeviceImpl>(impl);
 }
 
 Device::~Device()
 {
-	m_pimpl.reset();
 }
 
 Channel* Device::getChannel(unsigned int chnIdx)

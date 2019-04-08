@@ -46,7 +46,7 @@ public:
 
 private:
 	class GenericDigitalImpl;
-	std::unique_ptr<GenericDigitalImpl> m_pimpl;
+	std::shared_ptr<GenericDigitalImpl> m_pimpl;
 };
 }
 }

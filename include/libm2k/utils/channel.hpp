@@ -32,7 +32,7 @@ class Channel
 public:
 	Channel(struct iio_device* device, unsigned int channel = 0);
 	Channel(struct iio_device* device, std::string channel_name, bool output);
-	~Channel();
+	virtual ~Channel();
 
 	std::string getName();
 	std::string getId();

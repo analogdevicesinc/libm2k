@@ -79,7 +79,7 @@ public:
 
 private:
 	class M2kDigitalImpl;
-	std::unique_ptr<M2kDigitalImpl> m_pimpl;
+	std::shared_ptr<M2kDigitalImpl> m_pimpl;
 };
 }
 }

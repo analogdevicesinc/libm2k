@@ -27,7 +27,6 @@ Buffer::Buffer(struct iio_device *dev) :
 
 Buffer::~Buffer()
 {
-	m_pimpl.reset();
 }
 
 /* push on multiple channels
