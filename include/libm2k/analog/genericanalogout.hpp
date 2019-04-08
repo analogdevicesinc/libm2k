@@ -51,7 +51,8 @@ public:
 	void stop();
 
 private:
-	std::vector<bool> m_cyclic;
+	class GenericAnalogOutImpl;
+	std::shared_ptr<GenericAnalogOutImpl> m_pimpl;
 };
 }
 }

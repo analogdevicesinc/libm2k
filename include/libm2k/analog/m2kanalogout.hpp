@@ -34,7 +34,7 @@ class LIBM2K_API M2kAnalogOut : public Device
 {
 public:
 	M2kAnalogOut(struct iio_context*, std::vector<std::string> dac_devs);
-	~M2kAnalogOut();
+	virtual ~M2kAnalogOut();
 
 	void openAnalogOut();
 	void closeAnalogOut();
@@ -73,15 +73,10 @@ public:
 	void stop(unsigned int chn);
 
 	void enableChannel(unsigned int chnIdx, bool enable);
-private:
-	short processSample(double value, unsigned int channel, bool raw);
-	std::shared_ptr<Device> m_m2k_fabric;
-	std::vector<double> m_calib_vlsb;
-	std::vector<bool> m_cyclic;
-	bool m_sync_start;
 
-	std::map<double, double> m_filter_compensation_table;
-	std::vector<Device*> m_dac_devices;
+private:
+	class M2kAnalogOutImpl;
+	std::shared_ptr<M2kAnalogOutImpl> m_pimpl;
 };
 }
 }

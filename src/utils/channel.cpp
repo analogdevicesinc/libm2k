@@ -33,7 +33,6 @@ Channel::Channel(iio_device *device, std::string channel_name, bool output) :
 
 Channel::~Channel()
 {
-	m_pimpl.reset();
 }
 
 std::string Channel::getName()

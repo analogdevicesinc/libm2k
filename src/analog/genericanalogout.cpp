@@ -17,18 +17,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <libm2k/analog/genericanalogout.hpp>
-#include <libm2k/m2kexceptions.hpp>
-#include <libm2k/utils/utils.hpp>
-#include <iostream>
+#include "private/genericanalogout_impl.cpp"
 
 using namespace std;
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 
 GenericAnalogOut::GenericAnalogOut(iio_context *ctx, std::string dac_dev):
-	Device(ctx, dac_dev)
+	Device(new GenericAnalogOutImpl(ctx, dac_dev))
 {
+	m_pimpl = dynamic_pointer_cast<GenericAnalogOutImpl>(Device::m_pimpl);
 }
 
 GenericAnalogOut::~GenericAnalogOut()
@@ -37,74 +35,65 @@ GenericAnalogOut::~GenericAnalogOut()
 }
 double GenericAnalogOut::getSamplerate()
 {
-	return getDoubleValue("sampling_frequency");
+	return m_pimpl->getSamplerate();
 }
 
 double GenericAnalogOut::getSamplerate(unsigned int chn_idx)
 {
-	return getDoubleValue(chn_idx, "sampling_frequency", true);
+	return m_pimpl->getSamplerate(chn_idx);
 }
 
 double GenericAnalogOut::setSamplerate(double sampleRate)
 {
-	return setDoubleValue(sampleRate, "sampling_frequency");
+	return m_pimpl->setSamplerate(sampleRate);
 }
 
 double GenericAnalogOut::setSamplerate(unsigned int chn_idx, double sampleRate)
 {
-	return setDoubleValue(chn_idx, sampleRate,
-			      "sampling_frequency", true);
+	return m_pimpl->setSamplerate(chn_idx, sampleRate);
 }
 
 std::vector<double> GenericAnalogOut::getAvailableSamplerates()
 {
-	return Device::getAvailableSamplerates();
+	return m_pimpl->getAvailableSamplerates();
 }
 
 void GenericAnalogOut::setCyclic(bool en)
 {
-	for (unsigned int i = 0; i < getNbChannels(); i++) {
-		m_cyclic.at(i) = en;
-	}
+	m_pimpl->setCyclic(en);
 }
 
 void GenericAnalogOut::setCyclic(bool en, unsigned int chn)
 {
-	if (chn >= getNbChannels()) {
-		throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
-	}
-	m_cyclic.at(chn) = en;
+	m_pimpl->setCyclic(en, chn);
 }
 
 bool GenericAnalogOut::getCyclic(unsigned int chn)
 {
-	if (chn >= getNbChannels()) {
-		throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
-	}
-	return m_cyclic.at(chn);
+	return m_pimpl->getCyclic(chn);
 }
 
 void GenericAnalogOut::push(std::vector<short> &data, unsigned int chn_idx)
 {
-	Device::push(data, chn_idx, getCyclic(chn_idx));
+	m_pimpl->push(data, chn_idx);
 }
 
 void GenericAnalogOut::push(std::vector<double> &data, unsigned int chn_idx)
 {
-	Device::push(data, chn_idx, getCyclic(chn_idx));
+	m_pimpl->push(data, chn_idx);
 }
 
 void libm2k::analog::GenericAnalogOut::openAnalogOut()
 {
-
+	m_pimpl->openAnalogOut();
 }
 
 void libm2k::analog::GenericAnalogOut::closeAnalogOut()
 {
-
+	m_pimpl->closeAnalogOut();
 }
 
 void GenericAnalogOut::stop()
 {
-	Device::stop();
+	m_pimpl->stop();
 }
