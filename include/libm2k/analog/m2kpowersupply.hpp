@@ -33,7 +33,7 @@ class LIBM2K_API M2kPowerSupply : public Device {
 public:
 	M2kPowerSupply(struct iio_context* ctx, std::string write_dev,
 		       std::string read_dev);
-	~M2kPowerSupply();
+	virtual ~M2kPowerSupply();
 
 	void enableChannel(unsigned int chn, bool en);
 	void enableAll(bool en);
@@ -41,22 +41,10 @@ public:
 	void pushChannel(unsigned int chn, double value);
 	void powerDownDacs(bool powerdown);
 	bool anyChannelEnabled();
-private:
-	std::shared_ptr<Device> m_dev_write;
-	std::shared_ptr<Device> m_dev_read;
-	std::shared_ptr<Device> m_m2k_fabric;
 
-	void loadCalibrationCoefficients();
-	double getCalibrationCoefficient(std::string key);
-	std::vector<std::pair<std::string, double>> m_calib_coefficients;
-	std::vector<double> m_write_coefficients;
-	std::vector<double> m_read_coefficients;
-	unsigned int m_pos_powerdown_idx;
-	unsigned int m_neg_powerdown_idx;
-	bool m_individual_powerdown;
-	std::vector<bool> m_channels_enabled;
-	std::vector<unsigned int> m_write_channel_idx;
-	std::vector<unsigned int> m_read_channel_idx;
+private:
+	class M2kPowerSupplyImpl;
+	std::shared_ptr<M2kPowerSupplyImpl> m_pimpl;
 };
 }
 }

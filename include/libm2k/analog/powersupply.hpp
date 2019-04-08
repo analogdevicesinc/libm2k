@@ -38,8 +38,8 @@ public:
 	virtual ~PowerSupply();
 
 private:
-	std::shared_ptr<Device> m_dev_write;
-	std::shared_ptr<Device> m_dev_read;
+	class PowerSupplyImpl;
+	std::shared_ptr<PowerSupplyImpl> m_pimpl;
 };
 }
 }

@@ -17,33 +17,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <libm2k/analog/powersupply.hpp>
-#include <libm2k/m2kexceptions.hpp>
-#include <iio.h>
-#include <iostream>
+#include "private/powersupply_impl.cpp"
 
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 
 PowerSupply::PowerSupply(struct iio_context* ctx, std::string write_dev,
 			 std::string read_dev) :
-	Device(ctx, "")
+	Device(new PowerSupplyImpl(ctx, write_dev, read_dev))
 {
-	if (write_dev != "") {
-		m_dev_write = make_shared<Device>(ctx, write_dev);
-		if (!m_dev_write) {
-			m_dev_write = nullptr;
-			throw_exception(EXC_INVALID_PARAMETER, "Power Supply: No device was found for writing");
-		}
-	}
-
-	if (read_dev != "") {
-		m_dev_read = make_shared<Device>(ctx, write_dev);
-		if (!m_dev_read) {
-			m_dev_read = nullptr;
-			throw_exception(EXC_INVALID_PARAMETER, "Power Supply: No device was found for reading");
-		}
-	}
+	m_pimpl = dynamic_pointer_cast<PowerSupplyImpl>(Device::m_pimpl);
 }
 
 PowerSupply::~PowerSupply()
