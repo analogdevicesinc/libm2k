@@ -45,15 +45,12 @@ public:
 	double setSampleRate(unsigned int chn_idx, double sampleRate);
 	std::vector<double> getAvailableSamplerates();
 
-	static double processSample(int16_t sample, unsigned int channel);
-
 	void enableChannel(unsigned int index, bool enable);
 	std::string getDeviceName();
 
-protected:
-	std::string m_dev_name;
-	unsigned int m_nb_channels;
-	bool m_cyclic;
+private:
+	class GenericAnalogInImpl;
+	std::shared_ptr<GenericAnalogInImpl> m_pimpl;
 };
 }
 }

@@ -26,6 +26,7 @@
 #include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <vector>
 #include <map>
+#include <memory>
 
 using namespace libm2k::utils;
 namespace libm2k {
@@ -34,7 +35,7 @@ class LIBM2K_API M2kAnalogIn : public Device
 {
 public:	
 	M2kAnalogIn(struct iio_context*, std::string adc_dev);
-	~M2kAnalogIn();
+	virtual ~M2kAnalogIn();
 
 	std::vector<std::vector<double>> getSamples(int nb_samples,
 						    bool processed=false);
@@ -117,19 +118,8 @@ public:
 
 	M2kHardwareTrigger* getTrigger();
 private:
-	std::shared_ptr<Device> m_ad9963;
-	std::shared_ptr<Device> m_m2k_fabric;
-	std::shared_ptr<Device> m_ad5625;
-	bool m_need_processing;
-
-	libm2k::analog::M2kHardwareTrigger *m_trigger;
-	std::vector<M2K_RANGE> m_input_range;
-
-	std::vector<double> m_adc_calib_gain;
-	std::vector<double> m_adc_calib_offset;
-	std::vector<double> m_adc_hw_offset;
-
-	std::map<double, double> m_filter_compensation_table;
+	class M2kAnalogInImpl;
+	std::shared_ptr<M2kAnalogInImpl> m_pimpl;
 };
 }
 }

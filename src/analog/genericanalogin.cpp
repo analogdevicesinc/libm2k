@@ -17,81 +17,71 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <libm2k/analog/genericanalogin.hpp>
-#include <libm2k/m2kexceptions.hpp>
-
-#include "libm2k/utils/utils.hpp"
-#include <iio.h>
-#include <iostream>
-#include <algorithm>
+#include "private/genericanalogin_impl.cpp"
 
 using namespace libm2k::utils;
 using namespace libm2k::analog;
 using namespace std;
 
 GenericAnalogIn::GenericAnalogIn(iio_context *ctx, std::string adc_dev) :
-	Device(ctx, adc_dev)
+	Device(new GenericAnalogInImpl(ctx, adc_dev))
 {
+
+	m_pimpl = dynamic_pointer_cast<GenericAnalogInImpl>(Device::m_pimpl);
 }
 
 GenericAnalogIn::~GenericAnalogIn()
 {
-//	m_data.clear();
 }
 
 std::vector<std::vector<double>> GenericAnalogIn::getSamples(int nb_samples,
 							     bool processed)
 {
-	return Device::getSamples(nb_samples, processSample);
-}
-
-double GenericAnalogIn::processSample(int16_t sample, unsigned int ch)
-{
-	return (double)sample;
+	return m_pimpl->getSamples(nb_samples, processed);
 }
 
 void GenericAnalogIn::openAnalogIn()
 {
-	std::cout << "Opened analog in for " << m_dev_name << "\n";
+	m_pimpl->openAnalogIn();
 }
 
 void GenericAnalogIn::closeAnalogIn()
 {
-	std::cout << "Closed analog in for " << m_dev_name << "\n";
+	m_pimpl->closeAnalogIn();
 }
 
 double GenericAnalogIn::getSampleRate()
 {
-	return getDoubleValue("sampling_frequency");
+	return m_pimpl->getSampleRate();
 }
 
 double GenericAnalogIn::getSampleRate(unsigned int chn_idx)
 {
-	return getDoubleValue(chn_idx, "sampling_frequency");
+	return m_pimpl->getSampleRate(chn_idx);
 }
 
 double GenericAnalogIn::setSampleRate(double sampleRate)
 {
-	return setDoubleValue(sampleRate, "sampling_frequency");
+	return m_pimpl->setSampleRate(sampleRate);
 }
 
 double GenericAnalogIn::setSampleRate(unsigned int chn_idx, double sampleRate)
 {
-	return setDoubleValue(chn_idx, sampleRate, "sampling_frequency");
+	return m_pimpl->setSampleRate(chn_idx, sampleRate);
 }
 
 std::vector<double> GenericAnalogIn::getAvailableSamplerates()
 {
-	return Device::getAvailableSamplerates();
+	return m_pimpl->getAvailableSamplerates();
 }
 
 string GenericAnalogIn::getDeviceName()
 {
-	return m_dev_name;
+	return m_pimpl->getDeviceName();
 }
 
 void GenericAnalogIn::enableChannel(unsigned int index, bool enable)
 {
-	Device::enableChannel(index, enable);
+	m_pimpl->enableChannel(index, enable);
 }
 
