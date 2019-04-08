@@ -77,21 +77,9 @@ public:
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);
 protected:
-	std::vector<libm2k::analog::GenericAnalogIn*> m_instancesAnalogIn;
-	std::vector<libm2k::analog::GenericAnalogOut*> m_instancesAnalogOut;
-	std::vector<libm2k::analog::DMM*> m_instancesDMM;
-	std::vector<libm2k::analog::PowerSupply*> m_instancesPowerSupply;
-	std::vector<libm2k::digital::GenericDigital*> m_instancesDigital;
-
-	std::vector<std::pair<std::string, std::string>> getIioDevByChannelAttrs(std::vector<std::string> attr_list);
-	bool isIioDeviceBufferCapable(std::string dev_name);
-	DEVICE_TYPE getIioDeviceType(std::string dev_name);
-	DEVICE_DIRECTION getIioDeviceDirection(std::string dev_name);
-
-	std::string m_uri;
-	std::string m_name;
-	struct iio_context* m_context;
-
+	class ContextImpl;
+	std::shared_ptr<ContextImpl> m_pimpl;
+	Context(ContextImpl*);
 };
 }
 }

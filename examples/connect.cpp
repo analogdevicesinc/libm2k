@@ -222,7 +222,7 @@ int main(int argc, char **argv)
 						trigger->setSourceChannel(0);
 						trigger->setDelay(-10);
 						trigger->setLevel(ANALOG_IN_CHANNEL_1, 1);
-						trigger->setTriggerMode(ANALOG_IN_CHANNEL_1, ANALOG);
+						trigger->setTriggerMode(ANALOG_IN_CHANNEL_1, ALWAYS);
 						trigger->setAnalogCondition(0, FALLING_EDGE);
 					} else {
 						maIn->setSourceChannel(ANALOG_IN_CHANNEL_1);
@@ -291,7 +291,7 @@ int main(int argc, char **argv)
 					std::cout << e.what() << "\n";
 				}
 				//			auto anIn = d->openAnalogIn();
-				dev->blinkLed();
+//				dev->blinkLed();
 				//			d->closeAnalogIn()
 //				DeviceBuilder::deviceClose(d);
 //				DeviceBuilder::deviceClose(d2);

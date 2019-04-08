@@ -43,7 +43,7 @@ class LIBM2K_API M2K : public Context
 {
 public:
 	M2K(std::string uri, iio_context* ctx, std::string name);
-	~M2K();
+	virtual ~M2K();
 	void scanAllAnalogIn();
 	void scanAllAnalogOut();
 	void scanAllPowerSupply();
@@ -71,12 +71,8 @@ public:
 	void setTimeout(unsigned int timeout);
 	void blinkLed(const double duration = 4, bool blocking = false);
 private:
-	M2kCalibration* m_calibration;
-	std::vector<utils::Device*> m_instancesAnalogOut;
-	std::vector<utils::Device*> m_instancesAnalogIn;
-	std::vector<utils::Device*> m_instancesPowerSupply;
-	std::vector<utils::Device*> m_instancesDigital;
-	void initialize();
+	class M2KImpl;
+	std::shared_ptr<M2KImpl> m_pimpl;
 };
 }
 }
