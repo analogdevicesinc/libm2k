@@ -42,7 +42,8 @@ public:
 	std::vector<DMM_READING> readAll();
 
 private:
-	std::map<std::string, unsigned int> m_channel_id_list;
+	class DMMImpl;
+	std::shared_ptr<DMMImpl> m_pimpl;
 };
 }
 }
