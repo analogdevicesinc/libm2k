@@ -34,7 +34,7 @@ class LIBM2K_API M2kHardwareTrigger : public Device
 {
 public:
 	M2kHardwareTrigger(struct iio_context *ctx);
-	~M2kHardwareTrigger();
+	virtual ~M2kHardwareTrigger();
 
 	int getLevel(unsigned int chnIdx);
 	void setLevel(unsigned int chnIdx, int level);
@@ -71,21 +71,8 @@ public:
 	static std::vector<std::string> getAvailableDigitalConditions();
 
 private:
-	struct iio_device *m_trigger_device;
-	std::vector<Channel *> m_analog_channels;
-	std::vector<Channel *> m_digital_channels;
-	std::vector<Channel *> m_logic_channels;
-	Channel *m_delay_trigger;
-	bool m_streaming_flag;
-
-	unsigned int m_num_channels;
-
-	static std::vector<std::string> m_trigger_analog_cond;
-	static std::vector<std::string> m_trigger_digital_cond;
-	static std::vector<std::string> m_trigger_mode;
-	static std::vector<std::string> m_trigger_source;
-	std::vector<bool> m_analog_enabled;
-	std::vector<bool> m_digital_enabled;
+	class M2kHardwareTriggerImpl;
+	std::shared_ptr<M2kHardwareTriggerImpl> m_pimpl;
 };
 }
 }
