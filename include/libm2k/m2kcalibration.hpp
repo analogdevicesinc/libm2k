@@ -37,7 +37,7 @@ class LIBM2K_API M2kCalibration
 public:
 	M2kCalibration(struct iio_context* ctx, M2kAnalogIn* analogIn,
 		       M2kAnalogOut* analogOut);
-	~M2kCalibration();
+	virtual ~M2kCalibration();
 
 	bool initialize();
 	bool isInitialized() const;
@@ -70,53 +70,13 @@ public:
 	void updateDacCorrections();
 
 	bool setCalibrationMode(int);
-	bool setGainMode(int ch, int);
 	void dacAOutputDCVolts(int16_t volts);
 	void dacBOutputDCVolts(int16_t volts);
 	void dacOutputStop();
 
-private:
-	bool fine_tune(size_t span, int16_t centerVal0, int16_t centerVal1,
-		size_t num_samples);
-
-	void dacOutputDC(struct iio_device *dac, struct iio_channel *channel,
-		struct iio_buffer** buffer, size_t value);
-	void dacAOutputDC(int16_t value);
-	void dacBOutputDC(int16_t value);
-	void configAdcSamplerate();
-	void configDacSamplerate();
-
-	bool m_cancel;
-
-	struct iio_context *m_ctx;
-	M2kAnalogIn* m_m2k_adc;
-	M2kAnalogOut* m_m2k_dac;
-
-	int m_adc_ch0_offset;
-	int m_adc_ch1_offset;
-	int m_dac_a_ch_offset;
-	int m_dac_b_ch_offset;
-	double m_adc_ch0_gain;
-	double m_adc_ch1_gain;
-	double m_dac_a_ch_vlsb;
-	double m_dac_b_ch_vlsb;
-
-	M2K_TRIGGER_MODE m_trigger0_mode;
-	M2K_TRIGGER_MODE m_trigger1_mode;
-	double adc_sampl_freq;
-	double adc_oversampl;
-	double dac_a_sampl_freq;
-	double dac_a_oversampl;
-	double dac_b_sampl_freq;
-	double dac_b_oversampl;
-
-	bool m_adc_calibrated;
-	bool m_dac_calibrated;
-	bool m_initialized;
-	int m_calibration_mode;
-
-	std::shared_ptr<libm2k::utils::Device> m_ad5625_dev;
-	std::shared_ptr<libm2k::utils::Device> m_m2k_fabric;
+protected:
+	class M2kCalibrationImpl;
+	std::shared_ptr<M2kCalibrationImpl> m_pimpl;
 };
 
 }
