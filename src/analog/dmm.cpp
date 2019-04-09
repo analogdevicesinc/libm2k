@@ -52,3 +52,8 @@ std::vector<DMM_READING> DMM::readAll()
 	return m_pimpl->readAll();
 }
 
+string DMM::getName()
+{
+	return m_pimpl->getName();
+}
+

@@ -40,6 +40,7 @@ public:
 	DMM_READING readChannel(unsigned int index);
 	DMM_READING readChannel(std::string chn_name);
 	std::vector<DMM_READING> readAll();
+	std::string getName();
 
 private:
 	class DMMImpl;

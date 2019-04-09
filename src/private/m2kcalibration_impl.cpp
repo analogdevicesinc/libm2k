@@ -364,8 +364,8 @@ public:
 				goto out_cleanup;
 			}
 
-			averagesCh0[i] = abs(Utils::average(ch_data.at(0).data(), num_samples));
-			averagesCh1[i] = abs(Utils::average(ch_data.at(1).data(), num_samples));
+			averagesCh0[i] = std::abs(Utils::average(ch_data.at(0).data(), num_samples));
+			averagesCh1[i] = std::abs(Utils::average(ch_data.at(1).data(), num_samples));
 		}
 
 		minAvg0 = abs(averagesCh0[0]);
