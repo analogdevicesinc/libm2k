@@ -35,8 +35,7 @@ using namespace std;
 class M2kAnalogOut::M2kAnalogOutImpl : public DeviceImpl {
 public:
 	M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs):
-		DeviceImpl(ctx, ""),
-		m_sync_start(true)
+		DeviceImpl(ctx, "")
 	{
 		m_dac_devices.push_back(new Device(ctx, dac_devs.at(0)));
 		m_dac_devices.push_back(new Device(ctx, dac_devs.at(1)));
@@ -84,7 +83,7 @@ public:
 	std::vector<double> getOversamplingRatio()
 	{
 		std::vector<double> values = {};
-		for (int i = 0; i < m_dac_devices.size(); i++) {
+		for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
 			double val = m_dac_devices.at(i)->getDoubleValue("oversampling_ratio");
 			values.push_back(val);
 		}
@@ -99,7 +98,7 @@ public:
 	std::vector<double> setOversamplingRatio(std::vector<double> oversampling_ratio)
 	{
 		std::vector<double> values = {};
-		for (int i = 0; i < oversampling_ratio.size(); i++) {
+		for (unsigned int i = 0; i < oversampling_ratio.size(); i++) {
 			double val = m_dac_devices.at(i)->setDoubleValue(oversampling_ratio.at(i),
 									 "oversampling_ratio");
 			values.push_back(val);
@@ -116,7 +115,7 @@ public:
 	std::vector<double> getSamplerate()
 	{
 		std::vector<double> values = {};
-		for (int i = 0; i < m_dac_devices.size(); i++) {
+		for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
 			double val = m_dac_devices.at(i)->getDoubleValue("sampling_frequency");
 			values.push_back(val);
 		}
@@ -131,7 +130,7 @@ public:
 	std::vector<double> setSamplerate(std::vector<double> samplerates)
 	{
 		std::vector<double> values = {};
-		for (int i = 0; i < samplerates.size(); i++) {
+		for (unsigned int i = 0; i < samplerates.size(); i++) {
 			double val = m_dac_devices.at(i)->setDoubleValue(samplerates.at(i),
 									 "sampling_frequency");
 			values.push_back(val);
@@ -214,7 +213,7 @@ public:
 
 		size_t size = data.size();
 		std::vector<short> raw_data_buffer = {};
-		for (int i = 0; i < size; i++) {
+		for (unsigned int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(processSample(data.at(i), chnIdx, true));
 		}
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
@@ -233,7 +232,7 @@ public:
 
 		size_t size = data.size();
 		std::vector<short> raw_data_buffer = {};
-		for (int i = 0; i < size; i++) {
+		for (unsigned int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(processSample(data.at(i), chnIdx, false));
 		}
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
@@ -249,10 +248,10 @@ public:
 		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 		setSyncedDma(true);
 
-		for (int chn = 0; chn < data.size(); chn++) {
+		for (unsigned int chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
 			std::vector<short> raw_data_buffer = {};
-			for (int i = 0; i < size; i++) {
+			for (unsigned int i = 0; i < size; i++) {
 				raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, true));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
@@ -270,10 +269,10 @@ public:
 		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 		setSyncedDma(true);
 
-		for (int chn = 0; chn < data.size(); chn++) {
+		for (unsigned int chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
 			std::vector<short> raw_data_buffer = {};
-			for (int i = 0; i < size; i++) {
+			for (unsigned int i = 0; i < size; i++) {
 				raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, false));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
@@ -347,7 +346,6 @@ private:
 	std::shared_ptr<Device> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;
 	std::vector<bool> m_cyclic;
-	bool m_sync_start;
 
 	std::map<double, double> m_filter_compensation_table;
 	std::vector<Device*> m_dac_devices;

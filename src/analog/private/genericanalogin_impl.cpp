@@ -47,7 +47,7 @@ public:
 		return (double)sample;
 	}
 
-	std::vector<std::vector<double>> getSamples(int nb_samples,
+	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 						bool processed = false)
 	{
 		return DeviceImpl::getSamples(nb_samples, processSample);

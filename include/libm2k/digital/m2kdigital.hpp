@@ -54,7 +54,7 @@ public:
 	void push(std::vector<short>& data);
 	void stop();
 
-	std::vector<unsigned short> getSamples(int nb_samples);
+	std::vector<unsigned short> getSamples(unsigned int nb_samples);
 
 	void enableChannelIn(DIO_CHANNEL index, bool enable);
 	void enableChannelOut(DIO_CHANNEL index, bool enable);

@@ -88,7 +88,7 @@ public:
 		{ return a.second < b.second; });
 
 		// Pick the analog, digital, trigger_logic and delay channels
-		for (int i = 0; i < channels.size(); i++) {
+		for (unsigned int i = 0; i < channels.size(); i++) {
 			Channel* chn = channels[i].first;
 			bool mode = chn->hasAttribute("mode");
 			bool trigger = chn->hasAttribute("trigger");
@@ -217,7 +217,6 @@ public:
 
 	void setLevelVolts(unsigned int chnIdx, double v_level)
 	{
-		int rawValue = 0;
 	}
 
 	int getHysteresis(unsigned int chnIdx)

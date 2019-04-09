@@ -164,7 +164,7 @@ public:
 		}
 	}
 
-	std::vector<unsigned short> getSamples(int nb_samples)
+	std::vector<unsigned short> getSamples(unsigned int nb_samples)
 	{
 		if (!m_buffer) {
 			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
@@ -174,7 +174,7 @@ public:
 
 	}
 
-	std::vector<std::vector<double> > getSamples(int nb_samples,
+	std::vector<std::vector<double> > getSamples(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process)
 	{
 		if (!m_buffer) {
@@ -462,7 +462,7 @@ public:
 		if (hw_rev_attr_val) {
 			std::string const s = hw_rev_attr_val;
 			std::string const key = "Rev.";
-			int n = s.find(key);
+			unsigned long n = s.find(key);
 
 			n += key.length();
 			rev =  s.substr(n, 1);

@@ -113,7 +113,7 @@ public:
 		return m_trigger;
 	}
 
-	std::vector<std::vector<double>> getSamples(int nb_samples,
+	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 						bool processed = false)
 	{
 		if (processed) {
@@ -148,7 +148,7 @@ public:
 
 	uint16_t getVoltageRaw(ANALOG_IN_CHANNEL ch)
 	{
-		size_t num_samples = 100;
+		unsigned int num_samples = 100;
 		if (ch >= getNbChannels()) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: no such channel");
 		}
@@ -161,7 +161,7 @@ public:
 
 	std::vector<uint16_t> getVoltageRaw()
 	{
-		size_t num_samples = 100;
+		unsigned int num_samples = 100;
 		std::vector<uint16_t> avgs;
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			enableChannel(i, true);
@@ -182,7 +182,7 @@ public:
 
 	double getVoltage(ANALOG_IN_CHANNEL ch)
 	{
-		size_t num_samples = 100;
+		unsigned int num_samples = 100;
 		if (ch >= getNbChannels()) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogIn: no such channel");
 		}

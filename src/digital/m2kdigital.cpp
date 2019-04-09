@@ -91,7 +91,7 @@ void M2kDigital::stop()
 	m_pimpl->stop();
 }
 
-std::vector<unsigned short> M2kDigital::getSamples(int nb_samples)
+std::vector<unsigned short> M2kDigital::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples);
 }

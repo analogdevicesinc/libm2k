@@ -40,8 +40,8 @@ public:
 	void push(std::vector<double> &data, unsigned int channel = 0, bool cyclic = true);
 	void push(std::vector<std::vector<short>> &data);
 	void setChannels(std::vector<Channel*> channels);
-	std::vector<unsigned short> getSamples(int nb_samples);
-	std::vector<std::vector<double>> getSamples(int nb_samples,
+	std::vector<unsigned short> getSamples(unsigned int nb_samples);
+	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
 	void stop();
 private:

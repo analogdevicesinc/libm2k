@@ -53,8 +53,8 @@ public:
 	void push(std::vector<double> &data, unsigned int channel, bool cyclic = true);
 	void stop();
 
-	std::vector<unsigned short> getSamples(int nb_samples);
-	std::vector<std::vector<double> > getSamples(int nb_samples,
+	std::vector<unsigned short> getSamples(unsigned int nb_samples);
+	std::vector<std::vector<double> > getSamples(unsigned int nb_samples,
 					std::function<double (int16_t, unsigned int)> process);
 
 	std::string getName();

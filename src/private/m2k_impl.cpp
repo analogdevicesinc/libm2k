@@ -281,8 +281,8 @@ public:
 
 		std::shared_ptr<Device> m_ad9963 = make_shared<Device>(m_context, "ad9963");
 		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
-		int config1 = 0x05;
-		int config2 = 0x05;
+		unsigned int config1 = 0x05;
+		unsigned int config2 = 0x05;
 
 		if (hw_rev == "A") {
 			config1 = 0x1B; // IGAIN1 +-6db  0.25db steps

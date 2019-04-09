@@ -222,7 +222,7 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the RX buffer");
 		}
 
-		int ret = iio_buffer_refill(m_buffer);
+		ssize_t ret = iio_buffer_refill(m_buffer);
 
 		if (ret < 0) {
 			destroy();
@@ -236,7 +236,7 @@ public:
 		for (i = 0, p_dat = m_channel_list.at(0)->getFirst(m_buffer);
 				p_dat < p_end; p_dat += p_inc, i++)
 		{
-			for (int ch = 0; ch < m_data.size(); ch++) {
+			for (unsigned int ch = 0; ch < m_data.size(); ch++) {
 				m_data[ch][i] = process(((int16_t*)p_dat)[ch], ch);
 			}
 		}

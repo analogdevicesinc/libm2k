@@ -55,12 +55,12 @@ void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
 	m_pimpl->push(data, channel, cyclic);
 }
 
-std::vector<unsigned short> Buffer::getSamples(int nb_samples)
+std::vector<unsigned short> Buffer::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples);
 }
 
-std::vector<std::vector<double>> Buffer::getSamples(int nb_samples,
+std::vector<std::vector<double>> Buffer::getSamples(unsigned int nb_samples,
 				std::function<double(int16_t, unsigned int)> process)
 {
 	return m_pimpl->getSamples(nb_samples, process);

@@ -165,7 +165,7 @@ public:
 		const char *name;
 		const char *value;
 		m_calib_coefficients.clear();
-		for (int i = 4; i < 12; i++) {
+		for (unsigned int i = 4; i < 12; i++) {
 			std::pair<std::string, double> calib_pair;
 			try {
 				auto pair = getContextAttr(i);

@@ -82,12 +82,12 @@ void Device::stop()
 	m_pimpl->stop();
 }
 
-std::vector<unsigned short> Device::getSamples(int nb_samples)
+std::vector<unsigned short> Device::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples);
 }
 
-std::vector<std::vector<double> > Device::getSamples(int nb_samples,
+std::vector<std::vector<double> > Device::getSamples(unsigned int nb_samples,
 				std::function<double(int16_t, unsigned int)> process)
 {
 	return m_pimpl->getSamples(nb_samples, process);

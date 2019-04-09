@@ -34,7 +34,7 @@ GenericAnalogIn::~GenericAnalogIn()
 {
 }
 
-std::vector<std::vector<double>> GenericAnalogIn::getSamples(int nb_samples,
+std::vector<std::vector<double>> GenericAnalogIn::getSamples(unsigned int nb_samples,
 							     bool processed)
 {
 	return m_pimpl->getSamples(nb_samples, processed);
