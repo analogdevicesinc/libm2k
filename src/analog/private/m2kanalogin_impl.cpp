@@ -264,12 +264,14 @@ public:
 
 	M2K_TRIGGER_CONDITION getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
 	{
+		M2K_TRIGGER_CONDITION res = NONE;
 		__try {
-			return m_trigger->getAnalogCondition(chnIdx);
+			res = m_trigger->getAnalogCondition(chnIdx);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_RUNTIME_ERROR, "M2KAnalogIn trigger condition error: "  +
 					string(e.what()));
 		}
+		return res;
 	}
 
 	void setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
@@ -279,12 +281,14 @@ public:
 
 	M2K_TRIGGER_CONDITION getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const
 	{
+		M2K_TRIGGER_CONDITION res = NONE;
 		__try {
-			return m_trigger->getDigitalCondition(chnIdx);
+			res = m_trigger->getDigitalCondition(chnIdx);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger condition error: "  +
 					string(e.what()));
 		}
+		return res;
 	}
 
 	void setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
@@ -294,12 +298,14 @@ public:
 
 	M2K_TRIGGER_SOURCE getSource() const
 	{
+		M2K_TRIGGER_SOURCE res = CHANNEL_1;
 		__try {
-			return m_trigger->getSource();
+			res = m_trigger->getSource();
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger source error: "  +
 					string(e.what()));
 		}
+		return res;
 	}
 
 	void setSource(M2K_TRIGGER_SOURCE src)
@@ -320,12 +326,11 @@ public:
 	ANALOG_IN_CHANNEL getSourceChannel()
 	{
 		int sourceChannel = m_trigger->getSourceChannel();
-		if (sourceChannel > 0) {
-			return static_cast<ANALOG_IN_CHANNEL>(sourceChannel);
-		} else {
+		if (sourceChannel <= 0) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger source channel error: "  +
 					string(e.what()));
 		}
+		return static_cast<ANALOG_IN_CHANNEL>(sourceChannel);
 	}
 
 	void setTriggerMode(ANALOG_IN_CHANNEL channel,
@@ -341,12 +346,14 @@ public:
 
 	M2K_TRIGGER_MODE getTriggerMode(ANALOG_IN_CHANNEL channel)
 	{
+		M2K_TRIGGER_MODE res = ALWAYS;
 		__try {
-			return m_trigger->getTriggerMode(channel);
+			res = m_trigger->getTriggerMode(channel);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger mode error: "  +
 					string(e.what()));
 		}
+		return res;
 	}
 
 	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
@@ -390,7 +397,7 @@ public:
 	std::vector<M2K_RANGE> getAvailableRanges()
 	{
 		std::vector<M2K_RANGE> ranges = {};
-
+		return ranges;
 	}
 
 	double getOversamplingRatio()

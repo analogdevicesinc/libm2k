@@ -138,6 +138,10 @@ public:
 		size_t size = data.size();
 		size_t ret = iio_channel_write(m_channel, buffer, data.data(),
 					       size * sizeof(short));
+
+		if (ret == 0) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+		}
 	}
 
 	void write(struct iio_buffer* buffer, std::vector<double> &data)
@@ -149,6 +153,10 @@ public:
 		size_t size = data.size();
 		size_t ret = iio_channel_write(m_channel, buffer, data.data(),
 					       size * sizeof(double));
+
+		if (ret == 0) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+		}
 	}
 
 	void convert(int16_t *avg, int16_t *src)

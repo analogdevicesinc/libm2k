@@ -222,19 +222,19 @@ public:
 	M2kPowerSupply* getPowerSupply()
 	{
 		M2kPowerSupply* pSupply = dynamic_cast<M2kPowerSupply*>(m_instancesPowerSupply.at(0));
-		if (pSupply) {
-			return pSupply;
+		if (!pSupply) {
+			throw_exception(EXC_INVALID_PARAMETER, "No M2K power supply");
 		}
-		throw_exception(EXC_INVALID_PARAMETER, "No M2K power supply");
+		return pSupply;
 	}
 
 	M2kDigital* getDigital()
 	{
 		M2kDigital* logic = dynamic_cast<M2kDigital*>(m_instancesDigital.at(0));
-		if (logic) {
-			return logic;
+		if (!logic) {
+			throw_exception(EXC_INVALID_PARAMETER, "No M2K digital device found");
 		}
-		throw_exception(EXC_INVALID_PARAMETER, "No M2K digital device found");
+		return logic;
 	}
 
 	M2kAnalogOut* getAnalogOut()

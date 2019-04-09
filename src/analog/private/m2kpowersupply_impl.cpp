@@ -216,11 +216,10 @@ public:
 			//voltage2 and v1
 			val = m_dev_read->getDoubleValue(m_read_channel_idx.at(idx), "raw", false);
 			value = ((val * m_read_coefficients.at(idx)) + offset) * gain;
-
-			return value;
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
+		return value;
 	}
 
 	void pushChannel(unsigned int chnIdx, double value)

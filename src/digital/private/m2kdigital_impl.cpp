@@ -131,37 +131,34 @@ public:
 
 	DIO_DIRECTION getDirection(DIO_CHANNEL index)
 	{
-		if (index < getNbChannels()) {
-			std::string dir_str = getStringValue(index, "direction");
-			if (dir_str == "in") {
-				return DIO_INPUT;
-			} else {
-				return DIO_OUTPUT;
-			}
-		} else {
+		if (index >= getNbChannels()) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 		}
+
+		std::string dir_str = getStringValue(index, "direction");
+		if (dir_str == "in") {
+			return DIO_INPUT;
+		}
+		return DIO_OUTPUT;
 	}
 
 	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 	{
-		if (index < getNbChannels()) {
-			long long val = static_cast<long long>(level);
-			setDoubleValue(index, val, "raw");
-		} else {
+		if (index >= getNbChannels()) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 		}
+		long long val = static_cast<long long>(level);
+		setDoubleValue(index, val, "raw");
 	}
 
 	DIO_LEVEL getValueRaw(DIO_CHANNEL index)
 	{
-		if (index < getNbChannels()) {
-			long long val;
-			val = getDoubleValue(index, "raw");
-			return static_cast<DIO_LEVEL>(val);
-		} else {
+		if (index >= getNbChannels()) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 		}
+		long long val;
+		val = getDoubleValue(index, "raw");
+		return static_cast<DIO_LEVEL>(val);
 	}
 
 	void push(std::vector<short> &data)

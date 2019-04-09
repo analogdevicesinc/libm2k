@@ -97,11 +97,10 @@ public:
 
 	Channel* getChannel(unsigned int chnIdx)
 	{
-		if (chnIdx < m_channel_list.size()) {
-			return m_channel_list.at(chnIdx);
-		} else {
+		if (chnIdx >= m_channel_list.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel: " + to_string(chnIdx));
 		}
+		return m_channel_list.at(chnIdx);
 	}
 
 	Channel* getChannel(std::string id)
@@ -529,7 +528,7 @@ public:
 		const char *value;
 		int ret = iio_context_get_attr(m_context, attrIdx, &name, &value);
 		if (ret < 0) {
-			throw (EXC_RUNTIME_ERROR, "Device: Can't get context attribute " +
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Can't get context attribute " +
 					std::to_string(attrIdx));
 		}
 		pair.first = std::string(name);

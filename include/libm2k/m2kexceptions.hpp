@@ -86,6 +86,9 @@ static void throw_exception(M2K_EXCEPTION exc_type, std::string exception)
 	case EXC_INVALID_PARAMETER: {
 		throw std::invalid_argument("ERR: Invalid argument - " + exception);
 	}
+	default: {
+		throw std::runtime_error("ERR: Generic - " + exception);
+	}
 	}
 #else
 	LOG("exception");

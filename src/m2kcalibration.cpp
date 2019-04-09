@@ -106,7 +106,7 @@ void M2kCalibration::updateAdcCorrections()
 
 bool M2kCalibration::resetCalibration()
 {
-	m_pimpl->resetCalibration();
+	return m_pimpl->resetCalibration();
 }
 
 int M2kCalibration::dacAoffset() const
