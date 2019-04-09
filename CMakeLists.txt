@@ -26,7 +26,7 @@ set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 # generate docs by default
 option(ENABLE_DOC "Generate documentation with Doxygen" ON)
 option(BUILD_EXAMPLES "Build the default examples" ON)
-option(ENABLE_LOG "Build with logging support" ON)
+option(ENABLE_LOG "Build with logging support" OFF)
 option(ENABLE_EXCEPTIONS "Build with exception handling support" ON)
 
 # build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.

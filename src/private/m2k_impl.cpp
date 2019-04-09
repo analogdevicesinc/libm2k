@@ -49,8 +49,6 @@ public:
 		initialize();
 		setTimeout(UINT_MAX);
 
-		LOG("BOOOMMM");
-
 		for (auto ain : m_instancesAnalogIn) {
 			delete ain;
 		}
