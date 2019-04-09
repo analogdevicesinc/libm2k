@@ -161,6 +161,12 @@ public:
 		setDoubleValue(index, val, "raw");
 	}
 
+	void setValueRaw(unsigned int index, DIO_LEVEL level)
+	{
+		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(index);
+		setValueRaw(idx, level);
+	}
+
 	DIO_LEVEL getValueRaw(DIO_CHANNEL index)
 	{
 		if (index >= getNbChannels()) {
@@ -169,6 +175,12 @@ public:
 		long long val;
 		val = getDoubleValue(index, "raw");
 		return static_cast<DIO_LEVEL>(val);
+	}
+
+	DIO_LEVEL getValueRaw(unsigned int index)
+	{
+		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(index);
+		return getValueRaw(idx);
 	}
 
 	void push(std::vector<short> &data)
@@ -256,6 +268,12 @@ public:
 		m_dev_read->setStringValue(chn, "trigger", trigger_val, false);
 	}
 
+	void setTrigger(unsigned int chn, M2K_TRIGGER_CONDITION cond)
+	{
+		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
+		setTrigger(idx, cond);
+	}
+
 	M2K_TRIGGER_CONDITION getTrigger(DIO_CHANNEL chn)
 	{
 		std::string trigger_val = m_dev_read->getStringValue(chn, "trigger", false);
@@ -270,6 +288,12 @@ public:
 
 		return static_cast<M2K_TRIGGER_CONDITION>
 				(it - available_digital_conditions.begin());
+	}
+
+	M2K_TRIGGER_CONDITION getTrigger(unsigned int chn)
+	{
+		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
+		return getTrigger(idx);
 	}
 
 	void setTriggerDelay(int delay)
@@ -312,6 +336,12 @@ public:
 		setStringValue(chn, "outputmode", output_mode);
 	}
 
+	void setOutputMode(unsigned int chn, DIO_MODE mode)
+	{
+		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
+		setOutputMode(idx, mode);
+	}
+
 	DIO_MODE getOutputMode(DIO_CHANNEL chn)
 	{
 		std::string output_mode = "";
@@ -324,6 +354,12 @@ public:
 		}
 
 		return static_cast<DIO_MODE>(it - m_output_mode.begin());
+	}
+
+	DIO_MODE getOutputMode(unsigned int chn)
+	{
+		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
+		return getOutputMode(idx);
 	}
 
 	double setSamplerateIn(double samplerate)

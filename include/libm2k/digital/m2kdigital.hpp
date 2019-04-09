@@ -48,8 +48,10 @@ public:
 	DIO_DIRECTION getDirection(DIO_CHANNEL index);
 
 	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL);
+	void setValueRaw(unsigned int index, DIO_LEVEL);
 	void setValueRaw(DIO_CHANNEL index, bool level);
 	DIO_LEVEL getValueRaw(DIO_CHANNEL index);
+	DIO_LEVEL getValueRaw(unsigned int index);
 
 	void push(std::vector<short>& data);
 	void stop();
@@ -64,7 +66,9 @@ public:
 	bool anyChannelEnabled(DIO_DIRECTION dir);
 
 	void setTrigger(DIO_CHANNEL, M2K_TRIGGER_CONDITION);
+	void setTrigger(unsigned int, M2K_TRIGGER_CONDITION);
 	M2K_TRIGGER_CONDITION getTrigger(DIO_CHANNEL);
+	M2K_TRIGGER_CONDITION getTrigger(unsigned int);
 
 	void setTriggerDelay(int delay);
 	int getTriggerDelay();
@@ -73,7 +77,9 @@ public:
 	DIO_TRIGGER_MODE getTriggerMode();
 
 	void setOutputMode(DIO_CHANNEL, DIO_MODE);
+	void setOutputMode(unsigned int, DIO_MODE);
 	DIO_MODE getOutputMode(DIO_CHANNEL);
+	DIO_MODE getOutputMode(unsigned int);
 
 	double setSamplerateIn(double samplerate);
 	double setSamplerateOut(double samplerate);

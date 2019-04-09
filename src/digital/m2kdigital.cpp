@@ -70,6 +70,11 @@ void M2kDigital::setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 	m_pimpl->setValueRaw(index, level);
 }
 
+void M2kDigital::setValueRaw(unsigned int index, DIO_LEVEL level)
+{
+	m_pimpl->setValueRaw(index, level);
+}
+
 void M2kDigital::setValueRaw(DIO_CHANNEL index, bool level)
 {
 	DIO_LEVEL lvl = static_cast<DIO_LEVEL>(level);
@@ -77,6 +82,11 @@ void M2kDigital::setValueRaw(DIO_CHANNEL index, bool level)
 }
 
 DIO_LEVEL M2kDigital::getValueRaw(DIO_CHANNEL index)
+{
+	return m_pimpl->getValueRaw(index);
+}
+
+DIO_LEVEL M2kDigital::getValueRaw(unsigned int index)
 {
 	return m_pimpl->getValueRaw(index);
 }
@@ -121,7 +131,17 @@ void M2kDigital::setTrigger(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION cond)
 	m_pimpl->setTrigger(chn, cond);
 }
 
+void M2kDigital::setTrigger(unsigned int chn, M2K_TRIGGER_CONDITION cond)
+{
+	m_pimpl->setTrigger(chn, cond);
+}
+
 M2K_TRIGGER_CONDITION M2kDigital::getTrigger(DIO_CHANNEL chn)
+{
+	return m_pimpl->getTrigger(chn);
+}
+
+M2K_TRIGGER_CONDITION M2kDigital::getTrigger(unsigned int chn)
 {
 	return m_pimpl->getTrigger(chn);
 }
@@ -151,7 +171,18 @@ void M2kDigital::setOutputMode(DIO_CHANNEL chn, DIO_MODE mode)
 	m_pimpl->setOutputMode(chn, mode);
 }
 
+
+void M2kDigital::setOutputMode(unsigned int chn, DIO_MODE mode)
+{
+	m_pimpl->setOutputMode(chn, mode);
+}
+
 DIO_MODE M2kDigital::getOutputMode(DIO_CHANNEL chn)
+{
+	return m_pimpl->getOutputMode(chn);
+}
+
+DIO_MODE M2kDigital::getOutputMode(unsigned int chn)
 {
 	return m_pimpl->getOutputMode(chn);
 }

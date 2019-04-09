@@ -269,7 +269,8 @@ int main(int argc, char **argv)
 					std::cout << std::endl;
 
 					logic->setTriggerMode(DIO_AND);
-
+					logic->enableChannel(1, true);
+					logic->setSamplerateIn(1000);
 					logic->setDirection(DIO_CHANNEL_4, DIO_OUTPUT);
 					logic->setDirection(DIO_CHANNEL_5, DIO_OUTPUT);
 					logic->setValueRaw(DIO_CHANNEL_4, libm2k::digital::HIGH);
@@ -278,6 +279,7 @@ int main(int argc, char **argv)
 
 					logic->enableAllOut(true);
 					logic->setDirection(65535);
+
 					std::vector<short> vec_digital(512, 7);
 					logic->setCyclic(true);
 					logic->push(vec_digital);
