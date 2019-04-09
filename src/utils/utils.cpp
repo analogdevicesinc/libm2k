@@ -95,7 +95,7 @@ std::pair<std::string, std::vector<std::string>>
 {
 	std::string key = "";
 	std::vector<std::string> values {};
-	std:size_t delim = line.find("=");
+	size_t delim = line.find("=");
 	if (delim != std::string::npos) {
 		key = line.substr(0, delim);
 		line = line.substr(delim+1, line.size()-delim-1);

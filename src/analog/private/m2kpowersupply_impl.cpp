@@ -162,8 +162,6 @@ public:
 	void loadCalibrationCoefficients()
 	{
 		/*Load calibration parameters from iio context*/
-		const char *name;
-		const char *value;
 		m_calib_coefficients.clear();
 		for (unsigned int i = 4; i < 12; i++) {
 			std::pair<std::string, double> calib_pair;
@@ -172,7 +170,7 @@ public:
 				calib_pair.first = std::string(pair.first.c_str() + 4);
 				calib_pair.second = std::stod(pair.second);
 				m_calib_coefficients.push_back(calib_pair);
-			} catch (exception_type &e) {
+			} catch (exception_type &) {
 				continue;
 			}
 		}
