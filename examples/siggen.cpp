@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <math.h>
+#include <cmath>
 #include <thread>
 #include <chrono>
 
