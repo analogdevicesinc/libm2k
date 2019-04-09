@@ -73,6 +73,16 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: logic device not found");
 		}
 
+		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			/* Disable all the TX channels */
+			m_tx_channels_enabled.push_back(false);
+			enableChannel(i, false);
+
+			/* Enable all the RX channels */
+			m_rx_channels_enabled.push_back(true);
+			m_dev_read->enableChannel(i, true);
+		}
+
 		m_dev_read->setKernelBuffersCount(25);
 	}
 
@@ -194,51 +204,45 @@ public:
 		}
 	}
 
-	void enableChannelIn(DIO_CHANNEL index, bool enable)
-	{
-		if (index < getNbChannels()) {
-			m_dev_read->enableChannel(index, enable);
-		} else {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital channel");
-		}
-	}
-
-	void enableAllIn(bool enable)
-	{
-		for (unsigned int i = 0; i < m_dev_read->getNbChannels(); i++) {
-			DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(i);
-			enableChannelIn(idx, enable);
-		}
-	}
-
-	void enableChannelOut(DIO_CHANNEL index, bool enable)
+	void enableChannel(unsigned int index, bool enable)
 	{
 		if (index < getNbChannels()) {
 			m_dev_write->enableChannel(index, enable);
+			m_tx_channels_enabled.at(index) = enable;
 		} else {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel");
+		}
+	}
+
+	void enableChannel(DIO_CHANNEL index, bool enable)
+	{
+		if (index < getNbChannels()) {
+			m_dev_write->enableChannel(index, enable);
+			m_tx_channels_enabled.at(index) = enable;
+		} else {
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel");
 		}
 	}
 
 	void enableAllOut(bool enable)
 	{
-		for (unsigned int i = 0; i < m_dev_write->getNbChannels(); i++) {
+		for (unsigned int i = 0; i < m_dev_write->getNbChannels() - 2; i++) {
 			DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(i);
-			enableChannelOut(idx, enable);
+			enableChannel(idx, enable);
 		}
 	}
 
 	bool anyChannelEnabled(DIO_DIRECTION dir)
 	{
 		if (dir == DIO_INPUT) {
-			for (unsigned int i = 0; i < m_dev_read->getNbChannels(); i++) {
-				if (m_dev_read->isChannelEnabled(i)) {
+			for (auto b : m_rx_channels_enabled) {
+				if (b) {
 					return true;
 				}
 			}
 		} else {
-			for (unsigned int i = 0; i < m_dev_write->getNbChannels(); i++) {
-				if (m_dev_write->isChannelEnabled(i)) {
+			for (auto b : m_tx_channels_enabled) {
+				if (b) {
 					return true;
 				}
 			}
@@ -339,4 +343,6 @@ private:
 	std::shared_ptr<Device> m_dev_write;
 	std::string m_dev_name_read;
 	std::string m_dev_name_write;
+	std::vector<bool> m_tx_channels_enabled;
+	std::vector<bool> m_rx_channels_enabled;
 };

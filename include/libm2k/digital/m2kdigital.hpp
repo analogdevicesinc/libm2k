@@ -56,9 +56,9 @@ public:
 
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
 
-	void enableChannelIn(DIO_CHANNEL index, bool enable);
-	void enableChannelOut(DIO_CHANNEL index, bool enable);
-	void enableAllIn(bool enable);
+	/* Enable/disable TX channels only*/
+	void enableChannel(unsigned int index, bool enable) override;
+	void enableChannel(DIO_CHANNEL index, bool enable);
 	void enableAllOut(bool enable);
 
 	bool anyChannelEnabled(DIO_DIRECTION dir);

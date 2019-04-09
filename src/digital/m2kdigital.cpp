@@ -96,19 +96,14 @@ std::vector<unsigned short> M2kDigital::getSamples(unsigned int nb_samples)
 	return m_pimpl->getSamples(nb_samples);
 }
 
-void M2kDigital::enableChannelIn(DIO_CHANNEL index, bool enable)
+void M2kDigital::enableChannel(unsigned int index, bool enable)
 {
-	m_pimpl->enableChannelIn(index, enable);
+	m_pimpl->enableChannel(index, enable);
 }
 
-void M2kDigital::enableAllIn(bool enable)
+void M2kDigital::enableChannel(DIO_CHANNEL index, bool enable)
 {
-	m_pimpl->enableAllIn(enable);
-}
-
-void M2kDigital::enableChannelOut(DIO_CHANNEL index, bool enable)
-{
-	m_pimpl->enableChannelOut(index, enable);
+	m_pimpl->enableChannel(index, enable);
 }
 
 void M2kDigital::enableAllOut(bool enable)

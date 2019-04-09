@@ -261,8 +261,6 @@ int main(int argc, char **argv)
 
 					// DIO
 					M2kDigital* logic = dev->getDigital();
-					logic->enableChannelIn(DIO_CHANNEL_1, true);
-					logic->enableChannelIn(DIO_CHANNEL_2, true);
 					//				logic->setTrigger(M2kDigital::DIO_CHANNEL_1, M2kHardwareTrigger::RISING_EDGE);
 					auto data = logic->getSamples(32);
 					for (auto d : data) {
@@ -280,10 +278,6 @@ int main(int argc, char **argv)
 
 					logic->enableAllOut(true);
 					logic->setDirection(65535);
-					logic->enableChannelOut(DIO_CHANNEL_1, true);
-					logic->enableChannelOut(DIO_CHANNEL_0, true);
-					logic->enableChannelOut(DIO_CHANNEL_2, true);
-					logic->enableChannelOut(DIO_CHANNEL_3, true);
 					std::vector<short> vec_digital(512, 7);
 					logic->setCyclic(true);
 					logic->push(vec_digital);
