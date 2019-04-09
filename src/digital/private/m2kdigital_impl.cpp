@@ -326,6 +326,26 @@ public:
 		return static_cast<DIO_MODE>(it - m_output_mode.begin());
 	}
 
+	double setSamplerateIn(double samplerate)
+	{
+		return m_dev_read->setDoubleValue(samplerate, "sampling_frequency");
+	}
+
+	double setSamplerateOut(double samplerate)
+	{
+		return m_dev_write->setDoubleValue(samplerate, "sampling_frequency");
+	}
+
+	double getSamplerateIn()
+	{
+		return m_dev_read->getDoubleValue("sampling_frequency");
+	}
+
+	double getSamplerateOut()
+	{
+		return m_dev_read->getDoubleValue("sampling_frequency");
+	}
+
 	bool getCyclic()
 	{
 		return m_cyclic;

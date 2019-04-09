@@ -156,6 +156,26 @@ DIO_MODE M2kDigital::getOutputMode(DIO_CHANNEL chn)
 	return m_pimpl->getOutputMode(chn);
 }
 
+double M2kDigital::setSamplerateIn(double samplerate)
+{
+	return m_pimpl->setSamplerateIn(samplerate);
+}
+
+double M2kDigital::setSamplerateOut(double samplerate)
+{
+	return m_pimpl->setSamplerateOut(samplerate);
+}
+
+double M2kDigital::getSamplerateIn()
+{
+	return m_pimpl->getSamplerateIn();
+}
+
+double M2kDigital::getSamplerateOut()
+{
+	return m_pimpl->getSamplerateOut();
+}
+
 bool M2kDigital::getCyclic()
 {
 	return m_pimpl->getCyclic();

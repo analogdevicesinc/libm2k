@@ -75,6 +75,11 @@ public:
 	void setOutputMode(DIO_CHANNEL, DIO_MODE);
 	DIO_MODE getOutputMode(DIO_CHANNEL);
 
+	double setSamplerateIn(double samplerate);
+	double setSamplerateOut(double samplerate);
+	double getSamplerateIn();
+	double getSamplerateOut();
+
 	bool getCyclic();
 	void setCyclic(bool cyclic);
 
