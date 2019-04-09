@@ -109,8 +109,7 @@ Context* DeviceBuilder::deviceOpen(const char *uri)
 
 	struct iio_context* ctx = iio_create_context_from_uri(uri);
 	if (!ctx) {
-		std::string str = std::string(uri);
-		throw_exception(EXC_INVALID_PARAMETER, "No device found for uri: " + str);
+		return nullptr;
 	}
 	std::cout << "creating IIO context\n";
 
@@ -130,7 +129,7 @@ Context* DeviceBuilder::deviceOpen()
 {
 	auto lst = listDevices();
 	if (lst.size() <= 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "No available board");
+		return nullptr;
 	}
 	return deviceOpen(lst.at(0).c_str());
 }
