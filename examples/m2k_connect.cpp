@@ -29,7 +29,7 @@ int main (int argc, char **argv)
 			return 1;
 		}
 
-		std::cout << m2k_device->getContextAttributes() << std::endl;
+		std::cout << m2k_device->getContextDescription() << std::endl;
 
 		if (!detectDevices) {
 			break;

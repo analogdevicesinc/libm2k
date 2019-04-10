@@ -69,7 +69,11 @@ public:
 	libm2k::analog::DMM* getDMM(std::string);
 	std::vector<libm2k::analog::DMM*> getAllDmm();
 
-	std::string getContextAttributes();
+
+	std::vector<std::string> getAvailableContextAttributes();
+	std::string getContextAttributeValue(std::string attr);
+	std::string getContextDescription();
+	std::string getSerialNumber();
 	std::unordered_set<std::string> getAllDevices(iio_context *ctx);
 
 	libm2k::devices::M2K* toM2k();

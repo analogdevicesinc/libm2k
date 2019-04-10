@@ -28,7 +28,7 @@ int main (int argc, char **argv)
 		std::cout << "Detected device " << i << " "  << uri << std::endl;
 		auto device = DeviceBuilder::deviceOpen(uri.c_str());
 
-		std::cout << device->getContextAttributes() << std::endl;
+		std::cout << device->getContextDescription() << std::endl;
 		auto dmms = device->getAllDmm();
 		for (auto dmm : dmms) {
 			std::cout << "###  IIO Device name: " << dmm->getName() << std::endl;

@@ -283,6 +283,10 @@ int main(int argc, char **argv)
 					std::vector<short> vec_digital(512, 7);
 					logic->setCyclic(true);
 					logic->push(vec_digital);
+
+					for (auto att : dev->getAvailableContextAttributes()) {
+						std::cout << att << "   " << dev->getContextAttributeValue(att) << std::endl;
+					}
 				} __catch (exception_type &e) {
 					std::cout << e.what() << "\n";
 				}

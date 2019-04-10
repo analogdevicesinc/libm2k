@@ -24,7 +24,7 @@ int main (int argc, char **argv)
 		std::cout << "Detected device " << i << " "  << uri << std::endl;
 		auto device = DeviceBuilder::deviceOpen(uri.c_str());
 
-		std::cout << device->getContextAttributes() << std::endl;
+		std::cout << device->getContextDescription() << std::endl;
 
 		if (!detectDevices) {
 			break;

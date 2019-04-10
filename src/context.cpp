@@ -104,10 +104,24 @@ std::vector<DMM*> Context::getAllDmm()
 	return m_pimpl->getAllDmm();
 }
 
-
-std::string Context::getContextAttributes()
+std::vector<string> Context::getAvailableContextAttributes()
 {
-	return m_pimpl->getContextAttributes();
+	return m_pimpl->getAvailableContextAttributes();
+}
+
+std::string Context::getContextAttributeValue(std::string attr)
+{
+	return m_pimpl->getContextAttributeValue(attr);
+}
+
+std::string Context::getContextDescription()
+{
+	return m_pimpl->getContextDescription();
+}
+
+std::string Context::getSerialNumber()
+{
+	return m_pimpl->getSerialNumber();
 }
 
 M2K* Context::toM2k()

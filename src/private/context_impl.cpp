@@ -59,6 +59,8 @@ public:
 
 		/* Initialize the power supply list */
 		scanAllPowerSupply();
+
+		initializeContextAttributes();
 	}
 
 	virtual ~ContextImpl()
@@ -336,18 +338,38 @@ public:
 	}
 
 
-	std::string getContextAttributes()
+	std::vector<std::string> getAvailableContextAttributes()
+	{
+		std::vector<std::string> available_attrs = {};
+		for (auto a : m_context_attributes) {
+			available_attrs.push_back(a.first);
+		}
+		return available_attrs;
+	}
+
+	std::string getContextAttributeValue(std::string attr)
+	{
+		std::string val;
+		try {
+			val = m_context_attributes.at(attr);
+		} catch (exception &) {
+			throw_exception(EXC_INVALID_PARAMETER, "No such context attribute" + attr);
+		}
+		return val;
+	}
+
+	std::string getContextDescription()
 	{
 		if (!m_context) {
 			return "";
-			//throw error?
 		}
 		std::string descr = std::string(iio_context_get_description(m_context));
 		return descr;
-		//	int attr_no = iio_context_get_attrs_count(m_ctx);
-		//	for (int i = 0; i < attr_no; i++) {
+	}
 
-		//	}
+	std::string getSerialNumber()
+	{
+		return getContextAttributeValue("hw_serial");
 	}
 
 	M2K* toM2k(Context *parent)
@@ -384,11 +406,33 @@ public:
 protected:
 	struct iio_context* m_context;
 private:
+	void initializeContextAttributes()
+	{
+		const char *name;
+		const char *value;
+		char ctx_git_tag[8];
+		unsigned int ctx_major, ctx_minor;
+		iio_context_get_version(m_context, &ctx_major, &ctx_minor, ctx_git_tag);
+		unsigned int attr_no = iio_context_get_attrs_count(m_context);
+		for (unsigned int i = 0; i < attr_no; i++) {
+			std::pair<std::string, std::string> pair;
+			int ret = iio_context_get_attr(m_context, i, &name, &value);
+			if (ret < 0) {
+				throw_exception(EXC_RUNTIME_ERROR, "Device: Can't get context attribute " +
+						std::to_string(i));
+			}
+			pair.first = std::string(name);
+			pair.second = std::string(value);
+			m_context_attributes.insert(pair);
+		}
+	}
+
 	std::vector<libm2k::analog::GenericAnalogIn*> m_instancesAnalogIn;
 	std::vector<libm2k::analog::GenericAnalogOut*> m_instancesAnalogOut;
 	std::vector<libm2k::analog::DMM*> m_instancesDMM;
 	std::vector<libm2k::analog::PowerSupply*> m_instancesPowerSupply;
 	std::vector<libm2k::digital::GenericDigital*> m_instancesDigital;
+	std::map<std::string, std::string> m_context_attributes;
 
 	std::string m_uri;
 	std::string m_name;
