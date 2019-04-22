@@ -71,9 +71,6 @@ public:
 	double setSamplerate(double samplerate);
 	double setSamplerate(unsigned int chn_idx, double samplerate);
 
-	struct iio_channel* getChannel(ANALOG_IN_CHANNEL);
-	struct iio_channel* getAuxChannel(unsigned int);
-
 	int getLevel(ANALOG_IN_CHANNEL chnIdx) const;
 	void setLevel(ANALOG_IN_CHANNEL chnIdx, int level);
 

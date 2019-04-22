@@ -96,7 +96,7 @@ public:
 			key = " Volts\n";
 			value = value / 1000;
 		} else if (chn_name.find("temp") != std::string::npos) {
-			key = " \xB0\C\n";
+			key = " \xB0 C\n";
 			value = value / 1000;
 		} else if (chn_name.find("current") != std::string::npos) {
 			key = " Milliampere\n";

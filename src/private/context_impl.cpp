@@ -350,9 +350,9 @@ public:
 	std::string getContextAttributeValue(std::string attr)
 	{
 		std::string val;
-		try {
+		__try {
 			val = m_context_attributes.at(attr);
-		} catch (exception &) {
+		} __catch (exception &) {
 			throw_exception(EXC_INVALID_PARAMETER, "No such context attribute" + attr);
 		}
 		return val;

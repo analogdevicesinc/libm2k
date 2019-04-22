@@ -18,7 +18,6 @@
  */
 
 #include "libm2k/utils/utils.hpp"
-#include <iio.h>
 #include <regex>
 #include <iostream>
 #include <fstream>
@@ -101,7 +100,7 @@ std::pair<std::string, std::vector<std::string>>
 		line = line.substr(delim+1, line.size()-delim-1);
 		line.erase(remove(line.begin(), line.end(), ' '), line.end());
 		values = split(line, ",");
-		for (int i = 0; i < values.size(); i++) {
+		for (unsigned int i = 0; i < values.size(); i++) {
 			if (values.at(i) == "") {
 				values.erase(values.begin() + i);
 			}

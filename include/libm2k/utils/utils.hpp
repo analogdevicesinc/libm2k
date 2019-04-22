@@ -20,6 +20,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <iio.h>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/enums.hpp>
 #include <string>
@@ -34,8 +35,13 @@ namespace libm2k {
 namespace utils {
 	class LIBM2K_API Utils {
 	public:
-		static std::vector<std::string> getIioDevByGlobalAttrs(iio_context*, std::vector<std::string> attr_list);
+		Utils() {
 
+		}
+
+		~Utils() {
+
+		}
 		/**
 		 * @brief Utils::getIioDevByChannelAttrs
 		 * @param ctx : iio_context*
@@ -45,8 +51,6 @@ namespace utils {
 		 * The list can also contain pairs of type <device_name, "">, which means
 		 * all the required attributes were found as global attributes for the device <device_name>.
 		 */
-
-                static void blinkLed(iio_context* ctx, const double duration, bool blocking = false);
 
 		static std::vector<ini_device_struct> parseIniFile(std::string path);
 
@@ -61,13 +65,6 @@ namespace utils {
 		static double average(double *data, size_t numElements);
 
 		static std::vector<double> getAvailableSamplerates(struct iio_device*);
-		static double getDoubleValue(struct iio_device*, std::string attr);
-		static double getDoubleValue(struct iio_device*, unsigned int,
-					    std::string attr);
-		static double setDoubleValue(struct iio_device*, double value,
-					    std::string attr);
-		static double setDoubleValue(struct iio_device*, unsigned int chn_idx,
-					    double value, std::string attr);
 
 		static DEVICE_DIRECTION getIioDeviceDirection(iio_device *dev);
 		static std::vector<std::string> split(std::string, std::string);

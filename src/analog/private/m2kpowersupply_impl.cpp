@@ -165,12 +165,12 @@ public:
 		m_calib_coefficients.clear();
 		for (unsigned int i = 4; i < 12; i++) {
 			std::pair<std::string, double> calib_pair;
-			try {
+			__try {
 				auto pair = getContextAttr(i);
 				calib_pair.first = std::string(pair.first.c_str() + 4);
 				calib_pair.second = std::stod(pair.second);
 				m_calib_coefficients.push_back(calib_pair);
-			} catch (exception_type &) {
+			} __catch (exception_type &) {
 				continue;
 			}
 		}
@@ -184,6 +184,7 @@ public:
 			}
 		}
 		throw_exception(EXC_INVALID_PARAMETER, "M2k Power Supply: No such calibration coefficient");
+		return 0;
 	}
 
 	void enableAll(bool en)

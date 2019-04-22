@@ -31,7 +31,6 @@ extern "C" {
 	struct iio_context;
 }
 
-using namespace libm2k::utils;
 namespace libm2k {
 namespace analog {
 	class GenericAnalogIn;

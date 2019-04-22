@@ -70,9 +70,6 @@ public:
 	void updateDacCorrections();
 
 	bool setCalibrationMode(int);
-	void dacAOutputDCVolts(int16_t volts);
-	void dacBOutputDCVolts(int16_t volts);
-	void dacOutputStop();
 
 protected:
 	class M2kCalibrationImpl;

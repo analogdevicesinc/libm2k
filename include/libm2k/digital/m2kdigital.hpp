@@ -28,7 +28,6 @@
 #include <string>
 #include <vector>
 
-using namespace libm2k::devices;
 using namespace libm2k::utils;
 using namespace libm2k::analog;
 
