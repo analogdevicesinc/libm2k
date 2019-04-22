@@ -1,4 +1,4 @@
-#include "libm2k/devicebuilder.hpp"
+#include "libm2k/contextbuilder.hpp"
 #include "libm2k/devices.hpp"
 
 int main (int argc, char **argv)
@@ -13,7 +13,7 @@ int main (int argc, char **argv)
 		uri = argv[1];
 	}
 
-	auto lst = DeviceBuilder::listDevices();
+	auto lst = ContextBuilder::listDevices();
 	int i = 1;
 
 	while ((i <= lst.size()) || !detectDevices) {
@@ -22,7 +22,7 @@ int main (int argc, char **argv)
 		}
 
 		std::cout << "Detected device " << i << " "  << uri << std::endl;
-		auto gen_device = DeviceBuilder::deviceOpen(uri.c_str());
+		auto gen_device = ContextBuilder::deviceOpen(uri.c_str());
 		auto m2k_device = gen_device->toM2k();
 		if (!m2k_device) {
 			std::cerr << "Could not find M2K device, try the generic usage\n" << std::endl;

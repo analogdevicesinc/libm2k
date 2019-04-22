@@ -6,7 +6,7 @@
 #include <thread>
 #include <chrono>
 
-#include <libm2k/devicebuilder.hpp>
+#include <libm2k/contextbuilder.hpp>
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/m2k.hpp>
 
@@ -18,14 +18,14 @@ using namespace libm2k::digital;
 
 int main(int argc, char **argv) {
 
-	auto deviceList = DeviceBuilder::listDevices();
+	auto deviceList = ContextBuilder::listDevices();
 	if (deviceList.size() <= 0) {
 		std::cout << "No device found! " << std::endl;
 		return -1;
 	}
 
 	// GenericDeviced::sptr device
-	Context* device = DeviceBuilder::deviceOpen(deviceList[0].c_str());
+	Context* device = ContextBuilder::deviceOpen(deviceList[0].c_str());
 	M2K* m2k_device = device->toM2k();
 
 	if (!m2k_device) {

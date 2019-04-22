@@ -1,4 +1,4 @@
-#include <libm2k/devicebuilder.hpp>
+#include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/devices.hpp>
 #include <libm2k/analog/genericanalogin.hpp>
@@ -129,12 +129,12 @@ int main(int argc, char **argv)
 
 
 	std::exception e ;
-	std::vector<std::string> lst = DeviceBuilder::listDevices();
+	std::vector<std::string> lst = ContextBuilder::listDevices();
 	for (auto l : lst) {
 		__try {
-//			std::shared_ptr<GenericDevice> d = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
-//			std::shared_ptr<GenericDevice> d2 = DeviceBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
-			Context* d = DeviceBuilder::deviceOpen();//l.c_str());
+//			std::shared_ptr<GenericDevice> d = ContextBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
+//			std::shared_ptr<GenericDevice> d2 = ContextBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
+			Context* d = ContextBuilder::deviceOpen();//l.c_str());
 
 			M2K* dev = d->toM2k();
 			if (!dev) { // PLUTO
@@ -293,9 +293,9 @@ int main(int argc, char **argv)
 				//			auto anIn = d->openAnalogIn();
 //				dev->blinkLed();
 				//			d->closeAnalogIn()
-//				DeviceBuilder::deviceClose(d);
-//				DeviceBuilder::deviceClose(d2);
-				DeviceBuilder::deviceClose(d);
+//				ContextBuilder::deviceClose(d);
+//				ContextBuilder::deviceClose(d2);
+				ContextBuilder::deviceClose(d);
 			}
 		} __catch (exception_type &e) {
 			std::cout << "Err on connect: " << e.what() << std::endl;

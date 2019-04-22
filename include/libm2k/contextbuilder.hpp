@@ -35,15 +35,17 @@ enum DeviceTypes {
 
 namespace libm2k {
 namespace devices {
-class LIBM2K_API DeviceBuilder {
+class LIBM2K_API ContextBuilder {
 	static std::vector<Context*> s_connectedDevices;
 public:
 
-	explicit DeviceBuilder();
-	~DeviceBuilder();
+	explicit ContextBuilder();
+	~ContextBuilder();
 	static std::vector<std::string> listDevices();
 	static Context* deviceOpen(const char*);
 	static Context* deviceOpen();
+	static M2K* m2kOpen(const char*);
+	static M2K* m2kOpen();
 	static void deviceClose(Context*);
 	static DeviceTypes identifyDevice(iio_context *ctx);
 	static Context* buildDevice(DeviceTypes type,
@@ -52,7 +54,7 @@ public:
 private:
 	static std::map<DeviceTypes, std::vector<std::string>> m_dev_map;
 	static std::map<DeviceTypes, std::string> m_dev_name_map;
-	//                std::unique_ptr<M2KImpl> m_pimpl;
+	//                std::shared_ptr<M2KImpl> m_pimpl;
 };
 }
 }

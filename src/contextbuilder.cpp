@@ -18,7 +18,7 @@
  */
 
 #include <libm2k/m2k.hpp>
-#include <libm2k/devicebuilder.hpp>
+#include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <iio.h>
@@ -31,31 +31,31 @@
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
-std::vector<Context*> DeviceBuilder::s_connectedDevices = {};
-std::map<DeviceTypes, std::vector<std::string>> DeviceBuilder::m_dev_map = {
+std::vector<Context*> ContextBuilder::s_connectedDevices = {};
+std::map<DeviceTypes, std::vector<std::string>> ContextBuilder::m_dev_map = {
 	{DeviceTypes::DevFMCOMMS, {"cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy"}},
 	{DeviceTypes::DevM2K, {"m2k-adc", "m2k-dac-a",
 			       "m2k-dac-b", "m2k-logic-analyzer-rx",
 			       "m2k-logic-analyzer-tx", "m2k-logic-analyzer"}}
 };
 
-std::map<DeviceTypes, std::string> DeviceBuilder::m_dev_name_map = {
+std::map<DeviceTypes, std::string> ContextBuilder::m_dev_name_map = {
 	{DeviceTypes::DevFMCOMMS, "FMMCOMMS"},
 	{DeviceTypes::DevM2K, "M2K"},
 	{Other, "Generic"}
 };
 
-DeviceBuilder::DeviceBuilder()// : m_pimpl(new M2KImpl())
+ContextBuilder::ContextBuilder()// : m_pimpl(new M2KImpl())
 {
 	std::cout << "Constructor \n";
 }
 
-DeviceBuilder::~DeviceBuilder()
+ContextBuilder::~ContextBuilder()
 {
 	std::cout << "Destructor \n";
 }
 
-std::vector<std::string> DeviceBuilder::listDevices()
+std::vector<std::string> ContextBuilder::listDevices()
 {
 	struct iio_context_info **info;
 	unsigned int nb_contexts;
@@ -86,7 +86,7 @@ out_destroy_context:
 	return uris;
 }
 
-Context* DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
+Context* ContextBuilder::buildDevice(DeviceTypes type, std::string uri,
 			struct iio_context* ctx) // enum Device Name
 {
 	std::string name = m_dev_name_map.at(type);
@@ -99,7 +99,7 @@ Context* DeviceBuilder::buildDevice(DeviceTypes type, std::string uri,
 	}
 }
 
-Context* DeviceBuilder::deviceOpen(const char *uri)
+Context* ContextBuilder::deviceOpen(const char *uri)
 {
 	for (Context* dev : s_connectedDevices) {
 		if (dev->getUri() == std::string(uri)) {
@@ -113,7 +113,7 @@ Context* DeviceBuilder::deviceOpen(const char *uri)
 	}
 	std::cout << "creating IIO context\n";
 
-	DeviceTypes dev_type = DeviceBuilder::identifyDevice(ctx);
+	DeviceTypes dev_type = ContextBuilder::identifyDevice(ctx);
 	std::cout << m_dev_name_map.at(dev_type) << std::endl;
 
 	Context* dev = buildDevice(dev_type, std::string(uri), ctx);
@@ -125,7 +125,7 @@ Context* DeviceBuilder::deviceOpen(const char *uri)
 /* Connect to the first usb device that was found
 TODO: try to use the "local" context,
 before trying the "usb" one. */
-Context* DeviceBuilder::deviceOpen()
+Context* ContextBuilder::deviceOpen()
 {
 	auto lst = listDevices();
 	if (lst.size() <= 0) {
@@ -134,7 +134,27 @@ Context* DeviceBuilder::deviceOpen()
 	return deviceOpen(lst.at(0).c_str());
 }
 
-void DeviceBuilder::deviceClose(Context* device)
+M2K *ContextBuilder::m2kOpen(const char *uri)
+{
+	auto dev = deviceOpen(uri);
+	auto m2k = dev->toM2k();
+	if (m2k) {
+		return m2k;
+	}
+	return nullptr;
+}
+
+M2K *ContextBuilder::m2kOpen()
+{
+	auto dev = deviceOpen();
+	auto m2k = dev->toM2k();
+	if (m2k) {
+		return m2k;
+	}
+	return nullptr;
+}
+
+void ContextBuilder::deviceClose(Context* device)
 {
 	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),
 					     s_connectedDevices.end(),
@@ -142,7 +162,7 @@ void DeviceBuilder::deviceClose(Context* device)
 	delete device;
 }
 
-DeviceTypes DeviceBuilder::identifyDevice(iio_context *ctx)
+DeviceTypes ContextBuilder::identifyDevice(iio_context *ctx)
 {
 	DeviceTypes type = Other;
 	for (auto dev : m_dev_map) {

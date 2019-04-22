@@ -1,4 +1,4 @@
-#include <libm2k/devicebuilder.hpp>
+#include <libm2k/contextbuilder.hpp>
 #include <libm2k/devices.hpp>
 #include <libm2k/analog/dmm.hpp>
 #include <libm2k/m2kexceptions.hpp>
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 		uri = argv[1];
 	}
 
-	auto lst = DeviceBuilder::listDevices();
+	auto lst = ContextBuilder::listDevices();
 	int i = 1;
 
 	while ((i <= lst.size()) || !detectDevices) {
@@ -26,7 +26,7 @@ int main (int argc, char **argv)
 
 		std::cout << "############################################################################" << std::endl;
 		std::cout << "Detected device " << i << " "  << uri << std::endl;
-		auto device = DeviceBuilder::deviceOpen(uri.c_str());
+		auto device = ContextBuilder::deviceOpen(uri.c_str());
 
 		std::cout << device->getContextDescription() << std::endl;
 		auto dmms = device->getAllDmm();
