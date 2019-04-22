@@ -29,7 +29,7 @@ namespace utils {
 	enum DEVICE_TYPE {
 		ANALOG_DEV = 1,
 		DIGITAL_DEV = 2,
-		NONE = 3
+		NO_DEV = 3
 	};
 
 	enum DEVICE_DIRECTION {

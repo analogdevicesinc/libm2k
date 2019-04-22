@@ -34,8 +34,8 @@ namespace libm2k {
 	};
 
 	enum GAIN_MODE {
-		LOW,
-		HIGH
+		LOW_GAIN,
+		HIGH_GAIN
 	};
 
 	enum M2K_EXCEPTION {

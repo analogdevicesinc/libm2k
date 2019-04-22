@@ -264,7 +264,7 @@ public:
 
 	M2K_TRIGGER_CONDITION getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
 	{
-		M2K_TRIGGER_CONDITION res = NONE;
+		M2K_TRIGGER_CONDITION res = NO_TRIGGER;
 		__try {
 			res = m_trigger->getAnalogCondition(chnIdx);
 		} __catch (exception_type &e) {
@@ -281,7 +281,7 @@ public:
 
 	M2K_TRIGGER_CONDITION getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const
 	{
-		M2K_TRIGGER_CONDITION res = NONE;
+		M2K_TRIGGER_CONDITION res = NO_TRIGGER;
 		__try {
 			res = m_trigger->getDigitalCondition(chnIdx);
 		} __catch (exception_type &e) {

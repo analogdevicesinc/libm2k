@@ -70,6 +70,8 @@ public:
 		DMM_READING result;
 		double value = 0;
 		std::string key = "";
+		std::string id = getChannel(m_channel_id_list.at(chn_name))->getId();
+		std::string name = getChannel(m_channel_id_list.at(chn_name))->getName();
 		unsigned int index = m_channel_id_list.at(chn_name);
 		auto channel = getChannel(index);
 		if (channel->hasAttribute("raw")) {
@@ -112,7 +114,8 @@ public:
 			key = " \n";
 		}
 
-		result.name = chn_name;
+		result.id = id;
+		result.name = name;
 		result.unit = key;
 		result.value = value;
 		return result;

@@ -29,6 +29,7 @@ namespace libm2k {
 namespace analog {
 	struct DMM_READING {
 		std::string name;
+		std::string id;
 		double value;
 		std::string unit;
 	};
@@ -46,10 +47,10 @@ namespace analog {
 	enum M2K_TRIGGER_CONDITION {
 		RISING_EDGE = 0,
 		FALLING_EDGE = 1,
-		LOW = 3,
-		HIGH = 4,
+		LOW_LEVEL = 3,
+		HIGH_LEVEL = 4,
 		ANY_EDGE = 5,
-		NONE = 6,
+		NO_TRIGGER = 6,
 	};
 
 	enum M2K_TRIGGER_MODE {
@@ -82,7 +83,7 @@ namespace analog {
 		int delay;
 	};
 
-	typedef std::unique_ptr<SETTINGS> settings_uptr;
+	typedef std::shared_ptr<SETTINGS> settings_uptr;
 }
 }
 

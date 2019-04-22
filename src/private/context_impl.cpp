@@ -188,7 +188,7 @@ public:
 
 		auto chn = iio_device_get_channel(dev, 0);
 		if (!chn) {
-			return libm2k::utils::NONE;
+			return NO_DEV;
 		}
 
 		const struct iio_data_format* data_format = iio_channel_get_data_format(chn);
