@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 3.1.3)
-option(BUILD_STATIC_LIB "Build static library" OFF)
+
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
 if(APPLE)
 	# build universal binaries by default
 	set(CMAKE_OSX_ARCHITECTURES "x86_64")
 endif()
 
-if(MSVC)
-	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
-endif()
-
 include_directories(
-	SYSTEM ${IIO_INCLUDE_DIRS}
-        ${LOG4CPP_INCLUDE_DIR}
+	SYSTEM 
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}/include
+	${IIO_INCLUDE_DIRS}
+	${LOG4CPP_INCLUDE_DIR}
 )
 
 
@@ -26,35 +26,37 @@ FILE(GLOB HEADERS_LIST
 FILE(GLOB DEVICES ${CMAKE_SOURCE_DIR}/src/devices/*/*.cpp)
 
 
-add_library(m2k SHARED
+#Create the libm2k library
+add_library(${PROJECT_NAME} SHARED
 			${SRC_LIST}
                         ${HEADERS_LIST}
 			${DEVICES})
 
-if (WIN32 OR ENABLE_APPLICATION_BUNDLE)
-	set_target_properties(m2k PROPERTIES OUTPUT_NAME m2k)
-endif()	
-
 if (NOT WIN32)
 	find_library(PTHREAD_LIBRARIES pthread)
 	if (PTHREAD_LIBRARIES)
-		target_link_libraries(${PROJECT_NAME} ${PTHREAD_LIBRARIES})
+		target_link_libraries(libm2k ${PTHREAD_LIBRARIES})
 	endif()
 endif()
 
 
-target_link_libraries(m2k
+#Link the required dependencies
+target_link_libraries(${PROJECT_NAME}
 	${IIO_LIBRARIES}
         ${LOG4CPP_LIBRARies}
 )
 
-set_target_properties(m2k PROPERTIES
+#Take care of the library properties
+set_target_properties(${PROJECT_NAME} PROPERTIES
         VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_VERSION}
 )
 
-message(${CMAKE_INSTALL_LIBDIR})
-install(TARGETS m2k
+if (MSVC)
+	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME libm2k)
+endif()
+
+install(TARGETS ${PROJECT_NAME}
 	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
