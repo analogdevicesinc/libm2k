@@ -154,7 +154,7 @@ public:
 		}
 
 		enableChannel(ch, true);
-		auto samps = getSamples(num_samples);
+		auto samps = getSamples(num_samples, false);
 		double avg = Utils::average(samps.at(ch).data(), num_samples);
 		return (uint16_t)avg;
 	}
@@ -166,7 +166,7 @@ public:
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			enableChannel(i, true);
 		}
-		auto samps = getSamples(num_samples);
+		auto samps = getSamples(num_samples, false);
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			uint16_t avg = (uint16_t)(Utils::average(samps.at(i).data(), num_samples));
 			avgs.push_back(avg);
