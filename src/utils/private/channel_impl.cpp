@@ -33,7 +33,6 @@ public:
 
 		if (!m_channel) {
 			m_channel = nullptr;
-			throw_exception(EXC_INVALID_PARAMETER, "Channel: Channel not found for this device");
 		}
 	}
 
@@ -46,7 +45,6 @@ public:
 
 		if (!m_channel) {
 			m_channel = nullptr;
-			throw_exception(EXC_INVALID_PARAMETER, "Channel: Channel not found for this device");
 
 		}
 
@@ -232,6 +230,11 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
 		}
 		return std::string(value);
+	}
+
+	bool isValid()
+	{
+		return !!m_channel;
 	}
 
 private:

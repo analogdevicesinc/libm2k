@@ -25,12 +25,13 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <libm2k/m2kglobal.hpp>
 
 namespace libm2k {
 namespace utils {
 class Channel;
 
-class Buffer
+class LIBM2K_API Buffer
 {
 public:
 	Buffer(struct iio_device *dev);
@@ -47,7 +48,7 @@ public:
 private:
 
 	class BufferImpl;
-	std::unique_ptr<BufferImpl> m_pimpl;
+	std::shared_ptr<BufferImpl> m_pimpl;
 };
 }
 }

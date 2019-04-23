@@ -24,10 +24,11 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <libm2k/m2kglobal.hpp>
 
 namespace libm2k {
 namespace utils {
-class Channel
+class LIBM2K_API Channel
 {
 public:
 	Channel(struct iio_device* device, unsigned int channel = 0);
@@ -55,9 +56,11 @@ public:
 
 	void enableChannel(bool enable);
 	uintptr_t getFirst(struct iio_buffer* buffer);
+
+	bool isValid();
 private:
 	class ChannelImpl;
-	std::unique_ptr<ChannelImpl> m_pimpl;
+	std::shared_ptr<ChannelImpl> m_pimpl;
 
 
 };

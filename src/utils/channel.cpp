@@ -22,12 +22,12 @@
 using namespace libm2k::utils;
 
 Channel::Channel(iio_device *device, unsigned int channel) :
-	m_pimpl(std::unique_ptr<ChannelImpl>(new ChannelImpl(device, channel)))
+	m_pimpl(std::shared_ptr<ChannelImpl>(new ChannelImpl(device, channel)))
 {
 }
 
 Channel::Channel(iio_device *device, std::string channel_name, bool output) :
-	m_pimpl(std::unique_ptr<ChannelImpl>(new ChannelImpl(device, channel_name, output)))
+	m_pimpl(std::shared_ptr<ChannelImpl>(new ChannelImpl(device, channel_name, output)))
 {
 }
 
@@ -73,6 +73,11 @@ void Channel::enableChannel(bool enable)
 uintptr_t Channel::getFirst(iio_buffer *buffer)
 {
 	return m_pimpl->getFirst(buffer);
+}
+
+bool Channel::isValid()
+{
+	return m_pimpl->isValid();
 }
 
 void Channel::write(struct iio_buffer* buffer, std::vector<short> &data)

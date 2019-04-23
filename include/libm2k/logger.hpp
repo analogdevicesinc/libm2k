@@ -13,6 +13,7 @@
 
 #include <string>
 #include <iostream>
+#include <libm2k/m2kglobal.hpp>
 
 #ifdef LIBM2K_ENABLE_LOG
 	#define LOG(x) libm2k::Logger::getInstance().warn(x)
@@ -21,7 +22,7 @@
 #endif
 
 namespace libm2k {
-class Logger
+class LIBM2K_API Logger
 {
 public:
     static Logger & getInstance();

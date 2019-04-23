@@ -26,6 +26,11 @@
 #include <algorithm>
 #include <cstring>
 
+extern "C" {
+	struct iio_context;
+	struct iio_device;
+}
+
 using namespace std;
 using namespace libm2k::utils;
 using namespace libm2k::devices;
@@ -69,15 +74,22 @@ public:
 						}
 					} else {
 						std::string name = "voltage" + std::to_string(i);
-						__try {
-							chn = new Channel(m_dev, name.c_str(), true);
-						} __catch (exception_type &e) {
+
+						chn = new Channel(m_dev, name.c_str(), true);
+						if (!chn->isValid()) {
+							delete chn;
+							chn = nullptr;
 							chn = new Channel(m_dev, name.c_str(), false);
 						}
 					}
+					if (!chn->isValid()) {
+						delete chn;
+						chn = nullptr;
+						continue;
+					}
 					m_channel_list.push_back(chn);
 				}
-			} catch (std::exception &e) {
+			} __catch (std::exception &e) {
 
 			}
 		}

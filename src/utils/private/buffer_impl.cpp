@@ -212,6 +212,10 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: No channel enabled for RX buffer");
 		}
 
+		for (auto chn : m_channel_list) {
+			chn->enableChannel(true);
+		}
+
 		if (m_buffer) {
 			iio_buffer_destroy(m_buffer);
 			m_buffer = nullptr;
@@ -237,8 +241,14 @@ public:
 				p_dat < p_end; p_dat += p_inc, i++)
 		{
 			for (unsigned int ch = 0; ch < m_data.size(); ch++) {
-				m_data[ch][i] = process(((int16_t*)p_dat)[ch], ch);
+				if (channels_enabled.at(ch)) {
+					m_data[ch][i] = process(((int16_t*)p_dat)[ch], ch);
+				}
 			}
+		}
+
+		for (unsigned int i = 0; i < m_channel_list.size(); i++) {
+			m_channel_list.at(i)->enableChannel(channels_enabled.at(i));
 		}
 
 		destroy();

@@ -21,7 +21,7 @@
 #include "private/buffer_impl.cpp"
 
 Buffer::Buffer(struct iio_device *dev) :
-	m_pimpl(std::unique_ptr<BufferImpl>(new BufferImpl(dev)))
+	m_pimpl(std::shared_ptr<BufferImpl>(new BufferImpl(dev)))
 {
 }
 

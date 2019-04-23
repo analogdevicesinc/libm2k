@@ -25,6 +25,7 @@
 #include <vector>
 #include <functional>
 #include <memory>
+#include <libm2k/m2kglobal.hpp>
 
 using namespace std;
 
@@ -33,7 +34,7 @@ namespace utils {
 class Channel;
 class Buffer;
 
-class Device
+class LIBM2K_API Device
 {
 public:
 	class DeviceImpl;
