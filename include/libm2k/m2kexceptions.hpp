@@ -29,10 +29,18 @@
 using namespace std;
 using namespace libm2k;
 
-#if __cpp_exceptions
+#if _EXCEPTIONS || defined(__cpp_exceptions)
 	#define exception_type std::exception
+	#if defined(_MSC_VER)
+		#define __try      try
+		#define __catch(X) catch(X)
+	#endif
 #else
 	#define exception_type
+	#if defined(_MSC_VER)
+		#define __try      if (true)
+		#define __catch(X) if (false)
+	#endif
 #endif
 
 class LIBM2K_API no_device_exception: public std::runtime_error {
@@ -75,7 +83,7 @@ static std::exception e;
 
 static void throw_exception(M2K_EXCEPTION exc_type, std::string exception)
 {
-#if __cpp_exceptions
+#if _EXCEPTIONS || defined(__cpp_exceptions)
 	switch (exc_type) {
 	case EXC_OUT_OF_RANGE: {
 		throw std::out_of_range("ERR: Out of range - " + exception);
