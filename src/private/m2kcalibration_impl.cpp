@@ -94,6 +94,8 @@ public:
 			/* Save the previous values for sampling frequency and oversampling ratio */
 			adc_sampl_freq = m_m2k_adc->getSamplerate();
 			adc_oversampl = m_m2k_adc->getOversamplingRatio();
+			m_m2k_adc->enableChannel(0, true);
+			m_m2k_adc->enableChannel(1, true);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
@@ -121,6 +123,8 @@ public:
 			m_m2k_adc->setSamplerate(adc_sampl_freq);
 			m_m2k_adc->setOversamplingRatio(adc_oversampl);
 
+			m_m2k_adc->enableChannel(0, false);
+			m_m2k_adc->enableChannel(1, false);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
