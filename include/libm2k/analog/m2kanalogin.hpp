@@ -38,7 +38,7 @@ public:
 	virtual ~M2kAnalogIn();
 
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
-						    bool processed=false);
+						    bool processed=true);
 	void openAnalogIn();
 	void closeAnalogIn();
 
