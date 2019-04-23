@@ -47,6 +47,7 @@ namespace std {
 	#include <libm2k/m2kcalibration.hpp>
 	#include <libm2k/m2kexceptions.hpp>
 	#include <libm2k/m2k.hpp>
+	typedef std::vector<libm2k::analog::DMM_READING> DMMReading;
 %}
 
 %include <std_shared_ptr.i>
@@ -80,5 +81,7 @@ namespace std {
 %include <libm2k/m2kcalibration.hpp>
 %include <libm2k/m2kexceptions.hpp>
 %include <libm2k/m2k.hpp>
+
+%template(DMMReading) std::vector<libm2k::analog::DMM_READING>;
 
 
