@@ -120,22 +120,22 @@ void M2kAnalogOut::setDacCalibVlsb(unsigned int chn_idx, double vlsb)
 	m_pimpl->setDacCalibVlsb(chn_idx, vlsb);
 }
 
-void M2kAnalogOut::push(std::vector<short> &data, unsigned int chnIdx)
+void M2kAnalogOut::push(std::vector<short> const &data, unsigned int chnIdx)
 {
 	m_pimpl->push(data, chnIdx);
 }
 
-void M2kAnalogOut::push(std::vector<double> &data, unsigned int chnIdx)
+void M2kAnalogOut::push(std::vector<double> const &data, unsigned int chnIdx)
 {
 	m_pimpl->push(data, chnIdx);
 }
 
-void M2kAnalogOut::push(std::vector<std::vector<short>> &data)
+void M2kAnalogOut::push(std::vector<std::vector<short>> const &data)
 {
 	m_pimpl->push(data);
 }
 
-void M2kAnalogOut::push(std::vector<std::vector<double>> &data)
+void M2kAnalogOut::push(std::vector<std::vector<double>> const &data)
 {
 	m_pimpl->push(data);
 }

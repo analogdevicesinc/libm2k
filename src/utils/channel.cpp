@@ -80,12 +80,12 @@ bool Channel::isValid()
 	return m_pimpl->isValid();
 }
 
-void Channel::write(struct iio_buffer* buffer, std::vector<short> &data)
+void Channel::write(struct iio_buffer* buffer, std::vector<short> const &data)
 {
 	m_pimpl->write(buffer, data);
 }
 
-void Channel::write(struct iio_buffer* buffer, std::vector<double> &data)
+void Channel::write(struct iio_buffer* buffer, std::vector<double> const &data)
 {
 	m_pimpl->write(buffer, data);
 }

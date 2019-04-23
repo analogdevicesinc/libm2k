@@ -62,7 +62,7 @@ public:
 	}
 
 	//push on a certain channel
-	void push(std::vector<short> &data, unsigned int channel = 0,
+	void push(std::vector<short> const &data, unsigned int channel = 0,
 		  bool cyclic = true, bool multiplex = false)
 	{
 		size_t size = data.size();
@@ -105,7 +105,7 @@ public:
 		}
 	}
 
-	void push(std::vector<double> &data, unsigned int channel = 0, bool cyclic = true)
+	void push(std::vector<double> const &data, unsigned int channel = 0, bool cyclic = true)
 	{
 		size_t size = data.size();
 		if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
@@ -135,7 +135,7 @@ public:
 		}
 	}
 
-	void push(std::vector<std::vector<short>> &data)
+	void push(std::vector<std::vector<short>> const &data)
 	{
 		size_t data_ch_nb = data.size();
 

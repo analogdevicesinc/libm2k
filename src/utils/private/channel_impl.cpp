@@ -127,7 +127,7 @@ public:
 		return (uintptr_t)iio_buffer_first(buffer, m_channel);
 	}
 
-	void write(struct iio_buffer* buffer, std::vector<short> &data)
+	void write(struct iio_buffer* buffer, std::vector<short> const &data)
 	{
 		if (!m_channel) {
 			throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
@@ -142,7 +142,7 @@ public:
 		}
 	}
 
-	void write(struct iio_buffer* buffer, std::vector<double> &data)
+	void write(struct iio_buffer* buffer, std::vector<double> const &data)
 	{
 		if (!m_channel) {
 			throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");

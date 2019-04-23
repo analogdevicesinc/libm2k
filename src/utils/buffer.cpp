@@ -33,7 +33,7 @@ Buffer::~Buffer()
  * should call setChannels(channels) before using the
  * push methods
  */
-void Buffer::push(std::vector<std::vector<short>> &data)
+void Buffer::push(std::vector<std::vector<short>> const &data)
 {
 	m_pimpl->push(data);
 }
@@ -44,13 +44,13 @@ void Buffer::setChannels(std::vector<Channel*> channels)
 }
 
 //push on a certain channel
-void Buffer::push(std::vector<short> &data, unsigned int channel,
+void Buffer::push(std::vector<short> const &data, unsigned int channel,
 		  bool cyclic, bool multiplex)
 {
 	m_pimpl->push(data, channel, cyclic, multiplex);
 }
 
-void Buffer::push(std::vector<double> &data, unsigned int channel, bool cyclic)
+void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
 {
 	m_pimpl->push(data, channel, cyclic);
 }

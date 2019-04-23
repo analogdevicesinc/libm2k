@@ -89,12 +89,12 @@ public:
 		return m_cyclic.at(chn);
 	}
 
-	void push(std::vector<short> &data, unsigned int chn_idx)
+	void push(std::vector<short> const &data, unsigned int chn_idx)
 	{
 		DeviceImpl::push(data, chn_idx, getCyclic(chn_idx));
 	}
 
-	void push(std::vector<double> &data, unsigned int chn_idx)
+	void push(std::vector<double> const &data, unsigned int chn_idx)
 	{
 		DeviceImpl::push(data, chn_idx, getCyclic(chn_idx));
 	}

@@ -41,8 +41,8 @@ public:
 	bool isOutput();
 	bool isEnabled();
 	bool hasAttribute(std::string attr);
-	void write(struct iio_buffer* buffer, std::vector<short> &data);
-	void write(struct iio_buffer* buffer, std::vector<double> &data);
+	void write(struct iio_buffer* buffer, std::vector<short> const &data);
+	void write(struct iio_buffer* buffer, std::vector<double> const &data);
 	void convert(int16_t *avg, int16_t *src);
 	void convert(double *avg, int16_t *src);
 

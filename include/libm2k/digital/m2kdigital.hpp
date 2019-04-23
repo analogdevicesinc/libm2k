@@ -52,7 +52,7 @@ public:
 	DIO_LEVEL getValueRaw(DIO_CHANNEL index);
 	DIO_LEVEL getValueRaw(unsigned int index);
 
-	void push(std::vector<short>& data);
+	void push(std::vector<short> const &data);
 	void stop();
 
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);

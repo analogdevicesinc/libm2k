@@ -149,7 +149,7 @@ public:
 	}
 
 
-	void push(std::vector<short> &data, unsigned int channel,
+	void push(std::vector<short> const &data, unsigned int channel,
 			  bool cyclic = true, bool multiplex = false)
 	{
 		if (!m_buffer) {
@@ -159,7 +159,7 @@ public:
 		m_buffer->push(data, channel, cyclic, multiplex);
 	}
 
-	void push(std::vector<double> &data, unsigned int channel, bool cyclic = true)
+	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true)
 	{
 		if (!m_buffer) {
 			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");

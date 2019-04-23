@@ -46,8 +46,8 @@ public:
 	void setCyclic(bool en, unsigned int chn);
 	bool getCyclic(unsigned int chn);
 
-	void push(std::vector<double>& data, unsigned int chn_idx = 0);
-	void push(std::vector<short>& data, unsigned int chn_idx = 0);
+	void push(std::vector<double> const &data, unsigned int chn_idx = 0);
+	void push(std::vector<short> const &data, unsigned int chn_idx = 0);
 	void stop();
 
 private:

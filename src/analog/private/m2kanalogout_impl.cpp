@@ -203,7 +203,7 @@ public:
 		m_calib_vlsb[chn_idx] = vlsb;
 	}
 
-	void push(std::vector<short> &data, unsigned int chnIdx)
+	void push(std::vector<short> const &data, unsigned int chnIdx)
 	{
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
@@ -222,7 +222,7 @@ public:
 		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
 	}
 
-	void push(std::vector<double> &data, unsigned int chnIdx)
+	void push(std::vector<double> const &data, unsigned int chnIdx)
 	{
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
@@ -241,7 +241,7 @@ public:
 		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
 	}
 
-	void push(std::vector<std::vector<short>> &data)
+	void push(std::vector<std::vector<short>> const &data)
 	{
 		std::vector<std::vector<short>> data_buffers;
 		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
@@ -262,7 +262,7 @@ public:
 		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 	}
 
-	void push(std::vector<std::vector<double>> &data)
+	void push(std::vector<std::vector<double>> const &data)
 	{
 		std::vector<std::vector<short>> data_buffers;
 		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);

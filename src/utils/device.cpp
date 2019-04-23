@@ -66,13 +66,13 @@ bool Device::isChannelEnabled(unsigned int chnIdx)
 }
 
 
-void Device::push(std::vector<short> &data, unsigned int channel,
+void Device::push(std::vector<short> const &data, unsigned int channel,
 		  bool cyclic, bool multiplex)
 {
 	m_pimpl->push(data, channel, cyclic, multiplex);
 }
 
-void Device::push(std::vector<double> &data, unsigned int channel, bool cyclic)
+void Device::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
 {
 	m_pimpl->push(data, channel, cyclic);
 }

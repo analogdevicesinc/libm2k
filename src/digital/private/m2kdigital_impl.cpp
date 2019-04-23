@@ -183,7 +183,7 @@ public:
 		return getValueRaw(idx);
 	}
 
-	void push(std::vector<short> &data)
+	void push(std::vector<short> const &data)
 	{
 		if (!anyChannelEnabled(DIO_OUTPUT)) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.");

@@ -36,10 +36,10 @@ class LIBM2K_API Buffer
 public:
 	Buffer(struct iio_device *dev);
 	~Buffer();
-	void push(std::vector<short> &data, unsigned int channel = 0,
+	void push(std::vector<short> const &data, unsigned int channel = 0,
 		  bool cyclic = true, bool multiplex = false);
-	void push(std::vector<double> &data, unsigned int channel = 0, bool cyclic = true);
-	void push(std::vector<std::vector<short>> &data);
+	void push(std::vector<double> const &data, unsigned int channel = 0, bool cyclic = true);
+	void push(std::vector<std::vector<short>> const &data);
 	void setChannels(std::vector<Channel*> channels);
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
