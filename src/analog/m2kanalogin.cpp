@@ -74,10 +74,14 @@ M2kHardwareTrigger *M2kAnalogIn::getTrigger()
 	return m_pimpl->getTrigger();
 }
 
-std::vector<std::vector<double>> M2kAnalogIn::getSamples(unsigned int nb_samples,
-							 bool processed)
+std::vector<std::vector<double>> M2kAnalogIn::getSamples(unsigned int nb_samples)
 {
-	return m_pimpl->getSamples(nb_samples, processed);
+	return m_pimpl->getSamples(nb_samples, true);
+}
+
+std::vector<std::vector<double> > M2kAnalogIn::getSamplesRaw(unsigned int nb_samples)
+{
+	return m_pimpl->getSamples(nb_samples, false);
 }
 
 double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)

@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 					bool ret = dev->resetCalibration();
 					aIn->enableChannel(0, true);
 					aIn->enableChannel(1, true);
-					auto samps = aIn->getSamples(20);
+					auto samps = aIn->getSamplesRaw(20);
 					for (int i = 0; i < 20; i++) {
 						std::cout << samps[0][i] << " ";
 						std::cout << samps[1][i] << " ";
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 						maIn->setTriggerMode(ANALOG_IN_CHANNEL_1, ALWAYS);
 						maIn->setAnalogCondition(ANALOG_IN_CHANNEL_1, FALLING_EDGE);
 					}
-					samps = maIn->getSamples(64, true);
+					samps = maIn->getSamples(64);
 					for (int i = 0; i < 64; i++) {
 						std::cout << samps[0][i] << "\t ";
 						std::cout << samps[1][i] << "\n ";

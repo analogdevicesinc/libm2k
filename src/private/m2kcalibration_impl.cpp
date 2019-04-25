@@ -189,7 +189,7 @@ public:
 
 		const unsigned int num_samples = 1e5;
 		__try {
-			ch_data = m_m2k_adc->getSamples(num_samples, false);
+			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
@@ -238,7 +238,7 @@ public:
 		setCalibrationMode(ADC_REF1);
 
 		__try {
-			ch_data = m_m2k_adc->getSamples(num_samples, false);
+			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
@@ -361,7 +361,7 @@ public:
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 			__try {
-				ch_data = m_m2k_adc->getSamples(num_samples, false);
+				ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 			} __catch (exception_type &e) {
 				throw_exception(EXC_INVALID_PARAMETER, e.what());
 			}
@@ -470,7 +470,7 @@ out_cleanup:
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 		__try {
-			ch_data = m_m2k_adc->getSamples(num_samples, false);
+			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {
 			ch_data.clear();
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
@@ -552,7 +552,7 @@ out_cleanup:
 
 		const unsigned int num_samples = 1e5;
 		__try {
-			ch_data = m_m2k_adc->getSamples(num_samples, false);
+			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}

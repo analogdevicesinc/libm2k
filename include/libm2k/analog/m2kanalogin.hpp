@@ -37,8 +37,8 @@ public:
 	M2kAnalogIn(struct iio_context*, std::string adc_dev);
 	virtual ~M2kAnalogIn();
 
-	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
-						    bool processed=true);
+	std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
+	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
 	void openAnalogIn();
 	void closeAnalogIn();
 

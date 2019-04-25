@@ -34,10 +34,14 @@ GenericAnalogIn::~GenericAnalogIn()
 {
 }
 
-std::vector<std::vector<double>> GenericAnalogIn::getSamples(unsigned int nb_samples,
-							     bool processed)
+std::vector<std::vector<double> > GenericAnalogIn::getSamplesRaw(unsigned int nb_samples)
 {
-	return m_pimpl->getSamples(nb_samples, processed);
+	return m_pimpl->getSamples(nb_samples, false);
+}
+
+std::vector<std::vector<double>> GenericAnalogIn::getSamples(unsigned int nb_samples)
+{
+	return m_pimpl->getSamples(nb_samples, true);
 }
 
 void GenericAnalogIn::openAnalogIn()
