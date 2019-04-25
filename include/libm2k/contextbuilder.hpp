@@ -47,15 +47,45 @@ public:
 	static M2K* m2kOpen(const char*);
 	static M2K* m2kOpen();
 	static void deviceClose(Context*);
-	static DeviceTypes identifyDevice(iio_context *ctx);
-	static Context* buildDevice(DeviceTypes type,
-					std::string uri,
-					struct iio_context *ctx);
 private:
 	static std::map<DeviceTypes, std::vector<std::string>> m_dev_map;
 	static std::map<DeviceTypes, std::string> m_dev_name_map;
 	//                std::shared_ptr<M2KImpl> m_pimpl;
+	static DeviceTypes identifyDevice(iio_context *ctx);
+	static Context* buildDevice(DeviceTypes type,
+					std::string uri,
+					struct iio_context *ctx);
 };
+
+static LIBM2K_API Context* deviceOpen()
+{
+	return ContextBuilder::deviceOpen();
+}
+
+static LIBM2K_API Context* deviceOpen(const char* uri)
+{
+	return ContextBuilder::deviceOpen(uri);
+}
+
+static LIBM2K_API M2K* m2kOpen(const char* uri)
+{
+	return ContextBuilder::m2kOpen(uri);
+}
+
+static LIBM2K_API M2K* m2kOpen()
+{
+	return ContextBuilder::m2kOpen();
+}
+
+static LIBM2K_API std::vector<std::string> listDevices()
+{
+	return ContextBuilder::listDevices();
+}
+
+static LIBM2K_API void deviceClose(Context* ctx)
+{
+	ContextBuilder::deviceClose(ctx);
+}
 }
 }
 #endif //M2K_H
