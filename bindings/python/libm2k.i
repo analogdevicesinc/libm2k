@@ -7,6 +7,8 @@
 %include "std_set.i"
 %include "std_string.i"
 %include "std_vector.i"
+%include "exception.i"
+%allowexception;
 
 namespace std {
 	%template(VectorI) vector<int>;
@@ -54,6 +56,17 @@ namespace std {
 	typedef std::vector<libm2k::analog::M2kAnalogIn*> M2kAnalogIns;
 	typedef std::vector<libm2k::analog::M2kAnalogOut*> M2kAnalogOuts;
 %}
+
+%exception {
+    try {
+	$action
+    } catch (exception_type &e) {
+	std::string s("Module libm2k error: "), s2(e.what());
+	s = s + s2;
+	PyErr_SetString(PyExc_ValueError, s.c_str());
+	return NULL;
+    }
+}
 
 %include <std_shared_ptr.i>
 %include <libm2k/m2kglobal.hpp>
