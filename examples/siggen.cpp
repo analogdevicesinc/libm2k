@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
 
 	M2kAnalogOut* maOut = m2k_device->getAnalogOut();
 	m2k_device->calibrateDAC();
-	maOut->setSamplerate(0, sample_rate);
+	maOut->setSampleRate(0, sample_rate);
 	maOut->setOversamplingRatio(0, 1);
 	maOut->enableChannel(0, true);
 	maOut->push(data_all);

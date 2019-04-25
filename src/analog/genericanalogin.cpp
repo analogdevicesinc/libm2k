@@ -70,9 +70,9 @@ double GenericAnalogIn::setSampleRate(unsigned int chn_idx, double sampleRate)
 	return m_pimpl->setSampleRate(chn_idx, sampleRate);
 }
 
-std::vector<double> GenericAnalogIn::getAvailableSamplerates()
+std::vector<double> GenericAnalogIn::getAvailableSampleRates()
 {
-	return m_pimpl->getAvailableSamplerates();
+	return m_pimpl->getAvailableSampleRates();
 }
 
 string GenericAnalogIn::getDeviceName()

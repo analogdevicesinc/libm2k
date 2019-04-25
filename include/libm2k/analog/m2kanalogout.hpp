@@ -45,10 +45,10 @@ public:
 	std::vector<double> setOversamplingRatio(std::vector<double> oversampling_ratio);
 	double setOversamplingRatio(unsigned int chn, double oversampling_ratio);
 
-	std::vector<double> getSamplerate();
-	double getSamplerate(unsigned int chn);
-	std::vector<double> setSamplerate(std::vector<double> samplerates);
-	double setSamplerate(unsigned int chn, double samplerate);
+	std::vector<double> getSampleRate();
+	double getSampleRate(unsigned int chn);
+	std::vector<double> setSampleRate(std::vector<double> samplerates);
+	double setSampleRate(unsigned int chn, double samplerate);
 
 	void setSyncedDma(bool en, int chn = -1);
 	bool getSyncedDma(int chn = -1);

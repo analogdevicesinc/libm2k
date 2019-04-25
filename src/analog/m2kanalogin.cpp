@@ -261,24 +261,24 @@ double M2kAnalogIn::setOversamplingRatio(unsigned int chn_idx, double oversampli
 	return m_pimpl->setOversamplingRatio(chn_idx, oversampling_ratio);
 }
 
-double M2kAnalogIn::getSamplerate()
+double M2kAnalogIn::getSampleRate()
 {
-	return m_pimpl->getSamplerate();
+	return m_pimpl->getSampleRate();
 }
 
-double M2kAnalogIn::getSamplerate(unsigned int chn_idx)
+double M2kAnalogIn::getSampleRate(unsigned int chn_idx)
 {
-	return m_pimpl->getSamplerate(chn_idx);
+	return m_pimpl->getSampleRate(chn_idx);
 }
 
-double M2kAnalogIn::setSamplerate(double samplerate)
+double M2kAnalogIn::setSampleRate(double samplerate)
 {
-	return m_pimpl->setSamplerate(samplerate);
+	return m_pimpl->setSampleRate(samplerate);
 }
 
-double M2kAnalogIn::setSamplerate(unsigned int chn_idx, double samplerate)
+double M2kAnalogIn::setSampleRate(unsigned int chn_idx, double samplerate)
 {
-	return m_pimpl->setSamplerate(chn_idx, samplerate);
+	return m_pimpl->setSampleRate(chn_idx, samplerate);
 }
 
 double M2kAnalogIn::getFilterCompensation(double samplerate)

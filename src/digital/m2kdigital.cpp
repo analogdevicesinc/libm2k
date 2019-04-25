@@ -187,24 +187,24 @@ DIO_MODE M2kDigital::getOutputMode(unsigned int chn)
 	return m_pimpl->getOutputMode(chn);
 }
 
-double M2kDigital::setSamplerateIn(double samplerate)
+double M2kDigital::setSampleRateIn(double samplerate)
 {
-	return m_pimpl->setSamplerateIn(samplerate);
+	return m_pimpl->setSampleRateIn(samplerate);
 }
 
-double M2kDigital::setSamplerateOut(double samplerate)
+double M2kDigital::setSampleRateOut(double samplerate)
 {
-	return m_pimpl->setSamplerateOut(samplerate);
+	return m_pimpl->setSampleRateOut(samplerate);
 }
 
-double M2kDigital::getSamplerateIn()
+double M2kDigital::getSampleRateIn()
 {
-	return m_pimpl->getSamplerateIn();
+	return m_pimpl->getSampleRateIn();
 }
 
-double M2kDigital::getSamplerateOut()
+double M2kDigital::getSampleRateOut()
 {
-	return m_pimpl->getSamplerateOut();
+	return m_pimpl->getSampleRateOut();
 }
 
 bool M2kDigital::getCyclic()

@@ -158,9 +158,9 @@ string Device::getStringValue(unsigned int chn_idx, string attr, bool output)
 	return m_pimpl->getStringValue(chn_idx, attr, output);
 }
 
-std::vector<double> Device::getAvailableSamplerates()
+std::vector<double> Device::getAvailableSampleRates()
 {
-	return m_pimpl->getAvailableSamplerates();
+	return m_pimpl->getAvailableSampleRates();
 }
 
 void Device::writeRegister(uint32_t address, uint32_t value)

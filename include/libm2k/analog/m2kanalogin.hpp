@@ -66,10 +66,10 @@ public:
 	double setOversamplingRatio(double oversampling);
 	double setOversamplingRatio(unsigned int chn_idx, double oversampling);
 
-	double getSamplerate();
-	double getSamplerate(unsigned int);
-	double setSamplerate(double samplerate);
-	double setSamplerate(unsigned int chn_idx, double samplerate);
+	double getSampleRate();
+	double getSampleRate(unsigned int);
+	double setSampleRate(double samplerate);
+	double setSampleRate(unsigned int chn_idx, double samplerate);
 
 	int getLevel(ANALOG_IN_CHANNEL chnIdx) const;
 	void setLevel(ANALOG_IN_CHANNEL chnIdx, int level);

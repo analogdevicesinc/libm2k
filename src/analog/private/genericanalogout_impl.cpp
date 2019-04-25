@@ -40,22 +40,22 @@ public:
 
 	}
 
-	double getSamplerate()
+	double getSampleRate()
 	{
 		return getDoubleValue("sampling_frequency");
 	}
 
-	double getSamplerate(unsigned int chn_idx)
+	double getSampleRate(unsigned int chn_idx)
 	{
 		return getDoubleValue(chn_idx, "sampling_frequency", true);
 	}
 
-	double setSamplerate(double sampleRate)
+	double setSampleRate(double sampleRate)
 	{
 		return setDoubleValue(sampleRate, "sampling_frequency");
 	}
 
-	double setSamplerate(unsigned int chn_idx, double sampleRate)
+	double setSampleRate(unsigned int chn_idx, double sampleRate)
 	{
 		return setDoubleValue(chn_idx, sampleRate,
 				      "sampling_frequency", true);
@@ -63,7 +63,7 @@ public:
 
 	std::vector<double> getAvailableSamplerates()
 	{
-		return DeviceImpl::getAvailableSamplerates();
+		return DeviceImpl::getAvailableSampleRates();
 	}
 
 	void setCyclic(bool en)

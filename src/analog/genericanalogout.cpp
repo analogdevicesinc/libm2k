@@ -33,29 +33,29 @@ GenericAnalogOut::~GenericAnalogOut()
 {
 
 }
-double GenericAnalogOut::getSamplerate()
+double GenericAnalogOut::getSampleRate()
 {
-	return m_pimpl->getSamplerate();
+	return m_pimpl->getSampleRate();
 }
 
-double GenericAnalogOut::getSamplerate(unsigned int chn_idx)
+double GenericAnalogOut::getSampleRate(unsigned int chn_idx)
 {
-	return m_pimpl->getSamplerate(chn_idx);
+	return m_pimpl->getSampleRate(chn_idx);
 }
 
-double GenericAnalogOut::setSamplerate(double sampleRate)
+double GenericAnalogOut::setSampleRate(double sampleRate)
 {
-	return m_pimpl->setSamplerate(sampleRate);
+	return m_pimpl->setSampleRate(sampleRate);
 }
 
-double GenericAnalogOut::setSamplerate(unsigned int chn_idx, double sampleRate)
+double GenericAnalogOut::setSampleRate(unsigned int chn_idx, double sampleRate)
 {
-	return m_pimpl->setSamplerate(chn_idx, sampleRate);
+	return m_pimpl->setSampleRate(chn_idx, sampleRate);
 }
 
-std::vector<double> GenericAnalogOut::getAvailableSamplerates()
+std::vector<double> GenericAnalogOut::getAvailableSampleRates()
 {
-	return m_pimpl->getAvailableSamplerates();
+	return m_pimpl->getAvailableSampleRates();
 }
 
 void GenericAnalogOut::setCyclic(bool en)

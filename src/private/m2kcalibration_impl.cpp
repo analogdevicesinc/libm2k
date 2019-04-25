@@ -92,7 +92,7 @@ public:
 			m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_2, ALWAYS);
 
 			/* Save the previous values for sampling frequency and oversampling ratio */
-			adc_sampl_freq = m_m2k_adc->getSamplerate();
+			adc_sampl_freq = m_m2k_adc->getSampleRate();
 			adc_oversampl = m_m2k_adc->getOversamplingRatio();
 			m_m2k_adc->enableChannel(0, true);
 			m_m2k_adc->enableChannel(1, true);
@@ -104,9 +104,9 @@ public:
 	void setDacInCalibMode()
 	{
 		__try {
-			dac_a_sampl_freq = m_m2k_dac->getSamplerate(0);
+			dac_a_sampl_freq = m_m2k_dac->getSampleRate(0);
 			dac_a_oversampl = m_m2k_dac->getOversamplingRatio(0);
-			dac_b_sampl_freq = m_m2k_dac->getSamplerate(1);
+			dac_b_sampl_freq = m_m2k_dac->getSampleRate(1);
 			dac_b_oversampl = m_m2k_dac->getOversamplingRatio(1);
 		} __catch(exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
@@ -120,7 +120,7 @@ public:
 			m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
 
 			/* Restore the previous values for sampling frequency and oversampling ratio */
-			m_m2k_adc->setSamplerate(adc_sampl_freq);
+			m_m2k_adc->setSampleRate(adc_sampl_freq);
 			m_m2k_adc->setOversamplingRatio(adc_oversampl);
 
 			m_m2k_adc->enableChannel(0, false);
@@ -133,9 +133,9 @@ public:
 	void restoreDacFromCalibMode()
 	{
 		__try {
-			m_m2k_dac->setSamplerate(0, dac_a_sampl_freq);
+			m_m2k_dac->setSampleRate(0, dac_a_sampl_freq);
 			m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
-			m_m2k_dac->setSamplerate(1, dac_b_sampl_freq);
+			m_m2k_dac->setSampleRate(1, dac_b_sampl_freq);
 			m_m2k_dac->setOversamplingRatio(1, dac_b_oversampl);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
@@ -146,7 +146,7 @@ public:
 	{
 		// Make sure we calibrate at the highest sample rate
 		__try {
-			m_m2k_adc->setSamplerate(1e8);
+			m_m2k_adc->setSampleRate(1e8);
 			m_m2k_adc->setOversamplingRatio(1);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
@@ -156,9 +156,9 @@ public:
 	void configDacSamplerate()
 	{
 		__try {
-			m_m2k_dac->setSamplerate(0, 75E6);
+			m_m2k_dac->setSampleRate(0, 75E6);
 			m_m2k_dac->setOversamplingRatio(0, 1);
-			m_m2k_dac->setSamplerate(1, 75E6);
+			m_m2k_dac->setSampleRate(1, 75E6);
 			m_m2k_dac->setOversamplingRatio(1, 1);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());

@@ -36,11 +36,11 @@ public:
 	void openAnalogOut();
 	void closeAnalogOut();
 
-	double getSamplerate();
-	double getSamplerate(unsigned int);
-	double setSamplerate(double sampleRate);
-	double setSamplerate(unsigned int chn_idx, double sampleRate);
-	std::vector<double> getAvailableSamplerates();
+	double getSampleRate();
+	double getSampleRate(unsigned int);
+	double setSampleRate(double sampleRate);
+	double setSampleRate(unsigned int chn_idx, double sampleRate);
+	std::vector<double> getAvailableSampleRates();
 
 	void setCyclic(bool en);
 	void setCyclic(bool en, unsigned int chn);

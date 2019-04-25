@@ -83,9 +83,9 @@ public:
 		return setDoubleValue(chn_idx, sampleRate, "sampling_frequency");
 	}
 
-	std::vector<double> getAvailableSamplerates()
+	std::vector<double> getAvailableSampleRates()
 	{
-		return DeviceImpl::getAvailableSamplerates();
+		return DeviceImpl::getAvailableSampleRates();
 	}
 
 	string getDeviceName()

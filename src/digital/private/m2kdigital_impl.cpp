@@ -362,22 +362,22 @@ public:
 		return getOutputMode(idx);
 	}
 
-	double setSamplerateIn(double samplerate)
+	double setSampleRateIn(double samplerate)
 	{
 		return m_dev_read->setDoubleValue(samplerate, "sampling_frequency");
 	}
 
-	double setSamplerateOut(double samplerate)
+	double setSampleRateOut(double samplerate)
 	{
 		return m_dev_write->setDoubleValue(samplerate, "sampling_frequency");
 	}
 
-	double getSamplerateIn()
+	double getSampleRateIn()
 	{
 		return m_dev_read->getDoubleValue("sampling_frequency");
 	}
 
-	double getSamplerateOut()
+	double getSampleRateOut()
 	{
 		return m_dev_read->getDoubleValue("sampling_frequency");
 	}

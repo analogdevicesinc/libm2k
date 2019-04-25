@@ -80,10 +80,10 @@ public:
 	DIO_MODE getOutputMode(DIO_CHANNEL);
 	DIO_MODE getOutputMode(unsigned int);
 
-	double setSamplerateIn(double samplerate);
-	double setSamplerateOut(double samplerate);
-	double getSamplerateIn();
-	double getSamplerateOut();
+	double setSampleRateIn(double samplerate);
+	double setSampleRateOut(double samplerate);
+	double getSampleRateIn();
+	double getSampleRateOut();
 
 	bool getCyclic();
 	void setCyclic(bool cyclic);

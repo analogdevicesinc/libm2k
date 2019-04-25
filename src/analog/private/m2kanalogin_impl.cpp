@@ -133,7 +133,7 @@ public:
 			return convertRawToVolts(sample,
 						 m_adc_calib_gain.at(channel),
 						 getValueForRange(m_input_range.at(channel)),
-						 getFilterCompensation(getSamplerate()),
+						 getFilterCompensation(getSampleRate()),
 						 m_adc_hw_offset.at(channel));
 		} else {
 			return (double)sample;
@@ -213,7 +213,7 @@ public:
 		return (0.78 / ((1 << 11) * 1.3 *
 				getValueForRange(m_input_range.at(ch))) *
 			m_adc_calib_gain.at(ch) *
-			getFilterCompensation(getSamplerate()));
+			getFilterCompensation(getSampleRate()));
 	}
 
 	void openAnalogIn()
@@ -421,22 +421,22 @@ public:
 	}
 
 
-	double getSamplerate()
+	double getSampleRate()
 	{
 		return getDoubleValue("sampling_frequency");
 	}
 
-	double getSamplerate(unsigned int chn_idx)
+	double getSampleRate(unsigned int chn_idx)
 	{
 		return getDoubleValue(chn_idx, "sampling_frequency");
 	}
 
-	double setSamplerate(double samplerate)
+	double setSampleRate(double samplerate)
 	{
 		return setDoubleValue(samplerate, "sampling_frequency");
 	}
 
-	double setSamplerate(unsigned int chn_idx, double samplerate)
+	double setSampleRate(unsigned int chn_idx, double samplerate)
 	{
 		return setDoubleValue(chn_idx, samplerate, "sampling_frequency");
 	}

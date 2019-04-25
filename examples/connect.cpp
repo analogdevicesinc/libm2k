@@ -141,8 +141,8 @@ int main(int argc, char **argv)
 				GenericAnalogOut* plutoOut = d->getAnalogOut(0);
 				plutoOut->enableChannel(0, true);
 				plutoOut->enableChannel(1, true);
-				plutoOut->setSamplerate(0, 3840000);
-				plutoOut->setSamplerate(1, 3840000);
+				plutoOut->setSampleRate(0, 3840000);
+				plutoOut->setSampleRate(1, 3840000);
 				vector<short> data(1024, 2048);
 
 //				float amplitude = 2.5;
@@ -196,8 +196,8 @@ int main(int argc, char **argv)
 					// Analog Out
 					M2kAnalogOut* maOut = dev->getAnalogOut();
 					ret = dev->calibrateDAC();
-					maOut->setSamplerate(0, 75e6);
-					maOut->setSamplerate(1, 75e6);
+					maOut->setSampleRate(0, 75e6);
+					maOut->setSampleRate(1, 75e6);
 					maOut->setOversamplingRatio(0, 1);
 					maOut->setOversamplingRatio(1, 1);
 
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
 					std::cout << "Average voltage  " << maIn->getVoltage(ANALOG_IN_CHANNEL_1) << " "
 						  << maIn->getVoltage(ANALOG_IN_CHANNEL_2) << "\n";
 
-					for (auto s : aIn->getAvailableSamplerates()) {
+					for (auto s : aIn->getAvailableSampleRates()) {
 						std::cout << " s " << s << std::endl;
 					}
 
@@ -270,7 +270,7 @@ int main(int argc, char **argv)
 
 					logic->setTriggerMode(DIO_AND);
 					logic->enableChannel(1, true);
-					logic->setSamplerateIn(1000);
+					logic->setSampleRateIn(1000);
 					logic->setDirection(DIO_CHANNEL_4, DIO_OUTPUT);
 					logic->setDirection(DIO_CHANNEL_5, DIO_OUTPUT);
 					logic->setValueRaw(DIO_CHANNEL_4, libm2k::digital::HIGH);

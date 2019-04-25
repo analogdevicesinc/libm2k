@@ -43,7 +43,7 @@ public:
 	double getSampleRate(unsigned int);
 	double setSampleRate(double sampleRate);
 	double setSampleRate(unsigned int chn_idx, double sampleRate);
-	std::vector<double> getAvailableSamplerates();
+	std::vector<double> getAvailableSampleRates();
 
 	void enableChannel(unsigned int index, bool enable);
 	std::string getDeviceName();

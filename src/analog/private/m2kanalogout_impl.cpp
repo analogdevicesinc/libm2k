@@ -112,7 +112,7 @@ public:
 								 "oversampling_ratio");
 	}
 
-	std::vector<double> getSamplerate()
+	std::vector<double> getSampleRate()
 	{
 		std::vector<double> values = {};
 		for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
@@ -122,12 +122,12 @@ public:
 		return values;
 	}
 
-	double getSamplerate(unsigned int chn_idx)
+	double getSampleRate(unsigned int chn_idx)
 	{
 		return m_dac_devices.at(chn_idx)->getDoubleValue("sampling_frequency");
 	}
 
-	std::vector<double> setSamplerate(std::vector<double> samplerates)
+	std::vector<double> setSampleRate(std::vector<double> samplerates)
 	{
 		std::vector<double> values = {};
 		for (unsigned int i = 0; i < samplerates.size(); i++) {
@@ -138,7 +138,7 @@ public:
 		return values;
 	}
 
-	double setSamplerate(unsigned int chn_idx, double samplerate)
+	double setSampleRate(unsigned int chn_idx, double samplerate)
 	{
 		return m_dac_devices.at(chn_idx)->setDoubleValue(samplerate,
 								 "sampling_frequency");
@@ -174,7 +174,7 @@ public:
 		}
 	}
 
-	void setCyclic(bool en, unsigned int chn)
+	void setCyclic(unsigned int chn, bool en)
 	{
 		if (chn >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
@@ -290,7 +290,7 @@ public:
 			throw_exception(EXC_OUT_OF_RANGE, "No such channel");
 		}
 		return (-1 * (1 / m_calib_vlsb.at(chn)) * 16) /
-				getFilterCompensation(getSamplerate(chn));
+				getFilterCompensation(getSampleRate(chn));
 	}
 
 	double getFilterCompensation(double samplerate)
@@ -329,7 +329,7 @@ public:
 		} else {
 			return convertVoltsToRaw(value, m_calib_vlsb.at(channel),
 						 getFilterCompensation(
-							 getSamplerate(channel)));
+							 getSampleRate(channel)));
 		}
 	}
 

@@ -75,7 +75,7 @@ public:
 	std::string getStringValue(std::string attr);
 	std::string getStringValue(unsigned int chn, std::string attr, bool output=false);
 
-	std::vector<double> getAvailableSamplerates();
+	std::vector<double> getAvailableSampleRates();
 
 	void writeRegister(uint32_t address, uint32_t value);
 

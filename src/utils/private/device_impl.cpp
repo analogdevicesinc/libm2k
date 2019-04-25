@@ -420,7 +420,7 @@ public:
 		return value;
 	}
 
-	std::vector<double> getAvailableSamplerates()
+	std::vector<double> getAvailableSampleRates()
 	{
 		std::vector<double> values = {};
 		std::vector<std::string> str_values;

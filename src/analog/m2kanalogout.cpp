@@ -63,24 +63,24 @@ double M2kAnalogOut::setOversamplingRatio(unsigned int chn_idx, double oversampl
 	return m_pimpl->setOversamplingRatio(chn_idx, oversampling_ratio);
 }
 
-std::vector<double> M2kAnalogOut::getSamplerate()
+std::vector<double> M2kAnalogOut::getSampleRate()
 {
-	return m_pimpl->getSamplerate();
+	return m_pimpl->getSampleRate();
 }
 
-double M2kAnalogOut::getSamplerate(unsigned int chn_idx)
+double M2kAnalogOut::getSampleRate(unsigned int chn_idx)
 {
-	return m_pimpl->getSamplerate(chn_idx);
+	return m_pimpl->getSampleRate(chn_idx);
 }
 
-std::vector<double> M2kAnalogOut::setSamplerate(std::vector<double> samplerates)
+std::vector<double> M2kAnalogOut::setSampleRate(std::vector<double> samplerates)
 {
-	return m_pimpl->setSamplerate(samplerates);
+	return m_pimpl->setSampleRate(samplerates);
 }
 
-double M2kAnalogOut::setSamplerate(unsigned int chn_idx, double samplerate)
+double M2kAnalogOut::setSampleRate(unsigned int chn_idx, double samplerate)
 {
-	return m_pimpl->setSamplerate(chn_idx, samplerate);
+	return m_pimpl->setSampleRate(chn_idx, samplerate);
 }
 
 void M2kAnalogOut::setSyncedDma(bool en, int chn)
