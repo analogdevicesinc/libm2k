@@ -140,36 +140,55 @@ public:
 		}
 	}
 
-	uint16_t getVoltageRaw(unsigned int ch)
+	short getVoltageRaw(unsigned int ch)
 	{
 		ANALOG_IN_CHANNEL chn = static_cast<ANALOG_IN_CHANNEL>(ch);
 		return getVoltageRaw(chn);
 	}
 
-	uint16_t getVoltageRaw(ANALOG_IN_CHANNEL ch)
+	short getVoltageRaw(ANALOG_IN_CHANNEL ch)
 	{
 		unsigned int num_samples = 100;
+		M2K_TRIGGER_MODE mode;
+		bool enabled;
+
 		if (ch >= getNbChannels()) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: no such channel");
 		}
 
+		mode = m_trigger->getTriggerMode(ch);
+		m_trigger->setTriggerMode(ch, ALWAYS);
+
+		enabled = isChannelEnabled(ch);
 		enableChannel(ch, true);
+
 		auto samps = getSamples(num_samples, false);
 		double avg = Utils::average(samps.at(ch).data(), num_samples);
-		return (uint16_t)avg;
+
+		m_trigger->setTriggerMode(ch, mode);
+		enableChannel(ch, enabled);
+		return (short)avg;
 	}
 
-	std::vector<uint16_t> getVoltageRaw()
+	std::vector<short> getVoltageRaw()
 	{
 		unsigned int num_samples = 100;
-		std::vector<uint16_t> avgs;
+		std::vector<short> avgs;
+		std::vector<M2K_TRIGGER_MODE> modes = {};
+		std::vector<bool> enabled = {};
+
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			enabled.push_back(isChannelEnabled(i));
 			enableChannel(i, true);
+			modes.push_back(m_trigger->getTriggerMode(i));
+			m_trigger->setTriggerMode(i, ALWAYS);
 		}
 		auto samps = getSamples(num_samples, false);
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
-			uint16_t avg = (uint16_t)(Utils::average(samps.at(i).data(), num_samples));
+			short avg = (short)(Utils::average(samps.at(i).data(), num_samples));
 			avgs.push_back(avg);
+			m_trigger->setTriggerMode(i, modes.at(i));
+			enableChannel(i, enabled.at(i));
 		}
 		return avgs;
 	}
@@ -183,13 +202,23 @@ public:
 	double getVoltage(ANALOG_IN_CHANNEL ch)
 	{
 		unsigned int num_samples = 100;
+		M2K_TRIGGER_MODE mode;
+		bool enabled;
+
 		if (ch >= getNbChannels()) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogIn: no such channel");
 		}
+		mode = m_trigger->getTriggerMode(ch);
+		m_trigger->setTriggerMode(ch, ALWAYS);
 
+		enabled = isChannelEnabled(ch);
 		enableChannel(ch, true);
+
 		auto samps = getSamples(num_samples, true);
 		double avg = Utils::average(samps.at(ch).data(), num_samples);
+
+		m_trigger->setTriggerMode(ch, mode);
+		enableChannel(ch, enabled);
 		return avg;
 	}
 
@@ -197,13 +226,20 @@ public:
 	{
 		size_t num_samples = 100;
 		std::vector<double> avgs;
+		std::vector<M2K_TRIGGER_MODE> modes = {};
+		std::vector<bool> enabled = {};
 
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			enabled.push_back(isChannelEnabled(i));
 			enableChannel(i, true);
+			modes.push_back(m_trigger->getTriggerMode(i));
+			m_trigger->setTriggerMode(i, ALWAYS);
 		}
 		auto samps = getSamples(num_samples, true);
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			avgs.push_back(Utils::average(samps.at(i).data(), num_samples));
+			m_trigger->setTriggerMode(i, modes.at(i));
+			enableChannel(i, enabled.at(i));
 		}
 		return avgs;
 	}

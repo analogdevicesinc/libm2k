@@ -89,17 +89,17 @@ double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
 	return m_pimpl->processSample(sample, channel);
 }
 
-uint16_t M2kAnalogIn::getVoltageRaw(unsigned int ch)
+short M2kAnalogIn::getVoltageRaw(unsigned int ch)
 {
 	return m_pimpl->getVoltageRaw(ch);
 }
 
-uint16_t M2kAnalogIn::getVoltageRaw(ANALOG_IN_CHANNEL ch)
+short M2kAnalogIn::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 {
 	return m_pimpl->getVoltageRaw(ch);
 }
 
-std::vector<uint16_t> M2kAnalogIn::getVoltageRaw()
+std::vector<short> M2kAnalogIn::getVoltageRaw()
 {
 	return m_pimpl->getVoltageRaw();
 }

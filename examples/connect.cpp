@@ -233,6 +233,7 @@ int main(int argc, char **argv)
 						maIn->setTriggerMode(ANALOG_IN_CHANNEL_1, ALWAYS);
 						maIn->setAnalogCondition(ANALOG_IN_CHANNEL_1, FALLING_EDGE);
 					}
+					maIn->enableChannel(0, true);
 					samps = maIn->getSamples(64);
 					for (int i = 0; i < 64; i++) {
 						std::cout << samps[0][i] << "\t ";
