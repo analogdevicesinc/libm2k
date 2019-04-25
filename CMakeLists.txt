@@ -33,8 +33,8 @@ option(ENABLE_PYTHON "Build Python bindings" OFF)
 # build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
 add_definitions(-DLIBM2K_EXPORTS=1)
 
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
 if (WIN32)
-	set(CMAKE_SHARED_LIBRARY_PREFIX "")
 	set(CMAKE_SHARED_MODULE_PREFIX "")
 	set(CMAKE_STATIC_LIBRARY_PREFIX "")
 endif()
