@@ -9,7 +9,9 @@
 %include "std_vector.i"
 
 namespace std {
-	%template(VectorS) vector<int>;
+	%template(VectorI) vector<int>;
+	%template(VectorS) vector<short>;
+	%template(VectorUS) vector<unsigned short>;
 	%template(VectorD) vector<double>;
 	%template(VectorStr) vector<string>;
 	%template(VectorVectorD) vector< vector<double> >;
@@ -48,6 +50,9 @@ namespace std {
 	#include <libm2k/m2kexceptions.hpp>
 	#include <libm2k/m2k.hpp>
 	typedef std::vector<libm2k::analog::DMM_READING> DMMReading;
+	typedef std::vector<libm2k::analog::DMM*> DMMs;
+	typedef std::vector<libm2k::analog::M2kAnalogIn*> M2kAnalogIns;
+	typedef std::vector<libm2k::analog::M2kAnalogOut*> M2kAnalogOuts;
 %}
 
 %include <std_shared_ptr.i>
@@ -83,5 +88,8 @@ namespace std {
 %include <libm2k/m2k.hpp>
 
 %template(DMMReading) std::vector<libm2k::analog::DMM_READING>;
+%template(DMMs) std::vector<libm2k::analog::DMM*>;
+%template(M2kAnalogIns) std::vector<libm2k::analog::M2kAnalogIn*>;
+%template(M2kAnalogOuts) std::vector<libm2k::analog::M2kAnalogOut*>;
 
 
