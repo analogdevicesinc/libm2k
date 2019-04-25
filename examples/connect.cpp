@@ -162,6 +162,8 @@ int main(int argc, char **argv)
 
 			if (dev) { // M2K
 				__try {
+					dev->setLed(false);
+					dev->setLed(true);
 					GenericAnalogIn* aIn = d->getAnalogIn(0);
 					aIn->setSampleRate(1000);
 

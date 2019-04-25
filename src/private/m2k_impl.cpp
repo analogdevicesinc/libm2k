@@ -329,6 +329,24 @@ public:
 		}
 	}
 
+	void setLed(bool on)
+	{
+		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+		if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
+			m_m2k_fabric->setBoolValue(4, !on, "done_led_overwrite_powerdown", true);
+		}
+	}
+
+	bool getLed()
+	{
+		bool on = false;
+		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+		if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
+			on = !m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
+		}
+		return on;
+	}
+
 private:
 	M2kCalibration* m_calibration;
 	std::vector<utils::Device*> m_instancesAnalogOut;

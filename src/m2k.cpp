@@ -40,6 +40,16 @@ void M2K::setTimeout(unsigned int timeout)
 	m_pimpl->setTimeout(timeout);
 }
 
+void M2K::setLed(bool on)
+{
+	m_pimpl->setLed(on);
+}
+
+bool M2K::getLed()
+{
+	return m_pimpl->getLed();
+}
+
 void M2K::scanAllAnalogIn()
 {
 	m_pimpl->scanAllAnalogIn();
@@ -143,9 +153,4 @@ std::vector<M2kAnalogIn*> M2K::getAllAnalogIn()
 std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
 {
 	return m_pimpl->getAllAnalogOut();
-}
-
-void M2K::blinkLed(const double duration, bool blocking)
-{
-	m_pimpl->blinkLed(duration, blocking);
 }

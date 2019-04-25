@@ -69,7 +69,8 @@ public:
 	double getAdcCalibrationGain(unsigned int chn);
 
 	void setTimeout(unsigned int timeout);
-	void blinkLed(const double duration = 4, bool blocking = false);
+	void setLed(bool on);
+	bool getLed();
 private:
 	class M2KImpl;
 	std::shared_ptr<M2KImpl> m_pimpl;
