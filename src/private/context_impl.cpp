@@ -388,11 +388,6 @@ public:
 		return m_uri;
 	}
 
-	string getName()
-	{
-		return m_name;
-	}
-
 	void scanAllPowerSupply()
 	{
 

@@ -134,11 +134,6 @@ string Context::getUri()
 	return m_pimpl->getUri();
 }
 
-string Context::getName()
-{
-	return m_pimpl->getName();
-}
-
 void devices::Context::scanAllPowerSupply()
 {
 	m_pimpl->scanAllPowerSupply();

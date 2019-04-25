@@ -58,7 +58,6 @@ public:
 	virtual void scanAllDMM();
 
 	std::string getUri();
-	std::string getName();
 
 	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
 	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
