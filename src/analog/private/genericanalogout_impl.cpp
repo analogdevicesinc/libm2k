@@ -73,7 +73,7 @@ public:
 		}
 	}
 
-	void setCyclic(bool en, unsigned int chn)
+	void setCyclic(unsigned int chn, bool en)
 	{
 		if (chn >= getNbChannels()) {
 			throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");

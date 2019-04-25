@@ -54,7 +54,7 @@ public:
 	bool getSyncedDma(int chn = -1);
 
 	void setCyclic(bool en);
-	void setCyclic(bool en, unsigned int chn);
+	void setCyclic(unsigned int chn, bool en);
 	bool getCyclic(unsigned int chn);
 
 	double getScalingFactor(unsigned int chn);

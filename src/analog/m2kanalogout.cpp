@@ -98,9 +98,9 @@ void M2kAnalogOut::setCyclic(bool en)
 	m_pimpl->setCyclic(en);
 }
 
-void M2kAnalogOut::setCyclic(bool en, unsigned int chn)
+void M2kAnalogOut::setCyclic(unsigned int chn, bool en)
 {
-	m_pimpl->setCyclic(en, chn);
+	m_pimpl->setCyclic(chn, en);
 }
 
 bool M2kAnalogOut::getCyclic(unsigned int chn)

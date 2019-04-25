@@ -63,9 +63,9 @@ void GenericAnalogOut::setCyclic(bool en)
 	m_pimpl->setCyclic(en);
 }
 
-void GenericAnalogOut::setCyclic(bool en, unsigned int chn)
+void GenericAnalogOut::setCyclic(unsigned int chn, bool en)
 {
-	m_pimpl->setCyclic(en, chn);
+	m_pimpl->setCyclic(chn, en);
 }
 
 bool GenericAnalogOut::getCyclic(unsigned int chn)

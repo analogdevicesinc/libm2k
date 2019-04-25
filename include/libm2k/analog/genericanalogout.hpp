@@ -43,7 +43,7 @@ public:
 	std::vector<double> getAvailableSampleRates();
 
 	void setCyclic(bool en);
-	void setCyclic(bool en, unsigned int chn);
+	void setCyclic(unsigned int chn, bool en);
 	bool getCyclic(unsigned int chn);
 
 	void push(std::vector<double> const &data, unsigned int chn_idx = 0);
