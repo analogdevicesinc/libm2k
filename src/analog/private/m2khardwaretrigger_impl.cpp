@@ -130,6 +130,11 @@ public:
 		if (!m_delay_trigger) {
 			throw_exception(EXC_INVALID_PARAMETER, "no delay trigger available");
 		}
+
+		for(unsigned int i = 0; i < m_analog_channels.size(); i++) {
+			m_scaling.push_back(1);
+			m_offset.push_back(0);
+		}
 		setStreamingFlag(false);
 	}
 
@@ -195,7 +200,7 @@ public:
 		m_digital_channels[chnIdx]->setStringValue("trigger", m_trigger_digital_cond[cond]);
 	}
 
-	int getLevel(unsigned int chnIdx)
+	int getLevelRaw(unsigned int chnIdx)
 	{
 		if (chnIdx >= getNbChannels()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
@@ -206,7 +211,7 @@ public:
 		return static_cast<int>(val);
 	}
 
-	void setLevel(unsigned int chnIdx, int level)
+	void setLevelRaw(unsigned int chnIdx, int level)
 	{
 		if (chnIdx >= getNbChannels()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
@@ -215,8 +220,25 @@ public:
 		m_analog_channels[chnIdx]->setLongValue("trigger_level", static_cast<long long>(level));
 	}
 
-	void setLevelVolts(unsigned int chnIdx, double v_level)
+	int getLevel(unsigned int chnIdx)
 	{
+		if (chnIdx >= getNbChannels()) {
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+		}
+
+		int raw = getLevelRaw(chnIdx);
+		double volts = raw * m_scaling.at(chnIdx) + m_offset.at(chnIdx);
+		return volts;
+	}
+
+	void setLevel(unsigned int chnIdx, double v_level)
+	{
+		if (chnIdx >= getNbChannels()) {
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+		}
+
+		int raw = (v_level - m_offset.at(chnIdx)) / m_scaling.at(chnIdx);
+		setLevelRaw(chnIdx, raw);
 	}
 
 	int getHysteresis(unsigned int chnIdx)
@@ -373,11 +395,18 @@ public:
 			setAnalogCondition(i, settings->analog_condition[i]);
 			setDigitalCondition(i, settings->digital_condition[i]);
 			setLevel(i, settings->level[i]);
+			setLevelRaw(i, settings->raw_level[i]);
 			setHysteresis(i, settings->hysteresis[i]);
 			setTriggerMode(i, settings->mode[i]);
 			setSource(settings->trigger_source);
 			setDelay(settings->delay);
 		}
+	}
+
+	void setCalibParameters(unsigned int chnIdx, double scaling, double offset)
+	{
+		m_scaling[chnIdx] = scaling;
+		m_offset[chnIdx] = offset;
 	}
 
 private:
@@ -396,4 +425,5 @@ private:
 	unsigned int m_num_channels;
 	std::vector<bool> m_analog_enabled;
 	std::vector<bool> m_digital_enabled;
+	std::vector<double> m_scaling, m_offset;
 };

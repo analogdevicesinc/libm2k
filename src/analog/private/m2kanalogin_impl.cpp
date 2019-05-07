@@ -67,6 +67,7 @@ public:
 			m_adc_calib_offset.push_back(0);
 			m_adc_calib_gain.push_back(1);
 			m_adc_hw_offset.push_back(0);
+			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_offset.at(i));
 		}
 	}
 
@@ -80,6 +81,7 @@ public:
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
 	{
 		m_adc_calib_gain[channel] = gain;
+		m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_offset.at(channel));
 	}
 
 	double convertRawToVolts(int sample, double correctionGain,
@@ -252,6 +254,12 @@ public:
 			getFilterCompensation(getSampleRate()));
 	}
 
+	double getScalingFactor(unsigned int ch)
+	{
+		ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(ch);
+		return getScalingFactor(channel);
+	}
+
 	void openAnalogIn()
 	{
 		std::cout << "Opened analog in for " << getName() << "\n";
@@ -272,14 +280,24 @@ public:
 		m_trigger->setDelay(delay);
 	}
 
-	int getLevel(ANALOG_IN_CHANNEL chnIdx) const
+	double getLevel(ANALOG_IN_CHANNEL chnIdx) const
 	{
 		return m_trigger->getLevel(chnIdx);
 	}
 
-	void setLevel(ANALOG_IN_CHANNEL chnIdx, int level)
+	void setLevel(ANALOG_IN_CHANNEL chnIdx, double level)
 	{
 		m_trigger->setLevel(chnIdx, level);
+	}
+
+	int getLevelRaw(ANALOG_IN_CHANNEL chnIdx) const
+	{
+		return m_trigger->getLevelRaw(chnIdx);
+	}
+
+	void setLevelRaw(ANALOG_IN_CHANNEL chnIdx, int level)
+	{
+		m_trigger->setLevelRaw(chnIdx, level);
 	}
 
 	int getHysteresis(ANALOG_IN_CHANNEL chnIdx) const
@@ -404,6 +422,7 @@ public:
 		}
 
 		m_m2k_fabric->setStringValue(channel, "gain", std::string(str_gain_mode));
+		m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_offset.at(channel));
 	}
 
 	void setRange(ANALOG_IN_CHANNEL channel, double min, double max)
@@ -470,11 +489,15 @@ public:
 	double setSampleRate(double samplerate)
 	{
 		return setDoubleValue(samplerate, "sampling_frequency");
+		m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_offset.at(0));
+		m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_offset.at(1));
 	}
 
 	double setSampleRate(unsigned int chn_idx, double samplerate)
 	{
 		return setDoubleValue(chn_idx, samplerate, "sampling_frequency");
+		m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_offset.at(0));
+		m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_offset.at(1));
 	}
 
 	double getFilterCompensation(double samplerate)

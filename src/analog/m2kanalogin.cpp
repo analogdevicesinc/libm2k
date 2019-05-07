@@ -144,15 +144,50 @@ void M2kAnalogIn::setDelay(int delay)
 	m_pimpl->setDelay(delay);
 }
 
-int M2kAnalogIn::getLevel(ANALOG_IN_CHANNEL chnIdx) const
+double M2kAnalogIn::getLevel(ANALOG_IN_CHANNEL chnIdx) const
 {
 	return m_pimpl->getLevel(chnIdx);
 }
 
-void M2kAnalogIn::setLevel(ANALOG_IN_CHANNEL chnIdx, int level)
+void M2kAnalogIn::setLevel(ANALOG_IN_CHANNEL chnIdx, double level)
 {
 	m_pimpl->setLevel(chnIdx, level);
 }
+
+int M2kAnalogIn::getLevelRaw(ANALOG_IN_CHANNEL chnIdx) const
+{
+	return m_pimpl->getLevelRaw(chnIdx);
+}
+
+void M2kAnalogIn::setLevelRaw(ANALOG_IN_CHANNEL chnIdx, int level)
+{
+	m_pimpl->setLevelRaw(chnIdx, level);
+}
+
+double M2kAnalogIn::getLevel(unsigned int chnIdx) const
+{
+	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(chnIdx);
+	return m_pimpl->getLevel(channel);
+}
+
+void M2kAnalogIn::setLevel(unsigned int chnIdx, double level)
+{
+	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(chnIdx);
+	m_pimpl->setLevel(channel, level);
+}
+
+int M2kAnalogIn::getLevelRaw(unsigned int chnIdx) const
+{
+	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(chnIdx);
+	return m_pimpl->getLevelRaw(channel);
+}
+
+void M2kAnalogIn::setLevelRaw(unsigned int chnIdx, int level)
+{
+	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(chnIdx);
+	m_pimpl->setLevelRaw(channel, level);
+}
+
 
 int M2kAnalogIn::getHysteresis(ANALOG_IN_CHANNEL chnIdx) const
 {

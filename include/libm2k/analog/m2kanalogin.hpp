@@ -71,8 +71,15 @@ public:
 	double setSampleRate(double samplerate);
 	double setSampleRate(unsigned int chn_idx, double samplerate);
 
-	int getLevel(ANALOG_IN_CHANNEL chnIdx) const;
-	void setLevel(ANALOG_IN_CHANNEL chnIdx, int level);
+	int getLevelRaw(unsigned int chnIdx) const;
+	void setLevelRaw(unsigned int chnIdx, int level);
+	double getLevel(unsigned int chnIdx) const;
+	void setLevel(unsigned int chnIdx, double v_level);
+
+	int getLevelRaw(ANALOG_IN_CHANNEL chnIdx) const;
+	void setLevelRaw(ANALOG_IN_CHANNEL chnIdx, int level);
+	double getLevel(ANALOG_IN_CHANNEL chnIdx) const;
+	void setLevel(ANALOG_IN_CHANNEL chnIdx, double level);
 
 	int getHysteresis(ANALOG_IN_CHANNEL chnIdx) const;
 	void setHysteresis(ANALOG_IN_CHANNEL chnIdx, int histeresis);

@@ -54,19 +54,24 @@ void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CO
 	m_pimpl->setDigitalCondition(chnIdx, cond);
 }
 
-int M2kHardwareTrigger::getLevel(unsigned int chnIdx)
+int M2kHardwareTrigger::getLevelRaw(unsigned int chnIdx)
 {
-	return m_pimpl->getLevel(chnIdx);
+	return m_pimpl->getLevelRaw(chnIdx);
 }
 
-void M2kHardwareTrigger::setLevel(unsigned int chnIdx, int level)
+void M2kHardwareTrigger::setLevelRaw(unsigned int chnIdx, int level)
 {
-	m_pimpl->setLevel(chnIdx, level);
+	m_pimpl->setLevelRaw(chnIdx, level);
 }
 
-void M2kHardwareTrigger::setLevelVolts(unsigned int chnIdx, double v_level)
+double M2kHardwareTrigger::getLevel(unsigned int chnIdx)
 {
-	m_pimpl->setLevelVolts(chnIdx, v_level);
+	m_pimpl->getLevel(chnIdx);
+}
+
+void M2kHardwareTrigger::setLevel(unsigned int chnIdx, double v_level)
+{
+	m_pimpl->setLevel(chnIdx, v_level);
 }
 
 int M2kHardwareTrigger::getHysteresis(unsigned int chnIdx)
@@ -140,6 +145,11 @@ bool M2kHardwareTrigger::getStreamingFlag()
 std::vector<string> M2kHardwareTrigger::getAvailableDigitalConditions()
 {
 	return M2kHardwareTriggerImpl::getAvailableDigitalConditions();
+}
+
+void M2kHardwareTrigger::setCalibParameters(unsigned int chnIdx, double scaling, double offset)
+{
+	m_pimpl->setCalibParameters(chnIdx, scaling, offset);
 }
 
 settings_uptr M2kHardwareTrigger::getCurrentHwSettings()

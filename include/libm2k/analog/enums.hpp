@@ -76,7 +76,8 @@ namespace analog {
 	struct SETTINGS {
 		std::vector<M2K_TRIGGER_CONDITION> analog_condition;
 		std::vector<M2K_TRIGGER_CONDITION> digital_condition;
-		std::vector<int> level;
+		std::vector<int> raw_level;
+		std::vector<double> level;
 		std::vector<int> hysteresis;
 		std::vector<M2K_TRIGGER_MODE> mode;
 		M2K_TRIGGER_SOURCE trigger_source;

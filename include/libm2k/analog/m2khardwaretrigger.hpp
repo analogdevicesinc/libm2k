@@ -36,9 +36,10 @@ public:
 	M2kHardwareTrigger(struct iio_context *ctx);
 	virtual ~M2kHardwareTrigger();
 
-	int getLevel(unsigned int chnIdx);
-	void setLevel(unsigned int chnIdx, int level);
-	void setLevelVolts(unsigned int chnIdx, double v_level);
+	int getLevelRaw(unsigned int chnIdx);
+	void setLevelRaw(unsigned int chnIdx, int level);
+	void setLevel(unsigned int chnIdx, double v_level);
+	double getLevel(unsigned int chnIdx);
 
 	int getHysteresis(unsigned int chnIdx);
 	void setHysteresis(unsigned int chnIdx, int histeresis);
@@ -58,7 +59,6 @@ public:
 	int getSourceChannel();
 	void setSourceChannel(unsigned int chnIdx);
 
-
 	int getDelay() const;
 	void setDelay(int delay);
 
@@ -70,6 +70,7 @@ public:
 
 	static std::vector<std::string> getAvailableDigitalConditions();
 
+	void setCalibParameters(unsigned int chnIdx, double scaling, double offset);
 private:
 	class M2kHardwareTriggerImpl;
 	std::shared_ptr<M2kHardwareTriggerImpl> m_pimpl;
