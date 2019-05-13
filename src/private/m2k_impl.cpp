@@ -44,8 +44,6 @@ public:
 	M2KImpl(std::string uri, iio_context* ctx, std::string name) :
 		ContextImpl(uri, ctx, name)
 	{
-		std::cout << "I am M2K device " << std::endl;
-
 		initialize();
 		setTimeout(UINT_MAX);
 

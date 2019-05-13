@@ -47,6 +47,7 @@ public:
 	static M2K* m2kOpen(const char*);
 	static M2K* m2kOpen();
 	static void deviceClose(Context*);
+	static void deviceCloseAll();
 private:
 	static std::map<DeviceTypes, std::vector<std::string>> m_dev_map;
 	static std::map<DeviceTypes, std::string> m_dev_name_map;
@@ -85,6 +86,11 @@ LIBM2K_API std::vector<std::string> listDevices()
 LIBM2K_API void deviceClose(Context* ctx)
 {
 	ContextBuilder::deviceClose(ctx);
+}
+
+LIBM2K_API void deviceCloseAll()
+{
+	ContextBuilder::deviceCloseAll();
 }
 }
 }

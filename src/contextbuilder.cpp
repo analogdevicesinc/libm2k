@@ -162,6 +162,13 @@ void ContextBuilder::deviceClose(Context* device)
 	delete device;
 }
 
+void ContextBuilder::deviceCloseAll()
+{
+	while (s_connectedDevices.size() > 0) {
+		deviceClose(s_connectedDevices.at(0));
+	}
+}
+
 DeviceTypes ContextBuilder::identifyDevice(iio_context *ctx)
 {
 	DeviceTypes type = Other;
