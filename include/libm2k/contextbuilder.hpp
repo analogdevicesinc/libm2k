@@ -57,32 +57,32 @@ private:
 					struct iio_context *ctx);
 };
 
-static LIBM2K_API Context* deviceOpen()
+LIBM2K_API Context* deviceOpen()
 {
 	return ContextBuilder::deviceOpen();
 }
 
-static LIBM2K_API Context* deviceOpen(const char* uri)
+LIBM2K_API Context* deviceOpen(const char* uri)
 {
 	return ContextBuilder::deviceOpen(uri);
 }
 
-static LIBM2K_API M2K* m2kOpen(const char* uri)
+LIBM2K_API M2K* m2kOpen(const char* uri)
 {
 	return ContextBuilder::m2kOpen(uri);
 }
 
-static LIBM2K_API M2K* m2kOpen()
+LIBM2K_API M2K* m2kOpen()
 {
 	return ContextBuilder::m2kOpen();
 }
 
-static LIBM2K_API std::vector<std::string> listDevices()
+LIBM2K_API std::vector<std::string> listDevices()
 {
 	return ContextBuilder::listDevices();
 }
 
-static LIBM2K_API void deviceClose(Context* ctx)
+LIBM2K_API void deviceClose(Context* ctx)
 {
 	ContextBuilder::deviceClose(ctx);
 }

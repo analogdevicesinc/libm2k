@@ -66,7 +66,7 @@ void M2kHardwareTrigger::setLevelRaw(unsigned int chnIdx, int level)
 
 double M2kHardwareTrigger::getLevel(unsigned int chnIdx)
 {
-	m_pimpl->getLevel(chnIdx);
+	return m_pimpl->getLevel(chnIdx);
 }
 
 void M2kHardwareTrigger::setLevel(unsigned int chnIdx, double v_level)

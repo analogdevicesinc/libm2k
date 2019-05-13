@@ -1,6 +1,8 @@
 #define SWIG_ON 1
-
 %module libm2k
+#ifdef __WIN32__
+	%include <windows.i>
+#endif
 %include "std_list.i"
 %include "std_map.i"
 %include "std_pair.i"
@@ -27,7 +29,6 @@ namespace std {
 	#include <libm2k/utils/device.hpp>
 	#include <libm2k/utils/enums.hpp>
 	#include <libm2k/utils/utils.hpp>
-
 	#include <libm2k/analog/dmm.hpp>
 	#include <libm2k/analog/enums.hpp>
 	#include <libm2k/analog/genericanalogin.hpp>
@@ -75,7 +76,6 @@ namespace std {
 %include <libm2k/utils/device.hpp>
 %include <libm2k/utils/enums.hpp>
 %include <libm2k/utils/utils.hpp>
-
 %include <libm2k/analog/dmm.hpp>
 %include <libm2k/analog/enums.hpp>
 %include <libm2k/analog/genericanalogin.hpp>
