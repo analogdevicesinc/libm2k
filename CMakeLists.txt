@@ -37,6 +37,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 if (WIN32)
 	set(CMAKE_SHARED_MODULE_PREFIX "")
 	set(CMAKE_STATIC_LIBRARY_PREFIX "")
+	SET(CMAKE_IMPORT_LIBRARY_PREFIX "")
 endif()
 
 # Get the GIT hash of the latest commit

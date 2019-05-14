@@ -1,22 +1,10 @@
-#-*- coding:utf-8 -*-
-import sys
-import os
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, os, Extension
 
-libPath = "src"
-
-moduleLibPalindrome = Extension(
-      name = '%PROJECT_NAME%',
-      sources = [os.path.join(libPath, 'libm2kPYTHON_wrap.cxx')]
-)
-#setup (
-#      name = '%PROJECT_NAME%',
-#      version = '%PROJECT_VERSION%',
-#      author = "ADI",
-#      description = "Install extension from original C/C++",
-#      packages= find_packages(where = 'src'),
-#      package_dir = {'':'src'},
-#      ext_modules=[moduleLibPalindrome]
-#)
-
-
+setup (name = '${PROJECT_NAME}',
+       version = '${PROJECT_VERSION}',
+       author = "Analog Devices, Inc",
+       description = """Install Python bindings from original C/C++ libm2k""",
+       py_modules = ["${PROJECT_NAME}"],
+       packages=[''],
+       package_data={'': ['_${PROJECT_NAME}.so', '_${PROJECT_NAME}.pyd']},
+       )
