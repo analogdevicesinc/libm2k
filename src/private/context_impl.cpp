@@ -36,10 +36,11 @@ using namespace libm2k::utils;
 
 class Context::ContextImpl {
 public:
-	ContextImpl(std::string uri, struct iio_context *ctx, std::string name)
+	ContextImpl(std::string uri, struct iio_context *ctx, std::string name, bool sync)
 	{
 		m_context = ctx;
 		m_uri = uri;
+		m_sync = sync;
 
 		/* Initialize the AnalogIn list */
 		auto aIn_lst = scanAllAnalogIn();
@@ -80,8 +81,11 @@ public:
 
 		if (m_context) {
 			iio_context_destroy(m_context);
-			std::cout << "Context: destroying IIO context\n";
 		}
+	}
+
+	virtual void init()
+	{
 	}
 
 	GenericAnalogIn* getAnalogIn(unsigned int index)
@@ -306,7 +310,7 @@ public:
 		for (auto dev : dev_list) {
 			if (getIioDeviceDirection(dev.first) != OUTPUT) {
 				if (!getDMM(dev.first)) {
-					m_instancesDMM.push_back(new DMM(m_context, dev.first));
+					m_instancesDMM.push_back(new DMM(m_context, dev.first, m_sync));
 				}
 			}
 		}
@@ -379,7 +383,6 @@ public:
 			return dev;
 		} else {
 			return nullptr;
-			//		throw_exception(EXC_INVALID_PARAMETER, "Context is not of M2K type");
 		}
 	}
 
@@ -400,6 +403,7 @@ public:
 
 protected:
 	struct iio_context* m_context;
+	std::vector<libm2k::analog::DMM*> m_instancesDMM;
 private:
 	void initializeContextAttributes()
 	{
@@ -424,11 +428,11 @@ private:
 
 	std::vector<libm2k::analog::GenericAnalogIn*> m_instancesAnalogIn;
 	std::vector<libm2k::analog::GenericAnalogOut*> m_instancesAnalogOut;
-	std::vector<libm2k::analog::DMM*> m_instancesDMM;
 	std::vector<libm2k::analog::PowerSupply*> m_instancesPowerSupply;
 	std::vector<libm2k::digital::GenericDigital*> m_instancesDigital;
 	std::map<std::string, std::string> m_context_attributes;
 
 	std::string m_uri;
 	std::string m_name;
+	bool m_sync;
 };

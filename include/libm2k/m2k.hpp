@@ -41,8 +41,10 @@ namespace devices {
 class LIBM2K_API M2k : public Context
 {
 public:
-	M2k(std::string uri, iio_context* ctx, std::string name);
+	M2k(std::string uri, iio_context* ctx, std::string name, bool sync);
 	virtual ~M2k();
+	void init();
+
 	void scanAllAnalogIn();
 	void scanAllAnalogOut();
 	void scanAllPowerSupply();

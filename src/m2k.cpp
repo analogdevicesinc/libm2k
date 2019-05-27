@@ -25,14 +25,19 @@ using namespace libm2k::analog;
 using namespace libm2k::digital;
 using namespace libm2k::utils;
 
-M2k::M2k(std::string uri, iio_context* ctx, std::string name) :
-	Context(new M2kImpl(uri, ctx, name))
+M2k::M2k(std::string uri, iio_context* ctx, std::string name, bool sync) :
+	Context(new M2kImpl(uri, ctx, name, sync))
 {
 	m_pimpl = dynamic_pointer_cast<M2kImpl>(Context::m_pimpl);
 }
 
 M2k::~M2k()
 {
+}
+
+void M2k::init()
+{
+	m_pimpl->init();
 }
 
 void M2k::setTimeout(unsigned int timeout)

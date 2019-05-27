@@ -29,8 +29,9 @@ namespace analog {
 class LIBM2K_API M2kPowerSupply {
 public:
 	M2kPowerSupply(struct iio_context* ctx, std::string write_dev,
-		       std::string read_dev);
+		       std::string read_dev, bool sync);
 	virtual ~M2kPowerSupply();
+	void init();
 
 	void enableChannel(unsigned int chn, bool en);
 	void enableAll(bool en);

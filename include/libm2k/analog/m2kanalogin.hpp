@@ -32,13 +32,12 @@ namespace analog {
 class LIBM2K_API M2kAnalogIn
 {
 public:	
-	M2kAnalogIn(struct iio_context*, std::string adc_dev);
+	M2kAnalogIn(struct iio_context*, std::string adc_dev, bool sync);
 	virtual ~M2kAnalogIn();
+	void init();
 
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
 	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
-	void openAnalogIn();
-	void closeAnalogIn();
 
 	double processSample(int16_t sample, unsigned int channel);
 
@@ -83,6 +82,8 @@ public:
 	void setHysteresis(ANALOG_IN_CHANNEL chnIdx, int histeresis);
 	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL);
 
+	double setCalibscale(unsigned int index, double calibscale);
+	double getCalibscale(unsigned int index);
 
 	M2K_TRIGGER_CONDITION getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const;
 	void setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond);
@@ -121,6 +122,7 @@ public:
 	unsigned int getNbChannels();
 	std::string getName();
 	void enableChannel(unsigned int chnIdx, bool enable);
+	bool isChannelEnabled(unsigned int chnIdx);
 
 	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);

@@ -30,8 +30,10 @@ namespace libm2k {
 namespace analog {
 class LIBM2K_API DMM {
 public:
-	DMM(struct iio_context *ctx, std::string dev);
+	DMM(struct iio_context *ctx, std::string dev, bool sync);
 	virtual ~DMM();
+
+	void init();
 
 	std::vector<std::string> getAllChannels();
 	libm2k::analog::DMM_READING readChannel(unsigned int index);

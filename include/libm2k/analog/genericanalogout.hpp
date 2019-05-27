@@ -36,9 +36,6 @@ public:
 	GenericAnalogOut(struct iio_context* ctx, std::string dac_dev);
 	virtual ~GenericAnalogOut();
 
-	void openAnalogOut();
-	void closeAnalogOut();
-
 	double getSampleRate();
 	double getSampleRate(unsigned int);
 	double setSampleRate(double sampleRate);

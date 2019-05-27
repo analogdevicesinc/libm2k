@@ -24,8 +24,8 @@ using namespace libm2k::digital;
 using namespace libm2k::devices;
 using namespace libm2k::utils;
 
-Context::Context(std::string uri, struct iio_context *ctx, std::string name) :
-	m_pimpl(std::shared_ptr<ContextImpl>(new ContextImpl(uri, ctx, name)))
+Context::Context(std::string uri, struct iio_context *ctx, std::string name, bool sync) :
+	m_pimpl(std::shared_ptr<ContextImpl>(new ContextImpl(uri, ctx, name, sync)))
 {
 }
 
@@ -36,6 +36,11 @@ Context::Context(ContextImpl* impl)
 
 Context::~Context()
 {
+}
+
+void Context::init()
+{
+	m_pimpl->init();
 }
 
 GenericAnalogIn* Context::getAnalogIn(unsigned int index)

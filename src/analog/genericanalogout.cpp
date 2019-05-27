@@ -82,16 +82,6 @@ void GenericAnalogOut::push(std::vector<double> const &data, unsigned int chn_id
 	m_pimpl->push(data, chn_idx);
 }
 
-void libm2k::analog::GenericAnalogOut::openAnalogOut()
-{
-	m_pimpl->openAnalogOut();
-}
-
-void libm2k::analog::GenericAnalogOut::closeAnalogOut()
-{
-	m_pimpl->closeAnalogOut();
-}
-
 void GenericAnalogOut::stop()
 {
 	m_pimpl->stop();

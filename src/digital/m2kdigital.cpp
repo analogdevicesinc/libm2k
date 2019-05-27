@@ -25,13 +25,18 @@ using namespace libm2k::analog;
 using namespace std;
 
 
-M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev) :
-	m_pimpl(std::unique_ptr<M2kDigitalImpl>(new M2kDigitalImpl(ctx, logic_dev)))
+M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev, bool sync) :
+	m_pimpl(std::unique_ptr<M2kDigitalImpl>(new M2kDigitalImpl(ctx, logic_dev, sync)))
 {
 }
 
 M2kDigital::~M2kDigital()
 {
+}
+
+void M2kDigital::init()
+{
+	m_pimpl->init();
 }
 
 void M2kDigital::setDirection(unsigned short mask)

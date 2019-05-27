@@ -21,14 +21,19 @@
 
 using namespace libm2k::analog;
 
-DMM::DMM(struct iio_context *ctx, std::string dev) :
-	m_pimpl(std::unique_ptr<DMMImpl>(new DMMImpl(ctx, dev)))
+DMM::DMM(struct iio_context *ctx, std::string dev, bool sync) :
+	m_pimpl(std::unique_ptr<DMMImpl>(new DMMImpl(ctx, dev, sync)))
 {
 }
 
 DMM::~DMM()
 {
 
+}
+
+void DMM::init()
+{
+	m_pimpl->init();
 }
 
 DMM_READING DMM::readChannel(unsigned int index)

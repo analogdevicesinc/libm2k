@@ -34,8 +34,6 @@ public:
 
 	virtual std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
 	virtual std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
-	virtual void openAnalogIn();
-	virtual void closeAnalogIn();
 
 	double getSampleRate();
 	double getSampleRate(unsigned int);

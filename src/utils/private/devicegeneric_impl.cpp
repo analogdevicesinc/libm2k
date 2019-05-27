@@ -447,7 +447,6 @@ public:
 					values.push_back(std::stoul(buf));
 				} __catch (exception_type &e) {
 					throw_exception(EXC_INVALID_PARAMETER, "Device: Not a valid samplerate.");
-	//				std::cout << "Not a valid samplerate " << e.what();
 				}
 			}
 		}

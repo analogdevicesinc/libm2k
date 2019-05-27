@@ -42,16 +42,6 @@ std::vector<std::vector<double>> GenericAnalogIn::getSamples(unsigned int nb_sam
 	return m_pimpl->getSamples(nb_samples, true);
 }
 
-void GenericAnalogIn::openAnalogIn()
-{
-	m_pimpl->openAnalogIn();
-}
-
-void GenericAnalogIn::closeAnalogIn()
-{
-	m_pimpl->closeAnalogIn();
-}
-
 double GenericAnalogIn::getSampleRate()
 {
 	return m_pimpl->getSampleRate();

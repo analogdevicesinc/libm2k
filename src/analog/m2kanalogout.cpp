@@ -23,8 +23,8 @@ using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std;
 
-M2kAnalogOut::M2kAnalogOut(iio_context *ctx, std::vector<std::string> dac_devs) :
-	m_pimpl(std::unique_ptr<M2kAnalogOutImpl>(new M2kAnalogOutImpl(ctx, dac_devs)))
+M2kAnalogOut::M2kAnalogOut(iio_context *ctx, std::vector<std::string> dac_devs, bool sync) :
+	m_pimpl(std::unique_ptr<M2kAnalogOutImpl>(new M2kAnalogOutImpl(ctx, dac_devs, sync)))
 {
 }
 
@@ -32,14 +32,9 @@ M2kAnalogOut::~M2kAnalogOut()
 {
 }
 
-void M2kAnalogOut::openAnalogOut()
+void M2kAnalogOut::init()
 {
-	m_pimpl->openAnalogOut();
-}
-
-void M2kAnalogOut::closeAnalogOut()
-{
-	m_pimpl->closeAnalogOut();
+	m_pimpl->init();
 }
 
 std::vector<double> M2kAnalogOut::getOversamplingRatio()
@@ -107,6 +102,16 @@ bool M2kAnalogOut::getCyclic(unsigned int chn)
 	return m_pimpl->getCyclic(chn);
 }
 
+double M2kAnalogOut::setCalibscale(unsigned int index, double calibscale)
+{
+	return m_pimpl->setCalibscale(index, calibscale);
+}
+
+double M2kAnalogOut::getCalibscale(unsigned int index)
+{
+	return m_pimpl->getCalibscale(index);
+}
+
 int M2kAnalogOut::convertVoltsToRaw(double voltage, double vlsb,
 				       double filterCompensation)
 {
@@ -162,4 +167,9 @@ void M2kAnalogOut::stop(unsigned int chn)
 void M2kAnalogOut::enableChannel(unsigned int chnIdx, bool enable)
 {
 	m_pimpl->enableChannel(chnIdx, enable);
+}
+
+bool M2kAnalogOut::isChannelEnabled(unsigned int chnIdx)
+{
+	m_pimpl->isChannelEnabled(chnIdx);
 }

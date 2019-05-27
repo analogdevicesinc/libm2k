@@ -32,8 +32,10 @@ namespace digital {
 class LIBM2K_API M2kDigital
 {
 public:
-	M2kDigital(struct iio_context* ctx, std::string logic_dev);
+	M2kDigital(struct iio_context* ctx, std::string logic_dev, bool sync);
 	virtual ~M2kDigital();
+
+	void init();
 
 	void setDirection(unsigned short mask);
 	void setDirection(unsigned int index, DIO_DIRECTION dir);

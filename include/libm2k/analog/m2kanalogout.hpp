@@ -34,11 +34,10 @@ namespace analog {
 class LIBM2K_API M2kAnalogOut
 {
 public:
-	M2kAnalogOut(struct iio_context*, std::vector<std::string> dac_devs);
+	M2kAnalogOut(struct iio_context*, std::vector<std::string> dac_devs, bool sync);
 	virtual ~M2kAnalogOut();
 
-	void openAnalogOut();
-	void closeAnalogOut();
+	void init();
 
 	/* chn can be 0 or 1, it actually refers to dac-a or dac-b) */
 	std::vector<double> getOversamplingRatio();
@@ -58,6 +57,9 @@ public:
 	void setCyclic(unsigned int chn, bool en);
 	bool getCyclic(unsigned int chn);
 
+	double setCalibscale(unsigned int index, double calibscale);
+	double getCalibscale(unsigned int index);
+
 	double getScalingFactor(unsigned int chn);
 	double getFilterCompensation(double samplerate);
 
@@ -74,6 +76,7 @@ public:
 	void stop(unsigned int chn);
 
 	void enableChannel(unsigned int chnIdx, bool enable);
+	bool isChannelEnabled(unsigned int chnIdx);
 private:
 	class M2kAnalogOutImpl;
 	std::unique_ptr<M2kAnalogOutImpl> m_pimpl;

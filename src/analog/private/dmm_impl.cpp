@@ -30,7 +30,7 @@ using namespace libm2k::utils;
 
 class DMM::DMMImpl : public DeviceIn  {
 public:
-	DMMImpl(struct iio_context *ctx, std::string dev) :
+	DMMImpl(struct iio_context *ctx, std::string dev, bool sync) :
 		DeviceIn (ctx, dev, true)
 	{
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
@@ -42,6 +42,11 @@ public:
 	}
 
 	~DMMImpl()
+	{
+
+	}
+
+	void init()
 	{
 
 	}

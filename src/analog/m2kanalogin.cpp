@@ -30,13 +30,18 @@ using namespace std::placeholders;
 #define LOW_MIN -25
 
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
-			 std::string adc_dev) :
-	m_pimpl(std::unique_ptr<M2kAnalogInImpl>(new M2kAnalogInImpl(ctx, adc_dev)))
+			 std::string adc_dev, bool sync) :
+	m_pimpl(std::unique_ptr<M2kAnalogInImpl>(new M2kAnalogInImpl(ctx, adc_dev, sync)))
 {
 }
 
 M2kAnalogIn::~M2kAnalogIn()
 {
+}
+
+void M2kAnalogIn::init()
+{
+	m_pimpl->init();
 }
 
 void M2kAnalogIn::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
@@ -83,6 +88,11 @@ void M2kAnalogIn::enableChannel(unsigned int chnIdx, bool enable)
 	m_pimpl->enableChannel(chnIdx, enable);
 }
 
+bool M2kAnalogIn::isChannelEnabled(unsigned int chnIdx)
+{
+	m_pimpl->isChannelEnabled(chnIdx);
+}
+
 void M2kAnalogIn::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src)
 {
 	m_pimpl->convertChannelHostFormat(chn_idx, avg, src);
@@ -91,6 +101,16 @@ void M2kAnalogIn::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, i
 void M2kAnalogIn::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src)
 {
 	m_pimpl->convertChannelHostFormat(chn_idx, avg, src);
+}
+
+double M2kAnalogIn::setCalibscale(unsigned int index, double calibscale)
+{
+	return m_pimpl->setCalibscale(index, calibscale);
+}
+
+double M2kAnalogIn::getCalibscale(unsigned int index)
+{
+	return m_pimpl->getCalibscale(index);
 }
 
 M2kHardwareTrigger *M2kAnalogIn::getTrigger()
@@ -146,16 +166,6 @@ std::vector<double> M2kAnalogIn::getVoltage()
 double M2kAnalogIn::getScalingFactor(ANALOG_IN_CHANNEL ch)
 {
 	return m_pimpl->getScalingFactor(ch);
-}
-
-void M2kAnalogIn::openAnalogIn()
-{
-	std::cout << "Opened analog in for " << m_pimpl->getName() << "\n";
-}
-
-void M2kAnalogIn::closeAnalogIn()
-{
-	std::cout << "Opened analog in for " << m_pimpl->getName() << "\n";
 }
 
 int M2kAnalogIn::getDelay()

@@ -100,16 +100,6 @@ public:
 		DeviceOut::push(data, chn_idx, getCyclic(chn_idx));
 	}
 
-	void openAnalogOut()
-	{
-
-	}
-
-	void closeAnalogOut()
-	{
-
-	}
-
 	void stop()
 	{
 		DeviceOut::stop();

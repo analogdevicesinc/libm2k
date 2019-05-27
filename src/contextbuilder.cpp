@@ -45,14 +45,12 @@ std::map<DeviceTypes, std::string> ContextBuilder::m_dev_name_map = {
 	{Other, "Generic"}
 };
 
-ContextBuilder::ContextBuilder()// : m_pimpl(new M2KImpl())
+ContextBuilder::ContextBuilder()
 {
-	std::cout << "Constructor \n";
 }
 
 ContextBuilder::~ContextBuilder()
 {
-	std::cout << "Destructor \n";
 }
 
 std::vector<std::string> ContextBuilder::listDevices()
@@ -87,15 +85,15 @@ out_destroy_context:
 }
 
 Context* ContextBuilder::buildDevice(DeviceTypes type, std::string uri,
-			struct iio_context* ctx) // enum Device Name
+			struct iio_context* ctx, bool sync) // enum Device Name
 {
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
-		case DevM2K: return new M2k(uri, ctx, name);
+		case DevM2K: return new M2k(uri, ctx, name, sync);
 
 		case Other:
 		default:
-		return new Context(uri, ctx, name);
+		return new Context(uri, ctx, name, sync);
 	}
 }
 
@@ -111,12 +109,11 @@ Context* ContextBuilder::deviceOpen(const char *uri)
 	if (!ctx) {
 		return nullptr;
 	}
-	std::cout << "creating IIO context\n";
 
 	DeviceTypes dev_type = ContextBuilder::identifyDevice(ctx);
 	std::cout << m_dev_name_map.at(dev_type) << std::endl;
 
-	Context* dev = buildDevice(dev_type, std::string(uri), ctx);
+	Context* dev = buildDevice(dev_type, std::string(uri), ctx, true);
 	s_connectedDevices.push_back(dev);
 
 	return dev;

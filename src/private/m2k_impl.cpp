@@ -41,8 +41,9 @@ using namespace libm2k::utils;
 
 class M2k::M2kImpl : public ContextImpl {
 public:
-	M2kImpl(std::string uri, iio_context* ctx, std::string name) :
-		ContextImpl(uri, ctx, name)
+	M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync) :
+		ContextImpl(uri, ctx, name, sync),
+		m_sync(sync)
 	{
 		initialize();
 		setTimeout(UINT_MAX);
@@ -96,6 +97,26 @@ public:
 		m_instancesPowerSupply.clear();
 	}
 
+	void init()
+	{
+		for (auto ain : m_instancesAnalogIn) {
+			ain->init();
+		}
+		for (auto aout : m_instancesAnalogOut) {
+			aout->init();
+		}
+		for (auto ps : m_instancesPowerSupply) {
+			ps->init();
+		}
+		for (auto d : m_instancesDigital) {
+			d->init();
+		}
+		for (auto dmm : m_instancesDMM) {
+			dmm->init();
+		}
+
+	}
+
 	void setTimeout(unsigned int timeout)
 	{
 		iio_context_set_timeout(m_context, timeout);
@@ -103,26 +124,26 @@ public:
 
 	void scanAllAnalogIn()
 	{
-		M2kAnalogIn* aIn = new libm2k::analog::M2kAnalogIn(m_context, "m2k-adc");
+		M2kAnalogIn* aIn = new libm2k::analog::M2kAnalogIn(m_context, "m2k-adc", m_sync);
 		m_instancesAnalogIn.push_back(aIn);
 	}
 
 	void scanAllAnalogOut()
 	{
 		std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
-		M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOut(m_context, devs);
+		M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOut(m_context, devs, m_sync);
 		m_instancesAnalogOut.push_back(aOut);
 	}
 
 	void scanAllPowerSupply()
 	{
-		libm2k::analog::M2kPowerSupply* pSupply = new libm2k::analog::M2kPowerSupply(m_context, "ad5627", "ad9963");
+		libm2k::analog::M2kPowerSupply* pSupply = new libm2k::analog::M2kPowerSupply(m_context, "ad5627", "ad9963", m_sync);
 		m_instancesPowerSupply.push_back(pSupply);
 	}
 
 	void scanAllDigital()
 	{
-		libm2k::digital::M2kDigital* logic = new libm2k::digital::M2kDigital(m_context, "m2k-logic-analyzer");
+		libm2k::digital::M2kDigital* logic = new libm2k::digital::M2kDigital(m_context, "m2k-logic-analyzer", m_sync);
 		m_instancesDigital.push_back(logic);
 	}
 
@@ -238,6 +259,7 @@ public:
 		if (m_instancesAnalogOut.size() > 0) {
 			return m_instancesAnalogOut.at(0);
 		}
+		return nullptr;
 	}
 
 	std::vector<M2kAnalogIn*> getAllAnalogIn()
@@ -330,4 +352,5 @@ private:
 	std::vector<analog::M2kAnalogIn*> m_instancesAnalogIn;
 	std::vector<analog::M2kPowerSupply*> m_instancesPowerSupply;
 	std::vector<digital::M2kDigital*> m_instancesDigital;
+	bool m_sync;
 };

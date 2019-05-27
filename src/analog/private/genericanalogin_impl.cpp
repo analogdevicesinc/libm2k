@@ -54,16 +54,6 @@ public:
 		return DeviceIn::getSamples(nb_samples, processSample);
 	}
 
-	void openAnalogIn()
-	{
-		std::cout << "Opened analog in for " << m_dev_name << "\n";
-	}
-
-	void closeAnalogIn()
-	{
-		std::cout << "Closed analog in for " << m_dev_name << "\n";
-	}
-
 	double getSampleRate()
 	{
 		return getDoubleValue("sampling_frequency");

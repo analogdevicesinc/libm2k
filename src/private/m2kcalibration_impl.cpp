@@ -50,6 +50,11 @@ public:
 		m_ad5625_dev(nullptr)
 	{
 		m_ad5625_dev = std::make_shared<DeviceGeneric>(m_ctx, "ad5625");
+		m_adc_channels_enabled.push_back(false);
+		m_adc_channels_enabled.push_back(false);
+		m_dac_channels_enabled.push_back(false);
+		m_dac_channels_enabled.push_back(false);
+		m_dac_default_vlsb = 10.0 / ((double)( 1 << 12 ));
 	}
 
 	~M2kCalibrationImpl()
@@ -95,6 +100,13 @@ public:
 			/* Save the previous values for sampling frequency and oversampling ratio */
 			adc_sampl_freq = m_m2k_adc->getSampleRate();
 			adc_oversampl = m_m2k_adc->getOversamplingRatio();
+
+			m_m2k_adc->setCalibscale(0, 1.0);
+			m_m2k_adc->setCalibscale(1, 1.0);
+
+			m_adc_channels_enabled.at(0) = m_m2k_adc->isChannelEnabled(0);
+			m_adc_channels_enabled.at(1) = m_m2k_adc->isChannelEnabled(1);
+
 			m_m2k_adc->enableChannel(0, true);
 			m_m2k_adc->enableChannel(1, true);
 		} __catch (exception_type &e) {
@@ -109,6 +121,15 @@ public:
 			dac_a_oversampl = m_m2k_dac->getOversamplingRatio(0);
 			dac_b_sampl_freq = m_m2k_dac->getSampleRate(1);
 			dac_b_oversampl = m_m2k_dac->getOversamplingRatio(1);
+
+			m_m2k_dac->setCalibscale(0, 1.0);
+			m_m2k_dac->setCalibscale(1, 1.0);
+
+			m_dac_channels_enabled.at(0) = m_m2k_dac->isChannelEnabled(0);
+			m_dac_channels_enabled.at(1) = m_m2k_dac->isChannelEnabled(1);
+
+			m_m2k_dac->enableChannel(0, true);
+			m_m2k_dac->enableChannel(1, true);
 		} __catch(exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
@@ -124,8 +145,8 @@ public:
 			m_m2k_adc->setSampleRate(adc_sampl_freq);
 			m_m2k_adc->setOversamplingRatio(adc_oversampl);
 
-			m_m2k_adc->enableChannel(0, false);
-			m_m2k_adc->enableChannel(1, false);
+			m_m2k_adc->enableChannel(0, m_adc_channels_enabled.at(0));
+			m_m2k_adc->enableChannel(1, m_adc_channels_enabled.at(1));
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
@@ -138,6 +159,9 @@ public:
 			m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
 			m_m2k_dac->setSampleRate(1, dac_b_sampl_freq);
 			m_m2k_dac->setOversamplingRatio(1, dac_b_oversampl);
+
+			m_m2k_dac->enableChannel(0, m_dac_channels_enabled.at(0));
+			m_m2k_dac->enableChannel(1, m_dac_channels_enabled.at(1));
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
 		}
@@ -294,8 +318,11 @@ public:
 		m_ad5625_dev->setDoubleValue(0, m_dac_a_ch_offset, "raw", true);
 		m_ad5625_dev->setDoubleValue(1, m_dac_b_ch_offset, "raw", true);
 
-		m_m2k_dac->setDacCalibVlsb(0, dacAvlsb());
-		m_m2k_dac->setDacCalibVlsb(1, dacBvlsb());
+		m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
+		m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
+
+		m_m2k_dac->setCalibscale(0, m_dac_default_vlsb / dacAvlsb());
+		m_m2k_dac->setCalibscale(1, m_dac_default_vlsb / dacBvlsb());
 	}
 
 	void updateAdcCorrections()
@@ -303,8 +330,8 @@ public:
 		m_ad5625_dev->setDoubleValue(2, m_adc_ch0_offset, "raw", true);
 		m_ad5625_dev->setDoubleValue(3, m_adc_ch1_offset, "raw", true);
 
-		m_m2k_adc->setAdcCalibGain(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
-		m_m2k_adc->setAdcCalibGain(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
+		m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
+		m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
 	}
 
 	bool resetCalibration()
@@ -773,7 +800,10 @@ private:
 	bool m_initialized;
 	int m_calibration_mode;
 
+	std::vector<bool> m_adc_channels_enabled;
+	std::vector<bool> m_dac_channels_enabled;
+	double m_dac_default_vlsb;
+
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
-
 };

@@ -44,7 +44,7 @@ public:
 		"and",
 	};
 
-	M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev) :
+	M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, bool sync) :
 		DeviceGeneric(ctx, logic_dev)
 	{
 		m_dev_name_write = logic_dev + "-tx";
@@ -74,8 +74,33 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: logic device not found");
 		}
 
+		if (sync) {
+			syncDevice();
+		}
+	}
+
+	~M2kDigitalImpl()
+	{
+	}
+
+	void syncDevice()
+	{
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			/* Disable all the TX channels */
+			bool en = m_dev_write->isChannelEnabled(i);
+			m_tx_channels_enabled.push_back(en);
+
+			/* Enable all the RX channels */
+			en = m_dev_read->isChannelEnabled(i);
+			m_rx_channels_enabled.push_back(en);
+		}
+	}
+
+	void init()
+	{
+		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			/* Disable all the TX channels */
+
 			m_tx_channels_enabled.push_back(false);
 			enableChannel(i, false);
 
@@ -85,10 +110,6 @@ public:
 		}
 
 		m_dev_read->setKernelBuffersCount(25);
-	}
-
-	~M2kDigitalImpl()
-	{
 	}
 
 	void setDirection(unsigned short mask)

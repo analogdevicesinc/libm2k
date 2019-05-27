@@ -35,7 +35,7 @@ using namespace std;
 
 class M2kAnalogOut::M2kAnalogOutImpl : public DeviceGeneric {
 public:
-	M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs):
+	M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs, bool sync):
 		DeviceGeneric(ctx, "")
 	{
 		m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(0)));
@@ -45,11 +45,13 @@ public:
 		if (!m_m2k_fabric) {
 			throw_exception(EXC_INVALID_PARAMETER, "Analog out: Can not find m2k fabric device");
 		}
-		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
-		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 
 		m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 )));
 		m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 )));
+
+		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
+		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
+
 		m_filter_compensation_table[75E6] = 1.00;
 		m_filter_compensation_table[75E5] = 1.525879;
 		m_filter_compensation_table[75E4] = 1.164153;
@@ -59,6 +61,10 @@ public:
 
 		for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
 			m_cyclic.push_back(true);
+		}
+
+		if (sync) {
+			syncDevice();
 		}
 	}
 
@@ -71,14 +77,40 @@ public:
 		m_dac_devices.clear();
 	}
 
-	void openAnalogOut()
+	void init()
 	{
-
+		setOversamplingRatio(0, 1);
+		setOversamplingRatio(1, 1);
+		setSampleRate(0, 75E6);
+		setSampleRate(1, 75E6);
+		m_calib_vlsb.at(0) = 10.0 / ((double)( 1 << 12 ));
+		m_calib_vlsb.at(1) = 10.0 / ((double)( 1 << 12 ));
+		m_cyclic.at(0) = true;
+		m_cyclic.at(1) = true;
+		enableChannel(0, true);
+		enableChannel(1, true);
 	}
 
-	void closeAnalogOut()
+	void syncDevice()
 	{
+		//enable???
+	}
 
+	double getCalibscale(unsigned int index)
+	{
+		if (index >= m_dac_devices.size()) {
+			throw invalid_parameter_exception("M2kAnalogOut: No such channel available for calibscale");
+		}
+		return m_dac_devices.at(index)->getDoubleValue("calibscale");
+	}
+
+	double setCalibscale(unsigned int index, double calibscale)
+	{
+		if (index >= m_dac_devices.size()) {
+			throw invalid_parameter_exception("M2kAnalogOut: No such channel available for calibscale");
+		}
+		m_dac_devices.at(index)->setDoubleValue(calibscale, "calibscale");
+		return getCalibscale(index);
 	}
 
 	std::vector<double> getOversamplingRatio()
@@ -341,6 +373,14 @@ public:
 		}
 
 		m_dac_devices.at(chnIdx)->enableChannel(0, enable);
+	}
+
+	bool isChannelEnabled(unsigned int chnIdx)
+	{
+		if (chnIdx >= m_dac_devices.size()) {
+			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel");
+		}
+		return m_dac_devices.at(chnIdx)->isChannelEnabled(0);
 	}
 
 private:

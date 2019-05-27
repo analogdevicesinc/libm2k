@@ -31,7 +31,7 @@ class M2kPowerSupply::M2kPowerSupplyImpl :  public DeviceGeneric  {
 public:
 
 	M2kPowerSupplyImpl(iio_context *ctx, std::string write_dev,
-				       std::string read_dev) :
+				       std::string read_dev, bool sync) :
 		DeviceGeneric(ctx, ""),
 		m_pos_powerdown_idx(2),
 		m_neg_powerdown_idx(3),
@@ -106,11 +106,33 @@ public:
 		m_write_coefficients.push_back(4095.0 / (-5.1 * 1.2 ));
 		m_read_coefficients.push_back(6.4 / 4095.0);
 		m_read_coefficients.push_back((-6.4)  / 4095.0);
+
+		if (sync) {
+			syncDevice();
+		}
 	}
 
 	~M2kPowerSupplyImpl()
 	{
 
+	}
+
+	void syncDevice()
+	{
+		m_channels_enabled.at(0) = m_dev_write->getBoolValue(m_write_channel_idx.at(0), "powerdown", true);
+		m_channels_enabled.at(1) = m_dev_write->getBoolValue(m_write_channel_idx.at(1), "powerdown", true);
+	}
+
+	void init()
+	{
+		for (unsigned int i : m_write_channel_idx) {
+			m_dev_write->setDoubleValue(i, 0.0, "raw", true);
+		}
+
+		m_write_coefficients.at(0) = 4095.0 / (5.02 * 1.2 );
+		m_write_coefficients.at(1) = 4095.0 / (-5.1 * 1.2 );
+		m_read_coefficients.at(0) = 6.4 / 4095.0;
+		m_read_coefficients.at(1) = (-6.4)  / 4095.0;
 	}
 
 	void powerDownDacs(bool powerdown)

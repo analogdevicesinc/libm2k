@@ -21,14 +21,19 @@
 using namespace libm2k::analog;
 
 M2kPowerSupply::M2kPowerSupply(iio_context *ctx, std::string write_dev,
-			       std::string read_dev) :
-	m_pimpl(std::unique_ptr<M2kPowerSupplyImpl>(new M2kPowerSupplyImpl(ctx, write_dev, read_dev)))
+			       std::string read_dev, bool sync) :
+	m_pimpl(std::unique_ptr<M2kPowerSupplyImpl>(new M2kPowerSupplyImpl(ctx, write_dev, read_dev, sync)))
 {
 }
 
 M2kPowerSupply::~M2kPowerSupply()
 {
 
+}
+
+void M2kPowerSupply::init()
+{
+	m_pimpl->init();
 }
 
 void M2kPowerSupply::powerDownDacs(bool powerdown)

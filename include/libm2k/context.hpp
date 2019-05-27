@@ -48,8 +48,10 @@ class M2k;
 
 class LIBM2K_API Context {
 public:
-	Context(std::string uri, struct iio_context*, std::string name);
+	Context(std::string uri, struct iio_context*, std::string name, bool sync);
 	virtual ~Context();
+
+	virtual void init();
 
 	std::vector<std::string> scanAllAnalogIn();
 	std::vector<std::string> scanAllAnalogOut();

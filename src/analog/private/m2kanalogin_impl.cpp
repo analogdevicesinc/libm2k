@@ -42,16 +42,12 @@ using namespace std::placeholders;
 
 class M2kAnalogIn::M2kAnalogInImpl : public DeviceIn {
 public:
-	M2kAnalogInImpl(iio_context * ctx, std::string adc_dev) :
-		DeviceIn (ctx, adc_dev),
+	M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sync) :
+		DeviceIn(ctx, adc_dev),
 		m_need_processing(false),
 		m_trigger(nullptr)
 	{
-//		m_ad9963 = make_shared<Device>(ctx, "ad9963");
-		setOversamplingRatio(1);
-
 		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
-//		m_ad5625 = make_shared<Device>(ctx, "ad5625");
 		m_trigger = new M2kHardwareTrigger(ctx);
 
 		/* Filters applied while decimating affect the
@@ -70,12 +66,48 @@ public:
 			m_adc_hw_offset.push_back(0);
 			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_offset.at(i));
 		}
+
+		if (sync) {
+			syncDevice();
+		}
+
 	}
 
 	~M2kAnalogInImpl()
 	{
 		if (m_trigger) {
 			delete m_trigger;
+		}
+	}
+
+	void init()
+	{
+		setOversamplingRatio(1);
+		setSampleRate(1E8);
+
+		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			enableChannel(i, true);
+
+			ANALOG_IN_CHANNEL ch = static_cast<ANALOG_IN_CHANNEL>(i);
+			setTriggerMode(ch, ALWAYS);
+
+			setRange(ch, PLUS_MINUS_25V);
+			m_adc_calib_offset.push_back(0);
+			m_adc_calib_gain.push_back(1);
+			m_adc_hw_offset.push_back(0);
+			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_offset.at(i));
+		}
+	}
+
+	void syncDevice()
+	{
+		for (unsigned int i = 0; i < getNbChannels(); i++) {
+			//enabled???
+			ANALOG_IN_CHANNEL ch = static_cast<ANALOG_IN_CHANNEL>(i);
+			auto range = getRangeDevice(ch);
+			m_input_range[i] = range;
+//			m_adc_hw_offset.push_back(0);
+			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_offset.at(i));
 		}
 	}
 
@@ -109,6 +141,16 @@ public:
 	bool getStreamingFlag()
 	{
 		return m_trigger->getStreamingFlag();
+	}
+
+	double getCalibscale(unsigned int index)
+	{
+		return getDoubleValue(index, "calibscale");
+	}
+
+	double setCalibscale(unsigned int index, double calibscale)
+	{
+		return setDoubleValue(index, calibscale, "calibscale");
 	}
 
 	M2kHardwareTrigger *getTrigger()
@@ -259,16 +301,6 @@ public:
 	{
 		ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(ch);
 		return getScalingFactor(channel);
-	}
-
-	void openAnalogIn()
-	{
-		std::cout << "Opened analog in for " << getName() << "\n";
-	}
-
-	void closeAnalogIn()
-	{
-		std::cout << "Opened analog in for " << getName() << "\n";
 	}
 
 	int getDelay()
@@ -441,6 +473,18 @@ public:
 		return m_input_range[channel];
 	}
 
+	M2K_RANGE getRangeDevice(ANALOG_IN_CHANNEL channel)
+	{
+		M2K_RANGE range = PLUS_MINUS_25V;
+		auto gain = m_m2k_fabric->getStringValue(channel, "gain");
+		if (gain == "high") {
+			range = PLUS_MINUS_2_5V;
+		} else {
+			range = PLUS_MINUS_25V;
+		}
+		return range;
+	}
+
 	std::pair<double, double> getRangeLimits(M2K_RANGE range)
 	{
 		if (range == PLUS_MINUS_25V) {
@@ -518,9 +562,7 @@ public:
 	}
 
 private:
-//	std::shared_ptr<IDe> m_ad9963;
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
-//	std::shared_ptr<Device> m_ad5625;
 	bool m_need_processing;
 
 	libm2k::analog::M2kHardwareTrigger *m_trigger;

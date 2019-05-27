@@ -70,7 +70,7 @@ class M2kHardwareTrigger::M2kHardwareTriggerImpl : public DeviceIn {
 	typedef std::pair<Channel *, std::string> channel_pair;
 
 public:
-	M2kHardwareTriggerImpl(struct iio_context *ctx) :
+	M2kHardwareTriggerImpl(struct iio_context *ctx, bool init = true) :
 		DeviceIn (ctx, "m2k-adc-trigger")
 	{
 		std::vector<std::pair<Channel*, std::string>> channels;
@@ -133,11 +133,13 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "no delay trigger available");
 		}
 
-		for(unsigned int i = 0; i < m_analog_channels.size(); i++) {
-			m_scaling.push_back(1);
-			m_offset.push_back(0);
+		if (init) {
+			for(unsigned int i = 0; i < m_analog_channels.size(); i++) {
+				m_scaling.push_back(1);
+				m_offset.push_back(0);
+			}
+			setStreamingFlag(false);
 		}
-		setStreamingFlag(false);
 	}
 
 	~M2kHardwareTriggerImpl()

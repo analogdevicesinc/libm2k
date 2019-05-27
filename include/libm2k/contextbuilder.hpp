@@ -55,7 +55,8 @@ private:
 	static DeviceTypes identifyDevice(iio_context *ctx);
 	static Context* buildDevice(DeviceTypes type,
 					std::string uri,
-					struct iio_context *ctx);
+					struct iio_context *ctx,
+					bool sync);
 };
 
 LIBM2K_API Context* deviceOpen()
