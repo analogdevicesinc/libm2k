@@ -28,12 +28,9 @@
 #include <string>
 #include <vector>
 
-using namespace libm2k::utils;
-using namespace libm2k::analog;
-
 namespace libm2k {
 namespace digital {
-class LIBM2K_API M2kDigital : public Device
+class LIBM2K_API M2kDigital : public libm2k::utils::Device
 {
 public:
 	M2kDigital(struct iio_context* ctx, std::string logic_dev);
@@ -64,10 +61,10 @@ public:
 
 	bool anyChannelEnabled(DIO_DIRECTION dir);
 
-	void setTrigger(DIO_CHANNEL, M2K_TRIGGER_CONDITION);
-	void setTrigger(unsigned int, M2K_TRIGGER_CONDITION);
-	M2K_TRIGGER_CONDITION getTrigger(DIO_CHANNEL);
-	M2K_TRIGGER_CONDITION getTrigger(unsigned int);
+	void setTrigger(DIO_CHANNEL, libm2k::analog::M2K_TRIGGER_CONDITION);
+	void setTrigger(unsigned int, libm2k::analog::M2K_TRIGGER_CONDITION);
+	libm2k::analog::M2K_TRIGGER_CONDITION getTrigger(DIO_CHANNEL);
+	libm2k::analog::M2K_TRIGGER_CONDITION getTrigger(unsigned int);
 
 	void setTriggerDelay(int delay);
 	int getTriggerDelay();

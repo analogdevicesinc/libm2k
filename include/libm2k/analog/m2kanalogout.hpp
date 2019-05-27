@@ -27,10 +27,9 @@
 #include <memory>
 #include <map>
 
-using namespace libm2k::utils;
 namespace libm2k {
 namespace analog {
-class LIBM2K_API M2kAnalogOut : public Device
+class LIBM2K_API M2kAnalogOut : public libm2k::utils::Device
 {
 public:
 	M2kAnalogOut(struct iio_context*, std::vector<std::string> dac_devs);
@@ -73,7 +72,6 @@ public:
 	void stop(unsigned int chn);
 
 	void enableChannel(unsigned int chnIdx, bool enable);
-
 private:
 	class M2kAnalogOutImpl;
 	std::shared_ptr<M2kAnalogOutImpl> m_pimpl;

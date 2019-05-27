@@ -1,6 +1,5 @@
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/devices.hpp>
 #include <libm2k/analog/genericanalogin.hpp>
 #include <libm2k/analog/dmm.hpp>
 
@@ -20,9 +19,10 @@
 using namespace libm2k::devices;
 using namespace libm2k::analog;
 using namespace libm2k::digital;
+using namespace std;
 
 void test() {
-	throw_exception(EXC_RUNTIME_ERROR, "no device found");
+	throw_exception(libm2k::EXC_RUNTIME_ERROR, "no device found");
 }
 
 

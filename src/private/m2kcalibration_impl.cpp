@@ -48,7 +48,7 @@ public:
 		m_initialized(false),
 		m_ad5625_dev(nullptr)
 	{
-		m_ad5625_dev = make_shared<Device>(m_ctx, "ad5625");
+		m_ad5625_dev = std::make_shared<Device>(m_ctx, "ad5625");
 	}
 
 	~M2kCalibrationImpl()
@@ -62,7 +62,7 @@ public:
 		if (!m_ctx)
 			return false;
 
-		m_m2k_fabric = make_shared<Device>(m_ctx, "m2k-fabric");
+		m_m2k_fabric = std::make_shared<Device>(m_ctx, "m2k-fabric");
 		if (!m_m2k_fabric) {
 			return false;
 		}

@@ -27,8 +27,6 @@
 #include <memory>
 #include <libm2k/m2kglobal.hpp>
 
-using namespace std;
-
 namespace libm2k {
 namespace utils {
 class Channel;

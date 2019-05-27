@@ -28,10 +28,9 @@
 #include <map>
 #include <memory>
 
-using namespace libm2k::utils;
 namespace libm2k {
 namespace analog {
-class LIBM2K_API M2kAnalogIn : public Device
+class LIBM2K_API M2kAnalogIn : public libm2k::utils::Device
 {
 public:	
 	M2kAnalogIn(struct iio_context*, std::string adc_dev);
@@ -47,19 +46,19 @@ public:
 	short getVoltageRaw(unsigned int ch);
 	double getVoltage(unsigned int ch);
 
-	short getVoltageRaw(ANALOG_IN_CHANNEL ch);
-	double getVoltage(ANALOG_IN_CHANNEL ch);
+	short getVoltageRaw(libm2k::analog::ANALOG_IN_CHANNEL ch);
+	double getVoltage(libm2k::analog::ANALOG_IN_CHANNEL ch);
 
 	std::vector<short> getVoltageRaw();
 	std::vector<double> getVoltage();
 
-	double getScalingFactor(ANALOG_IN_CHANNEL ch);
+	double getScalingFactor(libm2k::analog::ANALOG_IN_CHANNEL ch);
 
 	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range);
 	void setRange(ANALOG_IN_CHANNEL channel, double min, double max);
-	M2K_RANGE getRange(ANALOG_IN_CHANNEL channel);
-	std::pair<double, double> getRangeLimits(M2K_RANGE);
-	std::vector<M2K_RANGE>  getAvailableRanges();
+	libm2k::analog::M2K_RANGE getRange(libm2k::analog::ANALOG_IN_CHANNEL channel);
+	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE);
+	std::vector<libm2k::analog::M2K_RANGE>  getAvailableRanges();
 
 	double getOversamplingRatio();
 	double getOversamplingRatio(unsigned int);
@@ -120,7 +119,7 @@ public:
 	void setStreamingFlag(bool);
 	bool getStreamingFlag();
 
-	M2kHardwareTrigger* getTrigger();
+	libm2k::analog::M2kHardwareTrigger* getTrigger();
 private:
 	class M2kAnalogInImpl;
 	std::shared_ptr<M2kAnalogInImpl> m_pimpl;

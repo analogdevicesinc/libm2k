@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 namespace libm2k {
 namespace utils {
 	enum DEVICE_TYPE {

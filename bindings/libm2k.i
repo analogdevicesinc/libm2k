@@ -45,7 +45,6 @@ namespace std {
 
 	#include <libm2k/context.hpp>
 	#include <libm2k/contextbuilder.hpp>
-	#include <libm2k/devices.hpp>
 	#include <libm2k/enums.hpp>
 	#include <libm2k/fmcomms.hpp>
 	#include <libm2k/logger.hpp>
@@ -92,7 +91,6 @@ namespace std {
 
 %include <libm2k/context.hpp>
 %include <libm2k/contextbuilder.hpp>
-%include <libm2k/devices.hpp>
 %include <libm2k/enums.hpp>
 %include <libm2k/fmcomms.hpp>
 %include <libm2k/logger.hpp>

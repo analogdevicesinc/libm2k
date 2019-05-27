@@ -25,11 +25,9 @@
 #include <string>
 #include <vector>
 
-using namespace libm2k::utils;
-
 namespace libm2k {
 namespace analog {
-class LIBM2K_API GenericAnalogIn : public Device {
+class LIBM2K_API GenericAnalogIn : public libm2k::utils::Device {
 public:
 	GenericAnalogIn(struct iio_context* ctx, std::string adc_dev);
 	virtual ~GenericAnalogIn();

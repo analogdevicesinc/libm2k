@@ -352,7 +352,7 @@ public:
 		std::string val;
 		__try {
 			val = m_context_attributes.at(attr);
-		} __catch (exception &) {
+		} __catch (std::exception &) {
 			throw_exception(EXC_INVALID_PARAMETER, "No such context attribute" + attr);
 		}
 		return val;
@@ -383,7 +383,7 @@ public:
 		}
 	}
 
-	string getUri()
+	std::string getUri()
 	{
 		return m_uri;
 	}

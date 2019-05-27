@@ -27,11 +27,9 @@
 #include <vector>
 #include <memory>
 
-using namespace libm2k::utils;
-
 namespace libm2k {
 namespace digital {
-class LIBM2K_API GenericDigital : public Device {
+class LIBM2K_API GenericDigital : public libm2k::utils::Device {
 public:
 	GenericDigital(struct iio_context* ctx, std::string logic_dev);
 	virtual ~GenericDigital();

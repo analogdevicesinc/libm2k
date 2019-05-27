@@ -30,7 +30,7 @@ namespace libm2k {
 namespace analog {
 class M2kAnalogIn;
 
-class LIBM2K_API M2kHardwareTrigger : public Device
+class LIBM2K_API M2kHardwareTrigger : public libm2k::utils::Device
 {
 public:
 	M2kHardwareTrigger(struct iio_context *ctx);

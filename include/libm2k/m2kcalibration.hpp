@@ -29,14 +29,13 @@
 #include <memory>
 #include <vector>
 
-using namespace libm2k::analog;
 namespace libm2k {
 
 class LIBM2K_API M2kCalibration
 {
 public:
-	M2kCalibration(struct iio_context* ctx, M2kAnalogIn* analogIn,
-		       M2kAnalogOut* analogOut);
+	M2kCalibration(struct iio_context* ctx, libm2k::analog::M2kAnalogIn* analogIn,
+		       libm2k::analog::M2kAnalogOut* analogOut);
 	virtual ~M2kCalibration();
 
 	bool initialize();

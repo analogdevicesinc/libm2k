@@ -61,7 +61,7 @@ public:
 		std::string name = "";
 		auto n = iio_channel_get_name(m_channel);
 		if (n) {
-			name = string(n);
+			name = std::string(n);
 		}
 		return name;
 	}
@@ -208,7 +208,7 @@ public:
 		}
 	}
 
-	void setStringValue(string attr, string val)
+	void setStringValue(std::string attr, std::string val)
 	{
 		if (!m_channel) {
 			throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
@@ -219,7 +219,7 @@ public:
 		}
 	}
 
-	string getStringValue(string attr)
+	std::string getStringValue(std::string attr)
 	{
 		if (!m_channel) {
 			throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");

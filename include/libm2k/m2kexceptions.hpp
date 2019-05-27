@@ -26,8 +26,6 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
-using namespace std;
-using namespace libm2k;
 
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	#define exception_type std::exception
@@ -81,17 +79,17 @@ public:
 
 static std::exception e;
 
-static void throw_exception(M2K_EXCEPTION exc_type, std::string exception)
+static void throw_exception(libm2k::M2K_EXCEPTION exc_type, std::string exception)
 {
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	switch (exc_type) {
-	case EXC_OUT_OF_RANGE: {
+	case libm2k::EXC_OUT_OF_RANGE: {
 		throw std::out_of_range("ERR: Out of range - " + exception);
 	}
-	case EXC_RUNTIME_ERROR: {
+	case libm2k::EXC_RUNTIME_ERROR: {
 		throw std::runtime_error("ERR: Runtime - " + exception);
 	}
-	case EXC_INVALID_PARAMETER: {
+	case libm2k::EXC_INVALID_PARAMETER: {
 		throw std::invalid_argument("ERR: Invalid argument - " + exception);
 	}
 	default: {

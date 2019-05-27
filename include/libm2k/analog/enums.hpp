@@ -23,7 +23,6 @@
 #include <vector>
 #include <string>
 #include <memory>
-using namespace std;
 
 namespace libm2k {
 namespace analog {

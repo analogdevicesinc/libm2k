@@ -25,11 +25,9 @@
 #include <vector>
 #include <memory>
 
-using namespace libm2k::utils;
-
 namespace libm2k {
 namespace analog {
-class LIBM2K_API M2kPowerSupply : public Device {
+class LIBM2K_API M2kPowerSupply : public libm2k::utils::Device {
 public:
 	M2kPowerSupply(struct iio_context* ctx, std::string write_dev,
 		       std::string read_dev);

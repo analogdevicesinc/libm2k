@@ -104,7 +104,7 @@ std::vector<DMM*> Context::getAllDmm()
 	return m_pimpl->getAllDmm();
 }
 
-std::vector<string> Context::getAvailableContextAttributes()
+std::vector<std::string> Context::getAvailableContextAttributes()
 {
 	return m_pimpl->getAvailableContextAttributes();
 }
@@ -129,17 +129,17 @@ M2K* Context::toM2k()
 	return m_pimpl->toM2k(this);
 }
 
-string Context::getUri()
+std::string Context::getUri()
 {
 	return m_pimpl->getUri();
 }
 
-void devices::Context::scanAllPowerSupply()
+void libm2k::devices::Context::scanAllPowerSupply()
 {
 	m_pimpl->scanAllPowerSupply();
 }
 
-void devices::Context::scanAllDigital()
+void libm2k::devices::Context::scanAllDigital()
 {
 	m_pimpl->scanAllDigital();
 }

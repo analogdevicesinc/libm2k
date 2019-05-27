@@ -27,19 +27,17 @@
 #include <map>
 #include <string>
 
-using namespace libm2k::utils;
-
 namespace libm2k {
 namespace analog {
-class LIBM2K_API DMM : public Device {
+class LIBM2K_API DMM : public libm2k::utils::Device {
 public:
 	DMM(struct iio_context *ctx, std::string dev);
 	virtual ~DMM();
 
 	std::vector<std::string> getAllChannels();
-	DMM_READING readChannel(unsigned int index);
-	DMM_READING readChannel(std::string chn_name);
-	std::vector<DMM_READING> readAll();
+	libm2k::analog::DMM_READING readChannel(unsigned int index);
+	libm2k::analog::DMM_READING readChannel(std::string chn_name);
+	std::vector<libm2k::analog::DMM_READING> readAll();
 	std::string getName();
 
 private:
