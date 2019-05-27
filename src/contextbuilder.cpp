@@ -137,6 +137,10 @@ Context* ContextBuilder::deviceOpen()
 M2k *ContextBuilder::m2kOpen(const char *uri)
 {
 	auto dev = deviceOpen(uri);
+	if (!dev) {
+		return nullptr;
+	}
+
 	auto m2k = dev->toM2k();
 	if (m2k) {
 		return m2k;
@@ -147,6 +151,10 @@ M2k *ContextBuilder::m2kOpen(const char *uri)
 M2k *ContextBuilder::m2kOpen()
 {
 	auto dev = deviceOpen();
+	if (!dev) {
+		return nullptr;
+	}
+
 	auto m2k = dev->toM2k();
 	if (m2k) {
 		return m2k;
