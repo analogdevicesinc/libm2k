@@ -44,7 +44,7 @@ namespace digital {
 }
 
 namespace devices {
-class M2K;
+class M2k;
 
 class LIBM2K_API Context {
 public:
@@ -74,7 +74,7 @@ public:
 	std::string getSerialNumber();
 	std::unordered_set<std::string> getAllDevices(iio_context *ctx);
 
-	libm2k::devices::M2K* toM2k();
+	libm2k::devices::M2k* toM2k();
 
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);

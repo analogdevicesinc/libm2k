@@ -44,8 +44,8 @@ public:
 	static std::vector<std::string> listDevices();
 	static Context* deviceOpen(const char*);
 	static Context* deviceOpen();
-	static M2K* m2kOpen(const char*);
-	static M2K* m2kOpen();
+	static M2k* m2kOpen(const char*);
+	static M2k* m2kOpen();
 	static void deviceClose(Context*);
 	static void deviceCloseAll();
 private:
@@ -68,12 +68,12 @@ LIBM2K_API Context* deviceOpen(const char* uri)
 	return ContextBuilder::deviceOpen(uri);
 }
 
-LIBM2K_API M2K* m2kOpen(const char* uri)
+LIBM2K_API M2k* m2kOpen(const char* uri)
 {
 	return ContextBuilder::m2kOpen(uri);
 }
 
-LIBM2K_API M2K* m2kOpen()
+LIBM2K_API M2k* m2kOpen()
 {
 	return ContextBuilder::m2kOpen();
 }

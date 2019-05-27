@@ -372,9 +372,9 @@ public:
 		return getContextAttributeValue("hw_serial");
 	}
 
-	M2K* toM2k(Context *parent)
+	M2k* toM2k(Context *parent)
 	{
-		libm2k::devices::M2K* dev = dynamic_cast<M2K*>(parent);
+		libm2k::devices::M2k* dev = dynamic_cast<M2k*>(parent);
 		if(dev) {
 			return dev;
 		} else {

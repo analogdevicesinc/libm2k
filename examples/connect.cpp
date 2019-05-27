@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 //			std::shared_ptr<GenericDevice> d2 = ContextBuilder::deviceOpen("ip:192.168.2.1");//lst.at(0).c_str());
 			Context* d = ContextBuilder::deviceOpen();//l.c_str());
 
-			M2K* dev = d->toM2k();
+			M2k* dev = d->toM2k();
 			if (!dev) { // PLUTO
 				GenericAnalogOut* plutoOut = d->getAnalogOut(0);
 				plutoOut->enableChannel(0, true);

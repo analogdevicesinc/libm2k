@@ -39,11 +39,11 @@ class M2kDigital;
 class M2kCalibration;
 namespace devices {
 
-class LIBM2K_API M2K : public Context
+class LIBM2K_API M2k : public Context
 {
 public:
-	M2K(std::string uri, iio_context* ctx, std::string name);
-	virtual ~M2K();
+	M2k(std::string uri, iio_context* ctx, std::string name);
+	virtual ~M2k();
 	void scanAllAnalogIn();
 	void scanAllAnalogOut();
 	void scanAllPowerSupply();
@@ -72,8 +72,8 @@ public:
 	void setLed(bool on);
 	bool getLed();
 private:
-	class M2KImpl;
-	std::shared_ptr<M2KImpl> m_pimpl;
+	class M2kImpl;
+	std::shared_ptr<M2kImpl> m_pimpl;
 };
 }
 }

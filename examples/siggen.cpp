@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
 	// GenericDeviced::sptr device
 	Context* device = ContextBuilder::deviceOpen(deviceList[0].c_str());
-	M2K* m2k_device = device->toM2k();
+	M2k* m2k_device = device->toM2k();
 
 	if (!m2k_device) {
 		std::cout << "Need to plug in an m2k device!" << std::endl;

@@ -39,9 +39,9 @@ using namespace libm2k::analog;
 using namespace libm2k::digital;
 using namespace libm2k::utils;
 
-class M2K::M2KImpl : public ContextImpl {
+class M2k::M2kImpl : public ContextImpl {
 public:
-	M2KImpl(std::string uri, iio_context* ctx, std::string name) :
+	M2kImpl(std::string uri, iio_context* ctx, std::string name) :
 		ContextImpl(uri, ctx, name)
 	{
 		initialize();
@@ -67,7 +67,7 @@ public:
 		m_calibration = new M2kCalibration(ctx, getAnalogIn(), getAnalogOut());
 	}
 
-	~M2KImpl()
+	~M2kImpl()
 	{
 		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
 		if (m_m2k_fabric) {

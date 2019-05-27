@@ -25,132 +25,132 @@ using namespace libm2k::analog;
 using namespace libm2k::digital;
 using namespace libm2k::utils;
 
-M2K::M2K(std::string uri, iio_context* ctx, std::string name) :
-	Context(new M2KImpl(uri, ctx, name))
+M2k::M2k(std::string uri, iio_context* ctx, std::string name) :
+	Context(new M2kImpl(uri, ctx, name))
 {
-	m_pimpl = dynamic_pointer_cast<M2KImpl>(Context::m_pimpl);
+	m_pimpl = dynamic_pointer_cast<M2kImpl>(Context::m_pimpl);
 }
 
-M2K::~M2K()
+M2k::~M2k()
 {
 }
 
-void M2K::setTimeout(unsigned int timeout)
+void M2k::setTimeout(unsigned int timeout)
 {
 	m_pimpl->setTimeout(timeout);
 }
 
-void M2K::setLed(bool on)
+void M2k::setLed(bool on)
 {
 	m_pimpl->setLed(on);
 }
 
-bool M2K::getLed()
+bool M2k::getLed()
 {
 	return m_pimpl->getLed();
 }
 
-void M2K::scanAllAnalogIn()
+void M2k::scanAllAnalogIn()
 {
 	m_pimpl->scanAllAnalogIn();
 }
 
-void M2K::scanAllAnalogOut()
+void M2k::scanAllAnalogOut()
 {
 	m_pimpl->scanAllAnalogOut();
 }
 
-void M2K::scanAllPowerSupply()
+void M2k::scanAllPowerSupply()
 {
 	m_pimpl->scanAllPowerSupply();
 }
 
-void M2K::scanAllDigital()
+void M2k::scanAllDigital()
 {
 	m_pimpl->scanAllDigital();
 }
 
-void M2K::calibrate()
+void M2k::calibrate()
 {
 	m_pimpl->calibrate();
 }
 
-bool M2K::resetCalibration()
+bool M2k::resetCalibration()
 {
 	return m_pimpl->resetCalibration();
 }
 
-bool M2K::calibrateADC()
+bool M2k::calibrateADC()
 {
 	return m_pimpl->calibrateADC();
 }
 
-bool M2K::calibrateDAC()
+bool M2k::calibrateDAC()
 {
 	return m_pimpl->calibrateDAC();
 }
 
-double M2K::getAdcCalibrationGain(unsigned int chn)
+double M2k::getAdcCalibrationGain(unsigned int chn)
 {
 	return m_pimpl->getAdcCalibrationGain(chn);
 }
 
-int M2K::getAdcCalibrationOffset(unsigned int chn)
+int M2k::getAdcCalibrationOffset(unsigned int chn)
 {
 	return m_pimpl->getAdcCalibrationOffset(chn);
 }
 
-double M2K::getDacACalibrationGain()
+double M2k::getDacACalibrationGain()
 {
 	return m_pimpl->getDacACalibrationGain();
 }
 
-double M2K::getDacBCalibrationGain()
+double M2k::getDacBCalibrationGain()
 {
 	return m_pimpl->getDacBCalibrationGain();
 }
 
-int M2K::getDacACalibrationOffset()
+int M2k::getDacACalibrationOffset()
 {
 	return m_pimpl->getDacACalibrationOffset();
 }
 
-int M2K::getDacBCalibrationOffset()
+int M2k::getDacBCalibrationOffset()
 {
 	return m_pimpl->getDacBCalibrationOffset();
 }
 
-M2kAnalogIn* M2K::getAnalogIn()
+M2kAnalogIn* M2k::getAnalogIn()
 {
 	return m_pimpl->getAnalogIn();
 }
 
-M2kAnalogIn* M2K::getAnalogIn(string dev_name)
+M2kAnalogIn* M2k::getAnalogIn(string dev_name)
 {
 	return m_pimpl->getAnalogIn(dev_name);
 }
 
-M2kPowerSupply* M2K::getPowerSupply()
+M2kPowerSupply* M2k::getPowerSupply()
 {
 	return m_pimpl->getPowerSupply();
 }
 
-M2kDigital* M2K::getDigital()
+M2kDigital* M2k::getDigital()
 {
 	return m_pimpl->getDigital();
 }
 
-M2kAnalogOut* M2K::getAnalogOut()
+M2kAnalogOut* M2k::getAnalogOut()
 {
 	return m_pimpl->getAnalogOut();
 }
 
-std::vector<M2kAnalogIn*> M2K::getAllAnalogIn()
+std::vector<M2kAnalogIn*> M2k::getAllAnalogIn()
 {
 	return m_pimpl->getAllAnalogIn();
 }
 
-std::vector<M2kAnalogOut*> M2K::getAllAnalogOut()
+std::vector<M2kAnalogOut*> M2k::getAllAnalogOut()
 {
 	return m_pimpl->getAllAnalogOut();
 }

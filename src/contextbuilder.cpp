@@ -91,7 +91,7 @@ Context* ContextBuilder::buildDevice(DeviceTypes type, std::string uri,
 {
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
-		case DevM2K: return new M2K(uri, ctx, name);
+		case DevM2K: return new M2k(uri, ctx, name);
 
 		case Other:
 		default:
@@ -134,7 +134,7 @@ Context* ContextBuilder::deviceOpen()
 	return deviceOpen(lst.at(0).c_str());
 }
 
-M2K *ContextBuilder::m2kOpen(const char *uri)
+M2k *ContextBuilder::m2kOpen(const char *uri)
 {
 	auto dev = deviceOpen(uri);
 	auto m2k = dev->toM2k();
@@ -144,7 +144,7 @@ M2K *ContextBuilder::m2kOpen(const char *uri)
 	return nullptr;
 }
 
-M2K *ContextBuilder::m2kOpen()
+M2k *ContextBuilder::m2kOpen()
 {
 	auto dev = deviceOpen();
 	auto m2k = dev->toM2k();

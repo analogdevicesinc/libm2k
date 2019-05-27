@@ -124,7 +124,7 @@ std::string Context::getSerialNumber()
 	return m_pimpl->getSerialNumber();
 }
 
-M2K* Context::toM2k()
+M2k* Context::toM2k()
 {
 	return m_pimpl->toM2k(this);
 }
