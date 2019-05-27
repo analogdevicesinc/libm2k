@@ -28,7 +28,7 @@
 
 namespace libm2k {
 namespace utils {
-class LIBM2K_API Channel
+class Channel
 {
 public:
 	Channel(struct iio_device* device, unsigned int channel = 0);

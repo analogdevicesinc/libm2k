@@ -26,9 +26,8 @@ using namespace std;
 
 
 M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev) :
-	Device(new M2kDigitalImpl(ctx, logic_dev))
+	m_pimpl(std::unique_ptr<M2kDigitalImpl>(new M2kDigitalImpl(ctx, logic_dev)))
 {
-	m_pimpl = dynamic_pointer_cast<M2kDigitalImpl>(Device::m_pimpl);
 }
 
 M2kDigital::~M2kDigital()

@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <libm2k/utils/device.hpp>
+#include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/utils/buffer.hpp>
 #include <libm2k/utils/channel.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -35,13 +35,13 @@ using namespace std;
 using namespace libm2k::utils;
 using namespace libm2k::devices;
 
-class Device::DeviceImpl {
+class DeviceGeneric::DeviceGenericImpl {
 public:
 
 	/*
 	 * Represents an iio_device
 	 */
-	DeviceImpl(struct iio_context* context, std::string dev_name = "", bool input = false)
+	DeviceGenericImpl(struct iio_context* context, std::string dev_name = "", bool input = false)
 	{
 		m_context = context;
 		m_dev = nullptr;
@@ -95,7 +95,7 @@ public:
 		}
 	}
 
-	virtual ~DeviceImpl()
+	virtual ~DeviceGenericImpl()
 	{
 		if (m_buffer) {
 			delete m_buffer;

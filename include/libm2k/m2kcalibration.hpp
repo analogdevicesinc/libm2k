@@ -72,7 +72,7 @@ public:
 
 protected:
 	class M2kCalibrationImpl;
-	std::shared_ptr<M2kCalibrationImpl> m_pimpl;
+	std::unique_ptr<M2kCalibrationImpl> m_pimpl;
 };
 
 }

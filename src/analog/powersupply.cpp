@@ -20,16 +20,19 @@
 #include "private/powersupply_impl.cpp"
 
 using namespace libm2k::analog;
-using namespace libm2k::utils;
 
 PowerSupply::PowerSupply(struct iio_context* ctx, std::string write_dev,
 			 std::string read_dev) :
-	Device(new PowerSupplyImpl(ctx, write_dev, read_dev))
+	m_pimpl(std::unique_ptr<PowerSupplyImpl>(new PowerSupplyImpl(ctx, write_dev, read_dev)))
 {
-	m_pimpl = dynamic_pointer_cast<PowerSupplyImpl>(Device::m_pimpl);
 }
 
 PowerSupply::~PowerSupply()
 {
+}
+
+void PowerSupply::enableChannel(unsigned int chnidx, bool enable)
+{
+	m_pimpl->enableChannel(chnidx, enable);
 }
 

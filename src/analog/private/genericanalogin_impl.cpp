@@ -17,7 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/utils/devicein.hpp>
 #include <libm2k/analog/genericanalogin.hpp>
 #include <libm2k/m2kexceptions.hpp>
 
@@ -30,10 +31,10 @@ using namespace libm2k::utils;
 using namespace libm2k::analog;
 using namespace std;
 
-class GenericAnalogIn::GenericAnalogInImpl : public DeviceImpl {
+class GenericAnalogIn::GenericAnalogInImpl : public DeviceIn {
 public:
 	GenericAnalogInImpl(iio_context *ctx, std::string adc_dev) :
-		DeviceImpl(ctx, adc_dev)
+		DeviceIn(ctx, adc_dev)
 	{
 	}
 
@@ -50,7 +51,7 @@ public:
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 						bool processed = false)
 	{
-		return DeviceImpl::getSamples(nb_samples, processSample);
+		return DeviceIn::getSamples(nb_samples, processSample);
 	}
 
 	void openAnalogIn()
@@ -85,7 +86,7 @@ public:
 
 	std::vector<double> getAvailableSampleRates()
 	{
-		return DeviceImpl::getAvailableSampleRates();
+		return DeviceGeneric::getAvailableSampleRates();
 	}
 
 	string getDeviceName()
@@ -95,7 +96,7 @@ public:
 
 	void enableChannel(unsigned int index, bool enable)
 	{
-		DeviceImpl::enableChannel(index, enable);
+		DeviceGeneric::enableChannel(index, enable);
 	}
 
 private:

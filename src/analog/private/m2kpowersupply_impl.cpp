@@ -17,25 +17,28 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/utils/devicein.hpp>
+#include <libm2k/utils/deviceout.hpp>
 #include <libm2k/analog/m2kpowersupply.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <iio.h>
 
 using namespace libm2k::analog;
+using namespace libm2k::utils;
 
-class M2kPowerSupply::M2kPowerSupplyImpl : public DeviceImpl {
+class M2kPowerSupply::M2kPowerSupplyImpl :  public DeviceGeneric  {
 public:
 
 	M2kPowerSupplyImpl(iio_context *ctx, std::string write_dev,
 				       std::string read_dev) :
-		DeviceImpl(ctx, ""),
+		DeviceGeneric(ctx, ""),
 		m_pos_powerdown_idx(2),
 		m_neg_powerdown_idx(3),
 		m_individual_powerdown(false)
 	{
 		if (write_dev != "") {
-			m_dev_write = make_shared<Device>(ctx, write_dev);
+			m_dev_write = make_shared<DeviceOut>(ctx, write_dev);
 			if (!m_dev_write) {
 				m_dev_write = nullptr;
 				throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: No device was found for writing");
@@ -43,7 +46,7 @@ public:
 		}
 
 		if (read_dev != "") {
-			m_dev_read = make_shared<Device>(ctx, read_dev);
+			m_dev_read = make_shared<DeviceIn>(ctx, read_dev);
 			if (!m_dev_read) {
 				m_dev_read = nullptr;
 				throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: No device was found for reading");
@@ -78,7 +81,7 @@ public:
 		m_channels_enabled.push_back(false);
 
 
-		m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
+		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 		if (!m_m2k_fabric) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Can not find m2k fabric device");
 		}
@@ -253,9 +256,9 @@ public:
 
 
 private:
-	std::shared_ptr<Device> m_dev_write;
-	std::shared_ptr<Device> m_dev_read;
-	std::shared_ptr<Device> m_m2k_fabric;
+	std::shared_ptr<DeviceOut> m_dev_write;
+	std::shared_ptr<DeviceIn> m_dev_read;
+	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 
 	std::vector<std::pair<std::string, double>> m_calib_coefficients;
 	std::vector<double> m_write_coefficients;

@@ -31,7 +31,7 @@ namespace libm2k {
 namespace utils {
 class Channel;
 
-class LIBM2K_API Buffer
+class Buffer
 {
 public:
 	Buffer(struct iio_device *dev);

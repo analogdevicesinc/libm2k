@@ -21,7 +21,6 @@
 #define GENERICDMM_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/utils/device.hpp>
 #include <libm2k/analog/enums.hpp>
 #include <vector>
 #include <map>
@@ -29,7 +28,7 @@
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API DMM : public libm2k::utils::Device {
+class LIBM2K_API DMM {
 public:
 	DMM(struct iio_context *ctx, std::string dev);
 	virtual ~DMM();
@@ -42,7 +41,7 @@ public:
 
 private:
 	class DMMImpl;
-	std::shared_ptr<DMMImpl> m_pimpl;
+	std::unique_ptr<DMMImpl> m_pimpl;
 };
 }
 }

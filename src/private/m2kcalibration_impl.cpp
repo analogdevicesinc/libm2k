@@ -17,9 +17,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <libm2k/analog/m2kanalogin.hpp>
-#include <libm2k/analog/m2kanalogout.hpp>
+#include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/m2kcalibration.hpp>
+#include <libm2k/analog/m2kanalogout.hpp>
+#include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/enums.hpp>
@@ -48,7 +49,7 @@ public:
 		m_initialized(false),
 		m_ad5625_dev(nullptr)
 	{
-		m_ad5625_dev = std::make_shared<Device>(m_ctx, "ad5625");
+		m_ad5625_dev = std::make_shared<DeviceGeneric>(m_ctx, "ad5625");
 	}
 
 	~M2kCalibrationImpl()
@@ -62,7 +63,7 @@ public:
 		if (!m_ctx)
 			return false;
 
-		m_m2k_fabric = std::make_shared<Device>(m_ctx, "m2k-fabric");
+		m_m2k_fabric = std::make_shared<DeviceGeneric>(m_ctx, "m2k-fabric");
 		if (!m_m2k_fabric) {
 			return false;
 		}
@@ -772,7 +773,7 @@ private:
 	bool m_initialized;
 	int m_calibration_mode;
 
-	std::shared_ptr<libm2k::utils::Device> m_ad5625_dev;
-	std::shared_ptr<libm2k::utils::Device> m_m2k_fabric;
+	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
+	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 
 };

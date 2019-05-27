@@ -28,12 +28,9 @@
 #include <utility>
 #include <unordered_set>
 
-class iio_context;
-class iio_device;
-class iio_channel;
 namespace libm2k {
 namespace utils {
-	class LIBM2K_API Utils {
+	class Utils {
 	public:
 		Utils() {
 

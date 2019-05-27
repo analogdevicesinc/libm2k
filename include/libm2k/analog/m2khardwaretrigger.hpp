@@ -29,8 +29,7 @@
 namespace libm2k {
 namespace analog {
 class M2kAnalogIn;
-
-class LIBM2K_API M2kHardwareTrigger : public libm2k::utils::Device
+class LIBM2K_API M2kHardwareTrigger
 {
 public:
 	M2kHardwareTrigger(struct iio_context *ctx);
@@ -73,7 +72,7 @@ public:
 	void setCalibParameters(unsigned int chnIdx, double scaling, double offset);
 private:
 	class M2kHardwareTriggerImpl;
-	std::shared_ptr<M2kHardwareTriggerImpl> m_pimpl;
+	std::unique_ptr<M2kHardwareTriggerImpl> m_pimpl;
 };
 }
 }

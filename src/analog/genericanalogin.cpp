@@ -24,10 +24,8 @@ using namespace libm2k::analog;
 using namespace std;
 
 GenericAnalogIn::GenericAnalogIn(iio_context *ctx, std::string adc_dev) :
-	Device(new GenericAnalogInImpl(ctx, adc_dev))
+	m_pimpl(std::unique_ptr<GenericAnalogInImpl>(new GenericAnalogInImpl(ctx, adc_dev)))
 {
-
-	m_pimpl = dynamic_pointer_cast<GenericAnalogInImpl>(Device::m_pimpl);
 }
 
 GenericAnalogIn::~GenericAnalogIn()

@@ -31,9 +31,8 @@ using namespace std::placeholders;
 
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
 			 std::string adc_dev) :
-	Device(new M2kAnalogInImpl(ctx, adc_dev))
+	m_pimpl(std::unique_ptr<M2kAnalogInImpl>(new M2kAnalogInImpl(ctx, adc_dev)))
 {
-	m_pimpl = dynamic_pointer_cast<M2kAnalogInImpl>(Device::m_pimpl);
 }
 
 M2kAnalogIn::~M2kAnalogIn()
@@ -67,6 +66,31 @@ void M2kAnalogIn::setStreamingFlag(bool en)
 bool M2kAnalogIn::getStreamingFlag()
 {
 	return m_pimpl->getStreamingFlag();
+}
+
+unsigned int M2kAnalogIn::getNbChannels()
+{
+	return m_pimpl->getNbChannels();
+}
+
+string M2kAnalogIn::getName()
+{
+	return m_pimpl->getName();
+}
+
+void M2kAnalogIn::enableChannel(unsigned int chnIdx, bool enable)
+{
+	m_pimpl->enableChannel(chnIdx, enable);
+}
+
+void M2kAnalogIn::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src)
+{
+	m_pimpl->convertChannelHostFormat(chn_idx, avg, src);
+}
+
+void M2kAnalogIn::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src)
+{
+	m_pimpl->convertChannelHostFormat(chn_idx, avg, src);
 }
 
 M2kHardwareTrigger *M2kAnalogIn::getTrigger()
@@ -126,12 +150,12 @@ double M2kAnalogIn::getScalingFactor(ANALOG_IN_CHANNEL ch)
 
 void M2kAnalogIn::openAnalogIn()
 {
-	std::cout << "Opened analog in for " << getName() << "\n";
+	std::cout << "Opened analog in for " << m_pimpl->getName() << "\n";
 }
 
 void M2kAnalogIn::closeAnalogIn()
 {
-	std::cout << "Opened analog in for " << getName() << "\n";
+	std::cout << "Opened analog in for " << m_pimpl->getName() << "\n";
 }
 
 int M2kAnalogIn::getDelay()

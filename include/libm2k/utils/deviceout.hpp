@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Analog Devices, Inc.
+ * Copyright 2016 Analog Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,35 +17,41 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef GENERICDIGITALIN_HPP
-#define GENERICDIGITALIN_HPP
-
-#include <libm2k/m2kglobal.hpp>
-#include <libm2k/digital/enums.hpp>
+#ifndef DEVICEOUT_HPP
+#define DEVICEOUT_HPP
+#include <iio.h>
 #include <string>
+#include <iostream>
 #include <vector>
+#include <functional>
 #include <memory>
+#include <libm2k/m2kglobal.hpp>
+#include <libm2k/utils/devicegeneric.hpp>
+
+using namespace std;
 
 namespace libm2k {
-namespace digital {
-class LIBM2K_API GenericDigital {
+namespace utils {
+class Channel;
+class Buffer;
+
+class DeviceOut : public DeviceGeneric
+{
 public:
-	GenericDigital(struct iio_context* ctx, std::string logic_dev);
-	virtual ~GenericDigital();
+	DeviceOut(struct iio_context* context, std::string dev_name = "", bool input = false);
+	virtual ~DeviceOut();
 
-	double getSampleRate();
-	double setSampleRate(double sampleRate);
-
-	void setCyclic(bool cyclic);
-	bool getCyclic();
-
-	void enableChannel(unsigned int index, bool enable);
+	virtual void push(std::vector<short> const &data, unsigned int channel,
+		  bool cyclic = true, bool multiplex = false);
+	virtual void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true);
+	virtual void stop();
 
 private:
-	class GenericDigitalImpl;
-	std::unique_ptr<GenericDigitalImpl> m_pimpl;
+	class DeviceOutImpl;
+	std::unique_ptr<DeviceOutImpl> m_pimpl;
 };
 }
 }
 
-#endif //GENERICDIGITALIN_HPP
+
+#endif //DEVICE_HPP

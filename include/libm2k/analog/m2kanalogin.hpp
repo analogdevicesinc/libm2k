@@ -22,7 +22,6 @@
 
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/analog/enums.hpp>
-#include <libm2k/analog/genericanalogin.hpp>
 #include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <vector>
 #include <map>
@@ -30,7 +29,7 @@
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API M2kAnalogIn : public libm2k::utils::Device
+class LIBM2K_API M2kAnalogIn
 {
 public:	
 	M2kAnalogIn(struct iio_context*, std::string adc_dev);
@@ -119,10 +118,17 @@ public:
 	void setStreamingFlag(bool);
 	bool getStreamingFlag();
 
+	unsigned int getNbChannels();
+	std::string getName();
+	void enableChannel(unsigned int chnIdx, bool enable);
+
+	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
+	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
+
 	libm2k::analog::M2kHardwareTrigger* getTrigger();
 private:
 	class M2kAnalogInImpl;
-	std::shared_ptr<M2kAnalogInImpl> m_pimpl;
+	std::unique_ptr<M2kAnalogInImpl> m_pimpl;
 };
 }
 }

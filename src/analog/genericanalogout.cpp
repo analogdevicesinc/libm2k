@@ -24,9 +24,8 @@ using namespace libm2k::analog;
 using namespace libm2k::utils;
 
 GenericAnalogOut::GenericAnalogOut(iio_context *ctx, std::string dac_dev):
-	Device(new GenericAnalogOutImpl(ctx, dac_dev))
+	m_pimpl(std::unique_ptr<GenericAnalogOutImpl>(new GenericAnalogOutImpl(ctx, dac_dev)))
 {
-	m_pimpl = dynamic_pointer_cast<GenericAnalogOutImpl>(Device::m_pimpl);
 }
 
 GenericAnalogOut::~GenericAnalogOut()
@@ -96,4 +95,14 @@ void libm2k::analog::GenericAnalogOut::closeAnalogOut()
 void GenericAnalogOut::stop()
 {
 	m_pimpl->stop();
+}
+
+std::string GenericAnalogOut::getName()
+{
+	return m_pimpl->getName();
+}
+
+void GenericAnalogOut::enableChannel(unsigned int chnIdx, bool enable)
+{
+	m_pimpl->enableChannel(chnIdx, enable);
 }

@@ -17,7 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicein.hpp>
+#include <libm2k/utils/deviceout.hpp>
 #include <libm2k/digital/m2kdigital.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -30,7 +31,7 @@ using namespace libm2k::digital;
 using namespace libm2k::analog;
 using namespace std;
 
-class M2kDigital::M2kDigitalImpl : public DeviceImpl {
+class M2kDigital::M2kDigitalImpl : public DeviceGeneric {
 public:
 
 	std::vector<std::string> m_output_mode = {
@@ -44,14 +45,14 @@ public:
 	};
 
 	M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev) :
-		DeviceImpl(ctx, logic_dev)
+		DeviceGeneric(ctx, logic_dev)
 	{
 		m_dev_name_write = logic_dev + "-tx";
 		m_dev_name_read = logic_dev + "-rx";
 
 		if (m_dev_name_write != "") {
 			__try {
-				m_dev_write = make_shared<Device>(ctx, m_dev_name_write);
+				m_dev_write = make_shared<DeviceOut>(ctx, m_dev_name_write);
 			} __catch (exception_type &e) {
 				m_dev_write = nullptr;
 				throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for writing");
@@ -60,7 +61,7 @@ public:
 
 		if (m_dev_name_read != "") {
 			__try {
-				m_dev_read = make_shared<Device>(ctx, m_dev_name_read);
+				m_dev_read = make_shared<DeviceIn>(ctx, m_dev_name_read);
 			} __catch (exception_type &e) {
 				m_dev_read = nullptr;
 				throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for reading");
@@ -395,8 +396,8 @@ public:
 
 private:
 	bool m_cyclic;
-	std::shared_ptr<Device> m_dev_read;
-	std::shared_ptr<Device> m_dev_write;
+	std::shared_ptr<DeviceIn> m_dev_read;
+	std::shared_ptr<DeviceOut> m_dev_write;
 	std::string m_dev_name_read;
 	std::string m_dev_name_write;
 	std::vector<bool> m_tx_channels_enabled;

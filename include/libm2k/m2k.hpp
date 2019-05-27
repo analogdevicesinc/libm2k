@@ -22,7 +22,6 @@
 
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/context.hpp>
-#include <libm2k/utils/device.hpp>
 #include <iostream>
 
 namespace libm2k {

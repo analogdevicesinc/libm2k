@@ -21,13 +21,13 @@
 #define GENERICANALOGIN_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/utils/device.hpp>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API GenericAnalogIn : public libm2k::utils::Device {
+class LIBM2K_API GenericAnalogIn {
 public:
 	GenericAnalogIn(struct iio_context* ctx, std::string adc_dev);
 	virtual ~GenericAnalogIn();
@@ -48,7 +48,7 @@ public:
 
 private:
 	class GenericAnalogInImpl;
-	std::shared_ptr<GenericAnalogInImpl> m_pimpl;
+	std::unique_ptr<GenericAnalogInImpl> m_pimpl;
 };
 }
 }

@@ -17,7 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/utils/devicein.hpp>
 #include <libm2k/analog/dmm.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/channel.hpp>
@@ -25,11 +26,12 @@
 #include <iostream>
 
 using namespace libm2k::analog;
+using namespace libm2k::utils;
 
-class DMM::DMMImpl : public DeviceImpl {
+class DMM::DMMImpl : public DeviceIn  {
 public:
 	DMMImpl(struct iio_context *ctx, std::string dev) :
-		DeviceImpl(ctx, dev, true)
+		DeviceIn (ctx, dev, true)
 	{
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			if (isValidDmmChannel(i)) {

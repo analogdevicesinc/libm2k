@@ -17,7 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/utils/deviceout.hpp>
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -32,15 +33,15 @@ using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std;
 
-class M2kAnalogOut::M2kAnalogOutImpl : public DeviceImpl {
+class M2kAnalogOut::M2kAnalogOutImpl : public DeviceGeneric {
 public:
 	M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs):
-		DeviceImpl(ctx, "")
+		DeviceGeneric(ctx, "")
 	{
-		m_dac_devices.push_back(new Device(ctx, dac_devs.at(0)));
-		m_dac_devices.push_back(new Device(ctx, dac_devs.at(1)));
+		m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(0)));
+		m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(1)));
 
-		m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
+		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 		if (!m_m2k_fabric) {
 			throw_exception(EXC_INVALID_PARAMETER, "Analog out: Can not find m2k fabric device");
 		}
@@ -303,7 +304,7 @@ public:
 		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
 		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 
-		for (Device* dev : m_dac_devices) {
+		for (DeviceOut* dev : m_dac_devices) {
 			dev->stop();
 		}
 	}
@@ -343,10 +344,10 @@ public:
 	}
 
 private:
-	std::shared_ptr<Device> m_m2k_fabric;
+	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;
 	std::vector<bool> m_cyclic;
 
 	std::map<double, double> m_filter_compensation_table;
-	std::vector<Device*> m_dac_devices;
+	std::vector<DeviceOut*> m_dac_devices;
 };

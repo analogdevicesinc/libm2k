@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Analog Devices, Inc.
+ * Copyright 2016 Analog Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,42 +17,32 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "private/dmm_impl.cpp"
+#include "private/devicein_impl.cpp"
 
-using namespace libm2k::analog;
+using namespace std;
+using namespace libm2k::utils;
+using namespace libm2k::devices;
 
-DMM::DMM(struct iio_context *ctx, std::string dev) :
-	m_pimpl(std::unique_ptr<DMMImpl>(new DMMImpl(ctx, dev)))
+/*
+ * Represents an iio_device
+ */
+DeviceIn::DeviceIn(struct iio_context* context, std::string dev_name, bool input) :
+	DeviceGeneric(context, dev_name, input),
+	m_pimpl(std::unique_ptr<DeviceInImpl>(new DeviceInImpl(context, dev_name, input)))
 {
 }
 
-DMM::~DMM()
+DeviceIn::~DeviceIn()
 {
-
 }
 
-DMM_READING DMM::readChannel(unsigned int index)
+std::vector<unsigned short> DeviceIn::getSamples(unsigned int nb_samples)
 {
-	return m_pimpl->readChannel(index);
+	return m_pimpl->getSamples(nb_samples);
 }
 
-std::vector<std::string> DMM::getAllChannels()
+std::vector<std::vector<double> > DeviceIn::getSamples(unsigned int nb_samples,
+				std::function<double(int16_t, unsigned int)> process)
 {
-	return m_pimpl->getAllChannels();
+	return m_pimpl->getSamples(nb_samples, process);
 }
-
-DMM_READING DMM::readChannel(std::string chn_name)
-{
-	return m_pimpl->readChannel(chn_name);
-}
-
-std::vector<DMM_READING> DMM::readAll()
-{
-	return m_pimpl->readAll();
-}
-
-string DMM::getName()
-{
-	return m_pimpl->getName();
-}
-

@@ -17,7 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/utils/devicein.hpp>
 #include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <libm2k/utils/channel.hpp>
 #include <libm2k/m2kexceptions.hpp>
@@ -25,10 +26,11 @@
 #include <algorithm>
 #include <iio.h>
 
+using namespace libm2k::utils;
 using namespace libm2k::analog;
 using namespace std;
 
-class M2kHardwareTrigger::M2kHardwareTriggerImpl : public DeviceImpl {
+class M2kHardwareTrigger::M2kHardwareTriggerImpl : public DeviceIn {
 	std::vector<std::string> m_trigger_analog_cond = {
 		"edge-rising",
 		"edge-falling",
@@ -69,7 +71,7 @@ class M2kHardwareTrigger::M2kHardwareTriggerImpl : public DeviceImpl {
 
 public:
 	M2kHardwareTriggerImpl(struct iio_context *ctx) :
-		DeviceImpl(ctx, "m2k-adc-trigger")
+		DeviceIn (ctx, "m2k-adc-trigger")
 	{
 		std::vector<std::pair<Channel*, std::string>> channels;
 		for (unsigned int i = 0; i < getNbChannels(); i++) {

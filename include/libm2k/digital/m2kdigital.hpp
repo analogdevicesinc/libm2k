@@ -24,13 +24,12 @@
 #include <libm2k/digital/enums.hpp>
 #include <libm2k/analog/enums.hpp>
 #include <libm2k/analog/m2khardwaretrigger.hpp>
-#include <libm2k/utils/device.hpp>
 #include <string>
 #include <vector>
 
 namespace libm2k {
 namespace digital {
-class LIBM2K_API M2kDigital : public libm2k::utils::Device
+class LIBM2K_API M2kDigital
 {
 public:
 	M2kDigital(struct iio_context* ctx, std::string logic_dev);
@@ -55,7 +54,7 @@ public:
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
 
 	/* Enable/disable TX channels only*/
-	void enableChannel(unsigned int index, bool enable) override;
+	void enableChannel(unsigned int index, bool enable);
 	void enableChannel(DIO_CHANNEL index, bool enable);
 	void enableAllOut(bool enable);
 
@@ -87,7 +86,7 @@ public:
 
 private:
 	class M2kDigitalImpl;
-	std::shared_ptr<M2kDigitalImpl> m_pimpl;
+	std::unique_ptr<M2kDigitalImpl> m_pimpl;
 };
 }
 }

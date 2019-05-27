@@ -17,7 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/utils/devicein.hpp>
 #include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -39,18 +40,18 @@ using namespace std::placeholders;
 #define LOW_MAX 25
 #define LOW_MIN -25
 
-class M2kAnalogIn::M2kAnalogInImpl : public DeviceImpl {
+class M2kAnalogIn::M2kAnalogInImpl : public DeviceIn {
 public:
 	M2kAnalogInImpl(iio_context * ctx, std::string adc_dev) :
-		DeviceImpl(ctx, adc_dev),
+		DeviceIn (ctx, adc_dev),
 		m_need_processing(false),
 		m_trigger(nullptr)
 	{
-		m_ad9963 = make_shared<Device>(ctx, "ad9963");
+//		m_ad9963 = make_shared<Device>(ctx, "ad9963");
 		setOversamplingRatio(1);
 
-		m_m2k_fabric = make_shared<Device>(ctx, "m2k-fabric");
-		m_ad5625 = make_shared<Device>(ctx, "ad5625");
+		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
+//		m_ad5625 = make_shared<Device>(ctx, "ad5625");
 		m_trigger = new M2kHardwareTrigger(ctx);
 
 		/* Filters applied while decimating affect the
@@ -122,7 +123,7 @@ public:
 			m_need_processing = true;
 		}
 		auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
-		auto samps = DeviceImpl::getSamples(nb_samples, fp);
+		auto samps = DeviceIn::getSamples(nb_samples, fp);
 		if (processed) {
 			m_need_processing = false;
 		}
@@ -517,9 +518,9 @@ public:
 	}
 
 private:
-	std::shared_ptr<Device> m_ad9963;
-	std::shared_ptr<Device> m_m2k_fabric;
-	std::shared_ptr<Device> m_ad5625;
+//	std::shared_ptr<IDe> m_ad9963;
+	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
+//	std::shared_ptr<Device> m_ad5625;
 	bool m_need_processing;
 
 	libm2k::analog::M2kHardwareTrigger *m_trigger;

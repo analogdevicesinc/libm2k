@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Analog Devices, Inc.
+ * Copyright 2016 Analog Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,42 +17,37 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "private/genericdigital_impl.cpp"
+#include "private/deviceout_impl.cpp"
 
-using namespace libm2k::digital;
 using namespace std;
+using namespace libm2k::utils;
+using namespace libm2k::devices;
 
-GenericDigital::GenericDigital(iio_context *ctx, string logic_dev) :
-	m_pimpl(std::unique_ptr<GenericDigitalImpl>(new GenericDigitalImpl(ctx, logic_dev)))
+/*
+ * Represents an iio_device
+ */
+DeviceOut::DeviceOut(struct iio_context* context, std::string dev_name, bool input) :
+	DeviceGeneric(context, dev_name, input),
+	m_pimpl(std::unique_ptr<DeviceOutImpl>(new DeviceOutImpl(context, dev_name, input)))
 {
 }
 
-GenericDigital::~GenericDigital()
+DeviceOut::~DeviceOut()
 {
 }
 
-double GenericDigital::getSampleRate()
+void DeviceOut::push(std::vector<short> const &data, unsigned int channel,
+		  bool cyclic, bool multiplex)
 {
-	return m_pimpl->getSampleRate();
+	m_pimpl->push(data, channel, cyclic, multiplex);
 }
 
-double GenericDigital::setSampleRate(double sampleRate)
+void DeviceOut::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
 {
-	return m_pimpl->setSampleRate(sampleRate);
+	m_pimpl->push(data, channel, cyclic);
 }
 
-void GenericDigital::setCyclic(bool cyclic)
+void DeviceOut::stop()
 {
-	m_pimpl->setCyclic(cyclic);
+	m_pimpl->stop();
 }
-
-bool GenericDigital::getCyclic()
-{
-	return m_pimpl->getCyclic();
-}
-
-void GenericDigital::enableChannel(unsigned int index, bool enable)
-{
-	m_pimpl->enableChannel(index, enable);
-}
-

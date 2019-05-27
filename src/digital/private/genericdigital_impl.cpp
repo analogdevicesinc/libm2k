@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/digital/genericdigital.hpp>
 #include <libm2k/m2kexceptions.hpp>
 
@@ -30,10 +30,10 @@ using namespace libm2k::utils;
 using namespace libm2k::digital;
 using namespace std;
 
-class GenericDigital::GenericDigitalImpl : public DeviceImpl {
+class GenericDigital::GenericDigitalImpl : public DeviceGeneric {
 public:
 	GenericDigitalImpl(iio_context *ctx, string logic_dev) :
-		DeviceImpl(ctx, logic_dev)
+		DeviceGeneric(ctx, logic_dev)
 	{
 		m_dev_name = logic_dev;
 

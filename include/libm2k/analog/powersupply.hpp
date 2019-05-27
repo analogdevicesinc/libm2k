@@ -21,23 +21,24 @@
 #define POWERSUPPLY_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/utils/device.hpp>
 #include <vector>
 #include <string>
 #include <memory>
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API PowerSupply : public libm2k::utils::Device
+class LIBM2K_API PowerSupply
 {
 public:
 	PowerSupply(struct iio_context* ctx, std::string write_dev = "",
 		     std::string read_dev = "");
 	virtual ~PowerSupply();
 
+	void enableChannel(unsigned int chnidx, bool enable);
+
 private:
 	class PowerSupplyImpl;
-	std::shared_ptr<PowerSupplyImpl> m_pimpl;
+	std::unique_ptr<PowerSupplyImpl> m_pimpl;
 };
 }
 }

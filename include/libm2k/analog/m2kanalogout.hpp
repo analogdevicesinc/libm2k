@@ -21,15 +21,17 @@
 #define M2KANALOGOUT_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/analog/genericanalogout.hpp>
-#include <libm2k/utils/device.hpp>
 #include <vector>
 #include <memory>
 #include <map>
 
+extern "C" {
+	struct iio_context;
+}
+
 namespace libm2k {
 namespace analog {
-class LIBM2K_API M2kAnalogOut : public libm2k::utils::Device
+class LIBM2K_API M2kAnalogOut
 {
 public:
 	M2kAnalogOut(struct iio_context*, std::vector<std::string> dac_devs);
@@ -74,7 +76,7 @@ public:
 	void enableChannel(unsigned int chnIdx, bool enable);
 private:
 	class M2kAnalogOutImpl;
-	std::shared_ptr<M2kAnalogOutImpl> m_pimpl;
+	std::unique_ptr<M2kAnalogOutImpl> m_pimpl;
 };
 }
 }

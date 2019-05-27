@@ -17,7 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/utils/deviceout.hpp>
 #include <libm2k/analog/genericanalogout.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -27,11 +28,11 @@ using namespace std;
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 
-class GenericAnalogOut::GenericAnalogOutImpl : public DeviceImpl {
+class GenericAnalogOut::GenericAnalogOutImpl : public DeviceOut {
 public:
 
 	GenericAnalogOutImpl(iio_context *ctx, std::string dac_dev):
-		DeviceImpl(ctx, dac_dev)
+		DeviceOut (ctx, dac_dev)
 	{
 	}
 
@@ -63,7 +64,7 @@ public:
 
 	std::vector<double> getAvailableSamplerates()
 	{
-		return DeviceImpl::getAvailableSampleRates();
+		return DeviceGeneric::getAvailableSampleRates();
 	}
 
 	void setCyclic(bool en)
@@ -91,12 +92,12 @@ public:
 
 	void push(std::vector<short> const &data, unsigned int chn_idx)
 	{
-		DeviceImpl::push(data, chn_idx, getCyclic(chn_idx));
+		DeviceOut::push(data, chn_idx, getCyclic(chn_idx));
 	}
 
 	void push(std::vector<double> const &data, unsigned int chn_idx)
 	{
-		DeviceImpl::push(data, chn_idx, getCyclic(chn_idx));
+		DeviceOut::push(data, chn_idx, getCyclic(chn_idx));
 	}
 
 	void openAnalogOut()
@@ -111,7 +112,7 @@ public:
 
 	void stop()
 	{
-		DeviceImpl::stop();
+		DeviceOut::stop();
 	}
 
 private:

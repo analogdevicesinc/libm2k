@@ -17,7 +17,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "../../utils/private/device_impl.cpp"
+#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/utils/devicein.hpp>
+#include <libm2k/utils/deviceout.hpp>
 #include <libm2k/analog/powersupply.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <iio.h>
@@ -26,14 +28,14 @@
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 
-class PowerSupply::PowerSupplyImpl : public DeviceImpl {
+class PowerSupply::PowerSupplyImpl : public DeviceGeneric {
 public:
 	PowerSupplyImpl(struct iio_context* ctx, std::string write_dev,
 				 std::string read_dev) :
-		DeviceImpl(ctx, "")
+		DeviceGeneric(ctx, "")
 	{
 		if (write_dev != "") {
-			m_dev_write = make_shared<Device>(ctx, write_dev);
+			m_dev_write = make_shared<DeviceOut>(ctx, write_dev);
 			if (!m_dev_write) {
 				m_dev_write = nullptr;
 				throw_exception(EXC_INVALID_PARAMETER, "Power Supply: No device was found for writing");
@@ -41,7 +43,7 @@ public:
 		}
 
 		if (read_dev != "") {
-			m_dev_read = make_shared<Device>(ctx, write_dev);
+			m_dev_read = make_shared<DeviceIn>(ctx, read_dev);
 			if (!m_dev_read) {
 				m_dev_read = nullptr;
 				throw_exception(EXC_INVALID_PARAMETER, "Power Supply: No device was found for reading");
@@ -54,6 +56,6 @@ public:
 	}
 
 private:
-	std::shared_ptr<Device> m_dev_write;
-	std::shared_ptr<Device> m_dev_read;
+	std::shared_ptr<DeviceOut> m_dev_write;
+	std::shared_ptr<DeviceIn> m_dev_read;
 };

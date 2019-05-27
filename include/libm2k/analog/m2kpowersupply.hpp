@@ -21,13 +21,12 @@
 #define M2KPOWERSUPPLY_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/utils/device.hpp>
 #include <vector>
 #include <memory>
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API M2kPowerSupply : public libm2k::utils::Device {
+class LIBM2K_API M2kPowerSupply {
 public:
 	M2kPowerSupply(struct iio_context* ctx, std::string write_dev,
 		       std::string read_dev);
@@ -42,7 +41,7 @@ public:
 
 private:
 	class M2kPowerSupplyImpl;
-	std::shared_ptr<M2kPowerSupplyImpl> m_pimpl;
+	std::unique_ptr<M2kPowerSupplyImpl> m_pimpl;
 };
 }
 }

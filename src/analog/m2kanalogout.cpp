@@ -23,10 +23,9 @@ using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std;
 
-M2kAnalogOut::M2kAnalogOut(iio_context *ctx, std::vector<std::string> dac_devs):
-	Device(new M2kAnalogOutImpl(ctx, dac_devs))
+M2kAnalogOut::M2kAnalogOut(iio_context *ctx, std::vector<std::string> dac_devs) :
+	m_pimpl(std::unique_ptr<M2kAnalogOutImpl>(new M2kAnalogOutImpl(ctx, dac_devs)))
 {
-	m_pimpl = dynamic_pointer_cast<M2kAnalogOutImpl>(Device::m_pimpl);
 }
 
 M2kAnalogOut::~M2kAnalogOut()

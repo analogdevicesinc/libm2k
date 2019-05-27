@@ -21,13 +21,17 @@
 #define GENERICANALOGOUT_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/utils/device.hpp>
 #include <string>
 #include <vector>
+#include <memory>
+
+extern "C" {
+	struct iio_context;
+}
 
 namespace libm2k {
 namespace analog {
-class LIBM2K_API GenericAnalogOut : public libm2k::utils::Device {
+class LIBM2K_API GenericAnalogOut {
 public:
 	GenericAnalogOut(struct iio_context* ctx, std::string dac_dev);
 	virtual ~GenericAnalogOut();
@@ -49,9 +53,12 @@ public:
 	void push(std::vector<short> const &data, unsigned int chn_idx = 0);
 	void stop();
 
+	std::string getName();
+	void enableChannel(unsigned int chnIdx, bool enable);
+
 private:
 	class GenericAnalogOutImpl;
-	std::shared_ptr<GenericAnalogOutImpl> m_pimpl;
+	std::unique_ptr<GenericAnalogOutImpl> m_pimpl;
 };
 }
 }

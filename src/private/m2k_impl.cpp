@@ -27,7 +27,7 @@
 #include <libm2k/analog/m2kpowersupply.hpp>
 #include <libm2k/digital/m2kdigital.hpp>
 #include <libm2k/utils/utils.hpp>
-#include <libm2k/utils/device.hpp>
+#include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/logger.hpp>
 #include <iio.h>
 #include <iostream>
@@ -69,7 +69,7 @@ public:
 
 	~M2kImpl()
 	{
-		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
 		if (m_m2k_fabric) {
 			m_m2k_fabric->setBoolValue(0, true, "powerdown", false);
 			m_m2k_fabric->setBoolValue(1, true, "powerdown", false);
@@ -103,26 +103,26 @@ public:
 
 	void scanAllAnalogIn()
 	{
-		Device* aIn = new libm2k::analog::M2kAnalogIn(m_context, "m2k-adc");
+		M2kAnalogIn* aIn = new libm2k::analog::M2kAnalogIn(m_context, "m2k-adc");
 		m_instancesAnalogIn.push_back(aIn);
 	}
 
 	void scanAllAnalogOut()
 	{
 		std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
-		Device* aOut = new libm2k::analog::M2kAnalogOut(m_context, devs);
+		M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOut(m_context, devs);
 		m_instancesAnalogOut.push_back(aOut);
 	}
 
 	void scanAllPowerSupply()
 	{
-		Device* pSupply = new libm2k::analog::M2kPowerSupply(m_context, "ad5627", "ad9963");
+		libm2k::analog::M2kPowerSupply* pSupply = new libm2k::analog::M2kPowerSupply(m_context, "ad5627", "ad9963");
 		m_instancesPowerSupply.push_back(pSupply);
 	}
 
 	void scanAllDigital()
 	{
-		Device* logic = new libm2k::digital::M2kDigital(m_context, "m2k-logic-analyzer");
+		libm2k::digital::M2kDigital* logic = new libm2k::digital::M2kDigital(m_context, "m2k-logic-analyzer");
 		m_instancesDigital.push_back(logic);
 	}
 
@@ -203,7 +203,7 @@ public:
 
 	M2kAnalogIn* getAnalogIn(string dev_name)
 	{
-		for (Device* d : m_instancesAnalogIn) {
+		for (M2kAnalogIn* d : m_instancesAnalogIn) {
 			if (d->getName() == dev_name) {
 				libm2k::analog::M2kAnalogIn* analogIn =
 						dynamic_cast<libm2k::analog::M2kAnalogIn*>(d);
@@ -235,48 +235,27 @@ public:
 
 	M2kAnalogOut* getAnalogOut()
 	{
-		for (Device* d : m_instancesAnalogOut) {
-			libm2k::analog::M2kAnalogOut* analogOut =
-					dynamic_cast<M2kAnalogOut*>(d);
-			if (analogOut) {
-				return analogOut;
-			}
+		if (m_instancesAnalogOut.size() > 0) {
+			return m_instancesAnalogOut.at(0);
 		}
-		return nullptr;
 	}
 
 	std::vector<M2kAnalogIn*> getAllAnalogIn()
 	{
-		std::vector<libm2k::analog::M2kAnalogIn*> allAnalogIn = {};
-		for (Device* inst : m_instancesAnalogIn) {
-			libm2k::analog::M2kAnalogIn* analogIn =
-					dynamic_cast<M2kAnalogIn*>(inst);
-			if (analogIn) {
-				allAnalogIn.push_back(analogIn);
-			}
-		}
-		return allAnalogIn;
+		return m_instancesAnalogIn;
 	}
 
 	std::vector<M2kAnalogOut*> getAllAnalogOut()
 	{
-		std::vector<libm2k::analog::M2kAnalogOut*> allAnalogOut;
-		for (Device* inst : m_instancesAnalogOut) {
-			libm2k::analog::M2kAnalogOut* analogOut =
-					dynamic_cast<libm2k::analog::M2kAnalogOut*>(inst);
-			if (analogOut) {
-				allAnalogOut.push_back(analogOut);
-			}
-		}
-		return allAnalogOut;
+		return m_instancesAnalogOut;
 	}
 
 	void initialize()
 	{
 		std::string hw_rev = Utils::getHardwareRevision(m_context);
 
-		std::shared_ptr<Device> m_ad9963 = make_shared<Device>(m_context, "ad9963");
-		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+		std::shared_ptr<DeviceGeneric> m_ad9963 = make_shared<DeviceGeneric>(m_context, "ad9963");
+		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
 		unsigned int config1 = 0x05;
 		unsigned int config2 = 0x05;
 
@@ -301,7 +280,7 @@ public:
 
 	void blinkLed(const double duration = 4, bool blocking = false)
 	{
-		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
 		if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
 			bool currentValue = m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
 
@@ -329,7 +308,7 @@ public:
 
 	void setLed(bool on)
 	{
-		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
 		if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
 			m_m2k_fabric->setBoolValue(4, !on, "done_led_overwrite_powerdown", true);
 		}
@@ -338,7 +317,7 @@ public:
 	bool getLed()
 	{
 		bool on = false;
-		std::shared_ptr<Device> m_m2k_fabric = make_shared<Device>(m_context, "m2k-fabric");
+		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
 		if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
 			on = !m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
 		}
@@ -347,8 +326,8 @@ public:
 
 private:
 	M2kCalibration* m_calibration;
-	std::vector<utils::Device*> m_instancesAnalogOut;
-	std::vector<utils::Device*> m_instancesAnalogIn;
-	std::vector<utils::Device*> m_instancesPowerSupply;
-	std::vector<utils::Device*> m_instancesDigital;
+	std::vector<analog::M2kAnalogOut*> m_instancesAnalogOut;
+	std::vector<analog::M2kAnalogIn*> m_instancesAnalogIn;
+	std::vector<analog::M2kPowerSupply*> m_instancesPowerSupply;
+	std::vector<digital::M2kDigital*> m_instancesDigital;
 };

@@ -25,8 +25,7 @@ using namespace libm2k::utils;
 
 M2kCalibration::M2kCalibration(struct iio_context* ctx, M2kAnalogIn* analogIn,
 			       M2kAnalogOut* analogOut):
-	m_pimpl(std::shared_ptr<M2kCalibrationImpl>(new M2kCalibrationImpl(ctx,
-			analogIn, analogOut)))
+	m_pimpl(std::unique_ptr<M2kCalibrationImpl>(new M2kCalibrationImpl(ctx, analogIn, analogOut)))
 {
 }
 
