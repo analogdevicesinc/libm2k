@@ -23,14 +23,13 @@ namespace std {
 }
 
 %{
+
+	extern "C" {
+		struct iio_context;
+	}
+
 	#include <libm2k/m2kglobal.hpp>
-	#include <libm2k/utils/buffer.hpp>
-	#include <libm2k/utils/channel.hpp>
-	#include <libm2k/utils/devicegeneric.hpp>
-	#include <libm2k/utils/devicein.hpp>
-	#include <libm2k/utils/deviceout.hpp>
 	#include <libm2k/utils/enums.hpp>
-	#include <libm2k/utils/utils.hpp>
 	#include <libm2k/analog/dmm.hpp>
 	#include <libm2k/analog/enums.hpp>
 	#include <libm2k/analog/genericanalogin.hpp>
@@ -72,13 +71,7 @@ namespace std {
 
 %include <std_shared_ptr.i>
 %include <libm2k/m2kglobal.hpp>
-%include <libm2k/utils/buffer.hpp>
-%include <libm2k/utils/channel.hpp>
-%include <libm2k/utils/devicegeneric.hpp>
-%include <libm2k/utils/devicein.hpp>
-%include <libm2k/utils/deviceout.hpp>
 %include <libm2k/utils/enums.hpp>
-%include <libm2k/utils/utils.hpp>
 %include <libm2k/analog/dmm.hpp>
 %include <libm2k/analog/enums.hpp>
 %include <libm2k/analog/genericanalogin.hpp>
