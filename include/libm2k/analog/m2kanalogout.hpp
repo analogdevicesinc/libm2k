@@ -64,8 +64,8 @@ public:
 
 	void setDacCalibVlsb(unsigned int chn, double vlsb);
 
-	void push(std::vector<double> const &data, unsigned int chnIdx);
-	void push(std::vector<short> const &data, unsigned int chnIdx);
+	void push(unsigned int chnIdx, std::vector<double> const &data);
+	void push(unsigned int chnIdx, std::vector<short> const &data);
 	void push(std::vector<std::vector<double>> const &data);
 	void push(std::vector<std::vector<short>> const &data);
 	void stop();
