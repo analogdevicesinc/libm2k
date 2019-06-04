@@ -28,7 +28,12 @@ option(ENABLE_DOC "Generate documentation with Doxygen" ON)
 option(BUILD_EXAMPLES "Build the default examples" ON)
 option(ENABLE_LOG "Build with logging support" OFF)
 option(ENABLE_EXCEPTIONS "Build with exception handling support" ON)
-option(ENABLE_PYTHON "Build Python bindings" OFF)
+option(ENABLE_PYTHON "Build Python bindings" ON)
+
+FIND_PACKAGE(SWIG)
+if (NOT SWIG_FOUND)
+	set(ENABLE_PYTHON OFF)
+endif()
 
 # build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
 add_definitions(-DLIBM2K_EXPORTS=1)
@@ -61,9 +66,8 @@ endif()
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
-if (NOT LIBM2K_VERSION_GIT)
-	set(LIBM2K_VERSION_GIT v${PROJECT_VERSION})
-endif()
+set(LIBM2K_VERSION ${PROJECT_VERSION})
+set(LIBM2K_VERSION_FULL v${PROJECT_VERSION} - ${LIBM2K_VERSION_GIT})
 
 if (ENABLE_LOG)
 	add_definitions(-DLIBM2K_ENABLE_LOG)
@@ -146,7 +150,8 @@ configure_file(libm2k.pc.cmakein ${LIBM2K_PC} @ONLY)
 install(FILES ${LIBM2K_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 
 #Add and build python bindings
-if (ENABLE_PYTHON)
+if (ENABLE_PYTHON AND SWIG_FOUND)
+	message("---- Building Python bindings")
 	add_subdirectory(bindings/python)
 endif()
 
