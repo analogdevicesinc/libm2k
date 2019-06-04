@@ -1,6 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1.3)
 set (CMAKE_CXX_STANDARD 11)
 
-project(power_supply)
+project(power_supply LANGUAGES CXX VERSION ${LIBM2K_VERSION})
+include_directories(
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${IIO_INCLUDE_DIR}
+	${CMAKE_SOURCE_DIR}/include
+)
 add_executable(${PROJECT_NAME} "main.cpp")
-target_link_libraries(${PROJECT_NAME} m2k)
+target_link_libraries(${PROJECT_NAME} libm2k)
