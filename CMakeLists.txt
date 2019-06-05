@@ -17,6 +17,13 @@
 
 cmake_minimum_required(VERSION 3.1.3)
 project(libm2k LANGUAGES CXX VERSION 0.1.0)
+
+set(LIBM2K_VERSION_MAJOR 0)
+set(LIBM2K_VERSION_MINOR 1)
+set(LIBM2K_VERSION "${LIBM2K_VERSION_MAJOR}.${LIBM2K_VERSION_MINOR}")
+
+project(libm2k LANGUAGES CXX VERSION ${LIBM2K_VERSION})
+
 include(GNUInstallDirs)
 include(FindGit OPTIONAL)
 
@@ -66,7 +73,6 @@ endif()
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
-set(LIBM2K_VERSION ${PROJECT_VERSION})
 set(LIBM2K_VERSION_FULL v${PROJECT_VERSION} - ${LIBM2K_VERSION_GIT})
 
 if (ENABLE_LOG)
@@ -87,7 +93,7 @@ endif()
 
 # Set the default install path to /usr
 if (NOT WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "default install path" FORCE)
+	set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "default install path" FORCE)
 endif()
 
 # get rid of Visual Studio's default "Debug" and "Release" output directories
@@ -160,3 +166,23 @@ if (BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	option(OSX_PACKAGE "Create a OSX package" ON)
+	set(CMAKE_MACOSX_RPATH ON)
+	set(SKIP_INSTALL_ALL ${OSX_PACKAGE})
+endif()
+
+if (NOT OSX_PACKAGE)
+	# Support creating some basic binpkgs via `make package`.
+	# Disabled if OSX_PACKAGE is enabled, as tarballs would end up empty otherwise.
+	option(ENABLE_PACKAGING "Create .deb/.rpm or .tar.gz packages via 'make package'" OFF)
+
+	if(ENABLE_PACKAGING)
+#		if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+#			include(cmake/DarwinPackaging.cmake)
+#		endif()
+		if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+			include(cmake/LinuxPackaging.cmake)
+		endif()
+	endif()
+endif()
