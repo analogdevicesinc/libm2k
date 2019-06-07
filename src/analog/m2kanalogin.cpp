@@ -90,7 +90,7 @@ void M2kAnalogIn::enableChannel(unsigned int chnIdx, bool enable)
 
 bool M2kAnalogIn::isChannelEnabled(unsigned int chnIdx)
 {
-	m_pimpl->isChannelEnabled(chnIdx);
+	return m_pimpl->isChannelEnabled(chnIdx);
 }
 
 void M2kAnalogIn::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src)

@@ -171,5 +171,5 @@ void M2kAnalogOut::enableChannel(unsigned int chnIdx, bool enable)
 
 bool M2kAnalogOut::isChannelEnabled(unsigned int chnIdx)
 {
-	m_pimpl->isChannelEnabled(chnIdx);
+	return m_pimpl->isChannelEnabled(chnIdx);
 }

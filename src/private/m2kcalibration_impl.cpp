@@ -397,12 +397,12 @@ public:
 				goto out_cleanup;
 			}
 
-			averagesCh0[i] = abs(Utils::average(ch_data.at(0).data(), num_samples));
-			averagesCh1[i] = abs(Utils::average(ch_data.at(1).data(), num_samples));
+			averagesCh0[i] = std::abs(Utils::average(ch_data.at(0).data(), num_samples));
+			averagesCh1[i] = std::abs(Utils::average(ch_data.at(1).data(), num_samples));
 		}
 
-		minAvg0 = abs(averagesCh0[0]);
-		minAvg1 = abs(averagesCh1[0]);
+		minAvg0 = std::abs(averagesCh0[0]);
+		minAvg1 = std::abs(averagesCh1[0]);
 
 		for (unsigned int i = 1; i < span + 1; i++) {
 			if (averagesCh0[i] < minAvg0) {

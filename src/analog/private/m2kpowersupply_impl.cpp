@@ -17,6 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <cmath>
 #include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/utils/devicein.hpp>
 #include <libm2k/utils/deviceout.hpp>
@@ -256,7 +257,7 @@ public:
 			throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel");
 		}
 
-		if (abs(value) > 5) {
+		if (std::abs(value) > 5) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2K power supplies are limited to 5V");
 		}
 

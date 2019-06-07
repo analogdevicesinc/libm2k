@@ -10,7 +10,7 @@ using namespace std;
 using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::devices;
-
+#define M_PI 3.14
 int main(int argc, char* argv[])
 {
 	M2k *ctx = m2kOpen();

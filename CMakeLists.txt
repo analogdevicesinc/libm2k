@@ -155,6 +155,8 @@ set(LIBM2K_PC ${CMAKE_CURRENT_BINARY_DIR}/libm2k.pc)
 configure_file(libm2k.pc.cmakein ${LIBM2K_PC} @ONLY)
 install(FILES ${LIBM2K_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 
+configure_file(libm2k.iss.cmakein ${CMAKE_CURRENT_BINARY_DIR}/libm2k.iss @ONLY)
+
 #Add and build python bindings
 if (ENABLE_PYTHON AND SWIG_FOUND)
 	message("---- Building Python bindings")
