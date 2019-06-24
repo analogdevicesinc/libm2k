@@ -61,6 +61,7 @@ public:
 
 		for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
 			m_cyclic.push_back(true);
+			m_samplerate.push_back(75E6);
 		}
 
 		if (sync) {
@@ -89,10 +90,14 @@ public:
 		m_cyclic.at(1) = true;
 		enableChannel(0, true);
 		enableChannel(1, true);
+		m_samplerate.at(0) = 75E6;
+		m_samplerate.at(1) = 75E6;
 	}
 
 	void syncDevice()
 	{
+		m_samplerate.at(0) = getSampleRate(0);
+		m_samplerate.at(1) = getSampleRate(1);
 		//enable???
 	}
 
@@ -204,6 +209,7 @@ public:
 	{
 		for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
 			m_cyclic.at(i) = en;
+			m_dac_devices.at(i)->setCyclic(en);
 		}
 	}
 
@@ -213,6 +219,7 @@ public:
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 		}
 		m_cyclic.at(chn) = en;
+		m_dac_devices.at(chn)->setCyclic(en);
 	}
 
 	bool getCyclic(unsigned int chn)
@@ -246,6 +253,10 @@ public:
 
 		size_t size = data.size();
 		std::vector<short> raw_data_buffer = {};
+
+		m_samplerate.at(0) = getSampleRate(0);
+		m_samplerate.at(1) = getSampleRate(1);
+
 		for (unsigned int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(processSample(data.at(i), chnIdx, true));
 		}
@@ -265,6 +276,10 @@ public:
 
 		size_t size = data.size();
 		std::vector<short> raw_data_buffer = {};
+
+		m_samplerate.at(0) = getSampleRate(0);
+		m_samplerate.at(1) = getSampleRate(1);
+
 		for (unsigned int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(processSample(data.at(i), chnIdx, false));
 		}
@@ -280,6 +295,9 @@ public:
 		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
 		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 		setSyncedDma(true);
+
+		m_samplerate.at(0) = getSampleRate(0);
+		m_samplerate.at(1) = getSampleRate(1);
 
 		for (unsigned int chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
@@ -301,6 +319,9 @@ public:
 		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
 		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 		setSyncedDma(true);
+
+		m_samplerate.at(0) = getSampleRate(0);
+		m_samplerate.at(1) = getSampleRate(1);
 
 		for (unsigned int chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
@@ -362,7 +383,7 @@ public:
 		} else {
 			return convertVoltsToRaw(value, m_calib_vlsb.at(channel),
 						 getFilterCompensation(
-							 getSampleRate(channel)));
+							 m_samplerate.at(channel)));
 		}
 	}
 
@@ -387,6 +408,7 @@ private:
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;
 	std::vector<bool> m_cyclic;
+	std::vector<double> m_samplerate;
 
 	std::map<double, double> m_filter_compensation_table;
 	std::vector<DeviceOut*> m_dac_devices;

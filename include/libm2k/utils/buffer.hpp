@@ -45,6 +45,7 @@ public:
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
 	void stop();
+	void setCyclic(bool enable);
 private:
 
 	class BufferImpl;

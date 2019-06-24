@@ -412,6 +412,7 @@ public:
 	void setCyclic(bool cyclic)
 	{
 		m_cyclic = cyclic;
+		m_dev_write->setCyclic(cyclic);
 	}
 
 

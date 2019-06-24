@@ -44,9 +44,11 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device is not buffer capable, no buffer can be created");
 		}
 		m_buffer = nullptr;
+		m_last_nb_samples = 0;
 	}
 
 	~BufferImpl() {
+		stop();
 		destroy();
 		m_data.clear();
 		m_data_short.clear();
@@ -154,24 +156,27 @@ public:
 			throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created");
 		}
 
-		if (m_buffer) {
-			iio_buffer_destroy(m_buffer);
-			m_buffer = nullptr;
+		m_data_short.clear();
+
+		bool new_buffer = (nb_samples != m_last_nb_samples);
+		if (new_buffer) {
+			destroy();
+			m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
+			m_last_nb_samples = nb_samples;
 		}
 
-		m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
 		if (!m_buffer) {
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
 		}
 
 		int ret = iio_buffer_refill(m_buffer);
 
+
 		if (ret < 0) {
 			destroy();
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		}
 
-		m_data_short.clear();
 
 		for (int j = 0; j < nb_samples; j++) {
 			m_data_short.push_back(0);
@@ -182,7 +187,6 @@ public:
 			m_data_short[i] = data[i];
 		}
 
-		destroy();
 		return m_data_short;
 	}
 
@@ -216,12 +220,13 @@ public:
 			chn->enableChannel(true);
 		}
 
-		if (m_buffer) {
-			iio_buffer_destroy(m_buffer);
-			m_buffer = nullptr;
+		bool new_buffer = (nb_samples != m_last_nb_samples);
+		if (new_buffer) {
+			destroy();
+			m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
+			m_last_nb_samples = nb_samples;
 		}
 
-		m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
 		if (!m_buffer) {
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the RX buffer");
 		}
@@ -251,7 +256,6 @@ public:
 			m_channel_list.at(i)->enableChannel(channels_enabled.at(i));
 		}
 
-		destroy();
 		return m_data;
 	}
 
@@ -261,7 +265,9 @@ public:
 			return;
 		}
 
-		destroy();
+		if (m_buffer) {
+			iio_buffer_cancel(m_buffer);
+		}
 	}
 
 	void destroy()
@@ -271,9 +277,17 @@ public:
 			m_buffer = nullptr;
 		}
 	}
+
+	void setCyclic(bool enable)
+	{
+		m_cyclic = enable;
+	}
+
 private:
 	struct iio_device* m_dev;
 	struct iio_buffer* m_buffer;
+	int m_last_nb_samples;
+	bool m_cyclic;
 	std::vector<Channel*> m_channel_list;
 	std::vector<std::vector<double>> m_data;
 	std::vector<unsigned short> m_data_short;

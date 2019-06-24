@@ -251,7 +251,7 @@ public:
 	{
 		int16_t tmp;
 		double vref1 = 0.46172;
-		const unsigned int num_samples = 1e5;
+		const unsigned int num_samples = 15e4;
 		double avg0, avg1;
 		bool calibrated = false;
 		std::vector<std::vector<double>> ch_data = {};
@@ -578,7 +578,7 @@ out_cleanup:
 		// Allow some time for the voltage to settle
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-		const unsigned int num_samples = 1e5;
+		const unsigned int num_samples = 15e4;
 		__try {
 			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {

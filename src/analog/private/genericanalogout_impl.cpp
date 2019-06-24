@@ -72,6 +72,7 @@ public:
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			m_cyclic.at(i) = en;
 		}
+		DeviceGeneric::setCyclic(en);
 	}
 
 	void setCyclic(unsigned int chn, bool en)

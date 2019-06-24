@@ -77,6 +77,8 @@ public:
 
 	virtual std::pair<std::string, std::string> getContextAttr(unsigned int attrIdx);
 
+	virtual void setCyclic(bool en);
+
 private:
 	class DeviceGenericImpl;
 	std::unique_ptr<DeviceGenericImpl> m_pimpl;

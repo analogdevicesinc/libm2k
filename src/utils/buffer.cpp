@@ -70,3 +70,8 @@ void Buffer::stop()
 {
 	m_pimpl->stop();
 }
+
+void Buffer::setCyclic(bool enable)
+{
+	m_pimpl->setCyclic(enable);
+}

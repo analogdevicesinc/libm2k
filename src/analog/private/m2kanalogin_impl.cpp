@@ -59,6 +59,8 @@ public:
 		m_filter_compensation_table[1E4] = 1.20;
 		m_filter_compensation_table[1E3] = 1.26;
 
+		m_samplerate = 1E8;
+
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			m_input_range.push_back(PLUS_MINUS_25V);
 			m_adc_calib_offset.push_back(0);
@@ -108,6 +110,7 @@ public:
 			m_input_range[i] = range;
 //			m_adc_hw_offset.push_back(0);
 			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_offset.at(i));
+			m_samplerate = getSampleRate();
 		}
 	}
 
@@ -164,6 +167,7 @@ public:
 		if (processed) {
 			m_need_processing = true;
 		}
+		m_samplerate = getSampleRate();
 		auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
 		auto samps = DeviceIn::getSamples(nb_samples, fp);
 		if (processed) {
@@ -178,7 +182,7 @@ public:
 			return convertRawToVolts(sample,
 						 m_adc_calib_gain.at(channel),
 						 getValueForRange(m_input_range.at(channel)),
-						 getFilterCompensation(getSampleRate()),
+						 getFilterCompensation(m_samplerate),
 						 m_adc_hw_offset.at(channel));
 		} else {
 			return (double)sample;
@@ -565,6 +569,7 @@ private:
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 	bool m_need_processing;
 
+	double m_samplerate;
 	libm2k::analog::M2kHardwareTrigger *m_trigger;
 	std::vector<M2K_RANGE> m_input_range;
 

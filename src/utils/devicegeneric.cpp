@@ -174,3 +174,8 @@ std::pair<string, string> DeviceGeneric::getContextAttr(unsigned int attrIdx)
 {
 	return m_pimpl->getContextAttr(attrIdx);
 }
+
+void DeviceGeneric::setCyclic(bool en)
+{
+	m_pimpl->setCyclic(en);
+}

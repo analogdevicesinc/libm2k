@@ -547,6 +547,13 @@ public:
 		return pair;
 	}
 
+	void setCyclic(bool enable)
+	{
+		if (m_buffer) {
+			m_buffer->setCyclic(enable);
+		}
+	}
+
 private:
 	struct iio_context *m_context;
 	struct iio_device *m_dev;

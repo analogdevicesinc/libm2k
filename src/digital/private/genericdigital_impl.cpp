@@ -65,6 +65,7 @@ public:
 	void setCyclic(bool cyclic)
 	{
 		m_cyclic = cyclic;
+		DeviceGeneric::setCyclic(cyclic);
 	}
 
 	bool getCyclic()
