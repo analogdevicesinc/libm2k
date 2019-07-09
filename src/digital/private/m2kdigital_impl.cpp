@@ -91,8 +91,8 @@ public:
 			m_tx_channels_enabled.push_back(en);
 
 			/* Enable all the RX channels */
-			en = m_dev_read->isChannelEnabled(i);
-			m_rx_channels_enabled.push_back(en);
+			m_rx_channels_enabled.push_back(true);
+			m_dev_read->enableChannel(i, true);
 		}
 	}
 
