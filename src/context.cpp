@@ -43,6 +43,11 @@ void Context::init()
 	m_pimpl->init();
 }
 
+void Context::deinitialize()
+{
+	m_pimpl->deinitialize();
+}
+
 GenericAnalogIn* Context::getAnalogIn(unsigned int index)
 {
 	return m_pimpl->getAnalogIn(index);

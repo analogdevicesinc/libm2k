@@ -43,7 +43,8 @@ class M2k::M2kImpl : public ContextImpl {
 public:
 	M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync) :
 		ContextImpl(uri, ctx, name, sync),
-		m_sync(sync)
+		m_sync(sync),
+		m_deinit(false)
 	{
 		initialize();
 		setTimeout(UINT_MAX);
@@ -70,14 +71,17 @@ public:
 
 	~M2kImpl()
 	{
-		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
-		if (m_m2k_fabric) {
-			m_m2k_fabric->setBoolValue(0, true, "powerdown", false);
-			m_m2k_fabric->setBoolValue(1, true, "powerdown", false);
+		if (m_deinit) {
+			std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
+			if (m_m2k_fabric) {
+				m_m2k_fabric->setBoolValue(0, true, "powerdown", false);
+				m_m2k_fabric->setBoolValue(1, true, "powerdown", false);
 
-			/* ADF4360 global clock power down */
-			m_m2k_fabric->setBoolValue(true, "powerdown");
+				/* ADF4360 global clock power down */
+				m_m2k_fabric->setBoolValue(true, "clk_powerdown");
+			}
 		}
+
 		delete m_calibration;
 
 		for (auto ain : m_instancesAnalogIn) {
@@ -95,6 +99,11 @@ public:
 		m_instancesAnalogIn.clear();
 		m_instancesAnalogOut.clear();
 		m_instancesPowerSupply.clear();
+	}
+
+	void deinitialize()
+	{
+		m_deinit = true;
 	}
 
 	void init()
@@ -353,4 +362,5 @@ private:
 	std::vector<analog::M2kPowerSupply*> m_instancesPowerSupply;
 	std::vector<digital::M2kDigital*> m_instancesDigital;
 	bool m_sync;
+	bool m_deinit;
 };

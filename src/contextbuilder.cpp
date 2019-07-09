@@ -159,8 +159,12 @@ M2k *ContextBuilder::m2kOpen()
 	return nullptr;
 }
 
-void ContextBuilder::deviceClose(Context* device)
+void ContextBuilder::deviceClose(Context* device, bool deinit)
 {
+	if (deinit) {
+		device->deinitialize();
+	}
+
 	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),
 					     s_connectedDevices.end(),
 					     device), s_connectedDevices.end());

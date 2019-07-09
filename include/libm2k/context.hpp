@@ -52,6 +52,7 @@ public:
 	virtual ~Context();
 
 	virtual void init();
+	virtual void deinitialize();
 
 	std::vector<std::string> scanAllAnalogIn();
 	std::vector<std::string> scanAllAnalogOut();

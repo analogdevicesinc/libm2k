@@ -88,6 +88,11 @@ public:
 	{
 	}
 
+	virtual void deinitialize()
+	{
+
+	}
+
 	GenericAnalogIn* getAnalogIn(unsigned int index)
 	{
 		if (index < m_instancesAnalogIn.size()) {

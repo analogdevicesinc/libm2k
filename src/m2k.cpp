@@ -40,6 +40,11 @@ void M2k::init()
 	m_pimpl->init();
 }
 
+void M2k::deinitialize()
+{
+	m_pimpl->deinitialize();
+}
+
 void M2k::setTimeout(unsigned int timeout)
 {
 	m_pimpl->setTimeout(timeout);
