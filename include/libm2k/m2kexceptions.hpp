@@ -29,7 +29,7 @@
 
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	#define exception_type std::exception
-	#if defined(_MSC_VER)
+	#if defined(_MSC_VER) || (__APPLE__)
 		#define __try      try
 		#define __catch(X) catch(X)
 	#endif
