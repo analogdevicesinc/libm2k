@@ -38,6 +38,11 @@ class M2kDigital;
 class M2kCalibration;
 namespace devices {
 
+/** @defgroup Devices
+ * @brief Contains the representation of the M2K
+ * @{
+ * @class M2k
+ */
 class LIBM2K_API M2k : public Context
 {
 public:
@@ -52,27 +57,152 @@ public:
 	void scanAllDigital();
 
 	void calibrate();
-	bool calibrateADC();
-	bool calibrateDAC();
+
+
+    /**
+     * @brief Calibrate the ADC
+     *
+     * @return On succces, true
+     * @return Otherwise, false
+     */
+    bool calibrateADC();
+
+
+    /**
+     * @brief Calibrate the DAC
+     *
+     * @return On succces, true
+     * @return Otherwise, false
+     */
+    bool calibrateDAC();
 	bool resetCalibration();
 
-	libm2k::digital::M2kDigital* getDigital();
-	libm2k::analog::M2kPowerSupply* getPowerSupply();
-	libm2k::analog::M2kAnalogIn* getAnalogIn();
+
+    /**
+     * @brief Retrieve the Digital object
+     *
+     * @return On success, a pointer to a Digital object
+     * @throw EXC_INVALID_PARAMETER No M2K digital device found
+     */
+    libm2k::digital::M2kDigital* getDigital();
+
+
+    /**
+     * @brief Retrieve the PowerSupply object
+     *
+     * @return On success, a pointer to a PowerSupply object
+     * @throw EXC_INVALID_PARAMETER No M2K power supply
+     */
+    libm2k::analog::M2kPowerSupply* getPowerSupply();
+
+
+    /**
+     * @brief Retrieve the AnalogIn object
+     *
+     * @return On success, a pointer to an AnalogIn object
+     * @return On error, null is returned
+     */
+    libm2k::analog::M2kAnalogIn* getAnalogIn();
+
+
+    /**
+     * @brief Retrieve the AnalogIn object of a device
+     *
+     * @param std::string The name corresponding to a device
+     * @return On success, a pointer to an AnalogIn object
+     * @return If the name does not correspond to any device, null is returned
+     */
 	libm2k::analog::M2kAnalogIn* getAnalogIn(std::string);
-	libm2k::analog::M2kAnalogOut* getAnalogOut();
+
+
+
+    /**
+     * @brief Retrieve the AnalogOut object
+     *
+     * @return On success, a pointer to an AnalogOut object
+     * @return On error, null is returned
+     */
+    libm2k::analog::M2kAnalogOut* getAnalogOut();
+
+
 	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
 	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
-	int getDacBCalibrationOffset();
-	int getDacACalibrationOffset();
+
+
+    /**
+     * @brief Get the calibration offset of the DAC-B
+     *
+     * @return The value of the calibration offset
+     */
+    int getDacBCalibrationOffset();
+
+
+    /**
+     * @brief Get the calibration offset of the DAC-A
+     *
+     * @return The value of the calibration offset
+     */
+    int getDacACalibrationOffset();
+
+
+    /**
+     * @brief Get the calibration gain of the DAC-B
+     *
+     * @return The value of the calibration gain
+     */
 	double getDacBCalibrationGain();
+
+
+    /**
+     * @brief Get the calibration gain of the DAC-A
+     *
+     * @return The value of the calibration gain
+     */
 	double getDacACalibrationGain();
-	int getAdcCalibrationOffset(unsigned int chn);
+
+
+    /**
+     * @brief Get the calibration offset of the ADC
+     *
+     * @param chn The index corresponding to a channel
+     * @return The value of the calibration offset
+     */
+    int getAdcCalibrationOffset(unsigned int chn);
+
+
+    /**
+     * @brief Get the calibration gain of the ADC
+     *
+     * @param chn The index corresponding to a channel
+     * @return The value of the calibration gain
+     */
 	double getAdcCalibrationGain(unsigned int chn);
 
+    /**
+     * @brief Set a timeout for I/O operations
+     *
+     * @param timeout A positive integer representing the time in milliseconds after which a timeout occurs. A value of 0 is used to specify that no timeout should occur.
+     */
 	void setTimeout(unsigned int timeout);
-	void setLed(bool on);
-	bool getLed();
+
+
+    /**
+     * @brief Turn on or off the board's led
+     *
+     * @param on A boolean value corresponding to the state of the led
+     *
+     * @note For turning on the led, set the parameter true.
+     */
+    void setLed(bool on);
+
+
+    /**
+     * @brief Retrieve the state of the led
+     *
+     * @return If the led is turned on, true
+     * @return Otherwise, false
+     */
+    bool getLed();
 private:
 	class M2kImpl;
 	std::shared_ptr<M2kImpl> m_pimpl;

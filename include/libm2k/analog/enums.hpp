@@ -24,26 +24,58 @@
 #include <string>
 #include <memory>
 
+/**
+ * @file enums.hpp
+ * @brief Analogical enumerations
+ */
+
 namespace libm2k {
 namespace analog {
-	struct DMM_READING {
-		std::string name;
-		std::string id;
-		double value;
-		std::string unit;
+
+
+    /**
+     * @struct DMM_READING
+     * @brief The structure of a DMM
+     *
+     */
+    struct DMM_READING {
+        std::string name; ///< The name of the channel
+        std::string id; ///< Channel's id
+        double value; ///< The measured value
+        std::string unit; ///< Unit of measurement
 	};
 
-	enum ANALOG_IN_CHANNEL {
+
+    /**
+     * @enum ANALOG_IN_CHANNEL
+     * @brief Indexes of the channels
+     *
+     * Each channel can be accessed through its index
+     *
+     */
+    enum ANALOG_IN_CHANNEL {
 		ANALOG_IN_CHANNEL_1 = 0,
 		ANALOG_IN_CHANNEL_2 = 1
 	};
 
+
+    /**
+     * @enum M2K_RANGE
+     * @brief Range of the signal's amplitude
+     *
+     */
 	enum M2K_RANGE {
 		PLUS_MINUS_25V = 0,
 		PLUS_MINUS_2_5V = 1
 	};
 
-	enum M2K_TRIGGER_CONDITION {
+
+    /**
+     * @enum M2K_TRIGGER_CONDITION
+     * @brief Condition of triggering
+     *
+     */
+    enum M2K_TRIGGER_CONDITION {
 		RISING_EDGE = 0,
 		FALLING_EDGE = 1,
 		LOW_LEVEL = 2,
@@ -52,6 +84,12 @@ namespace analog {
 		NO_TRIGGER = 5,
 	};
 
+
+    /**
+     * @enum M2K_TRIGGER_MODE
+     * @brief Triggering mode
+     *
+     */
 	enum M2K_TRIGGER_MODE {
 		ALWAYS = 0,
 		ANALOG = 1,
@@ -64,6 +102,12 @@ namespace analog {
 		N_DIGITAL_XOR_ANALOG = 8,
 	};
 
+
+    /**
+     * @enum M2K_TRIGGER_SOURCE
+     * @brief The source of triggering
+     *
+     */
 	enum M2K_TRIGGER_SOURCE {
 		CHANNEL_1 = 0,
 		CHANNEL_2 = 1,
@@ -72,7 +116,13 @@ namespace analog {
 		CHANNEL_1_XOR_CHANNEL_2 = 4,
 	};
 
-	struct SETTINGS {
+
+    /**
+     * @struct SETTINGS
+     * @brief Triggering system
+     *
+     */
+    struct SETTINGS {
 		std::vector<M2K_TRIGGER_CONDITION> analog_condition;
 		std::vector<M2K_TRIGGER_CONDITION> digital_condition;
 		std::vector<int> raw_level;

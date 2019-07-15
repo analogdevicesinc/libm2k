@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2018 Analog Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,16 @@
 #include <vector>
 
 namespace libm2k {
+
 namespace digital {
+
+
+/**
+ * @defgroup Digital
+ * @brief Contains the representation of the digital segment
+ * @{
+ * @class M2kDigital
+ */
 class LIBM2K_API M2kDigital
 {
 public:
@@ -37,52 +46,284 @@ public:
 
 	void init();
 
+
+	/**
+	* @brief Set the direction for all digital channels
+	*
+	* @param mask A bitmask
+	*
+	* @note Each bit of the mask corresponds to the channel with the same index. The value of the bit represents the channel's direction. O - input, 1 - output
+	*/
 	void setDirection(unsigned short mask);
+
+
+	/**
+	* @brief Set the direction of the given digital channel
+	*
+	* @param index The index corresponding to the channel
+	* @param dir An enumerator that indicates the direction of a channel
+	*/
 	void setDirection(unsigned int index, DIO_DIRECTION dir);
+
+
+	/**
+	* @brief Set the direction of the given digital channel
+	*
+	* @param index The index corresponding to the channel
+	* @param dir A boolean value that corresponds to one direction
+	*
+	* @note The boolean value for input direction is false and for output direction is true
+	*/
 	void setDirection(unsigned int index, bool dir);
+
+
+	/**
+	* @brief Set the direction of the given digital channel
+	*
+	* @param index An enumerator corresponding to the channel's index
+	* @param dir A boolean value that corresponds to one direction
+	* @note The boolean value for input direction is false and for output direction is true
+	*/
 	void setDirection(DIO_CHANNEL index, bool dir);
+
+
+	/**
+	* @brief Set the direction of the given digital channel
+	*
+	* @param index An enumerator corresponding to the channel's index
+	* @param dir An enumerator that indicates the direction of a channel
+	*/
 	void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir);
+
+
+	/**
+	* @brief Retrieve the direction of the given digital channel
+	*
+	* @param index An enumerator corresponding to the channel's index
+	* @return DIO_DIRECTION An enumerator that indicates the direction of a channel
+	*/
 	DIO_DIRECTION getDirection(DIO_CHANNEL index);
 
+
+	/**
+	* @brief Set the raw value of a given digital channel
+	*
+	* @param index An enumerator corresponding to the channel's index
+	* @param DIO_LEVEL An enumerator corresponding to the raw value
+	*
+	*/
 	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL);
+
+
+	/**
+	* @brief Send the samples to all digital channels
+	*
+	* @param data The std vector that contains the samples
+	*/
+	void push(std::vector<unsigned short> const &data);
+
+
+	/**
+	* @brief Send the samples to all digital channels
+	*
+	* @param data a pointer to the samples
+	* @param nb_samples the number of samples
+	*/
+	void push(unsigned short *data, unsigned int nb_samples);
+	/**
+	* @brief Set the raw value of a given digital channel
+	*
+	* @param index The index corresponding to the channel
+	* @param DIO_LEVEL An enumerator corresponding to the raw value
+	*
+	*/
 	void setValueRaw(unsigned int index, DIO_LEVEL);
+
+
+	/**
+	* @brief Set the raw value of a given digital channel
+	*
+	* @param index An enumerator corresponding to the channel's index
+	* @param level A boolean value corresponding to the raw value
+	*
+	*/
 	void setValueRaw(DIO_CHANNEL index, bool level);
+
+
+	/**
+	* @brief Retrieve the raw value of the given digital channel
+	*
+	* @param index An enumerator corresponding to the channel's index
+	* @return DIO_LEVEL An enumerator corresponding to the raw value
+	*/
 	DIO_LEVEL getValueRaw(DIO_CHANNEL index);
+
+
+	/**
+	* @brief Retrieve the raw value of the given digital channel
+	*
+	* @param index The index corresponding to the channel
+	* @return DIO_LEVEL An enumerator corresponding to the raw value
+	*/
 	DIO_LEVEL getValueRaw(unsigned int index);
 
-	void push(std::vector<unsigned short> const &data);
-	void push(unsigned short *data, unsigned int nb_samples);
+
+	/**
+	* @brief Stop all digital channels from sending the signals
+	*/
 	void stop();
 
+
+	/**
+	* @brief Retrieve a specific number of samples
+	*
+	* @param nb_samples The number of samples that will be retrieved
+	* @return A list that contains the samples
+	*/
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
 	unsigned short *getSamplesP(unsigned int nb_samples);
 
 	/* Enable/disable TX channels only*/
+
+	/**
+	* @brief Enable or disable the given digital channel
+	*
+	* @param index The index corresponding to the channel
+	* @param enable A boolean value corresponding to the channel's state
+	*
+	* @note This function affects only the TX channels
+	*/
 	void enableChannel(unsigned int index, bool enable);
+
+
+	/**
+	* @brief Enable or disable the given digital channel
+	*
+	* @param index An enumerator corresponding to the channel's index
+	* @param enable A boolean value corresponding to the channel's state
+	*
+	* @note This function affects only the TX channels
+	*/
 	void enableChannel(DIO_CHANNEL index, bool enable);
+
+
+	/**
+	* @brief Enable or disable all output channels
+	*
+	* @param enable A boolean value corresponding to the channel's state
+	*
+	* @note This function affects only the TX channels
+	*/
 	void enableAllOut(bool enable);
 
+
+	/**
+	* @brief Check if there is at least one channel enabled
+	*
+	* @param dir An enumerator corresponding to the direction of a channel
+	* @return On succces, true
+	* @return Otherwise, false
+	*/
 	bool anyChannelEnabled(DIO_DIRECTION dir);
 
+
+	/**
+	* @brief Set the output mode for the given digital channel
+	*
+	* @param DIO_CHANNEL An enumerator corresponding to the channel's index
+	* @param DIO_MODE An enumerator corresponding to the output mode
+	*/
 	void setOutputMode(DIO_CHANNEL, DIO_MODE);
+
+
+	/**
+	* @brief Set the output mode for the given digital channel
+	*
+	* @param int The index corresponding to the channel
+	* @param DIO_MODE An enumerator corresponding to the output mode
+	*/
 	void setOutputMode(unsigned int, DIO_MODE);
+
+
+	/**
+	* @brief Retrieve the output mode for the given digital channel
+	*
+	* @param DIO_CHANNEL An enumerator corresponding to the channel's index
+	* @return An enumerator corresponding to the output mode
+	*/
 	DIO_MODE getOutputMode(DIO_CHANNEL);
+
+
+	/**
+	* @brief Retrieve the output mode for the given digital channel
+	*
+	* @param int The index corresponding to the channel
+	* @return An enumerator corresponding to the output mode
+	*/
 	DIO_MODE getOutputMode(unsigned int);
 
+
+	/**
+	* @brief Set the sample rate for all digital input channels
+	*
+	* @param samplerate A double value to set the sample rate to
+	* @return The current sample rate for all digital input channels
+	*/
 	double setSampleRateIn(double samplerate);
+
+
+	/**
+	* @brief Set the sample rate for all digital output channels
+	*
+	* @param samplerate A double value to set the sample rate to
+	* @return The current sample rate for all digital output channels
+	*/
 	double setSampleRateOut(double samplerate);
+
+
+	/**
+	* @brief Retrieve the sample rate of all digital input channels
+	* @return The value of the sample rate
+	*/
 	double getSampleRateIn();
+
+
+	/**
+	* @brief Retrieve the sample rate of all digital output channels
+
+	* @return The value of the sample rate
+	*/
 	double getSampleRateOut();
 
+
+	/**
+	* @brief Retrieve the value of the cyclic mode
+	*
+	* @return A boolean value corresponding to the state of the cyclic mode
+	*/
 	bool getCyclic();
+
+
+	/**
+	* @brief Enable or disable the cyclic mode for all digital channels
+	*
+	* @param cyclic If true, enable cyclic mode
+	*/
 	void setCyclic(bool cyclic);
 
+
+	/**
+	* @brief Get the hardware trigger handler
+	* @return the trigger object
+	*/
 	libm2k::analog::M2kHardwareTrigger* getTrigger();
+
+	/** @} */
+
 private:
 	class M2kDigitalImpl;
 	std::unique_ptr<M2kDigitalImpl> m_pimpl;
 };
 }
 }
-
 #endif //M2KDIGITAL_HPP
