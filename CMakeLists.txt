@@ -31,12 +31,16 @@ include(FindGit OPTIONAL)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
 # generate docs by default
-option(ENABLE_DOC "Generate documentation with Doxygen" ON)
+option(ENABLE_DOC "Generate documentation with Doxygen" OFF)
 option(BUILD_EXAMPLES "Build the default examples" ON)
 option(ENABLE_LOG "Build with logging support" OFF)
 option(ENABLE_EXCEPTIONS "Build with exception handling support" ON)
 option(ENABLE_PYTHON "Build Python bindings" ON)
 option(ENABLE_CSHARP "Build C# bindings" ON)
+
+if (ENABLE_DOC)
+    add_subdirectory(doc)
+endif()
 
 FIND_PACKAGE(SWIG)
 if (NOT SWIG_FOUND)
