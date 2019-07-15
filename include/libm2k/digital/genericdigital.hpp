@@ -33,10 +33,11 @@ public:
 	GenericDigital(struct iio_context* ctx, std::string logic_dev);
 	virtual ~GenericDigital();
 
-	double getSampleRate();
+
+    double getSampleRate();
 	double setSampleRate(double sampleRate);
 
-	void setCyclic(bool cyclic);
+    void setCyclic(bool cyclic);
 	bool getCyclic();
 
 	void enableChannel(unsigned int index, bool enable);
