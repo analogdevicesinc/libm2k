@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>libm2k Examples &mdash; libm2k v0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=cbff0a6f"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="libm2k Module" href="libm2k.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            libm2k
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="libm2k.html">libm2k Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">libm2k Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libm2k</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">libm2k Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="libm2k-examples">
+<h1>libm2k Examples<a class="headerlink" href="#libm2k-examples" title="Permalink to this heading"></a></h1>
+<p>Generating data using the ADALM2000 DAC and acquiring it using the ADALM2000 ADC</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This example assumes the following connections:</span>
+<span class="c1"># W1 -&gt; 1+</span>
+<span class="c1"># W2 -&gt; 2+</span>
+<span class="c1"># GND -&gt; 1-</span>
+<span class="c1"># GND -&gt; 2-</span>
+<span class="c1">#</span>
+<span class="c1"># The application will generate a sine and triangular wave on W1 and W2. The signal is fed back into the analog input</span>
+<span class="c1"># and the voltage values are displayed on the screen</span>
+
+<span class="kn">import</span> <span class="nn">libm2k</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">ctx</span><span class="o">=</span><span class="n">libm2k</span><span class="o">.</span><span class="n">m2kOpen</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connection Error: No ADALM2000 device available/connected to your PC.&quot;</span><span class="p">)</span>
+      <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ctx</span><span class="o">.</span><span class="n">calibrateADC</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">calibrateDAC</span><span class="p">()</span>
+
+<span class="n">ain</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">getAnalogIn</span><span class="p">()</span>
+<span class="n">aout</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">getAnalogOut</span><span class="p">()</span>
+<span class="n">trig</span><span class="o">=</span><span class="n">ain</span><span class="o">.</span><span class="n">getTrigger</span><span class="p">()</span>
+
+<span class="n">ain</span><span class="o">.</span><span class="n">enableChannel</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ain</span><span class="o">.</span><span class="n">enableChannel</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ain</span><span class="o">.</span><span class="n">setSampleRate</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+<span class="n">ain</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1">### uncomment the following block to enable triggering</span>
+<span class="c1">#trig.setAnalogSource(0) # Channel 0 as source</span>
+<span class="c1">#trig.setAnalogCondition(0,libm2k.RISING_EDGE_ANALOG)</span>
+<span class="c1">#trig.setAnalogLevel(0,0.5)  # Set trigger level at 0.5</span>
+<span class="c1">#trig.setAnalogDelay(0) # Trigger is centered</span>
+<span class="c1">#trig.setAnalogMode(1, libm2k.ANALOG)</span>
+
+<span class="n">aout</span><span class="o">.</span><span class="n">setSampleRate</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">750000</span><span class="p">)</span>
+<span class="n">aout</span><span class="o">.</span><span class="n">setSampleRate</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">750000</span><span class="p">)</span>
+<span class="n">aout</span><span class="o">.</span><span class="n">enableChannel</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">aout</span><span class="o">.</span><span class="n">enableChannel</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">buffer1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">2.00</span><span class="p">,</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">buffer2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">buffer</span> <span class="o">=</span> <span class="p">[</span><span class="n">buffer1</span><span class="p">,</span> <span class="n">buffer2</span><span class="p">]</span>
+
+<span class="n">aout</span><span class="o">.</span><span class="n">setCyclic</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">aout</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span> <span class="c1"># gets 10 triggered samples then quits</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ain</span><span class="o">.</span><span class="n">getSamples</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">libm2k</span><span class="o">.</span><span class="n">contextClose</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Other Python examples are available in the <a class="reference external" href="https://github.com/analogdevicesinc/libm2k/tree/main/bindings/python/examples">source repository</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="libm2k.html" class="btn btn-neutral float-left" title="libm2k Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Analog Devices Inc..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
