@@ -1,0 +1,7 @@
+<map id="Analog" name="Analog">
+<area shape="rect" id="node1" href="$group__analogin.html" title="Contains the representation of the analogical input segment." alt="" coords="134,5,213,31"/>
+<area shape="rect" id="node2" href="$group__dmm.html" title="Contains the representation of the digital multimeter." alt="" coords="145,55,201,80"/>
+<area shape="rect" id="node3" title="Contains all analogical components." alt="" coords="5,80,72,105"/>
+<area shape="rect" id="node4" href="$group__analogout.html" title="Contains the representation of the analogical output segment." alt="" coords="128,104,219,129"/>
+<area shape="rect" id="node5" href="$group__powersupply.html" title="Contains the representation of the power supply." alt="" coords="120,153,227,179"/>
+</map>
