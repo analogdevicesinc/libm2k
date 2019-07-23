@@ -1,0 +1,4 @@
+<map id="ContextBuilder" name="ContextBuilder">
+<area shape="rect" id="node1" title="Creates/destroys the context." alt="" coords="127,5,245,31"/>
+<area shape="rect" id="node2" href="$group__context.html" title="Contains the representation of a generic IIO context." alt="" coords="5,5,79,31"/>
+</map>
