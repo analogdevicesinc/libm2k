@@ -1,0 +1,4 @@
+<map id="AnalogOut" name="AnalogOut">
+<area shape="rect" id="node1" href="$group__analog.html" title="Contains all analogical components." alt="" coords="5,5,72,31"/>
+<area shape="rect" id="node2" title="Contains the representation of the analogical output segment." alt="" coords="120,5,211,31"/>
+</map>
