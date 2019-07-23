@@ -1,6 +1,10 @@
 language: cpp
 sudo: required
 
+cache:
+  directories:
+    - ${TRAVIS_BUILD_DIR}/deps
+
 services:
   - docker
 
@@ -10,8 +14,21 @@ matrix:
       env:
         - OS_TYPE=ubuntu_docker
         - OS_VERSION=bionic
+    - os: linux
+      dist: xenial
+      env:
+        - OS_TYPE=doxygen
+      addons: { apt: { packages: ["cmake", "graphviz"] } }
 
 before_install:
+
+  - export DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR}
+
+  # Configure git user for Travis to push documentation
+  - git config --global user.name "Travis Bot"
+  - git config --global user.email "<>"
+
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./CI/travis/before_install_darwin ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./CI/travis/before_install_linux "$OS_TYPE" "$OS_VERSION" ; fi
 

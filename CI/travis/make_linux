@@ -31,6 +31,10 @@ handle_ubuntu_docker() {
 		"ubuntu:${OS_VERSION}"
 }
 
+handle_doxygen() {
+	./CI/travis/doxygen.sh
+}
+
 LIBNAME="$1"
 OS_TYPE=${2:-default}
 OS_VERSION="$3"
