@@ -108,7 +108,7 @@ public:
 	}
 
 
-	void push(std::vector<short> const &data, unsigned int channel,
+	void push(std::vector<int> const &data, unsigned int channel,
 			  bool cyclic = true, bool multiplex = false)
 	{
 		if (!m_buffer) {

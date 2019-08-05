@@ -205,13 +205,14 @@ public:
 		return getValueRaw(idx);
 	}
 
-	void push(std::vector<short> const &data)
+	void push(std::vector<unsigned short> const &data)
 	{
 		if (!anyChannelEnabled(DIO_OUTPUT)) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.");
 		}
+		std::vector<int> d(data.begin(), data.end());
 
-		m_dev_write->push(data, 0, getCyclic(), true);
+		m_dev_write->push(d, 0, getCyclic(), true);
 	}
 
 	void stop()

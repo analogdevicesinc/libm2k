@@ -95,7 +95,7 @@ DIO_LEVEL M2kDigital::getValueRaw(unsigned int index)
 	return m_pimpl->getValueRaw(index);
 }
 
-void M2kDigital::push(std::vector<short> const &data)
+void M2kDigital::push(std::vector<unsigned short> const &data)
 {
 	m_pimpl->push(data);
 }

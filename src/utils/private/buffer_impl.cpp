@@ -64,7 +64,7 @@ public:
 	}
 
 	//push on a certain channel
-	void push(std::vector<short> const &data, unsigned int channel = 0,
+	void push(std::vector<int> const &data, unsigned int channel = 0,
 		  bool cyclic = true, bool multiplex = false)
 	{
 		size_t size = data.size();
@@ -91,11 +91,11 @@ public:
 			if (!multiplex) {
 					m_channel_list.at(channel)->write(m_buffer, data);
 			} else {
-				short *p_dat;
+				int *p_dat;
 				int i = 0;
 
-				for (p_dat = (short *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
-				     (unsigned short*)p_dat++, i++) {
+				for (p_dat = (int *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
+				     (unsigned int*)p_dat++, i++) {
 					*p_dat = data[i];
 				}
 
@@ -146,7 +146,8 @@ public:
 		}
 
 		for (unsigned int i = 0; i < data_ch_nb; i++) {
-			push(data.at(i), i);
+			std::vector<int> d(data.at(i).begin(), data.at(i).end());
+			push(d, i);
 		}
 	}
 

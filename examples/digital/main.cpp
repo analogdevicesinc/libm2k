@@ -26,7 +26,7 @@ int main()
 		dig->enableChannel(i, true);
 	}
 
-	vector<short> bufferOut;
+	vector<unsigned short> bufferOut;
 	vector<unsigned short> bufferIn;
 
 	for(int i=0;i< (1<<N_BITS); i++)

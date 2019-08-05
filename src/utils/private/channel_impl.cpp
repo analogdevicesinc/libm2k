@@ -127,7 +127,7 @@ public:
 		return (uintptr_t)iio_buffer_first(buffer, m_channel);
 	}
 
-	void write(struct iio_buffer* buffer, std::vector<short> const &data)
+	void write(struct iio_buffer* buffer, std::vector<int> const &data)
 	{
 		if (!m_channel) {
 			throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
@@ -135,7 +135,7 @@ public:
 
 		size_t size = data.size();
 		size_t ret = iio_channel_write(m_channel, buffer, data.data(),
-					       size * sizeof(short));
+					       size * sizeof(int));
 
 		if (ret == 0) {
 			throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");

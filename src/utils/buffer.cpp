@@ -44,7 +44,7 @@ void Buffer::setChannels(std::vector<Channel*> channels)
 }
 
 //push on a certain channel
-void Buffer::push(std::vector<short> const &data, unsigned int channel,
+void Buffer::push(std::vector<int> const &data, unsigned int channel,
 		  bool cyclic, bool multiplex)
 {
 	m_pimpl->push(data, channel, cyclic, multiplex);
