@@ -34,10 +34,10 @@ public:
 	virtual ~GenericDigital();
 
 
-    double getSampleRate();
+	double getSampleRate();
 	double setSampleRate(double sampleRate);
 
-    void setCyclic(bool cyclic);
+	void setCyclic(bool cyclic);
 	bool getCyclic();
 
 	void enableChannel(unsigned int index, bool enable);

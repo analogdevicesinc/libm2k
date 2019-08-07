@@ -25,80 +25,93 @@
 #include <memory>
 
 namespace libm2k {
-
-
 /**
- * @defgroup Analog
- * @brief Contains all analogical components
+ * @addtogroup analog
  * @{
  */
 namespace analog {
-
 /**
- * @defgroup PowerSupply
- * @brief Contains the representation of the power supply segment
+ * @defgroup powersupply PowerSupply
+ * @brief Contains the representation of the power supply
  * @{
  * @class M2kPowerSupply
+ * @brief Controls the power supply
  */
 class LIBM2K_API M2kPowerSupply {
 public:
+	/**
+	* @private
+	*/
 	M2kPowerSupply(struct iio_context* ctx, std::string write_dev,
-		       std::string read_dev, bool sync);
+		std::string read_dev, bool sync);
+
+
+	/**
+	* @private
+	*/
 	virtual ~M2kPowerSupply();
+
+
+	/**
+	* @private
+	*/
 	void init();
 
 
-    /**
-     * @brief Enable or disable the given channel
-     *
-     * @param chn The index corresponding to the channel
-     * @param en A boolean value corresponding to the state of the channel
-     */
-    void enableChannel(unsigned int chn, bool en);
+	/**
+	* @brief Enable or disable the given channel
+	*
+	* @param chn The index corresponding to the channel
+	* @param en A boolean value corresponding to the state of the channel
+	*/
+	void enableChannel(unsigned int chn, bool en);
 
 
-    /**
-     * @brief  Enable or disable all channels
-     *
-     * @param en A boolean value corresponding to the state of the channels
-     */
-    void enableAll(bool en);
+	/**
+	* @brief  Enable or disable all channels
+	*
+	* @param en A boolean value corresponding to the state of the channels
+	*/
+	void enableAll(bool en);
 
 
-    /**
-     * @brief Retrieve the value of a given channel
-     *
-     * @param chn The index corresponding to the channel
-     * @return double The voltage transmitted by the given channel
-     */
-    double readChannel(unsigned int chn);
+	/**
+	* @brief Retrieve the value of a given channel
+	*
+	* @param chn The index corresponding to the channel
+	* @return double The voltage transmitted by the given channel
+	*/
+	double readChannel(unsigned int chn);
 
 
-    /**
-     * @brief Set the voltage for the given channel
-     *
-     * @param chn The index corresponding to the channel
-     * @param value The voltage
-     */
-    void pushChannel(unsigned int chn, double value);
+	/**
+	* @brief Set the voltage for the given channel
+	*
+	* @param chn The index corresponding to the channel
+	* @param value The voltage (up to 5V)
+	*/
+	void pushChannel(unsigned int chn, double value);
+
+
+	/**
+	* @private
+	*/
 	void powerDownDacs(bool powerdown);
 
 
-    /**
-     * @brief Check if there is at least one enabled channel
-     *
-     * @return On succes, true
-     * @return Otherwise, false
-     */
-    bool anyChannelEnabled();
+	/**
+	* @brief Check if there is at least one enabled channel
+	*
+	* @return On succes, true
+	* @return Otherwise, false
+	*/
+	bool anyChannelEnabled();
 
-    /** @} */
 
 private:
 	class M2kPowerSupplyImpl;
 	std::unique_ptr<M2kPowerSupplyImpl> m_pimpl;
 };
-/** @}*/
 }
 }
 

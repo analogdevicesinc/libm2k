@@ -33,17 +33,30 @@ namespace digital {
 
 
 /**
- * @defgroup Digital
+ * @defgroup digital Digital
  * @brief Contains the representation of the digital segment
  * @{
  * @class M2kDigital
+ * @brief Controls the digital input and output segment
  */
 class LIBM2K_API M2kDigital
 {
 public:
+	/**
+	* @private
+	*/
 	M2kDigital(struct iio_context* ctx, std::string logic_dev, bool sync);
+
+
+	/**
+	 * @private
+	 */
 	virtual ~M2kDigital();
 
+
+	/**
+	* @private
+	*/
 	void init();
 
 
@@ -109,10 +122,10 @@ public:
 	* @brief Set the raw value of a given digital channel
 	*
 	* @param index An enumerator corresponding to the channel's index
-	* @param DIO_LEVEL An enumerator corresponding to the raw value
+	* @param level An enumerator corresponding to the raw value
 	*
 	*/
-	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL);
+	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL level);
 
 
 	/**
@@ -130,14 +143,16 @@ public:
 	* @param nb_samples the number of samples
 	*/
 	void push(unsigned short *data, unsigned int nb_samples);
+
+
 	/**
 	* @brief Set the raw value of a given digital channel
 	*
 	* @param index The index corresponding to the channel
-	* @param DIO_LEVEL An enumerator corresponding to the raw value
+	* @param level An enumerator corresponding to the raw value
 	*
 	*/
-	void setValueRaw(unsigned int index, DIO_LEVEL);
+	void setValueRaw(unsigned int index, DIO_LEVEL level);
 
 
 	/**
@@ -185,6 +200,7 @@ public:
 
 	/* Enable/disable TX channels only*/
 
+
 	/**
 	* @brief Enable or disable the given digital channel
 	*
@@ -230,37 +246,37 @@ public:
 	/**
 	* @brief Set the output mode for the given digital channel
 	*
-	* @param DIO_CHANNEL An enumerator corresponding to the channel's index
-	* @param DIO_MODE An enumerator corresponding to the output mode
+	* @param chn An enumerator corresponding to the channel's index
+	* @param mode An enumerator corresponding to the output mode
 	*/
-	void setOutputMode(DIO_CHANNEL, DIO_MODE);
+	void setOutputMode(DIO_CHANNEL chn, DIO_MODE mode);
 
 
 	/**
 	* @brief Set the output mode for the given digital channel
 	*
-	* @param int The index corresponding to the channel
-	* @param DIO_MODE An enumerator corresponding to the output mode
+	* @param chn The index corresponding to the channel
+	* @param mode An enumerator corresponding to the output mode
 	*/
-	void setOutputMode(unsigned int, DIO_MODE);
+	void setOutputMode(unsigned int chn, DIO_MODE mode);
 
 
 	/**
 	* @brief Retrieve the output mode for the given digital channel
 	*
-	* @param DIO_CHANNEL An enumerator corresponding to the channel's index
+	* @param chn An enumerator corresponding to the channel's index
 	* @return An enumerator corresponding to the output mode
 	*/
-	DIO_MODE getOutputMode(DIO_CHANNEL);
+	DIO_MODE getOutputMode(DIO_CHANNEL chn);
 
 
 	/**
 	* @brief Retrieve the output mode for the given digital channel
 	*
-	* @param int The index corresponding to the channel
+	* @param chn The index corresponding to the channel
 	* @return An enumerator corresponding to the output mode
 	*/
-	DIO_MODE getOutputMode(unsigned int);
+	DIO_MODE getOutputMode(unsigned int chn);
 
 
 	/**
