@@ -28,66 +28,78 @@
 
 namespace libm2k {
 /**
- * @defgroup Analog
- * @brief Contains all analogical components
+ * @addtogroup analog
  * @{
  */
 namespace analog {
 
 /**
- * @defgroup DMM
+ * @defgroup dmm DMM
  * @brief Contains the representation of the digital multimeter
  * @{
  * @class DMM
+ * @brief Controls the digital multimeter
  */
 class LIBM2K_API DMM {
 public:
+	/**
+	* @private
+	*/
 	DMM(struct iio_context *ctx, std::string dev, bool sync);
+
+
+	/**
+	* @private
+	*/
 	virtual ~DMM();
 
+
+	/**
+	* @private
+	*/
 	void init();
 
 
-    /**
-     * @brief Retrieve all channels
-     *
-     * @return A list containing the name of all channels
-     */
-    std::vector<std::string> getAllChannels();
+	/**
+	* @brief Retrieve all channels
+	*
+	* @return A list containing the name of all channels
+	*/
+	std::vector<std::string> getAllChannels();
 
 
-    /**
-     * @brief Retrieve additional information about the given channel
-     *
-     * @param index The index corresponding to the channel
-     * @return A structure containing additional information
-     */
+	/**
+	* @brief Retrieve additional information about the given channel
+	*
+	* @param index The index corresponding to the channel
+	* @return A structure containing additional information
+	*/
 	libm2k::analog::DMM_READING readChannel(unsigned int index);
 
 
-    /**
-     * @brief Retrieve additional information about the given channel
-     *
-     * @param chn_name The name corresponding to the channel
-     * @return A structure containing additional information
-     */
-    libm2k::analog::DMM_READING readChannel(std::string chn_name);
+	/**
+	* @brief Retrieve additional information about the given channel
+	*
+	* @param chn_name The name corresponding to the channel
+	* @return A structure containing additional information
+	*/
+	libm2k::analog::DMM_READING readChannel(std::string chn_name);
 
 
-    /**
-     * @brief Retrieve additional information about all channels
-     *
-     * @return A list containing structures for each channel
-     */
-    std::vector<libm2k::analog::DMM_READING> readAll();
+	/**
+	* @brief Retrieve additional information about all channels
+	*
+	* @return A list containing structures for each channel
+	*/
+	std::vector<libm2k::analog::DMM_READING> readAll();
 
 
-    /**
-     * @brief Retrieve the device's name
-     *
-     * @return The name of the device
-     */
-    std::string getName();
+	/**
+	* @brief Retrieve the device's name
+	*
+	* @return The name of the device
+	*/
+	std::string getName();
 
 private:
 	class DMMImpl;

@@ -42,41 +42,41 @@ namespace devices {
      * @private
      */
 class LIBM2K_API ContextBuilder {
-static std::vector<Context*> s_connectedDevices;
+	static std::vector<Context*> s_connectedDevices;
 public:
-    /**
-     * @private
-     */
-    explicit ContextBuilder();
-    /**
-     * @private
-     */
-    ~ContextBuilder();
-    /**
-     * @private
-     */
-    static std::vector<std::string> listDevices();
-    /**
-     * @private
-     */
-    static Context* deviceOpen(const char*);
-    /**
-     * @private
-     */
-    static Context* deviceOpen();
-    /**
-     * @private
-     */
+	/**
+	* @private
+	*/
+	explicit ContextBuilder();
+	/**
+	* @private
+	*/
+	~ContextBuilder();
+	/**
+	* @private
+	*/
+	static std::vector<std::string> listDevices();
+	/**
+	* @private
+	*/
+	static Context* deviceOpen(const char*);
+	/**
+	* @private
+	*/
+	static Context* deviceOpen();
+	/**
+	* @private
+	*/
 	static M2k* m2kOpen(const char *);
-    /**
-     * @private
-     */
+	/**
+	* @private
+	*/
 	static M2k* m2kOpen();
 
-    /**
-     * @private
-     */
-    static void deviceClose(Context*, bool deinit = true);
+	/**
+	* @private
+	*/
+	static void deviceClose(Context*, bool deinit = true);
 
 	static void deviceCloseAll();
 private:
@@ -85,9 +85,9 @@ private:
 	//                std::shared_ptr<M2KImpl> m_pimpl;
 	static DeviceTypes identifyDevice(iio_context *ctx);
 	static Context* buildDevice(DeviceTypes type,
-					std::string uri,
-					struct iio_context *ctx,
-					bool sync);
+		std::string uri,
+		struct iio_context *ctx,
+		bool sync);
 
 };
 
@@ -149,6 +149,7 @@ LIBM2K_API std::vector<std::string> listDevices()
 /**
  * @brief Destroy the given context
  * @param ctx The context to be destroyed
+ * @param deinit If deinit is set to false, running contexts won't be affected
  */
 LIBM2K_API void deviceClose(Context* ctx, bool deinit = true)
 {

@@ -32,25 +32,37 @@ extern "C" {
 namespace libm2k {
 
 /**
- * @addtogroup Analog
- * @brief Contains all analogical components
+ * @addtogroup analog
  * @{
  */
 namespace analog {
 
 
 /**
- * @defgroup AnalogOut
+ * @defgroup analogout AnalogOut
  * @brief Contains the representation of the analogical output segment
  * @{
  * @class M2kAnalogOut
+ * @brief Controls the analogical output compound
  */
 class LIBM2K_API M2kAnalogOut
 {
 public:
+	/**
+	 * @private
+	 */
 	M2kAnalogOut(struct iio_context*, std::vector<std::string> dac_devs, bool sync);
+
+
+	/**
+	 * @private
+	*/
 	virtual ~M2kAnalogOut();
 
+
+	/**
+	* @private
+	*/
 	void init();
 
 	/* chn can be 0 or 1, it actually refers to dac-a or dac-b) */
@@ -124,7 +136,14 @@ public:
 	double setSampleRate(unsigned int chn, double samplerate);
 
 
+	/**
+	* @private
+	*/
 	void setSyncedDma(bool en, int chn = -1);
+
+	/**
+	* @private
+	*/
 	bool getSyncedDma(int chn = -1);
 
 
@@ -301,6 +320,7 @@ public:
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	bool isChannelEnabled(unsigned int chnIdx);
+
 private:
 	class M2kAnalogOutImpl;
 	std::unique_ptr<M2kAnalogOutImpl> m_pimpl;

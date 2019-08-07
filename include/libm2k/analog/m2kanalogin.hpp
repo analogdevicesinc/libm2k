@@ -29,21 +29,36 @@
 
 namespace libm2k {
 /**
- * @addtogroup Analog
+ * @defgroup analog Analog
+ * @brief Contains all analogical components
  * @{
  */
 namespace analog {
 /**
- * @defgroup AnalogIn
+ * @defgroup analogin AnalogIn
  * @brief Contains the representation of the analogical input segment
  * @{
  * @class M2kAnalogIn
+ * @brief Controls the analogical input compound
  */
 class LIBM2K_API M2kAnalogIn
 {
 public:
+	/**
+	 * @private
+	 */
 	M2kAnalogIn(struct iio_context*, std::string adc_dev, bool sync);
+
+
+	/**
+	* @private
+	*/
 	virtual ~M2kAnalogIn();
+
+
+	/**
+	* @private
+	*/
 	void init();
 
 
@@ -58,6 +73,14 @@ public:
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
 
 
+	/**
+	* @brief Retrieve a specific number of raw samples from each channel
+	*
+	* @param nb_samples The number of samples that will be retrieved
+	* @return A list containing lists of raw samples for each channel
+	*
+	* @note The index of the list corresponds to the index of the channel
+	*/
 	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
 
 	double* getSamplesInterleaved(unsigned int nb_samples);
@@ -174,10 +197,10 @@ public:
 	/**
 	* @brief Retrieve the bounds for the given range
 	*
-	* @param An enumerator corresponding to the range
+	* @param range An enumerator corresponding to the range
 	* @return A pair containing the lower and upper bound
 	*/
-	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE);
+	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE range);
 
 
 	/**
@@ -198,10 +221,10 @@ public:
 	/**
 	* @brief Retrieve the oversampling ratio for the given channel
 	*
-	* @param int The index corresponding to the channel
+	* @param chn_idx The index corresponding to the channel
 	* @return The ratio value
 	*/
-	double getOversamplingRatio(unsigned int);
+	double getOversamplingRatio(unsigned int chn_idx);
 
 
 	/**
@@ -234,10 +257,10 @@ public:
 	/**
 	* @brief Retrieve the sample rate of the given channel
 	*
-	* @param int The index corresponding to the channel
+	* @param chn_idx The index corresponding to the channel
 	* @return The value of the sample rate
 	*/
-	double getSampleRate(unsigned int);
+	double getSampleRate(unsigned int chn_idx);
 
 
 	/**
@@ -262,10 +285,10 @@ public:
 	/**
 	* @brief Retrieve the bounds of the analogical trigger's hysteresis for the given channel
 	*
-	* @param An enumerator corresponding to the channel's index
+	* @param chn An enumerator corresponding to the channel's index
 	* @return A pair containing the lower and upper bound
 	*/
-	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL);
+	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn);
 
 
 	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset);
@@ -311,22 +334,15 @@ public:
 	/**
 	* @brief Retrieve the numeric value corresponding to the given range
 	*
-	* @param M2K_RANGE
+	* @param range
 	* @return double
 	*/
-	double getValueForRange(M2K_RANGE);
+	double getValueForRange(M2K_RANGE range);
 
 
 	/**
-	* @brief Convert a raw value into volts
-	*
-	* @param sample The raw value of a sample
-	* @param correctionGain
-	* @param hw_gain
-	* @param filterCompensation The value of the filter compensation
-	* @param offset
-	* @return The value of the voltage
-	*/
+	 * @private
+	 */
 	double convertRawToVolts(int sample, double correctionGain = 1,
 		double hw_gain = 0.02,
 		double filterCompensation = 1,
@@ -334,20 +350,12 @@ public:
 
 
 	/**
-	* @brief Convert a value measured in volts into a raw value
-	*
-	* @param voltage The value of the voltage
-	* @param correctionGain
-	* @param hw_gain
-	* @param filterCompensation The value of the filter compensation
-	* @param offset
-	* @return The raw value
-	*/
+	 * @private
+	 */
 	int convertVoltsToRaw(double voltage, double correctionGain = 1,
 		double hw_gain = 0.02,
 		double filterCompensation = 1,
 		double offset = 0);
-
 
 
 	/**
@@ -384,7 +392,16 @@ public:
 	*/
 	bool isChannelEnabled(unsigned int chnIdx);
 
+
+	/**
+	 * @private
+	 */
 	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
+
+
+	/**
+	* @private
+	*/
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
 	void setKernelBuffersCount(unsigned int count);
 
