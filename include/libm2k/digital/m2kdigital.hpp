@@ -62,17 +62,6 @@ public:
 
 	bool anyChannelEnabled(DIO_DIRECTION dir);
 
-	void setTrigger(DIO_CHANNEL, libm2k::analog::M2K_TRIGGER_CONDITION);
-	void setTrigger(unsigned int, libm2k::analog::M2K_TRIGGER_CONDITION);
-	libm2k::analog::M2K_TRIGGER_CONDITION getTrigger(DIO_CHANNEL);
-	libm2k::analog::M2K_TRIGGER_CONDITION getTrigger(unsigned int);
-
-	void setTriggerDelay(int delay);
-	int getTriggerDelay();
-
-	void setTriggerMode(DIO_TRIGGER_MODE);
-	DIO_TRIGGER_MODE getTriggerMode();
-
 	void setOutputMode(DIO_CHANNEL, DIO_MODE);
 	void setOutputMode(unsigned int, DIO_MODE);
 	DIO_MODE getOutputMode(DIO_CHANNEL);
@@ -86,6 +75,7 @@ public:
 	bool getCyclic();
 	void setCyclic(bool cyclic);
 
+	libm2k::analog::M2kHardwareTrigger* getTrigger();
 private:
 	class M2kDigitalImpl;
 	std::unique_ptr<M2kDigitalImpl> m_pimpl;

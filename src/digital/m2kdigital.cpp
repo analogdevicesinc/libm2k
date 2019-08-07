@@ -130,51 +130,15 @@ bool M2kDigital::anyChannelEnabled(DIO_DIRECTION dir)
 	return m_pimpl->anyChannelEnabled(dir);
 }
 
-void M2kDigital::setTrigger(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION cond)
+M2kHardwareTrigger *M2kDigital::getTrigger()
 {
-	m_pimpl->setTrigger(chn, cond);
-}
-
-void M2kDigital::setTrigger(unsigned int chn, M2K_TRIGGER_CONDITION cond)
-{
-	m_pimpl->setTrigger(chn, cond);
-}
-
-M2K_TRIGGER_CONDITION M2kDigital::getTrigger(DIO_CHANNEL chn)
-{
-	return m_pimpl->getTrigger(chn);
-}
-
-M2K_TRIGGER_CONDITION M2kDigital::getTrigger(unsigned int chn)
-{
-	return m_pimpl->getTrigger(chn);
-}
-
-void M2kDigital::setTriggerDelay(int delay)
-{
-	m_pimpl->setTriggerDelay(delay);
-}
-
-int M2kDigital::getTriggerDelay()
-{
-	return m_pimpl->getTriggerDelay();
-}
-
-void M2kDigital::setTriggerMode(DIO_TRIGGER_MODE trig_mode)
-{
-	m_pimpl->setTriggerMode(trig_mode);
-}
-
-DIO_TRIGGER_MODE M2kDigital::getTriggerMode()
-{
-	return m_pimpl->getTriggerMode();
+	return m_pimpl->getTrigger();
 }
 
 void M2kDigital::setOutputMode(DIO_CHANNEL chn, DIO_MODE mode)
 {
 	m_pimpl->setOutputMode(chn, mode);
 }
-
 
 void M2kDigital::setOutputMode(unsigned int chn, DIO_MODE mode)
 {

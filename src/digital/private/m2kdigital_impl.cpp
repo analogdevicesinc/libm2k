@@ -39,14 +39,10 @@ public:
 		"push-pull",
 	};
 
-	std::vector<std::string> m_trigger_logic_mode = {
-		"or",
-		"and",
-	};
-
 	M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, bool sync) :
 		DeviceGeneric(ctx, logic_dev)
 	{
+		m_trigger = new M2kHardwareTrigger(ctx);
 		m_dev_name_write = logic_dev + "-tx";
 		m_dev_name_read = logic_dev + "-rx";
 
@@ -285,72 +281,9 @@ public:
 		return false;
 	}
 
-	void setTrigger(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION cond)
+	M2kHardwareTrigger *getTrigger()
 	{
-		std::string trigger_val = M2kHardwareTrigger::getAvailableDigitalConditions()[cond];
-		m_dev_read->setStringValue(chn, "trigger", trigger_val, false);
-	}
-
-	void setTrigger(unsigned int chn, M2K_TRIGGER_CONDITION cond)
-	{
-		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
-		setTrigger(idx, cond);
-	}
-
-	M2K_TRIGGER_CONDITION getTrigger(DIO_CHANNEL chn)
-	{
-		std::string trigger_val = m_dev_read->getStringValue(chn, "trigger", false);
-		std::vector<std::string> available_digital_conditions =
-				M2kHardwareTrigger::getAvailableDigitalConditions();
-
-		auto it = std::find(available_digital_conditions.begin(),
-				    available_digital_conditions.end(), trigger_val.c_str());
-		if (it == available_digital_conditions.end()) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: Cannot read channel attribute: trigger");
-		}
-
-		return static_cast<M2K_TRIGGER_CONDITION>
-				(it - available_digital_conditions.begin());
-	}
-
-	M2K_TRIGGER_CONDITION getTrigger(unsigned int chn)
-	{
-		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
-		return getTrigger(idx);
-	}
-
-	void setTriggerDelay(int delay)
-	{
-		__try {
-			m_dev_read->setDoubleValue(DIO_CHANNEL_0, delay, "trigger_delay", false);
-		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
-		}
-	}
-
-	int getTriggerDelay()
-	{
-		return (int)m_dev_read->getDoubleValue(DIO_CHANNEL_0, "trigger_delay", false);
-	}
-
-	void setTriggerMode(DIO_TRIGGER_MODE trig_mode)
-	{
-		std::string trigger_mode = m_trigger_logic_mode[trig_mode];
-		m_dev_read->setStringValue(DIO_CHANNEL_0, "trigger_logic_mode", trigger_mode, false);
-	}
-
-	DIO_TRIGGER_MODE getTriggerMode()
-	{
-		std::string trigger_mode = "";
-		trigger_mode = m_dev_read->getStringValue(DIO_CHANNEL_0,
-						"trigger_logic_mode", false);
-
-		auto it = std::find(m_trigger_logic_mode.begin(), m_trigger_logic_mode.end(),
-				    trigger_mode.c_str());
-		if (it == m_trigger_logic_mode.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Cannot read channel attribute: trigger logic mode");
-		}
-		return static_cast<DIO_TRIGGER_MODE>(it - m_trigger_logic_mode.begin());
+		return m_trigger;
 	}
 
 	void setOutputMode(DIO_CHANNEL chn, DIO_MODE mode)
@@ -373,7 +306,7 @@ public:
 		auto it = std::find(m_output_mode.begin(), m_output_mode.end(),
 				    output_mode.c_str());
 		if (it == m_output_mode.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot read channel attribute: trigger");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot read channel attribute: output mode");
 		}
 
 		return static_cast<DIO_MODE>(it - m_output_mode.begin());
@@ -425,4 +358,5 @@ private:
 	std::string m_dev_name_write;
 	std::vector<bool> m_tx_channels_enabled;
 	std::vector<bool> m_rx_channels_enabled;
+	libm2k::analog::M2kHardwareTrigger *m_trigger;
 };
