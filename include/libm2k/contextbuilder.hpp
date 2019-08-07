@@ -34,19 +34,50 @@ enum DeviceTypes {
 };
 
 namespace libm2k {
-namespace devices {
-class LIBM2K_API ContextBuilder {
-	static std::vector<Context*> s_connectedDevices;
-public:
 
-	explicit ContextBuilder();
-	~ContextBuilder();
-	static std::vector<std::string> listDevices();
-	static Context* deviceOpen(const char*);
-	static Context* deviceOpen();
-	static M2k* m2kOpen(const char*);
+
+namespace devices {
+
+    /**
+     * @private
+     */
+class LIBM2K_API ContextBuilder {
+static std::vector<Context*> s_connectedDevices;
+public:
+    /**
+     * @private
+     */
+    explicit ContextBuilder();
+    /**
+     * @private
+     */
+    ~ContextBuilder();
+    /**
+     * @private
+     */
+    static std::vector<std::string> listDevices();
+    /**
+     * @private
+     */
+    static Context* deviceOpen(const char*);
+    /**
+     * @private
+     */
+    static Context* deviceOpen();
+    /**
+     * @private
+     */
+	static M2k* m2kOpen(const char *);
+    /**
+     * @private
+     */
 	static M2k* m2kOpen();
-	static void deviceClose(Context*, bool deinit = true);
+
+    /**
+     * @private
+     */
+    static void deviceClose(Context*, bool deinit = true);
+
 	static void deviceCloseAll();
 private:
 	static std::map<DeviceTypes, std::vector<std::string>> m_dev_map;
@@ -57,42 +88,86 @@ private:
 					std::string uri,
 					struct iio_context *ctx,
 					bool sync);
+
 };
 
+/**
+ * @addtogroup devices
+ * @{
+ * @defgroup context ContextBuilder
+ * @brief Creates/destroys the context
+ * @{
+ */
+
+/**
+* @private
+*/
 LIBM2K_API Context* deviceOpen()
 {
 	return ContextBuilder::deviceOpen();
 }
 
+/**
+ * @private
+ */
 LIBM2K_API Context* deviceOpen(const char* uri)
 {
 	return ContextBuilder::deviceOpen(uri);
 }
 
+
+/**
+ * @brief Open a device based on its uri
+ * @param uri Describe the location of the context
+ * @return M2k object
+ */
 LIBM2K_API M2k* m2kOpen(const char* uri)
 {
 	return ContextBuilder::m2kOpen(uri);
 }
 
+
+/**
+ *@brief Open a device based on its USB uri
+ * @return  M2k object
+ */
 LIBM2K_API M2k* m2kOpen()
 {
 	return ContextBuilder::m2kOpen();
 }
 
+
+/**
+ * @brief List all available devices
+ * @return A list containing the available devices
+ */
 LIBM2K_API std::vector<std::string> listDevices()
 {
 	return ContextBuilder::listDevices();
 }
 
+/**
+ * @brief Destroy the given context
+ * @param ctx The context to be destroyed
+ */
 LIBM2K_API void deviceClose(Context* ctx, bool deinit = true)
 {
 	ContextBuilder::deviceClose(ctx, deinit);
 }
 
+
+/**
+ * @brief Close all the devices
+ */
 LIBM2K_API void deviceCloseAll()
 {
 	ContextBuilder::deviceCloseAll();
 }
+
+/**
+ * @}
+ * @}
+ */
 }
 }
 #endif //M2K_H

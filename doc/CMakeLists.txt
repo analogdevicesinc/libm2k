@@ -13,6 +13,7 @@ set(DOXY_WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR}/doxygen_doc)
 
 set(PROJECT_NAME "LibM2K")
 set(DOCUMENTED_FILES "${SOURCES_DIR}/m2k.hpp \\
+                      ${SOURCES_DIR}/contextbuilder.hpp \\
                       ${SOURCES_DIR}/digital/m2kdigital.hpp \\
                       ${SOURCES_DIR}/digital/enums.hpp \\
                       ${SOURCES_DIR}/analog/m2kanalogin.hpp \\
