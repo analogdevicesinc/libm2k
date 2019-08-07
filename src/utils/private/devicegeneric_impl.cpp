@@ -275,6 +275,77 @@ public:
 		return getDoubleValue(chn_idx, attr, output);
 	}
 
+	int getLongValue(std::string attr)
+	{
+		long long value = 0;
+		std::string dev_name = getName();
+
+		if (Context::iioDevHasAttribute(m_dev, attr)) {
+			iio_device_attr_read_longlong(m_dev, attr.c_str(),
+				&value);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+					attr + " attribute");
+		}
+		return value;
+	}
+
+	int getLongValue(unsigned int chn_idx, std::string attr, bool output = false)
+	{
+		long long value = 0;
+		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
+		std::string dev_name = getName();
+
+		if (chn_idx >= nb_channels) {
+			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no such channel");
+		}
+
+		std::string name = "voltage" + std::to_string(chn_idx);
+		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		if (Context::iioChannelHasAttribute(chn, attr)) {
+			iio_channel_attr_read_longlong(chn, attr.c_str(), &value);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+					attr + " attribute for the selected channel");
+		}
+		return value;
+	}
+
+	int setLongValue(int value, std::string attr)
+	{
+		std::string dev_name = iio_device_get_name(m_dev);
+		if (Context::iioDevHasAttribute(m_dev, attr)) {
+			iio_device_attr_write_longlong(m_dev, attr.c_str(),
+				value);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+					attr + " attribute");
+		}
+		return getLongValue(attr);
+	}
+
+	int setLongValue(unsigned int chn_idx, int value, std::string attr, bool output = false)
+	{
+		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
+		std::string dev_name = getName();
+		if (chn_idx >= nb_channels) {
+			throw_exception(EXC_INVALID_PARAMETER, dev_name +
+					" has no such channel");
+		}
+
+		std::string name = "voltage" + std::to_string(chn_idx);
+		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		if (Context::iioChannelHasAttribute(chn, attr)) {
+			iio_channel_attr_write_longlong(chn, attr.c_str(),
+				value);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, dev_name +
+					" has no " + attr +
+					" attribute for the selected channel");
+		}
+		return getLongValue(chn_idx, attr, output);
+	}
+
 	bool getBoolValue(string attr)
 	{
 		bool value = 0;

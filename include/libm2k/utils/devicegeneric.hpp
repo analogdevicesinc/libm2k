@@ -51,6 +51,11 @@ public:
 	virtual double setDoubleValue(double value, std::string attr);
 	virtual double setDoubleValue(unsigned int chn_idx, double value, std::string attr, bool output=false);
 
+	virtual int getLongValue(std::string attr);
+	virtual int getLongValue(unsigned int, std::string attr, bool output=false);
+	virtual int setLongValue(int value, std::string attr);
+	virtual int setLongValue(unsigned int chn_idx, int value, std::string attr, bool output=false);
+
 	virtual bool getBoolValue(std::string attr);
 	virtual bool getBoolValue(unsigned int, std::string attr, bool output=false);
 	virtual bool setBoolValue(bool value, std::string attr);

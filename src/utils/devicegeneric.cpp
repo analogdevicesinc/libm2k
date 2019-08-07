@@ -90,6 +90,26 @@ double DeviceGeneric::setDoubleValue(unsigned int chn_idx, double value, std::st
 	return m_pimpl->setDoubleValue(chn_idx, value, attr, output);
 }
 
+int DeviceGeneric::getLongValue(string attr)
+{
+	return m_pimpl->getLongValue(attr);
+}
+
+int DeviceGeneric::getLongValue(unsigned int chn_idx, string attr, bool output)
+{
+	return m_pimpl->getLongValue(chn_idx, attr, output);
+}
+
+int DeviceGeneric::setLongValue(int value, string attr)
+{
+	return m_pimpl->setLongValue(value, attr);
+}
+
+int DeviceGeneric::setLongValue(unsigned int chn_idx, int value, string attr, bool output)
+{
+	return m_pimpl->setLongValue(chn_idx, value, attr, output);
+}
+
 bool DeviceGeneric::getBoolValue(string attr)
 {
 	return m_pimpl->getBoolValue(attr);
