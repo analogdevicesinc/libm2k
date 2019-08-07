@@ -63,16 +63,6 @@ int M2kAnalogIn::convertVoltsToRaw(double voltage, double correctionGain,
 					  hw_gain, filterCompensation, offset);
 }
 
-void M2kAnalogIn::setStreamingFlag(bool en)
-{
-	m_pimpl->setStreamingFlag(en);
-}
-
-bool M2kAnalogIn::getStreamingFlag()
-{
-	return m_pimpl->getStreamingFlag();
-}
-
 unsigned int M2kAnalogIn::getNbChannels()
 {
 	return m_pimpl->getNbChannels();
@@ -168,125 +158,9 @@ double M2kAnalogIn::getScalingFactor(ANALOG_IN_CHANNEL ch)
 	return m_pimpl->getScalingFactor(ch);
 }
 
-int M2kAnalogIn::getDelay()
-{
-	return m_pimpl->getDelay();
-}
-
-void M2kAnalogIn::setDelay(int delay)
-{
-	m_pimpl->setDelay(delay);
-}
-
-double M2kAnalogIn::getLevel(ANALOG_IN_CHANNEL chnIdx) const
-{
-	return m_pimpl->getLevel(chnIdx);
-}
-
-void M2kAnalogIn::setLevel(ANALOG_IN_CHANNEL chnIdx, double level)
-{
-	m_pimpl->setLevel(chnIdx, level);
-}
-
-int M2kAnalogIn::getLevelRaw(ANALOG_IN_CHANNEL chnIdx) const
-{
-	return m_pimpl->getLevelRaw(chnIdx);
-}
-
-void M2kAnalogIn::setLevelRaw(ANALOG_IN_CHANNEL chnIdx, int level)
-{
-	m_pimpl->setLevelRaw(chnIdx, level);
-}
-
-double M2kAnalogIn::getLevel(unsigned int chnIdx) const
-{
-	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(chnIdx);
-	return m_pimpl->getLevel(channel);
-}
-
-void M2kAnalogIn::setLevel(unsigned int chnIdx, double level)
-{
-	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(chnIdx);
-	m_pimpl->setLevel(channel, level);
-}
-
-int M2kAnalogIn::getLevelRaw(unsigned int chnIdx) const
-{
-	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(chnIdx);
-	return m_pimpl->getLevelRaw(channel);
-}
-
-void M2kAnalogIn::setLevelRaw(unsigned int chnIdx, int level)
-{
-	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(chnIdx);
-	m_pimpl->setLevelRaw(channel, level);
-}
-
-
-int M2kAnalogIn::getHysteresis(ANALOG_IN_CHANNEL chnIdx) const
-{
-	return m_pimpl->getHysteresis(chnIdx);
-}
-
-void M2kAnalogIn::setHysteresis(ANALOG_IN_CHANNEL chnIdx, int hysteresis)
-{
-	m_pimpl->setHysteresis(chnIdx, hysteresis);
-}
-
 std::pair<double, double> M2kAnalogIn::getHysteresisRange(ANALOG_IN_CHANNEL chn)
 {
 	return m_pimpl->getHysteresisRange(chn);
-}
-
-M2K_TRIGGER_CONDITION M2kAnalogIn::getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
-{
-	return m_pimpl->getAnalogCondition(chnIdx);
-}
-
-void M2kAnalogIn::setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
-{
-	m_pimpl->setAnalogCondition(chnIdx, cond);
-}
-
-M2K_TRIGGER_CONDITION M2kAnalogIn::getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const
-{
-	return m_pimpl->getDigitalCondition(chnIdx);
-}
-
-void M2kAnalogIn::setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
-{
-	m_pimpl->setDigitalCondition(chnIdx, cond);
-}
-
-M2K_TRIGGER_SOURCE M2kAnalogIn::getSource() const
-{
-	return m_pimpl->getSource();
-}
-
-void M2kAnalogIn::setSource(M2K_TRIGGER_SOURCE src)
-{
-	m_pimpl->setSource(src);
-}
-
-void M2kAnalogIn::setSourceChannel(ANALOG_IN_CHANNEL channel)
-{
-	m_pimpl->setSourceChannel(channel);
-}
-
-ANALOG_IN_CHANNEL M2kAnalogIn::getSourceChannel()
-{
-	return m_pimpl->getSourceChannel();
-}
-
-void M2kAnalogIn::setTriggerMode(ANALOG_IN_CHANNEL channel,
-				 M2K_TRIGGER_MODE mode)
-{
-	m_pimpl->setTriggerMode(channel, mode);
-}
-
-M2K_TRIGGER_MODE M2kAnalogIn::getTriggerMode(ANALOG_IN_CHANNEL channel)
-{
-	return m_pimpl->getTriggerMode(channel);
 }
 
 void M2kAnalogIn::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)

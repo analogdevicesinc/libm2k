@@ -68,40 +68,10 @@ public:
 	double setSampleRate(double samplerate);
 	double setSampleRate(unsigned int chn_idx, double samplerate);
 
-	int getLevelRaw(unsigned int chnIdx) const;
-	void setLevelRaw(unsigned int chnIdx, int level);
-	double getLevel(unsigned int chnIdx) const;
-	void setLevel(unsigned int chnIdx, double v_level);
-
-	int getLevelRaw(ANALOG_IN_CHANNEL chnIdx) const;
-	void setLevelRaw(ANALOG_IN_CHANNEL chnIdx, int level);
-	double getLevel(ANALOG_IN_CHANNEL chnIdx) const;
-	void setLevel(ANALOG_IN_CHANNEL chnIdx, double level);
-
-	int getHysteresis(ANALOG_IN_CHANNEL chnIdx) const;
-	void setHysteresis(ANALOG_IN_CHANNEL chnIdx, int histeresis);
 	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL);
 
 	double setCalibscale(unsigned int index, double calibscale);
 	double getCalibscale(unsigned int index);
-
-	M2K_TRIGGER_CONDITION getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const;
-	void setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond);
-
-	M2K_TRIGGER_CONDITION getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const;
-	void setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond);
-
-	M2K_TRIGGER_MODE getTriggerMode(ANALOG_IN_CHANNEL chnIdx);
-	void setTriggerMode(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_MODE mode);
-
-	M2K_TRIGGER_SOURCE getSource() const;
-	void setSource(M2K_TRIGGER_SOURCE src);
-
-	ANALOG_IN_CHANNEL getSourceChannel();
-	void setSourceChannel(ANALOG_IN_CHANNEL chnIdx);
-
-	int getDelay();
-	void setDelay(int delay);
 
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
 	double getFilterCompensation(double samplerate);
