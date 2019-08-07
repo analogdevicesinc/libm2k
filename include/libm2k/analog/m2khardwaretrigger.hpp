@@ -21,6 +21,7 @@
 #define M2KHARDWARETRIGGER_HPP
 
 #include <libm2k/analog/enums.hpp>
+#include <libm2k/digital/enums.hpp>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/m2k.hpp>
 #include <vector>
@@ -35,37 +36,49 @@ public:
 	M2kHardwareTrigger(struct iio_context *ctx);
 	virtual ~M2kHardwareTrigger();
 
-	int getLevelRaw(unsigned int chnIdx);
-	void setLevelRaw(unsigned int chnIdx, int level);
-	void setLevel(unsigned int chnIdx, double v_level);
-	double getLevel(unsigned int chnIdx);
+	int getAnalogLevelRaw(unsigned int chnIdx);
+	void setAnalogLevelRaw(unsigned int chnIdx, int level);
+	void setAnalogLevel(unsigned int chnIdx, double v_level);
+	double getAnalogLevel(unsigned int chnIdx);
 
-	int getHysteresis(unsigned int chnIdx);
-	void setHysteresis(unsigned int chnIdx, int histeresis);
+	int getAnalogHysteresis(unsigned int chnIdx);
+	void setAnalogHysteresis(unsigned int chnIdx, int histeresis);
 
 	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx);
 	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
 
+	M2K_TRIGGER_CONDITION getExternalCondition(unsigned int chnIdx);
+	void setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
+
 	M2K_TRIGGER_CONDITION getDigitalCondition(unsigned int chnIdx);
 	void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
 
-	M2K_TRIGGER_MODE getTriggerMode(unsigned int chnIdx);
-	void setTriggerMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode);
+	M2K_TRIGGER_MODE getAnalogMode(unsigned int chnIdx);
+	void setAnalogMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode);
 
-	M2K_TRIGGER_SOURCE getSource();
-	void setSource(M2K_TRIGGER_SOURCE src);
+	libm2k::digital::DIO_TRIGGER_MODE getDigitalMode();
+	void setDigitalMode(libm2k::digital::DIO_TRIGGER_MODE mode);
 
-	int getSourceChannel();
-	void setSourceChannel(unsigned int chnIdx);
+	M2K_TRIGGER_SOURCE getAnalogSource();
+	void setAnalogSource(M2K_TRIGGER_SOURCE src);
 
-	int getDelay() const;
-	void setDelay(int delay);
+	int getAnalogSourceChannel();
+	void setAnalogSourceChannel(unsigned int chnIdx);
+
+	int getAnalogDelay() const;
+	void setAnalogDelay(int delay);
+
+	int getDigitalDelay() const;
+	void setDigitalDelay(int delay);
 
 	settings_uptr getCurrentHwSettings();
 	void setHwTriggerSettings(struct SETTINGS *settings);
 
-	void setStreamingFlag(bool);
-	bool getStreamingFlag();
+	void setAnalogStreamingFlag(bool);
+	bool getAnalogStreamingFlag();
+
+	void setDigitalStreamingFlag(bool);
+	bool getDigitalStreamingFlag();
 
 	static std::vector<std::string> getAvailableDigitalConditions();
 

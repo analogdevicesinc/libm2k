@@ -29,11 +29,11 @@ int main(int argc, char* argv[])
 	ain->setRange((ANALOG_IN_CHANNEL)1,PLUS_MINUS_25V);
 
 	// setup analog trigger
-	trig->setSource(CHANNEL_1);
+	trig->setAnalogSource(CHANNEL_1);
 	trig->setAnalogCondition(0,RISING_EDGE);
-	trig->setLevel(0, 0.5);
-	trig->setDelay(0);
-	trig->setTriggerMode(0,ANALOG);
+	trig->setAnalogLevel(0, 0.5);
+	trig->setAnalogDelay(0);
+	trig->setAnalogMode(0,ANALOG);
 
 	// setup analog output
 	aout->setSampleRate(0,750000);

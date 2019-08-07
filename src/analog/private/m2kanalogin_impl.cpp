@@ -91,7 +91,7 @@ public:
 			enableChannel(i, true);
 
 			ANALOG_IN_CHANNEL ch = static_cast<ANALOG_IN_CHANNEL>(i);
-			setTriggerMode(ch, ALWAYS);
+			m_trigger->setAnalogMode(ch, ALWAYS);
 
 			setRange(ch, PLUS_MINUS_25V);
 			m_adc_calib_offset.push_back(0);
@@ -134,16 +134,6 @@ public:
 		// TO DO: explain this formula
 		return ((voltage - offset) / (correctionGain * filterCompensation) *
 			(2048 * 1.3 * hw_gain) / 0.78);
-	}
-
-	void setStreamingFlag(bool en)
-	{
-		m_trigger->setStreamingFlag(en);
-	}
-
-	bool getStreamingFlag()
-	{
-		return m_trigger->getStreamingFlag();
 	}
 
 	double getCalibscale(unsigned int index)
@@ -205,8 +195,8 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: no such channel");
 		}
 
-		mode = m_trigger->getTriggerMode(ch);
-		m_trigger->setTriggerMode(ch, ALWAYS);
+		mode = m_trigger->getAnalogMode(ch);
+		m_trigger->setAnalogMode(ch, ALWAYS);
 
 		enabled = isChannelEnabled(ch);
 		enableChannel(ch, true);
@@ -214,7 +204,7 @@ public:
 		auto samps = getSamples(num_samples, false);
 		double avg = Utils::average(samps.at(ch).data(), num_samples);
 
-		m_trigger->setTriggerMode(ch, mode);
+		m_trigger->setAnalogMode(ch, mode);
 		enableChannel(ch, enabled);
 		return (short)avg;
 	}
@@ -229,14 +219,14 @@ public:
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			enabled.push_back(isChannelEnabled(i));
 			enableChannel(i, true);
-			modes.push_back(m_trigger->getTriggerMode(i));
-			m_trigger->setTriggerMode(i, ALWAYS);
+			modes.push_back(m_trigger->getAnalogMode(i));
+			m_trigger->setAnalogMode(i, ALWAYS);
 		}
 		auto samps = getSamples(num_samples, false);
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			short avg = (short)(Utils::average(samps.at(i).data(), num_samples));
 			avgs.push_back(avg);
-			m_trigger->setTriggerMode(i, modes.at(i));
+			m_trigger->setAnalogMode(i, modes.at(i));
 			enableChannel(i, enabled.at(i));
 		}
 		return avgs;
@@ -257,8 +247,8 @@ public:
 		if (ch >= getNbChannels()) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogIn: no such channel");
 		}
-		mode = m_trigger->getTriggerMode(ch);
-		m_trigger->setTriggerMode(ch, ALWAYS);
+		mode = m_trigger->getAnalogMode(ch);
+		m_trigger->setAnalogMode(ch, ALWAYS);
 
 		enabled = isChannelEnabled(ch);
 		enableChannel(ch, true);
@@ -266,7 +256,7 @@ public:
 		auto samps = getSamples(num_samples, true);
 		double avg = Utils::average(samps.at(ch).data(), num_samples);
 
-		m_trigger->setTriggerMode(ch, mode);
+		m_trigger->setAnalogMode(ch, mode);
 		enableChannel(ch, enabled);
 		return avg;
 	}
@@ -281,13 +271,13 @@ public:
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			enabled.push_back(isChannelEnabled(i));
 			enableChannel(i, true);
-			modes.push_back(m_trigger->getTriggerMode(i));
-			m_trigger->setTriggerMode(i, ALWAYS);
+			modes.push_back(m_trigger->getAnalogMode(i));
+			m_trigger->setAnalogMode(i, ALWAYS);
 		}
 		auto samps = getSamples(num_samples, true);
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			avgs.push_back(Utils::average(samps.at(i).data(), num_samples));
-			m_trigger->setTriggerMode(i, modes.at(i));
+			m_trigger->setAnalogMode(i, modes.at(i));
 			enableChannel(i, enabled.at(i));
 		}
 		return avgs;
@@ -305,46 +295,6 @@ public:
 	{
 		ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(ch);
 		return getScalingFactor(channel);
-	}
-
-	int getDelay()
-	{
-		return m_trigger->getDelay();
-	}
-
-	void setDelay(int delay)
-	{
-		m_trigger->setDelay(delay);
-	}
-
-	double getLevel(ANALOG_IN_CHANNEL chnIdx) const
-	{
-		return m_trigger->getLevel(chnIdx);
-	}
-
-	void setLevel(ANALOG_IN_CHANNEL chnIdx, double level)
-	{
-		m_trigger->setLevel(chnIdx, level);
-	}
-
-	int getLevelRaw(ANALOG_IN_CHANNEL chnIdx) const
-	{
-		return m_trigger->getLevelRaw(chnIdx);
-	}
-
-	void setLevelRaw(ANALOG_IN_CHANNEL chnIdx, int level)
-	{
-		m_trigger->setLevelRaw(chnIdx, level);
-	}
-
-	int getHysteresis(ANALOG_IN_CHANNEL chnIdx) const
-	{
-		return m_trigger->getHysteresis(chnIdx);
-	}
-
-	void setHysteresis(ANALOG_IN_CHANNEL chnIdx, int hysteresis)
-	{
-		m_trigger->setHysteresis(chnIdx, hysteresis);
 	}
 
 	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn)
@@ -385,66 +335,6 @@ public:
 	void setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
 	{
 		m_trigger->setDigitalCondition(chnIdx, cond);
-	}
-
-	M2K_TRIGGER_SOURCE getSource() const
-	{
-		M2K_TRIGGER_SOURCE res = CHANNEL_1;
-		__try {
-			res = m_trigger->getSource();
-		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger source error: "  +
-					string(e.what()));
-		}
-		return res;
-	}
-
-	void setSource(M2K_TRIGGER_SOURCE src)
-	{
-		m_trigger->setSource(src);
-	}
-
-	void setSourceChannel(ANALOG_IN_CHANNEL channel)
-	{
-		__try {
-			m_trigger->setSourceChannel(channel);
-		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn set trigger source error: "  +
-					string(e.what()));
-		}
-	}
-
-	ANALOG_IN_CHANNEL getSourceChannel()
-	{
-		int sourceChannel = m_trigger->getSourceChannel();
-		if (sourceChannel <= 0) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger source channel error: "  +
-					string(e.what()));
-		}
-		return static_cast<ANALOG_IN_CHANNEL>(sourceChannel);
-	}
-
-	void setTriggerMode(ANALOG_IN_CHANNEL channel,
-					 M2K_TRIGGER_MODE mode)
-	{
-		__try {
-			m_trigger->setTriggerMode(channel, mode);
-		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn set trigger mode error: "  +
-					string(e.what()));
-		}
-	}
-
-	M2K_TRIGGER_MODE getTriggerMode(ANALOG_IN_CHANNEL channel)
-	{
-		M2K_TRIGGER_MODE res = ALWAYS;
-		__try {
-			res = m_trigger->getTriggerMode(channel);
-		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger mode error: "  +
-					string(e.what()));
-		}
-		return res;
 	}
 
 	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)

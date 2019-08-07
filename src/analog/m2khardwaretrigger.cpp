@@ -43,6 +43,16 @@ void M2kHardwareTrigger::setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CON
 	m_pimpl->setAnalogCondition(chnIdx, cond);
 }
 
+M2K_TRIGGER_CONDITION M2kHardwareTrigger::getExternalCondition(unsigned int chnIdx)
+{
+	return m_pimpl->getExternalCondition(chnIdx);
+}
+
+void M2kHardwareTrigger::setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+{
+	m_pimpl->setExternalCondition(chnIdx, cond);
+}
+
 M2K_TRIGGER_CONDITION M2kHardwareTrigger::getDigitalCondition(unsigned int chnIdx)
 {
 	return m_pimpl->getDigitalCondition(chnIdx);
@@ -53,92 +63,122 @@ void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CO
 	m_pimpl->setDigitalCondition(chnIdx, cond);
 }
 
-int M2kHardwareTrigger::getLevelRaw(unsigned int chnIdx)
+M2K_TRIGGER_MODE M2kHardwareTrigger::getAnalogMode(unsigned int chnIdx)
 {
-	return m_pimpl->getLevelRaw(chnIdx);
+	return m_pimpl->getAnalogMode(chnIdx);
 }
 
-void M2kHardwareTrigger::setLevelRaw(unsigned int chnIdx, int level)
+void M2kHardwareTrigger::setAnalogMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode)
 {
-	m_pimpl->setLevelRaw(chnIdx, level);
+	m_pimpl->setAnalogMode(chnIdx, mode);
 }
 
-double M2kHardwareTrigger::getLevel(unsigned int chnIdx)
+DIO_TRIGGER_MODE M2kHardwareTrigger::getDigitalMode()
 {
-	return m_pimpl->getLevel(chnIdx);
+	return m_pimpl->getDigitalMode();
 }
 
-void M2kHardwareTrigger::setLevel(unsigned int chnIdx, double v_level)
+void M2kHardwareTrigger::setDigitalMode(DIO_TRIGGER_MODE mode)
 {
-	m_pimpl->setLevel(chnIdx, v_level);
+	m_pimpl->setDigitalMode(mode);
 }
 
-int M2kHardwareTrigger::getHysteresis(unsigned int chnIdx)
+int M2kHardwareTrigger::getAnalogLevelRaw(unsigned int chnIdx)
 {
-	return m_pimpl->getHysteresis(chnIdx);
+	return m_pimpl->getAnalogLevelRaw(chnIdx);
 }
 
-void M2kHardwareTrigger::setHysteresis(unsigned int chnIdx, int histeresis)
+void M2kHardwareTrigger::setAnalogLevelRaw(unsigned int chnIdx, int level)
 {
-	m_pimpl->setHysteresis(chnIdx, histeresis);
+	m_pimpl->setAnalogLevelRaw(chnIdx, level);
 }
 
-M2K_TRIGGER_MODE M2kHardwareTrigger::getTriggerMode(unsigned int chnIdx)
+double M2kHardwareTrigger::getAnalogLevel(unsigned int chnIdx)
 {
-	return m_pimpl->getTriggerMode(chnIdx);
+	return m_pimpl->getAnalogLevel(chnIdx);
 }
 
-void M2kHardwareTrigger::setTriggerMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode)
+void M2kHardwareTrigger::setAnalogLevel(unsigned int chnIdx, double v_level)
 {
-	m_pimpl->setTriggerMode(chnIdx, mode);
+	m_pimpl->setAnalogLevel(chnIdx, v_level);
 }
 
-M2K_TRIGGER_SOURCE M2kHardwareTrigger::getSource()
+int M2kHardwareTrigger::getAnalogHysteresis(unsigned int chnIdx)
 {
-	return m_pimpl->getSource();
+	return m_pimpl->getAnalogHysteresis(chnIdx);
 }
 
-void M2kHardwareTrigger::setSource(M2K_TRIGGER_SOURCE src)
+void M2kHardwareTrigger::setAnalogHysteresis(unsigned int chnIdx, int histeresis)
 {
-	m_pimpl->setSource(src);
+	m_pimpl->setAnalogHysteresis(chnIdx, histeresis);
+}
+
+M2K_TRIGGER_SOURCE M2kHardwareTrigger::getAnalogSource()
+{
+	return m_pimpl->getAnalogSource();
+}
+
+void M2kHardwareTrigger::setAnalogSource(M2K_TRIGGER_SOURCE src)
+{
+	m_pimpl->setAnalogSource(src);
 }
 
 /*
  * Convenience function to be used when willing to use the trigger for only one
  * channel at a time.
  */
-int M2kHardwareTrigger::getSourceChannel()
+int M2kHardwareTrigger::getAnalogSourceChannel()
 {
-	return m_pimpl->getSourceChannel();
+	return m_pimpl->getAnalogSourceChannel();
 }
 
 /*
  * Convenience function to be used when willing to enable the trigger for only
  * one channel at a time.
  */
-void M2kHardwareTrigger::setSourceChannel(unsigned int chnIdx)
+void M2kHardwareTrigger::setAnalogSourceChannel(unsigned int chnIdx)
 {
-	m_pimpl->setSourceChannel(chnIdx);
+	m_pimpl->setAnalogSourceChannel(chnIdx);
 }
 
-int M2kHardwareTrigger::getDelay() const
+int M2kHardwareTrigger::getAnalogDelay() const
 {
-	return m_pimpl->getDelay();
+	return m_pimpl->getAnalogDelay();
 }
 
-void M2kHardwareTrigger::setDelay(int delay)
+void M2kHardwareTrigger::setAnalogDelay(int delay)
 {
-	m_pimpl->setDelay(delay);
+	m_pimpl->setAnalogDelay(delay);
 }
 
-void M2kHardwareTrigger::setStreamingFlag(bool val)
+int M2kHardwareTrigger::getDigitalDelay() const
 {
-	m_pimpl->setStreamingFlag(val);
+	return m_pimpl->getDigitalDelay();
 }
 
-bool M2kHardwareTrigger::getStreamingFlag()
+void M2kHardwareTrigger::setDigitalDelay(int delay)
 {
-	return m_pimpl->getStreamingFlag();
+	m_pimpl->setDigitalDelay(delay);
+}
+
+void M2kHardwareTrigger::setAnalogStreamingFlag(bool val)
+{
+	m_pimpl->setAnalogStreamingFlag(val);
+}
+
+bool M2kHardwareTrigger::getAnalogStreamingFlag()
+{
+	return m_pimpl->getAnalogStreamingFlag();
+}
+
+void M2kHardwareTrigger::setDigitalStreamingFlag(bool val)
+{
+	m_pimpl->setDigitalStreamingFlag(val);
+}
+
+bool M2kHardwareTrigger::getDigitalStreamingFlag()
+{
+	return m_pimpl->getDigitalStreamingFlag();
 }
 
 std::vector<string> M2kHardwareTrigger::getAvailableDigitalConditions()

@@ -20,6 +20,7 @@
 #include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/m2kcalibration.hpp>
 #include <libm2k/analog/m2kanalogout.hpp>
+#include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -44,6 +45,7 @@ public:
 		m_ctx(ctx),
 		m_m2k_adc(analogIn),
 		m_m2k_dac(analogOut),
+		m_m2k_trigger(analogIn->getTrigger()),
 		m_adc_calibrated(false),
 		m_dac_calibrated(false),
 		m_initialized(false),
@@ -92,10 +94,10 @@ public:
 	{
 		// Make sure hardware triggers are disabled before calibrating
 		__try {
-			m_trigger0_mode = m_m2k_adc->getTriggerMode(ANALOG_IN_CHANNEL_1);
-			m_trigger1_mode = m_m2k_adc->getTriggerMode(ANALOG_IN_CHANNEL_2);
-			m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_1, ALWAYS);
-			m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_2, ALWAYS);
+			m_trigger0_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_1);
+			m_trigger1_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_2);
+			m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, ALWAYS);
+			m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, ALWAYS);
 
 			/* Save the previous values for sampling frequency and oversampling ratio */
 			adc_sampl_freq = m_m2k_adc->getSampleRate();
@@ -138,8 +140,8 @@ public:
 	void restoreAdcFromCalibMode()
 	{
 		__try {
-			m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_1, m_trigger0_mode);
-			m_m2k_adc->setTriggerMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
+			m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, m_trigger0_mode);
+			m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
 
 			/* Restore the previous values for sampling frequency and oversampling ratio */
 			m_m2k_adc->setSampleRate(adc_sampl_freq);
@@ -776,6 +778,7 @@ private:
 	struct iio_context *m_ctx;
 	M2kAnalogIn* m_m2k_adc;
 	M2kAnalogOut* m_m2k_dac;
+	M2kHardwareTrigger* m_m2k_trigger;
 
 	int m_adc_ch0_offset;
 	int m_adc_ch1_offset;
