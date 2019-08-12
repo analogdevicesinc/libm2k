@@ -48,6 +48,7 @@ public:
 		m_trigger(nullptr)
 	{
 		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
+		m_ad5625_dev = std::make_shared<DeviceGeneric>(ctx, "ad5625");
 		m_trigger = new M2kHardwareTrigger(ctx);
 
 		/* Filters applied while decimating affect the
@@ -63,10 +64,11 @@ public:
 
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			m_input_range.push_back(PLUS_MINUS_25V);
-			m_adc_calib_offset.push_back(0);
+			m_adc_calib_offset.push_back(2048);
 			m_adc_calib_gain.push_back(1);
-			m_adc_hw_offset.push_back(0);
-			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_offset.at(i));
+			m_adc_hw_vert_offset.push_back(0);
+			m_adc_hw_vert_offset_raw.push_back(2048);
+			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
 		}
 
 		if (sync) {
@@ -94,10 +96,11 @@ public:
 			m_trigger->setAnalogMode(ch, ALWAYS);
 
 			setRange(ch, PLUS_MINUS_25V);
-			m_adc_calib_offset.push_back(0);
-			m_adc_calib_gain.push_back(1);
-			m_adc_hw_offset.push_back(0);
-			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_offset.at(i));
+			m_adc_calib_offset.at(i) = 2048;
+			m_adc_calib_gain.at(i) = 1;
+			m_adc_hw_vert_offset.at(i) = 0;
+			m_adc_hw_vert_offset_raw.at(i) = 2048;
+			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
 		}
 	}
 
@@ -108,8 +111,9 @@ public:
 			ANALOG_IN_CHANNEL ch = static_cast<ANALOG_IN_CHANNEL>(i);
 			auto range = getRangeDevice(ch);
 			m_input_range[i] = range;
-//			m_adc_hw_offset.push_back(0);
-			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_offset.at(i));
+			getVerticalOffset(ch);
+
+			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
 			m_samplerate = getSampleRate();
 		}
 	}
@@ -117,7 +121,14 @@ public:
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
 	{
 		m_adc_calib_gain[channel] = gain;
-		m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_offset.at(channel));
+		m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
+	}
+
+	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int raw_offset)
+	{
+		m_adc_calib_offset[channel] = raw_offset;
+		m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
+		getVerticalOffset(channel);
 	}
 
 	double convertRawToVolts(int sample, double correctionGain,
@@ -173,7 +184,7 @@ public:
 						 m_adc_calib_gain.at(channel),
 						 getValueForRange(m_input_range.at(channel)),
 						 getFilterCompensation(m_samplerate),
-						 m_adc_hw_offset.at(channel));
+						 -m_adc_hw_vert_offset.at(channel));
 		} else {
 			return (double)sample;
 		}
@@ -349,7 +360,7 @@ public:
 		}
 
 		m_m2k_fabric->setStringValue(channel, "gain", std::string(str_gain_mode));
-		m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_offset.at(channel));
+		m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
 	}
 
 	void setRange(ANALOG_IN_CHANNEL channel, double min, double max)
@@ -394,6 +405,37 @@ public:
 		return ranges;
 	}
 
+
+	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset)
+	{
+		double gain = 1.3;
+		double vref = 1.2;
+		int channel_number = 2 + channel;
+		double hw_range_gain = getValueForRange(m_input_range.at(channel));
+		int raw_vert_offset = (int) (vertOffset * (1 << 12) * hw_range_gain *
+				gain / 2.693 / vref) + m_adc_calib_offset.at(channel);
+
+		m_ad5625_dev->setLongValue(channel_number, raw_vert_offset, "raw", true);
+		m_adc_hw_vert_offset_raw.at(channel) = raw_vert_offset;
+		m_adc_hw_vert_offset.at(channel) = vertOffset;
+
+		m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
+	}
+
+	double getVerticalOffset(ANALOG_IN_CHANNEL channel)
+	{
+		double gain = 1.3;
+		double vref = 1.2;
+		int channel_number = 2 + channel;
+		double hw_range_gain = getValueForRange(m_input_range.at(channel));
+		m_adc_hw_vert_offset_raw.at(channel) = m_ad5625_dev->getLongValue(channel_number, "raw", true);
+
+		double vert_offset = (m_adc_hw_vert_offset_raw.at(channel) - m_adc_calib_offset.at(channel)) *
+				2.693 * vref / ((1 << 12) * hw_range_gain * gain);
+		m_adc_hw_vert_offset.at(channel) = vert_offset;
+		return vert_offset;
+	}
+
 	double getOversamplingRatio()
 	{
 		return getDoubleValue("oversampling_ratio");
@@ -428,15 +470,15 @@ public:
 	double setSampleRate(double samplerate)
 	{
 		return setDoubleValue(samplerate, "sampling_frequency");
-		m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_offset.at(0));
-		m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_offset.at(1));
+		m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_vert_offset.at(0));
+		m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_vert_offset.at(1));
 	}
 
 	double setSampleRate(unsigned int chn_idx, double samplerate)
 	{
 		return setDoubleValue(chn_idx, samplerate, "sampling_frequency");
-		m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_offset.at(0));
-		m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_offset.at(1));
+		m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_vert_offset.at(0));
+		m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_vert_offset.at(1));
 	}
 
 	double getFilterCompensation(double samplerate)
@@ -456,6 +498,7 @@ public:
 	}
 
 private:
+	std::shared_ptr<DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 	bool m_need_processing;
 
@@ -465,6 +508,7 @@ private:
 
 	std::vector<double> m_adc_calib_gain;
 	std::vector<double> m_adc_calib_offset;
-	std::vector<double> m_adc_hw_offset;
+	std::vector<double> m_adc_hw_vert_offset_raw;
+	std::vector<double> m_adc_hw_vert_offset;
 	std::map<double, double> m_filter_compensation_table;
 };

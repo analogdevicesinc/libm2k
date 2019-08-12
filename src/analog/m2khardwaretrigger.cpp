@@ -186,9 +186,9 @@ std::vector<string> M2kHardwareTrigger::getAvailableDigitalConditions()
 	return M2kHardwareTriggerImpl::getAvailableDigitalConditions();
 }
 
-void M2kHardwareTrigger::setCalibParameters(unsigned int chnIdx, double scaling, double offset)
+void M2kHardwareTrigger::setCalibParameters(unsigned int chnIdx, double scaling, double vert_offset)
 {
-	m_pimpl->setCalibParameters(chnIdx, scaling, offset);
+	m_pimpl->setCalibParameters(chnIdx, scaling, vert_offset);
 }
 
 settings_uptr M2kHardwareTrigger::getCurrentHwSettings()

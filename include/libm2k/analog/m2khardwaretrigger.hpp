@@ -82,7 +82,7 @@ public:
 
 	static std::vector<std::string> getAvailableDigitalConditions();
 
-	void setCalibParameters(unsigned int chnIdx, double scaling, double offset);
+	void setCalibParameters(unsigned int chnIdx, double scaling, double vert_offset);
 private:
 	class M2kHardwareTriggerImpl;
 	std::unique_ptr<M2kHardwareTriggerImpl> m_pimpl;

@@ -49,6 +49,11 @@ void M2kAnalogIn::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
 	m_pimpl->setAdcCalibGain(channel, gain);
 }
 
+void M2kAnalogIn::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset)
+{
+	m_pimpl->setAdcCalibOffset(channel, calib_offset);
+}
+
 double M2kAnalogIn::convertRawToVolts(int sample, double correctionGain,
 		double hw_gain, double filterCompensation, double offset)
 {
@@ -186,6 +191,16 @@ std::pair<double, double> M2kAnalogIn::getRangeLimits(M2K_RANGE range)
 std::vector<M2K_RANGE> M2kAnalogIn::getAvailableRanges()
 {
 	return m_pimpl->getAvailableRanges();
+}
+
+void M2kAnalogIn::setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset)
+{
+	m_pimpl->setVerticalOffset(channel, vertOffset);
+}
+
+double M2kAnalogIn::getVerticalOffset(ANALOG_IN_CHANNEL channel)
+{
+	return m_pimpl->getVerticalOffset(channel);
 }
 
 double M2kAnalogIn::getOversamplingRatio()

@@ -329,6 +329,8 @@ public:
 
 	void updateAdcCorrections()
 	{
+		m_m2k_adc->setAdcCalibOffset(ANALOG_IN_CHANNEL_1, m_adc_ch0_offset);
+		m_m2k_adc->setAdcCalibOffset(ANALOG_IN_CHANNEL_2, m_adc_ch1_offset);
 		m_ad5625_dev->setDoubleValue(2, m_adc_ch0_offset, "raw", true);
 		m_ad5625_dev->setDoubleValue(3, m_adc_ch1_offset, "raw", true);
 

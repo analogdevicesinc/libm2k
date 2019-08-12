@@ -58,6 +58,9 @@ public:
 	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE);
 	std::vector<libm2k::analog::M2K_RANGE>  getAvailableRanges();
 
+	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
+	double getVerticalOffset(ANALOG_IN_CHANNEL channel);
+
 	double getOversamplingRatio();
 	double getOversamplingRatio(unsigned int);
 	double setOversamplingRatio(double oversampling);
@@ -74,6 +77,7 @@ public:
 	double getCalibscale(unsigned int index);
 
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
+	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset);
 	double getFilterCompensation(double samplerate);
 	double getValueForRange(M2K_RANGE);
 
