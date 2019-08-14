@@ -20,6 +20,8 @@ namespace std {
 	%template(VectorStr) vector<string>;
 	%template(VectorVectorD) vector< vector<double> >;
 	%template(VectorVectorS) vector< vector<int> >;
+	%template(PairDD) std::pair<double, double>;
+	%template(VectorPairDD) std::vector<std::pair<std::string, std::pair <double, double>>>;
 }
 
 %{
@@ -56,6 +58,8 @@ namespace std {
 	typedef std::vector<libm2k::analog::DMM*> DMMs;
 	typedef std::vector<libm2k::analog::M2kAnalogIn*> M2kAnalogIns;
 	typedef std::vector<libm2k::analog::M2kAnalogOut*> M2kAnalogOuts;
+	typedef std::vector<libm2k::analog::M2K_TRIGGER_CONDITION> M2kConditions;
+	typedef std::vector<libm2k::analog::M2K_TRIGGER_MODE> M2kModes;
 %}
 
 %exception {
@@ -99,5 +103,5 @@ namespace std {
 %template(DMMs) std::vector<libm2k::analog::DMM*>;
 %template(M2kAnalogIns) std::vector<libm2k::analog::M2kAnalogIn*>;
 %template(M2kAnalogOuts) std::vector<libm2k::analog::M2kAnalogOut*>;
-
-
+%template(M2kConditions) std::vector<libm2k::analog::M2K_TRIGGER_CONDITION>;
+%template(M2kModes) std::vector<libm2k::analog::M2K_TRIGGER_MODE>;
