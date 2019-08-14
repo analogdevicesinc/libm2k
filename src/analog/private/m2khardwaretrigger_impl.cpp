@@ -163,7 +163,7 @@ public:
 
 	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -180,7 +180,7 @@ public:
 
 	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -193,7 +193,7 @@ public:
 
 	M2K_TRIGGER_CONDITION getExternalCondition(unsigned int chnIdx)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 		std::string buf = m_digital_channels[chnIdx]->getStringValue("trigger");
@@ -209,7 +209,7 @@ public:
 
 	void setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -254,7 +254,7 @@ public:
 
 	int getAnalogLevelRaw(unsigned int chnIdx)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -265,7 +265,7 @@ public:
 
 	void setAnalogLevelRaw(unsigned int chnIdx, int level)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -274,7 +274,7 @@ public:
 
 	int getAnalogLevel(unsigned int chnIdx)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -285,7 +285,7 @@ public:
 
 	void setAnalogLevel(unsigned int chnIdx, double v_level)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -295,7 +295,7 @@ public:
 
 	int getAnalogHysteresis(unsigned int chnIdx)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -305,7 +305,7 @@ public:
 
 	void setAnalogHysteresis(unsigned int chnIdx, int histeresis)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -314,7 +314,7 @@ public:
 
 	M2K_TRIGGER_MODE getAnalogMode(unsigned int chnIdx)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -330,7 +330,7 @@ public:
 
 	void setAnalogMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
@@ -401,7 +401,7 @@ public:
  */
 	void setAnalogSourceChannel(unsigned int chnIdx)
 	{
-		if (chnIdx >= getNbChannels()) {
+		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Source channel index is out of range");
 		}
 
@@ -469,7 +469,7 @@ public:
 	{
 		settings_uptr settings(new SETTINGS);
 
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
+		for (unsigned int i = 0; i < m_num_channels; i++) {
 			settings->analog_condition.push_back(getAnalogCondition(i));
 			settings->digital_condition.push_back(getExternalCondition(i));
 			settings->level.push_back(getAnalogLevel(i));
@@ -484,7 +484,7 @@ public:
 
 	void setHwTriggerSettings(struct SETTINGS *settings)
 	{
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
+		for (unsigned int i = 0; i < m_num_channels; i++) {
 			setAnalogCondition(i, settings->analog_condition[i]);
 			setExternalCondition(i, settings->digital_condition[i]);
 			setAnalogLevel(i, settings->level[i]);
