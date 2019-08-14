@@ -188,7 +188,7 @@ std::pair<double, double> M2kAnalogIn::getRangeLimits(M2K_RANGE range)
 	return m_pimpl->getRangeLimits(range);
 }
 
-std::vector<M2K_RANGE> M2kAnalogIn::getAvailableRanges()
+std::vector<std::pair<std::string, std::pair<double, double>>> M2kAnalogIn::getAvailableRanges()
 {
 	return m_pimpl->getAvailableRanges();
 }

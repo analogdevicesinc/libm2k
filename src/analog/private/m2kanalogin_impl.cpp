@@ -399,9 +399,18 @@ public:
 		}
 	}
 
-	std::vector<M2K_RANGE> getAvailableRanges()
+	std::vector<std::pair<std::string, std::pair<double, double>>> getAvailableRanges()
 	{
-		std::vector<M2K_RANGE> ranges = {};
+		std::vector<std::pair<std::string, std::pair <double, double>>> ranges;
+		std::pair<std::string, std::pair <double, double>> p;
+		p.first = "PLUS_MINUS_25V";
+		p.second = getRangeLimits(PLUS_MINUS_25V);
+		ranges.push_back(p);
+
+		p.first = "PLUS_MINUS_2_5V";
+		p.second = getRangeLimits(PLUS_MINUS_2_5V);
+		ranges.push_back(p);
+
 		return ranges;
 	}
 

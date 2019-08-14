@@ -56,7 +56,7 @@ public:
 	void setRange(ANALOG_IN_CHANNEL channel, double min, double max);
 	libm2k::analog::M2K_RANGE getRange(libm2k::analog::ANALOG_IN_CHANNEL channel);
 	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE);
-	std::vector<libm2k::analog::M2K_RANGE>  getAvailableRanges();
+	std::vector<std::pair<std::string, std::pair<double, double>>> getAvailableRanges();
 
 	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
 	double getVerticalOffset(ANALOG_IN_CHANNEL channel);
