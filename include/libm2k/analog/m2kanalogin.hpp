@@ -90,9 +90,6 @@ public:
 			      double filterCompensation = 1,
 			      double offset = 0);
 
-	void setStreamingFlag(bool);
-	bool getStreamingFlag();
-
 	unsigned int getNbChannels();
 	std::string getName();
 	void enableChannel(unsigned int chnIdx, bool enable);
