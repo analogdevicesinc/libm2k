@@ -465,9 +465,9 @@ public:
 			"none"};
 	}
 
-	settings_uptr getCurrentHwSettings()
+	struct SETTINGS* getCurrentHwSettings()
 	{
-		settings_uptr settings(new SETTINGS);
+		SETTINGS* settings = new SETTINGS;
 
 		for (unsigned int i = 0; i < m_num_channels; i++) {
 			settings->analog_condition.push_back(getAnalogCondition(i));

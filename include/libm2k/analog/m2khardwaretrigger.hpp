@@ -71,7 +71,7 @@ public:
 	int getDigitalDelay() const;
 	void setDigitalDelay(int delay);
 
-	settings_uptr getCurrentHwSettings();
+	struct SETTINGS *getCurrentHwSettings();
 	void setHwTriggerSettings(struct SETTINGS *settings);
 
 	void setAnalogStreamingFlag(bool);

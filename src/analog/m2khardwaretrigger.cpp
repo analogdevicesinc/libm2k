@@ -191,7 +191,7 @@ void M2kHardwareTrigger::setCalibParameters(unsigned int chnIdx, double scaling,
 	m_pimpl->setCalibParameters(chnIdx, scaling, vert_offset);
 }
 
-settings_uptr M2kHardwareTrigger::getCurrentHwSettings()
+struct SETTINGS* M2kHardwareTrigger::getCurrentHwSettings()
 {
 	return m_pimpl->getCurrentHwSettings();
 }

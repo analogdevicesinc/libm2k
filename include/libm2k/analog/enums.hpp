@@ -82,8 +82,6 @@ namespace analog {
 		M2K_TRIGGER_SOURCE trigger_source;
 		int delay;
 	};
-
-	typedef std::shared_ptr<SETTINGS> settings_uptr;
 }
 }
 
