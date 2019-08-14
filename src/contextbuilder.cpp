@@ -111,7 +111,6 @@ Context* ContextBuilder::deviceOpen(const char *uri)
 	}
 
 	DeviceTypes dev_type = ContextBuilder::identifyDevice(ctx);
-	std::cout << m_dev_name_map.at(dev_type) << std::endl;
 
 	Context* dev = buildDevice(dev_type, std::string(uri), ctx, true);
 	s_connectedDevices.push_back(dev);
