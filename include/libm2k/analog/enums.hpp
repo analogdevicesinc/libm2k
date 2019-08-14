@@ -46,10 +46,10 @@ namespace analog {
 	enum M2K_TRIGGER_CONDITION {
 		RISING_EDGE = 0,
 		FALLING_EDGE = 1,
-		LOW_LEVEL = 3,
-		HIGH_LEVEL = 4,
-		ANY_EDGE = 5,
-		NO_TRIGGER = 6,
+		LOW_LEVEL = 2,
+		HIGH_LEVEL = 3,
+		ANY_EDGE = 4,
+		NO_TRIGGER = 5,
 	};
 
 	enum M2K_TRIGGER_MODE {
