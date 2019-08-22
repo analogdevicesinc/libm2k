@@ -127,6 +127,25 @@ public:
 		return m_buffer->getSamples(nb_samples, process);
 	}
 
+	double *getSamplesInterleaved(unsigned int nb_samples,
+					std::function<double(int16_t, unsigned int)> process)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		return m_buffer->getSamplesInterleaved(nb_samples, process);
+	}
+
+	short *getSamplesRawInterleaved(unsigned int nb_samples)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		return m_buffer->getSamplesRawInterleaved(nb_samples);
+	}
+
 private:
 	struct iio_context *m_context;
 	struct iio_device *m_dev;

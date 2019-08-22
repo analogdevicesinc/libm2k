@@ -44,6 +44,9 @@ public:
 	virtual std::vector<unsigned short> getSamples(unsigned int nb_samples);
 	virtual std::vector<std::vector<double> > getSamples(unsigned int nb_samples,
 					std::function<double (int16_t, unsigned int)> process);
+	virtual double *getSamplesInterleaved(unsigned int nb_samples,
+					std::function<double (int16_t, unsigned int)> process);
+	virtual short *getSamplesRawInterleaved(unsigned int nb_samples);
 
 private:
 	class DeviceInImpl;

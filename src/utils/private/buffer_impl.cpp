@@ -233,8 +233,8 @@ public:
 		return m_data_short;
 	}
 
-	std::vector<std::vector<double>> getSamples(int nb_samples,
-					std::function<double(int16_t, unsigned int)> process)
+
+	short* getSamplesRawInterleaved(int nb_samples)
 	{
 		bool anyChannelEnabled = false;
 		std::vector<bool> channels_enabled;
@@ -242,17 +242,10 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Device not found, so no buffer was created");
 		}
 
-		m_data.clear();
-
 		for (auto chn : m_channel_list) {
 			bool en  = chn->isEnabled();
 			channels_enabled.push_back(en);
 			anyChannelEnabled = en ? true : anyChannelEnabled;
-			std::vector<double> data {};
-			for (int j = 0; j < nb_samples; j++) {
-				data.push_back(0);
-			}
-			m_data.push_back(data);
 		}
 
 		if (!anyChannelEnabled) {
@@ -281,22 +274,70 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		}
 
-		ptrdiff_t p_inc = iio_buffer_step(m_buffer);
-		uintptr_t p_dat;
-		uintptr_t p_end = (uintptr_t)iio_buffer_end(m_buffer);
+		short* p_dat = (short*) m_channel_list.at(0)->getFirst(m_buffer);
+
+		for (unsigned int i = 0; i < m_channel_list.size(); i++) {
+			m_channel_list.at(i)->enableChannel(channels_enabled.at(i));
+		}
+		return p_dat;
+	}
+
+	double* getSamplesInterleaved(int nb_samples,
+				      std::function<double(int16_t, unsigned int)> process)
+	{
+		short* data_p = getSamplesRawInterleaved(nb_samples);
+
+		std::vector<bool> channels_enabled;
+
+		for (auto chn : m_channel_list) {
+			bool en  = chn->isEnabled();
+			channels_enabled.push_back(en);
+		}
+
+		unsigned int nb_channels = m_channel_list.size();
+		double *data_p_d = new double[nb_samples * channels_enabled.size()];
 		unsigned int i;
-		for (i = 0, p_dat = m_channel_list.at(0)->getFirst(m_buffer);
-				p_dat < p_end; p_dat += p_inc, i++)
-		{
-			for (unsigned int ch = 0; ch < m_data.size(); ch++) {
+		unsigned int i_d = 0;
+
+		for (i = 0; i < nb_samples; i++) {
+			for (unsigned int ch = 0; ch < nb_channels; ch++) {
 				if (channels_enabled.at(ch)) {
-					m_data[ch][i] = process(((int16_t*)p_dat)[ch], ch);
+					data_p_d[i_d] = process(data_p[i * nb_channels + ch], ch);
+					i_d++;
 				}
 			}
 		}
 
-		for (unsigned int i = 0; i < m_channel_list.size(); i++) {
-			m_channel_list.at(i)->enableChannel(channels_enabled.at(i));
+		return data_p_d;
+	}
+
+	std::vector<std::vector<double>> getSamples(int nb_samples,
+					std::function<double(int16_t, unsigned int)> process)
+	{
+		short* data_p = getSamplesRawInterleaved(nb_samples);
+
+		std::vector<bool> channels_enabled;
+		m_data.clear();
+
+		for (auto chn : m_channel_list) {
+			bool en  = chn->isEnabled();
+			channels_enabled.push_back(en);
+			std::vector<double> data {};
+			for (int j = 0; j < nb_samples; j++) {
+				data.push_back(0);
+			}
+			m_data.push_back(data);
+		}
+
+		unsigned int i;
+		unsigned int nb_channels = m_channel_list.size();
+
+		for (i = 0; i < nb_samples; i++) {
+			for (unsigned int ch = 0; ch < nb_channels; ch++) {
+				if (channels_enabled.at(ch)) {
+					m_data[ch][i] = process(data_p[i * nb_channels + ch], ch);
+				}
+			}
 		}
 
 		return m_data;
