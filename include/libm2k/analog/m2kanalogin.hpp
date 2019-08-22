@@ -39,6 +39,9 @@ public:
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
 	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
 
+	double* getSamplesInterleaved(unsigned int nb_samples);
+	short* getSamplesRawInterleaved(unsigned int nb_samples);
+
 	double processSample(int16_t sample, unsigned int channel);
 
 	short getVoltageRaw(unsigned int ch);
@@ -49,6 +52,9 @@ public:
 
 	std::vector<short> getVoltageRaw();
 	std::vector<double> getVoltage();
+
+	short *getVoltageRawP();
+	double *getVoltageP();
 
 	double getScalingFactor(libm2k::analog::ANALOG_IN_CHANNEL ch);
 

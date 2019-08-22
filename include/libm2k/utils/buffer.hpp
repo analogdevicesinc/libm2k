@@ -46,6 +46,9 @@ public:
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
+	double *getSamplesInterleaved(unsigned int nb_samples,
+					std::function<double(int16_t, unsigned int)> process);
+	short *getSamplesRawInterleaved(unsigned int nb_samples);
 	void stop();
 	void setCyclic(bool enable);
 private:

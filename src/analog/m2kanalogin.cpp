@@ -123,6 +123,16 @@ std::vector<std::vector<double> > M2kAnalogIn::getSamplesRaw(unsigned int nb_sam
 	return m_pimpl->getSamples(nb_samples, false);
 }
 
+double *M2kAnalogIn::getSamplesInterleaved(unsigned int nb_samples)
+{
+	return m_pimpl->getSamplesInterleaved(nb_samples, true);
+}
+
+short *M2kAnalogIn::getSamplesRawInterleaved(unsigned int nb_samples)
+{
+	return m_pimpl->getSamplesRawInterleaved(nb_samples);
+}
+
 double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
 {
 	return m_pimpl->processSample(sample, channel);
@@ -156,6 +166,16 @@ double M2kAnalogIn::getVoltage(ANALOG_IN_CHANNEL ch)
 std::vector<double> M2kAnalogIn::getVoltage()
 {
 	return m_pimpl->getVoltage();
+}
+
+short *M2kAnalogIn::getVoltageRawP()
+{
+	return m_pimpl->getVoltageRawP();
+}
+
+double *M2kAnalogIn::getVoltageP()
+{
+	return m_pimpl->getVoltageP();
 }
 
 double M2kAnalogIn::getScalingFactor(ANALOG_IN_CHANNEL ch)

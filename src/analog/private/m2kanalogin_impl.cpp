@@ -177,6 +177,27 @@ public:
 		return samps;
 	}
 
+	double *getSamplesInterleaved(unsigned int nb_samples,
+						bool processed = false)
+	{
+		if (processed) {
+			m_need_processing = true;
+		}
+		m_samplerate = getSampleRate();
+		auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
+		auto samps = DeviceIn::getSamplesInterleaved(nb_samples, fp);
+		if (processed) {
+			m_need_processing = false;
+		}
+		return samps;
+	}
+
+	short *getSamplesRawInterleaved(unsigned int nb_samples)
+	{
+		m_samplerate = getSampleRate();
+		return DeviceIn::getSamplesRawInterleaved(nb_samples);
+	}
+
 	double processSample(int16_t sample, unsigned int channel)
 	{
 		if (m_need_processing) {
@@ -243,6 +264,12 @@ public:
 		return avgs;
 	}
 
+	short *getVoltageRawP()
+	{
+		std::vector<short> avgs = getVoltageRaw();
+		return avgs.data();
+	}
+
 	double getVoltage(unsigned int ch)
 	{
 		ANALOG_IN_CHANNEL chn = static_cast<ANALOG_IN_CHANNEL>(ch);
@@ -292,6 +319,12 @@ public:
 			enableChannel(i, enabled.at(i));
 		}
 		return avgs;
+	}
+
+	double *getVoltageP()
+	{
+		std::vector<double> avgs = getVoltage();
+		return avgs.data();
 	}
 
 	double getScalingFactor(ANALOG_IN_CHANNEL ch)
