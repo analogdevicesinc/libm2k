@@ -46,8 +46,12 @@ public:
 	void setCyclic(unsigned int chn, bool en);
 	bool getCyclic(unsigned int chn);
 
-	void push(std::vector<double> const &data, unsigned int chn_idx = 0);
-	void push(std::vector<short> const &data, unsigned int chn_idx = 0);
+	void push(unsigned int chn_idx, std::vector<double> const &data);
+	void pushRaw(unsigned int chn_idx, std::vector<short> const &data);
+
+	void push(unsigned int chn_idx, double *data, unsigned int nb_samples);
+	void pushRaw(unsigned int chn_idx, short *data, unsigned int nb_samples);
+
 	void stop();
 
 	std::string getName();

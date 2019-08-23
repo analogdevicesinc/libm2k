@@ -72,14 +72,24 @@ bool GenericAnalogOut::getCyclic(unsigned int chn)
 	return m_pimpl->getCyclic(chn);
 }
 
-void GenericAnalogOut::push(std::vector<short> const &data, unsigned int chn_idx)
+void GenericAnalogOut::pushRaw(unsigned int chn_idx, std::vector<short> const &data)
 {
 	m_pimpl->push(data, chn_idx);
 }
 
-void GenericAnalogOut::push(std::vector<double> const &data, unsigned int chn_idx)
+void GenericAnalogOut::push(unsigned int chn_idx, std::vector<double> const &data)
 {
 	m_pimpl->push(data, chn_idx);
+}
+
+void GenericAnalogOut::push(unsigned int chn_idx, double *data, unsigned int nb_samples)
+{
+	m_pimpl->push(data, chn_idx, nb_samples);
+}
+
+void GenericAnalogOut::pushRaw(unsigned int chn_idx, short *data, unsigned int nb_samples)
+{
+	m_pimpl->push(data, chn_idx, nb_samples);
 }
 
 void GenericAnalogOut::stop()

@@ -44,6 +44,9 @@ public:
 	void write(struct iio_buffer* buffer, std::vector<short> const &data);
 	void write(struct iio_buffer* buffer, std::vector<unsigned short> const &data);
 	void write(struct iio_buffer* buffer, std::vector<double> const &data);
+	void write(struct iio_buffer* buffer, double *data, unsigned int nb_samples);
+	void write(struct iio_buffer* buffer, short *data, unsigned int nb_samples);
+
 	void convert(int16_t *avg, int16_t *src);
 	void convert(double *avg, int16_t *src);
 

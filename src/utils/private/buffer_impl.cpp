@@ -193,6 +193,64 @@ public:
 		}
 	}
 
+	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+	{
+		if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+		}
+
+		destroy();
+
+		/* If the data vector is empty, then it means we want
+		 * to remove what was pushed earlier to the device, so
+		 * we destroy the buffer */
+		if (nb_samples == 0) {
+			return;
+		}
+
+		m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
+
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+		}
+
+		if (channel < m_channel_list.size() ) {
+			m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
+			iio_buffer_push(m_buffer);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+		}
+	}
+
+	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+	{
+		if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+		}
+
+		destroy();
+
+		/* If the data vector is empty, then it means we want
+		 * to remove what was pushed earlier to the device, so
+		 * we destroy the buffer */
+		if (nb_samples == 0) {
+			return;
+		}
+
+		m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
+
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+		}
+
+		if (channel < m_channel_list.size() ) {
+			m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
+			iio_buffer_push(m_buffer);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+		}
+	}
+
 	std::vector<unsigned short> getSamples(int nb_samples)
 	{
 		if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
