@@ -35,6 +35,9 @@ public:
 	virtual std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
 	virtual std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
 
+	double* getSamplesInterleaved(unsigned int nb_samples);
+	short* getSamplesRawInterleaved(unsigned int nb_samples);
+
 	double getSampleRate();
 	double getSampleRate(unsigned int);
 	double setSampleRate(double sampleRate);

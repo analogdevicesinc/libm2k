@@ -37,6 +37,16 @@ std::vector<std::vector<double> > GenericAnalogIn::getSamplesRaw(unsigned int nb
 	return m_pimpl->getSamples(nb_samples, false);
 }
 
+double *GenericAnalogIn::getSamplesInterleaved(unsigned int nb_samples)
+{
+	return m_pimpl->getSamplesInterleaved(nb_samples, true);
+}
+
+short *GenericAnalogIn::getSamplesRawInterleaved(unsigned int nb_samples)
+{
+	return m_pimpl->getSamplesRawInterleaved(nb_samples);
+}
+
 std::vector<std::vector<double>> GenericAnalogIn::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples, true);
