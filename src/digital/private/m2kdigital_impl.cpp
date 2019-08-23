@@ -77,6 +77,10 @@ public:
 
 	~M2kDigitalImpl()
 	{
+		if (m_trigger) {
+			delete m_trigger;
+			m_trigger = NULL;
+		}
 	}
 
 	void syncDevice()
