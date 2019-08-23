@@ -61,6 +61,16 @@ void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cy
 	m_pimpl->push(data, channel, cyclic);
 }
 
+void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+{
+	m_pimpl->push(data, channel, nb_samples, cyclic);
+}
+
+void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+{
+	m_pimpl->push(data, channel, nb_samples, cyclic);
+}
+
 std::vector<unsigned short> Buffer::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples);

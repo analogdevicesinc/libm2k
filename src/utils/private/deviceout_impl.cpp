@@ -136,6 +136,24 @@ public:
 		m_buffer->push(data, channel, cyclic);
 	}
 
+	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		m_buffer->push(data, channel, nb_samples, cyclic);
+	}
+
+	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		m_buffer->push(data, channel, nb_samples, cyclic);
+	}
+
 	void stop()
 	{
 		if (m_buffer) {

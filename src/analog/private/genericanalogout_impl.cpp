@@ -101,6 +101,16 @@ public:
 		DeviceOut::push(data, chn_idx, getCyclic(chn_idx));
 	}
 
+	void push(short *data, unsigned int chn_idx, unsigned int nb_samples)
+	{
+		DeviceOut::push(data, chn_idx, nb_samples, getCyclic(chn_idx));
+	}
+
+	void push(double *data, unsigned int chn_idx, unsigned int nb_samples)
+	{
+		DeviceOut::push(data, chn_idx, nb_samples, getCyclic(chn_idx));
+	}
+
 	void stop()
 	{
 		DeviceOut::stop();

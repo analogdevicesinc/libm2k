@@ -46,6 +46,8 @@ public:
 	virtual void push(std::vector<unsigned short> const &data, unsigned int channel,
 		bool cyclic = true, bool multiplex = false);
 	virtual void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true);
+	virtual void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
+	virtual void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
 	virtual void stop();
 
 private:
