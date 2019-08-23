@@ -124,9 +124,9 @@ void M2kAnalogOut::setDacCalibVlsb(unsigned int chn_idx, double vlsb)
 	m_pimpl->setDacCalibVlsb(chn_idx, vlsb);
 }
 
-void M2kAnalogOut::push(unsigned int chnIdx, std::vector<short> const &data)
+void M2kAnalogOut::pushRaw(unsigned int chnIdx, std::vector<short> const &data)
 {
-	m_pimpl->push(data, chnIdx);
+	m_pimpl->pushRaw(data, chnIdx);
 }
 
 void M2kAnalogOut::push(unsigned int chnIdx, std::vector<double> const &data)
@@ -134,9 +134,29 @@ void M2kAnalogOut::push(unsigned int chnIdx, std::vector<double> const &data)
 	m_pimpl->push(data, chnIdx);
 }
 
-void M2kAnalogOut::push(std::vector<std::vector<short>> const &data)
+void M2kAnalogOut::pushRaw(std::vector<std::vector<short>> const &data)
 {
-	m_pimpl->push(data);
+	m_pimpl->pushRaw(data);
+}
+
+void M2kAnalogOut::push(unsigned int chnIdx, double *data, unsigned int nb_samples)
+{
+	m_pimpl->push(chnIdx, data, nb_samples);
+}
+
+void M2kAnalogOut::pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples)
+{
+	m_pimpl->pushRaw(chnIdx, data, nb_samples);
+}
+
+void M2kAnalogOut::pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples_per_channel)
+{
+	m_pimpl->push(data, nb_channels, nb_samples_per_channel);
+}
+
+void M2kAnalogOut::pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples_per_channel)
+{
+	m_pimpl->pushRaw(data, nb_channels, nb_samples_per_channel);
 }
 
 void M2kAnalogOut::push(std::vector<std::vector<double>> const &data)

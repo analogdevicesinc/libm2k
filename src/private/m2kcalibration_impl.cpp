@@ -486,7 +486,7 @@ out_cleanup:
 			m_m2k_dac->enableChannel(1, true);
 
 			m_m2k_dac->setCyclic(true);
-			m_m2k_dac->push(vec_data_all);
+			m_m2k_dac->pushRaw(vec_data_all);
 
 			m_m2k_dac->setSyncedDma(false);
 			m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
@@ -569,7 +569,7 @@ out_cleanup:
 			m_m2k_dac->enableChannel(1, true);
 
 			m_m2k_dac->setCyclic(true);
-			m_m2k_dac->push(vec_data_all);
+			m_m2k_dac->pushRaw(vec_data_all);
 
 			m_m2k_dac->setSyncedDma(false);
 			m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
