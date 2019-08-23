@@ -69,9 +69,15 @@ public:
 	void setDacCalibVlsb(unsigned int chn, double vlsb);
 
 	void push(unsigned int chnIdx, std::vector<double> const &data);
-	void push(unsigned int chnIdx, std::vector<short> const &data);
+	void pushRaw(unsigned int chnIdx, std::vector<short> const &data);
 	void push(std::vector<std::vector<double>> const &data);
-	void push(std::vector<std::vector<short>> const &data);
+	void pushRaw(std::vector<std::vector<short>> const &data);
+
+	void push(unsigned int chnIdx, double *data, unsigned int nb_samples);
+	void pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples);
+	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples_per_channel);
+	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples_per_channel);
+
 	void stop();
 	void stop(unsigned int chn);
 

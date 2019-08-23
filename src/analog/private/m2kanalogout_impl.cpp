@@ -243,7 +243,17 @@ public:
 		m_calib_vlsb[chn_idx] = vlsb;
 	}
 
-	void push(std::vector<short> const &data, unsigned int chnIdx)
+
+	/*
+	 * push short (raw) on one single channel
+	 */
+	void pushRaw(std::vector<short> const &data, unsigned int chnIdx)
+	{
+		short *ptr = (short*)data.data();
+		pushRaw(chnIdx, ptr, data.size());
+	}
+
+	void pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples)
 	{
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
@@ -251,14 +261,13 @@ public:
 		m_m2k_fabric->setBoolValue(chnIdx, true, "powerdown", true);
 		setSyncedDma(true, chnIdx);
 
-		size_t size = data.size();
 		std::vector<short> raw_data_buffer = {};
 
 		m_samplerate.at(0) = getSampleRate(0);
 		m_samplerate.at(1) = getSampleRate(1);
 
-		for (unsigned int i = 0; i < size; i++) {
-			raw_data_buffer.push_back(processSample(data.at(i), chnIdx, true));
+		for (unsigned int i = 0; i < nb_samples; i++) {
+			raw_data_buffer.push_back(processSample(data[i], chnIdx, true));
 		}
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
 
@@ -266,22 +275,31 @@ public:
 		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
 	}
 
+
+	/*
+	 * push double (voltage) on one single channel
+	 */
 	void push(std::vector<double> const &data, unsigned int chnIdx)
 	{
+		double *ptr = (double*)data.data();
+		push(chnIdx, ptr, data.size());
+	}
+
+	void push(unsigned int chnIdx, double *data, unsigned int nb_samples)
+	{
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 		}
 		m_m2k_fabric->setBoolValue(chnIdx, true, "powerdown", true);
 		setSyncedDma(true, chnIdx);
 
-		size_t size = data.size();
 		std::vector<short> raw_data_buffer = {};
 
 		m_samplerate.at(0) = getSampleRate(0);
 		m_samplerate.at(1) = getSampleRate(1);
 
-		for (unsigned int i = 0; i < size; i++) {
-			raw_data_buffer.push_back(processSample(data.at(i), chnIdx, false));
+		for (unsigned int i = 0; i < nb_samples; i++) {
+			raw_data_buffer.push_back(processSample(data[i], chnIdx, false));
 		}
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
 
@@ -289,7 +307,11 @@ public:
 		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
 	}
 
-	void push(std::vector<std::vector<short>> const &data)
+
+	/*
+	 * push short (raw) on multiple channels
+	 */
+	void pushRaw(std::vector<std::vector<short>> const &data)
 	{
 		std::vector<std::vector<short>> data_buffers;
 		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
@@ -303,7 +325,7 @@ public:
 			size_t size = data.at(chn).size();
 			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < size; i++) {
-				raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, true));
+				raw_data_buffer.push_back(processSample(data[chn][i], chn, true));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		}
@@ -313,6 +335,33 @@ public:
 		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 	}
 
+	void pushRaw(short *data, unsigned int nb_channels, unsigned int nb_samples)
+	{
+		std::vector<std::vector<short>> data_buffers;
+		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
+		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
+		setSyncedDma(true);
+
+		m_samplerate.at(0) = getSampleRate(0);
+		m_samplerate.at(1) = getSampleRate(1);
+
+		for (unsigned int chn = 0; chn < nb_channels; chn++) {
+			std::vector<short> raw_data_buffer = {};
+			for (unsigned int i = 0; i < nb_samples; i++) {
+				raw_data_buffer.push_back(processSample(data[chn + nb_channels * i], chn, true));
+			}
+			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
+		}
+
+		setSyncedDma(false);
+		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
+		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
+	}
+
+
+	/*
+	 * push double (voltage) on multiple channels
+	 */
 	void push(std::vector<std::vector<double>> const &data)
 	{
 		std::vector<std::vector<short>> data_buffers;
@@ -327,7 +376,31 @@ public:
 			size_t size = data.at(chn).size();
 			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < size; i++) {
-				raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, false));
+				raw_data_buffer.push_back(processSample(data[chn][i], chn, false));
+			}
+			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
+			data_buffers.push_back(raw_data_buffer);
+		}
+
+		setSyncedDma(false);
+		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
+		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
+	}
+
+	void push(double *data, unsigned int nb_channels, unsigned int nb_samples)
+	{
+		std::vector<std::vector<short>> data_buffers;
+		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
+		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
+		setSyncedDma(true);
+
+		m_samplerate.at(0) = getSampleRate(0);
+		m_samplerate.at(1) = getSampleRate(1);
+
+		for (unsigned int chn = 0; chn < nb_channels; chn++) {
+			std::vector<short> raw_data_buffer = {};
+			for (unsigned int i = 0; i < nb_samples; i++) {
+				raw_data_buffer.push_back(processSample(data[chn + nb_channels * i], chn, false));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 			data_buffers.push_back(raw_data_buffer);
