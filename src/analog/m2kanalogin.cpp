@@ -252,3 +252,8 @@ double M2kAnalogIn::getValueForRange(M2K_RANGE range)
 {
 	return m_pimpl->getValueForRange(range);
 }
+
+void M2kAnalogIn::setKernelBuffersCount(unsigned int count)
+{
+	return m_pimpl->setKernelBuffersCount(count);
+}

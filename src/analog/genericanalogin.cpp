@@ -77,3 +77,7 @@ void GenericAnalogIn::enableChannel(unsigned int index, bool enable)
 	m_pimpl->enableChannel(index, enable);
 }
 
+void GenericAnalogIn::setKernelBuffersCount(unsigned int count)
+{
+	m_pimpl->setKernelBuffersCount(count);
+}
