@@ -89,6 +89,11 @@ public:
 		DeviceGeneric::enableChannel(index, enable);
 	}
 
+	void setKernelBuffersCount(unsigned int count)
+	{
+		DeviceGeneric::setKernelBuffersCount(count);
+	}
+
 private:
 	std::string m_dev_name;
 	unsigned int m_nb_channels;

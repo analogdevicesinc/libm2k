@@ -42,6 +42,7 @@ public:
 	std::vector<double> getAvailableSampleRates();
 
 	void enableChannel(unsigned int index, bool enable);
+	void setKernelBuffersCount(unsigned int count);
 	std::string getDeviceName();
 
 private:

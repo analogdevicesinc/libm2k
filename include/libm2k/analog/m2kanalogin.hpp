@@ -97,6 +97,7 @@ public:
 
 	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
+	void setKernelBuffersCount(unsigned int count);
 
 	libm2k::analog::M2kHardwareTrigger* getTrigger();
 private:
