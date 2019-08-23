@@ -93,8 +93,7 @@ public:
 
 	void push(std::vector<short> const &data, unsigned int chn_idx)
 	{
-		std::vector<int> d(data.begin(), data.end());
-		DeviceOut::push(d, chn_idx, getCyclic(chn_idx));
+		DeviceOut::push(data, chn_idx, getCyclic(chn_idx));
 	}
 
 	void push(std::vector<double> const &data, unsigned int chn_idx)

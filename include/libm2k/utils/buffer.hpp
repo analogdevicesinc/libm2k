@@ -36,8 +36,10 @@ class Buffer
 public:
 	Buffer(struct iio_device *dev);
 	~Buffer();
-	void push(std::vector<int> const &data, unsigned int channel = 0,
-		  bool cyclic = true, bool multiplex = false);
+	void push(std::vector<short> const &data, unsigned int channel = 0,
+		bool cyclic = true, bool multiplex = false);
+	void push(std::vector<unsigned short> const &data, unsigned int channel = 0,
+		bool cyclic = true, bool multiplex = false);
 	void push(std::vector<double> const &data, unsigned int channel = 0, bool cyclic = true);
 	void push(std::vector<std::vector<short>> const &data);
 	void setChannels(std::vector<Channel*> channels);

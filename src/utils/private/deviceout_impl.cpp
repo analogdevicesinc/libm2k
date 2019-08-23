@@ -107,12 +107,21 @@ public:
 		m_channel_list.clear();
 	}
 
+	void push(std::vector<short> const &data, unsigned int channel,
+		bool cyclic = true, bool multiplex = false)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		m_buffer->push(data, channel, cyclic, multiplex);
+	}
 
-	void push(std::vector<int> const &data, unsigned int channel,
+	void push(std::vector<unsigned short> const &data, unsigned int channel,
 			  bool cyclic = true, bool multiplex = false)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic, multiplex);
@@ -121,7 +130,7 @@ public:
 	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic);

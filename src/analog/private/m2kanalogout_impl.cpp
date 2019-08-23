@@ -43,7 +43,7 @@ public:
 
 		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 		if (!m_m2k_fabric) {
-			throw_exception(EXC_INVALID_PARAMETER, "Analog out: Can not find m2k fabric device");
+			throw_exception(EXC_INVALID_PARAMETER, "Analog out: Cannot find m2k fabric device");
 		}
 
 		m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 )));
@@ -252,7 +252,7 @@ public:
 		setSyncedDma(true, chnIdx);
 
 		size_t size = data.size();
-		std::vector<int> raw_data_buffer = {};
+		std::vector<short> raw_data_buffer = {};
 
 		m_samplerate.at(0) = getSampleRate(0);
 		m_samplerate.at(1) = getSampleRate(1);
@@ -275,7 +275,7 @@ public:
 		setSyncedDma(true, chnIdx);
 
 		size_t size = data.size();
-		std::vector<int> raw_data_buffer = {};
+		std::vector<short> raw_data_buffer = {};
 
 		m_samplerate.at(0) = getSampleRate(0);
 		m_samplerate.at(1) = getSampleRate(1);
@@ -301,7 +301,7 @@ public:
 
 		for (unsigned int chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
-			std::vector<int> raw_data_buffer = {};
+			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < size; i++) {
 				raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, true));
 			}
@@ -315,7 +315,7 @@ public:
 
 	void push(std::vector<std::vector<double>> const &data)
 	{
-		std::vector<std::vector<int>> data_buffers;
+		std::vector<std::vector<short>> data_buffers;
 		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
 		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 		setSyncedDma(true);
@@ -325,7 +325,7 @@ public:
 
 		for (unsigned int chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
-			std::vector<int> raw_data_buffer = {};
+			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < size; i++) {
 				raw_data_buffer.push_back(processSample(data.at(chn).at(i), chn, false));
 			}

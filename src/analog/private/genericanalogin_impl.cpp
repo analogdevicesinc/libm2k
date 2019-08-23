@@ -33,10 +33,10 @@ using namespace std;
 
 class GenericAnalogIn::GenericAnalogInImpl : public DeviceIn {
 public:
-	GenericAnalogInImpl(iio_context *ctx, std::string adc_dev) :
-		DeviceIn(ctx, adc_dev)
-	{
-	}
+        GenericAnalogInImpl(iio_context *ctx, std::string adc_dev) :
+                DeviceIn(ctx, adc_dev)
+        {
+        }
 
 	~GenericAnalogInImpl()
 	{

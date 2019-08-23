@@ -496,7 +496,7 @@ public:
 		if(m_filter_compensation_table.find(samplerate) != m_filter_compensation_table.end()) {
 			compensation = m_filter_compensation_table.at(samplerate);
 		} else {
-			throw invalid_parameter_exception("Can not get compensation value for the given samplerate.");
+			throw invalid_parameter_exception("Cannot get compensation value for the given samplerate.");
 		}
 		return compensation;
 	}
