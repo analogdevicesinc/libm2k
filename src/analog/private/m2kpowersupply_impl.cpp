@@ -84,11 +84,11 @@ public:
 
 		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 		if (!m_m2k_fabric) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Can not find m2k fabric device");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Cannot find m2k fabric device");
 		}
 
 		if (!m_m2k_fabric->isChannel(2, true)) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Can not find powerdown channels");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Cannot find powerdown channels");
 		}
 
 		/* If neg powerdown channel is available */

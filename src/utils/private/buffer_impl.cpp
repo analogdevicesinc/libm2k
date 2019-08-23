@@ -64,8 +64,51 @@ public:
 	}
 
 	//push on a certain channel
-	void push(std::vector<int> const &data, unsigned int channel = 0,
-		  bool cyclic = true, bool multiplex = false)
+	void push(std::vector<short> const &data, unsigned int channel = 0,
+		bool cyclic = true, bool multiplex = false)
+	{
+		size_t size = data.size();
+		if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+		}
+
+		destroy();
+
+		/* If the data vector is empty, then it means we want
+		* to remove what was pushed earlier to the device, so
+		* we destroy the buffer */
+		if (data.size() == 0) {
+			return;
+		}
+
+		m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
+
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+		}
+
+		if (channel < m_channel_list.size() ) {
+			if (!multiplex) {
+				m_channel_list.at(channel)->write(m_buffer, data);
+			} else {
+				short *p_dat;
+				int i = 0;
+
+				for (p_dat = (short *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
+				     (short*)p_dat++, i++) {
+					*p_dat = data[i];
+				}
+
+			}
+			iio_buffer_push(m_buffer);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+
+		}
+	}
+
+	void push(std::vector<unsigned short> const &data, unsigned int channel = 0,
+		bool cyclic = true, bool multiplex = false)
 	{
 		size_t size = data.size();
 		if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
@@ -91,11 +134,11 @@ public:
 			if (!multiplex) {
 					m_channel_list.at(channel)->write(m_buffer, data);
 			} else {
-				int *p_dat;
+				unsigned short *p_dat;
 				int i = 0;
 
-				for (p_dat = (int *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
-				     (unsigned int*)p_dat++, i++) {
+				for (p_dat = (unsigned short *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
+				     (unsigned short*)p_dat++, i++) {
 					*p_dat = data[i];
 				}
 
@@ -146,8 +189,7 @@ public:
 		}
 
 		for (unsigned int i = 0; i < data_ch_nb; i++) {
-			std::vector<int> d(data.at(i).begin(), data.at(i).end());
-			push(d, i);
+			push(data.at(i), i);
 		}
 	}
 

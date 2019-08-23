@@ -148,22 +148,30 @@ public:
 		return getChannel(chnIdx)->isEnabled();
 	}
 
-
 	void push(std::vector<short> const &data, unsigned int channel,
+		bool cyclic = true, bool multiplex = false)
+	{
+		if (!m_buffer) {
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		m_buffer->push(data, channel, cyclic, multiplex);
+	}
+
+	void push(std::vector<unsigned short> const &data, unsigned int channel,
 			  bool cyclic = true, bool multiplex = false)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
 		}
 		m_buffer->setChannels(m_channel_list);
-		std::vector<int> d(data.begin(), data.end());
-		m_buffer->push(d, channel, cyclic, multiplex);
+		m_buffer->push(data, channel, cyclic, multiplex);
 	}
 
 	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic);
@@ -179,7 +187,7 @@ public:
 	std::vector<unsigned short> getSamples(unsigned int nb_samples)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamples(nb_samples);
@@ -190,7 +198,7 @@ public:
 					std::function<double(int16_t, unsigned int)> process)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamples(nb_samples, process);

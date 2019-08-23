@@ -48,7 +48,9 @@ public:
 	bool isChannelEnabled(unsigned int chnIdx);
 
 	void push(std::vector<short> const &data, unsigned int channel,
-		  bool cyclic = true, bool multiplex = false);
+		bool cyclic = true, bool multiplex = false);
+	void push(std::vector<unsigned short> const &data, unsigned int channel,
+		bool cyclic = true, bool multiplex = false);
 	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true);
 	void stop();
 

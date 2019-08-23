@@ -41,8 +41,10 @@ public:
 	DeviceOut(struct iio_context* context, std::string dev_name = "", bool input = false);
 	virtual ~DeviceOut();
 
-	virtual void push(std::vector<int> const &data, unsigned int channel,
-		  bool cyclic = true, bool multiplex = false);
+	virtual void push(std::vector<short> const &data, unsigned int channel,
+		bool cyclic = true, bool multiplex = false);
+	virtual void push(std::vector<unsigned short> const &data, unsigned int channel,
+		bool cyclic = true, bool multiplex = false);
 	virtual void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true);
 	virtual void stop();
 
