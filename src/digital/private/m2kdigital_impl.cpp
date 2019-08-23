@@ -335,7 +335,7 @@ public:
 
 	double getSampleRateOut()
 	{
-		return m_dev_read->getDoubleValue("sampling_frequency");
+		return m_dev_write->getDoubleValue("sampling_frequency");
 	}
 
 	bool getCyclic()
