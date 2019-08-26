@@ -36,10 +36,13 @@ class Buffer
 public:
 	Buffer(struct iio_device *dev);
 	~Buffer();
+
 	void push(std::vector<short> const &data, unsigned int channel = 0,
 		bool cyclic = true, bool multiplex = false);
 	void push(std::vector<unsigned short> const &data, unsigned int channel = 0,
 		bool cyclic = true, bool multiplex = false);
+	void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
+		  bool cyclic = true, bool multiplex = false);
 	void push(std::vector<double> const &data, unsigned int channel = 0, bool cyclic = true);
 	void push(std::vector<std::vector<short>> const &data);
 
@@ -48,6 +51,8 @@ public:
 
 	void setChannels(std::vector<Channel*> channels);
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
+	unsigned short* getSamplesP(unsigned int nb_samples);
+
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
 	double *getSamplesInterleaved(unsigned int nb_samples,

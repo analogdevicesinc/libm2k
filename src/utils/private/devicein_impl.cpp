@@ -117,6 +117,16 @@ public:
 
 	}
 
+	unsigned short* getSamplesP(unsigned int nb_samples)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		return m_buffer->getSamplesP(nb_samples);
+
+	}
+
 	std::vector<std::vector<double> > getSamples(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process)
 	{

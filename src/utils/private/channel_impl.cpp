@@ -200,6 +200,20 @@ public:
 		}
 	}
 
+	void write(struct iio_buffer* buffer, unsigned short *data, unsigned int nb_samples)
+	{
+		if (!m_channel) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+		}
+
+		size_t ret = iio_channel_write(m_channel, buffer, data,
+					       nb_samples * sizeof(unsigned short));
+
+		if (ret == 0) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+		}
+	}
+
 	void convert(int16_t *avg, int16_t *src)
 	{
 		if (!m_channel) {

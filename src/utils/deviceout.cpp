@@ -48,6 +48,12 @@ void DeviceOut::push(std::vector<unsigned short> const &data, unsigned int chann
 	m_pimpl->push(data, channel, cyclic, multiplex);
 }
 
+void DeviceOut::push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
+		  bool cyclic, bool multiplex)
+{
+	m_pimpl->push(data, channel, nb_samples, cyclic, multiplex);
+}
+
 void DeviceOut::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
 {
 	m_pimpl->push(data, channel, cyclic);

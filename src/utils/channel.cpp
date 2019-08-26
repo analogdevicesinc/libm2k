@@ -105,6 +105,11 @@ void Channel::write(struct iio_buffer* buffer, short *data, unsigned int nb_samp
 	m_pimpl->write(buffer, data, nb_samples);
 }
 
+void Channel::write(struct iio_buffer* buffer, unsigned short *data, unsigned int nb_samples)
+{
+	m_pimpl->write(buffer, data, nb_samples);
+}
+
 void Channel::convert(int16_t *avg, int16_t *src)
 {
 	m_pimpl->convert(avg, src);

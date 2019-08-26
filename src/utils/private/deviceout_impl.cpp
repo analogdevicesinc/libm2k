@@ -127,6 +127,17 @@ public:
 		m_buffer->push(data, channel, cyclic, multiplex);
 	}
 
+
+	void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
+			  bool cyclic, bool multiplex)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		m_buffer->push(data, channel, nb_samples, cyclic, multiplex);
+	}
+
 	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true)
 	{
 		if (!m_buffer) {
