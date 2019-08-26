@@ -209,6 +209,14 @@ public:
 		m_dev_write->push(data, 0, getCyclic(), true);
 	}
 
+	void push(unsigned short *data, unsigned int nb_samples)
+	{
+		if (!anyChannelEnabled(DIO_OUTPUT)) {
+			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.");
+		}
+		m_dev_write->push(data, 0, nb_samples, getCyclic(), true);
+	}
+
 	void stop()
 	{
 		m_dev_write->stop();
@@ -227,6 +235,25 @@ public:
 			 * nearest multiple.*/
 			nb_samples = ((nb_samples + 3) / 4) * 4;
 			return m_dev_read->getSamples(nb_samples);
+
+		} __catch (exception_type &e) {
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+		}
+	}
+
+	unsigned short* getSamplesP(int nb_samples)
+	{
+		__try {
+			if (!anyChannelEnabled(DIO_INPUT)) {
+				throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
+
+			}
+
+			/* There is a restriction in the HDL that the buffer size must
+			 * be a multiple of 8 bytes (4x 16-bit samples). Round up to the
+			 * nearest multiple.*/
+			nb_samples = ((nb_samples + 3) / 4) * 4;
+			return m_dev_read->getSamplesP(nb_samples);
 
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));

@@ -63,6 +63,48 @@ public:
 		m_channel_list = channels;
 	}
 
+	void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
+			  bool cyclic = true, bool multiplex = false)
+	{
+		if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+		}
+
+		destroy();
+
+		/* If the data vector is empty, then it means we want
+		 * to remove what was pushed earlier to the device, so
+		 * we destroy the buffer */
+		if (nb_samples == 0) {
+			return;
+		}
+
+		m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
+
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+		}
+
+		if (channel < m_channel_list.size() ) {
+			if (!multiplex) {
+					m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
+			} else {
+				int *p_dat;
+				int i = 0;
+
+				for (p_dat = (int *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
+				     (unsigned int*)p_dat++, i++) {
+					*p_dat = data[i];
+				}
+
+			}
+			iio_buffer_push(m_buffer);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+
+		}
+	}
+
 	//push on a certain channel
 	void push(std::vector<short> const &data, unsigned int channel = 0,
 		bool cyclic = true, bool multiplex = false)
@@ -289,6 +331,35 @@ public:
 		}
 
 		return m_data_short;
+	}
+
+	unsigned short *getSamplesP(int nb_samples)
+	{
+		if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
+			throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created");
+		}
+
+		bool new_buffer = (nb_samples != m_last_nb_samples);
+		if (new_buffer) {
+			destroy();
+			m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
+			m_last_nb_samples = nb_samples;
+		}
+
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
+		}
+
+		int ret = iio_buffer_refill(m_buffer);
+
+
+		if (ret < 0) {
+			destroy();
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
+		}
+
+		unsigned short* data = (unsigned short*)iio_buffer_start(m_buffer);
+		return data;
 	}
 
 

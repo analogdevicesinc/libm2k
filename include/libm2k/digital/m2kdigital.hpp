@@ -51,9 +51,11 @@ public:
 	DIO_LEVEL getValueRaw(unsigned int index);
 
 	void push(std::vector<unsigned short> const &data);
+	void push(unsigned short *data, unsigned int nb_samples);
 	void stop();
 
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
+	unsigned short *getSamplesP(unsigned int nb_samples);
 
 	/* Enable/disable TX channels only*/
 	void enableChannel(unsigned int index, bool enable);

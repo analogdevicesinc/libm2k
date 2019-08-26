@@ -95,9 +95,14 @@ DIO_LEVEL M2kDigital::getValueRaw(unsigned int index)
 	return m_pimpl->getValueRaw(index);
 }
 
-void M2kDigital::push(std::vector<unsigned short> const &data)
+void M2kDigital::push(const std::vector<unsigned short> &data)
 {
 	m_pimpl->push(data);
+}
+
+void M2kDigital::push(unsigned short *data, unsigned int nb_samples)
+{
+	m_pimpl->push(data, nb_samples);
 }
 
 void M2kDigital::stop()
@@ -108,6 +113,11 @@ void M2kDigital::stop()
 std::vector<unsigned short> M2kDigital::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples);
+}
+
+unsigned short *M2kDigital::getSamplesP(unsigned int nb_samples)
+{
+	return m_pimpl->getSamplesP(nb_samples);
 }
 
 void M2kDigital::enableChannel(unsigned int index, bool enable)
