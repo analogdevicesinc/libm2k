@@ -89,11 +89,11 @@ public:
 			if (!multiplex) {
 					m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
 			} else {
-				int *p_dat;
+				short *p_dat;
 				int i = 0;
 
-				for (p_dat = (int *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
-				     (unsigned int*)p_dat++, i++) {
+				for (p_dat = (short *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
+				     (unsigned short*)p_dat++, i++) {
 					*p_dat = data[i];
 				}
 
