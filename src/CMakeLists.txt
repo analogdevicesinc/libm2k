@@ -7,6 +7,8 @@ if(APPLE)
 	set(CMAKE_OSX_ARCHITECTURES "x86_64")
 endif()
 
+SET(CMAKE_EXE_LINKER_FLAGS  "/FORCE")
+
 include_directories(
 	SYSTEM 
 	${CMAKE_CURRENT_SOURCE_DIR}

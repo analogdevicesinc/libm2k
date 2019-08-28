@@ -1,0 +1,5 @@
+<configuration>
+  <dllmap dll="libm2k.dll" target="libm2k.so"/>
+  <dllmap dll="libm2k-sharp.dll" target="libm2k-sharp.so"/>
+  <dllmap dll="libm2k-sharp-cxx-wrap.dll" target="libm2k-sharp-cxx-wrap.so"/>
+</configuration>

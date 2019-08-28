@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+libdir=@CMAKE_INSTALL_PREFIX@/lib
+
+Name: libm2k-sharp
+Description: CLI bindings for libm2k
+Version: @VERSION@
+
+Requires:
+Libs: -r:${libdir}/cli/libm2k-sharp-@VERSION@/libm2k-sharp

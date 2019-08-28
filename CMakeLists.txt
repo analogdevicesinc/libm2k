@@ -36,10 +36,15 @@ option(BUILD_EXAMPLES "Build the default examples" ON)
 option(ENABLE_LOG "Build with logging support" OFF)
 option(ENABLE_EXCEPTIONS "Build with exception handling support" ON)
 option(ENABLE_PYTHON "Build Python bindings" ON)
+option(ENABLE_CSHARP "Build C# bindings" ON)
 
 FIND_PACKAGE(SWIG)
 if (NOT SWIG_FOUND)
 	set(ENABLE_PYTHON OFF)
+endif()
+
+if (NOT SWIG_FOUND)
+	set(ENABLE_CSHARP OFF)
 endif()
 
 # build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
@@ -161,6 +166,12 @@ configure_file(libm2k.iss.cmakein ${CMAKE_CURRENT_BINARY_DIR}/libm2k.iss @ONLY)
 if (ENABLE_PYTHON AND SWIG_FOUND)
 	message("---- Building Python bindings")
 	add_subdirectory(bindings/python)
+endif()
+
+#Add and build C# bindings
+if (ENABLE_CSHARP AND SWIG_FOUND)
+	message("---- Building C# bindings")
+	add_subdirectory(bindings/csharp)
 endif()
 
 #Add and build the examples
