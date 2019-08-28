@@ -3,10 +3,8 @@
 #ifdef __WIN32__
 	%include <windows.i>
 #endif
-%include "std_list.i"
 %include "std_map.i"
 %include "std_pair.i"
-%include "std_set.i"
 %include "std_string.i"
 %include "std_vector.i"
 %include "exception.i"
@@ -62,16 +60,30 @@ namespace std {
 	typedef std::vector<libm2k::analog::M2K_TRIGGER_MODE> M2kModes;
 %}
 
-%exception {
-    try {
-	$action
-    } catch (exception_type &e) {
-	std::string s("Module libm2k error: "), s2(e.what());
-	s = s + s2;
-	PyErr_SetString(PyExc_ValueError, s.c_str());
-	return NULL;
-    }
-}
+#ifdef SWIGPYTHON
+	%exception {
+		try {
+			$action
+		} catch (exception_type &e) {
+			std::string s("Module libm2k error: "), s2(e.what());
+			s = s + s2;
+			PyErr_SetString(PyExc_ValueError, s.c_str());
+			return NULL;
+		}
+	}
+#endif
+
+#ifdef SWIGCSHARP
+	%exception {
+		try {
+			$action
+		} catch (exception_type &e) {
+			std::string s("Module libm2k error: "), s2(e.what());
+			s = s + s2;
+			SWIG_CSharpSetPendingException(SWIG_CSharpApplicationException, s.c_str());
+		}
+	}
+#endif
 
 %include <std_shared_ptr.i>
 %include <libm2k/m2kglobal.hpp>
