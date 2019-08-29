@@ -88,6 +88,12 @@ Source: "C:\libiio-win64\libusb-1.0.dll"; DestDir: "{sys}"; Check: Is64BitInstal
 Source: "C:\libiio-win32\libserialport-0.dll"; DestDir: "{sys}"; Flags: 32bit
 Source: "C:\libiio-win64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
+Source: "C:\projects\libm2k\build-win32\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode
+Source: "C:\projects\libm2k\build-win32\libm2k-sharp-cxx-wrap.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode
+
+Source: "C:\projects\libm2k\build-win64\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode
+Source: "C:\projects\libm2k\build-win64\libm2k-sharp-cxx-wrap.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode
+
 [Tasks]
 Name: "install_python_bindings"; 				Description: "Install libm2k Python-3.7 bindings";
 Name: "install_libiio"; 						Description: "Install libiio"; 	Check: Not isIioInstalled;
