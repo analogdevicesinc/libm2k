@@ -227,9 +227,49 @@ public:
 	int convertVoltsToRaw(double voltage, double vlsb,
 		double filterCompensation);
 
+	/**
+	* @brief Send the samples to the given channel
+	*
+	* @param chnIdx The index corresponding to the channel
+	* @param data A pointer to the samples
+	* @param nb_samples the number of samples
+	*
+	* @throw EXC_OUT_OF_RANGE No such channel
+	*/
 	void push(unsigned int chnIdx, double *data, unsigned int nb_samples);
+
+
+	/**
+	* @brief Send the samples to the given channel
+	*
+	* @param chnIdx The index corresponding to the channel
+	* @param data A pointer to the raw samples
+	* @param nb_samples the number of samples
+	*
+	* @throw EXC_OUT_OF_RANGE No such channel
+	*/
 	void pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples);
+
+
+	/**
+	* @brief Send samples to all the channels
+	*
+	* @param data A pointer to the interleaved data
+	* @param nb_channels the number of channels on which we want to push
+	* @param nb_samples_per_channel the number of samples per channel
+	* @note Make sure the samples are interleaved
+	*/
 	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples_per_channel);
+
+
+	/**
+	* @brief Send samples to all the channels
+	*
+	* @param data A pointer to the interleaved raw data
+	* @param nb_channels the number of channels on which we want to push
+	* @param nb_samples_per_channel the number of raw samples per channel
+	* @note Make sure the raw samples are interleaved
+	*/
 	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples_per_channel);
 
 	/**

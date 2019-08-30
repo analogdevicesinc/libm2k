@@ -83,7 +83,22 @@ public:
 	*/
 	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
 
+
+	/**
+	* @brief Retrieve a specific number of samples from both channels
+	*
+	* @param nb_samples The number of samples that will be retrieved
+	* @return A pointer to the interleaved samples
+	*/
 	double* getSamplesInterleaved(unsigned int nb_samples);
+
+
+	/**
+	* @brief Retrieve a specific number of raw samples from both channels
+	*
+	* @param nb_samples The number of samples that will be retrieved
+	* @return A pointer to the interleaved raw samples
+	*/
 	short* getSamplesRawInterleaved(unsigned int nb_samples);
 
 	/**
@@ -151,11 +166,36 @@ public:
 	*/
 	std::vector<double> getVoltage();
 
+
+	/**
+	* @brief Retrieve the average raw value for both channels
+	*
+	* @return A pointer to the average raw value of both channels
+	*/
 	short *getVoltageRawP();
+
+
+	/**
+	* @brief Retrieve the average voltage for both channels
+	*
+	* @return A pointer to the average voltage of both channels
+	*/
 	double *getVoltageP();
 
+	/**
+	 * @brief Set the vertical offset, in Volts, of a specific channel
+	 * @param channel the index of the channel
+	 * @param vertOffset the value of the offset in Volts
+	 */
 	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
+
+	/**
+	 * @brief getVerticalOffset
+	 * @param channel the index of the channel
+	 * @return the value of the offset in Volts
+	 */
 	double getVerticalOffset(ANALOG_IN_CHANNEL channel);
+
 
 	/**
 	* @brief Retrieve the scaling factor
@@ -291,6 +331,12 @@ public:
 	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn);
 
 
+	/**
+	* @brief Set the value of the calibration offset for the given channel
+	*
+	* @param channel An enumerator corresponding to the channel's index
+	* @param calib_offset Int value to set the calibration offset to
+	*/
 	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset);
 
 
@@ -403,6 +449,11 @@ public:
 	* @private
 	*/
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
+
+	/**
+	 * @brief Set the kernel buffers to a specific value
+	 * @param count the number of kernel buffers
+	 */
 	void setKernelBuffersCount(unsigned int count);
 
 

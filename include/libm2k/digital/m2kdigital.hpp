@@ -196,6 +196,12 @@ public:
 	* @return A list that contains the samples
 	*/
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
+
+	/**
+	 * @brief Retrieve a specific number of samples
+	 * @param nb_samples The number of samples that will be retrieved
+	 * @return A pointer to the data
+	 */
 	unsigned short *getSamplesP(unsigned int nb_samples);
 
 	/* Enable/disable TX channels only*/
