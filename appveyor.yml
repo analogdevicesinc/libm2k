@@ -42,7 +42,7 @@ install:
 build_script:
     - set MCS_EXECUTABLE_PATH="C:\Windows\Microsoft.NET\Framework\v4.0.30319"
     # 32-bit build - VS
-    - set PATH=C:\\Python37;C:\\Python37\\libs;%PATH%
+    - set PATH=C:\Python37;C:\Python37\libs;%PATH%
     - mkdir c:\projects\libm2k\build-win32
     - cd c:\projects\libm2k\build-win32
     - cmake -G "Visual Studio 15" \
@@ -59,7 +59,7 @@ build_script:
     - ps: Get-ChildItem dist\libm2k-*.exe | Rename-Item -NewName "libm2k-py37-win32.exe"
 
     # 64-bit build - VS
-    - set PATH=C:\Python37-x64;C:\\Python37-x64\\libs;%PATH%
+    - set PATH=C:\Python37-x64;C:\Python37-x64\libs;%PATH%
     - mkdir c:\projects\libm2k\build-win64
     - cd c:\projects\libm2k\build-win64
     - cmake -G "Visual Studio 15 Win64" \
@@ -71,6 +71,7 @@ build_script:
         -DSWIG_VERSION="4.0.0" \
         ..
     - cmake --build . --config Release
+
     - python.exe setup.py bdist_wininst
     - ps: Get-ChildItem dist\libm2k-*.exe | Rename-Item -NewName "libm2k-py37-amd64.exe"
         

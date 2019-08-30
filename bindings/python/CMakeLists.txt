@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-set(Python_ADDITIONAL_VERSIONS 3)
-
 FIND_PACKAGE(SWIG REQUIRED)
 include(UseSWIG)
 FIND_PACKAGE(PythonInterp REQUIRED)
