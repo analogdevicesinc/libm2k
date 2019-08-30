@@ -33,13 +33,14 @@ install:
     - appveyor DownloadFile https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip
     - 7z x swigwin-4.0.0.zip -oswig
     - cd swig/swigwin-4.0.0
-    - xcopy * .. /s /e /h
+    - xcopy * .. /s /e /h /Q
 
     #Install Inno Setup
     - choco install InnoSetup
     - set PATH=%PATH%;"C:\Program Files (x86)\Inno Setup 5"
 
 build_script:
+    - set MCS_EXECUTABLE_PATH="C:\Windows\Microsoft.NET\Framework\v4.0.30319"
     # 32-bit build - VS
     - set PATH=C:\\Python37;C:\\Python37\\libs;%PATH%
     - mkdir c:\projects\libm2k\build-win32
