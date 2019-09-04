@@ -113,6 +113,11 @@ M2kHardwareTrigger *M2kAnalogIn::getTrigger()
 	return m_pimpl->getTrigger();
 }
 
+void M2kAnalogIn::flushBuffer()
+{
+	m_pimpl->flushBuffer();
+}
+
 std::vector<std::vector<double>> M2kAnalogIn::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples, true);

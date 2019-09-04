@@ -60,6 +60,7 @@ public:
 	short *getSamplesRawInterleaved(unsigned int nb_samples);
 	void stop();
 	void setCyclic(bool enable);
+	void flushBuffer();
 private:
 
 	class BufferImpl;

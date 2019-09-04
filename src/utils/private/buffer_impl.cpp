@@ -491,6 +491,12 @@ public:
 		}
 	}
 
+	void flushBuffer()
+	{
+		destroy();
+		m_last_nb_samples = 0;
+	}
+
 	void setCyclic(bool enable)
 	{
 		m_cyclic = enable;
