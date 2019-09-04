@@ -654,6 +654,7 @@ out_cleanup:
 			updateAdcCorrections();
 			restoreAdcFromCalibMode();
 			m_adc_calibrated = true;
+			m_m2k_adc->flushBuffer();
 			return true;
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "ADC calibration failed: " +
@@ -699,6 +700,7 @@ out_cleanup:
 			restoreAdcFromCalibMode();
 
 			m_dac_calibrated = true;
+			m_m2k_adc->flushBuffer();
 			return true;
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "DAC calibration failed " +
