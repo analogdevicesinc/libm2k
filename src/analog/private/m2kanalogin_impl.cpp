@@ -162,6 +162,11 @@ public:
 		return m_trigger;
 	}
 
+	void flushBuffer()
+	{
+		DeviceIn::flushBuffer();
+	}
+
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 						bool processed = false)
 	{

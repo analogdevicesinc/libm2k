@@ -63,6 +63,12 @@ public:
 
 
 	/**
+	 * @brief Destroy the buffer
+	 */
+	void flushBuffer();
+
+
+	/**
 	* @brief Retrieve a specific number of samples from each channel
 	*
 	* @param nb_samples The number of samples that will be retrieved

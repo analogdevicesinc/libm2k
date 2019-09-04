@@ -112,3 +112,8 @@ void Buffer::setCyclic(bool enable)
 {
 	m_pimpl->setCyclic(enable);
 }
+
+void Buffer::flushBuffer()
+{
+	m_pimpl->flushBuffer();
+}

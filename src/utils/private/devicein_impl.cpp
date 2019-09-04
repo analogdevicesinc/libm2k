@@ -156,6 +156,14 @@ public:
 		return m_buffer->getSamplesRawInterleaved(nb_samples);
 	}
 
+	void flushBuffer()
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		}
+		m_buffer->flushBuffer();
+	}
+
 private:
 	struct iio_context *m_context;
 	struct iio_device *m_dev;
