@@ -234,6 +234,7 @@ public:
 	* @param data A pointer to the samples
 	* @param nb_samples the number of samples
 	*
+	* @note The corresponding DAC will be powered up
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	void push(unsigned int chnIdx, double *data, unsigned int nb_samples);
@@ -246,6 +247,7 @@ public:
 	* @param data A pointer to the raw samples
 	* @param nb_samples the number of samples
 	*
+	* @note The corresponding DAC will be powered up
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	void pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples);
@@ -258,6 +260,7 @@ public:
 	* @param nb_channels the number of channels on which we want to push
 	* @param nb_samples_per_channel the number of samples per channel
 	* @note Make sure the samples are interleaved
+	* @note Both DACs will be powered up
 	*/
 	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples_per_channel);
 
@@ -269,6 +272,7 @@ public:
 	* @param nb_channels the number of channels on which we want to push
 	* @param nb_samples_per_channel the number of raw samples per channel
 	* @note Make sure the raw samples are interleaved
+	* @note Both DACs will be powered up
 	*/
 	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples_per_channel);
 
@@ -287,6 +291,7 @@ public:
 	* @param chnIdx The index corresponding to the channel
 	* @param data A list of doubles containing all samples
 	*
+	* @note Both DACs will be powered up
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	void push(unsigned int chnIdx, std::vector<double> const &data);
@@ -298,17 +303,19 @@ public:
 	* @param chnIdx The index corresponding to the channel
 	* @param data A list of shorts containing all samples
 	*
+	* @note The corresponding DAC will be powered up
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	void pushRaw(unsigned int chnIdx, std::vector<short> const &data);
 
 
 	/**
-	* @brief Send samples to channels
+	* @brief Send samples to channels.
 	*
 	* @param data A list containing lists of samples
 	*
 	* @note The index of each list of samples represents the channel's
+	* @note Both DACs will be powered up
 	*/
 	void push(std::vector<std::vector<double>> const &data);
 
@@ -319,12 +326,15 @@ public:
 	* @param data A list containing lists of samples
 	*
 	* @note The index of each list of samples represents the channel's index
+	* @note Both DACs will be powered up
 	*/
 	void pushRaw(std::vector<std::vector<short>> const &data);
 
 
 	/**
-	* @brief Stop all channels from sending the signals
+	* @brief Stop all channels from sending the signals.
+	*
+	* @note Both DACs will be powered down
 	*
 	*/
 	void stop();
@@ -335,6 +345,7 @@ public:
 	*
 	* @param chn The index corresponding to the channel
 	*
+	* @note The corresponding DAC will be powered down
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	void stop(unsigned int chn);
