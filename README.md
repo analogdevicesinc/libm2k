@@ -5,4 +5,5 @@
 
 # libm2k
 
-Library for interfacing with the ADALM2000
+Library for interfacing with the ADALM2000. More information available at https://wiki.analog.com/libm2k
+Windows builds available at https://ci.appveyor.com/project/analogdevicesinc/libm2k
