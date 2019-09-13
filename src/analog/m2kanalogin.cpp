@@ -123,12 +123,12 @@ std::vector<std::vector<double> > M2kAnalogIn::getSamplesRaw(unsigned int nb_sam
 	return m_pimpl->getSamples(nb_samples, false);
 }
 
-double *M2kAnalogIn::getSamplesInterleaved(unsigned int nb_samples)
+const double *M2kAnalogIn::getSamplesInterleaved(unsigned int nb_samples)
 {
 	return m_pimpl->getSamplesInterleaved(nb_samples, true);
 }
 
-short *M2kAnalogIn::getSamplesRawInterleaved(unsigned int nb_samples)
+const short *M2kAnalogIn::getSamplesRawInterleaved(unsigned int nb_samples)
 {
 	return m_pimpl->getSamplesRawInterleaved(nb_samples);
 }
@@ -168,12 +168,12 @@ std::vector<double> M2kAnalogIn::getVoltage()
 	return m_pimpl->getVoltage();
 }
 
-short *M2kAnalogIn::getVoltageRawP()
+const short *M2kAnalogIn::getVoltageRawP()
 {
 	return m_pimpl->getVoltageRawP();
 }
 
-double *M2kAnalogIn::getVoltageP()
+const double *M2kAnalogIn::getVoltageP()
 {
 	return m_pimpl->getVoltageP();
 }

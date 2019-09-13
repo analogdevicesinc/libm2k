@@ -41,7 +41,7 @@ std::vector<unsigned short> DeviceIn::getSamples(unsigned int nb_samples)
 	return m_pimpl->getSamples(nb_samples);
 }
 
-unsigned short *DeviceIn::getSamplesP(unsigned int nb_samples)
+const unsigned short *DeviceIn::getSamplesP(unsigned int nb_samples)
 {
 	return m_pimpl->getSamplesP(nb_samples);
 }
@@ -52,13 +52,13 @@ std::vector<std::vector<double> > DeviceIn::getSamples(unsigned int nb_samples,
 	return m_pimpl->getSamples(nb_samples, process);
 }
 
-double *DeviceIn::getSamplesInterleaved(unsigned int nb_samples,
+const double *DeviceIn::getSamplesInterleaved(unsigned int nb_samples,
 				std::function<double(int16_t, unsigned int)> process)
 {
 	return m_pimpl->getSamplesInterleaved(nb_samples, process);
 }
 
-short *DeviceIn::getSamplesRawInterleaved(unsigned int nb_samples)
+const short *DeviceIn::getSamplesRawInterleaved(unsigned int nb_samples)
 {
 	return m_pimpl->getSamplesRawInterleaved(nb_samples);
 }

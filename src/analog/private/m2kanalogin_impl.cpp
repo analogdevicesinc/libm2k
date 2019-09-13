@@ -177,7 +177,7 @@ public:
 		return samps;
 	}
 
-	double *getSamplesInterleaved(unsigned int nb_samples,
+	const double *getSamplesInterleaved(unsigned int nb_samples,
 						bool processed = false)
 	{
 		if (processed) {
@@ -185,14 +185,14 @@ public:
 		}
 		m_samplerate = getSampleRate();
 		auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
-		auto samps = DeviceIn::getSamplesInterleaved(nb_samples, fp);
+		auto samps = (const double *)DeviceIn::getSamplesInterleaved(nb_samples, fp);
 		if (processed) {
 			m_need_processing = false;
 		}
 		return samps;
 	}
 
-	short *getSamplesRawInterleaved(unsigned int nb_samples)
+	const short *getSamplesRawInterleaved(unsigned int nb_samples)
 	{
 		m_samplerate = getSampleRate();
 		return DeviceIn::getSamplesRawInterleaved(nb_samples);

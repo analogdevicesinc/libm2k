@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
 	auto t5 = std::chrono::high_resolution_clock::now();
 	// Get Voltage Interleaved for all the enabled channels
-	double *d3 = ain->getSamplesInterleaved(10);
+	const double *d3 = ain->getSamplesInterleaved(10);
 	auto t6 = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast<std::chrono::milliseconds>( t6 - t5 ).count();
 	std::cout << "\nTime - get V pointer: " << duration << "ms" <<  endl;
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 	auto t7 = std::chrono::high_resolution_clock::now();
 	// Get Raw interleaved for ALL the channels
 	// This is the most efficient, it does not make any copies or processing
-	short *d4 = ain->getSamplesRawInterleaved(10);
+	const short *d4 = ain->getSamplesRawInterleaved(10);
 	auto t8 = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast<std::chrono::milliseconds>( t8 - t7 ).count();
 	std::cout << "\nTime - get raw pointer: " << duration << "ms" << endl;

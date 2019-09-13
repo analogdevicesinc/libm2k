@@ -333,7 +333,7 @@ public:
 		return m_data_short;
 	}
 
-	unsigned short *getSamplesP(int nb_samples)
+	const unsigned short *getSamplesP(int nb_samples)
 	{
 		if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
 			throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created");
@@ -358,12 +358,12 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		}
 
-		unsigned short* data = (unsigned short*)iio_buffer_start(m_buffer);
+		const unsigned short* data = (const unsigned short*)iio_buffer_start(m_buffer);
 		return data;
 	}
 
 
-	short* getSamplesRawInterleaved(int nb_samples)
+	const short* getSamplesRawInterleaved(int nb_samples)
 	{
 		bool anyChannelEnabled = false;
 		std::vector<bool> channels_enabled;
@@ -403,7 +403,7 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		}
 
-		short* p_dat = (short*) m_channel_list.at(0)->getFirst(m_buffer);
+		const short* p_dat = (const short*) m_channel_list.at(0)->getFirst(m_buffer);
 
 		for (unsigned int i = 0; i < m_channel_list.size(); i++) {
 			m_channel_list.at(i)->enableChannel(channels_enabled.at(i));
@@ -411,10 +411,10 @@ public:
 		return p_dat;
 	}
 
-	double* getSamplesInterleaved(int nb_samples,
+	const double* getSamplesInterleaved(int nb_samples,
 				      std::function<double(int16_t, unsigned int)> process)
 	{
-		short* data_p = getSamplesRawInterleaved(nb_samples);
+		const short* data_p = getSamplesRawInterleaved(nb_samples);
 
 		std::vector<bool> channels_enabled;
 
@@ -437,13 +437,13 @@ public:
 			}
 		}
 
-		return data_p_d;
+		return (const double *)data_p_d;
 	}
 
 	std::vector<std::vector<double>> getSamples(int nb_samples,
 					std::function<double(int16_t, unsigned int)> process)
 	{
-		short* data_p = getSamplesRawInterleaved(nb_samples);
+		short* data_p = (short *) getSamplesRawInterleaved(nb_samples);
 
 		std::vector<bool> channels_enabled;
 		m_data.clear();

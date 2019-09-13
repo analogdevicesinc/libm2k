@@ -117,7 +117,7 @@ public:
 
 	}
 
-	unsigned short* getSamplesP(unsigned int nb_samples)
+	const unsigned short* getSamplesP(unsigned int nb_samples)
 	{
 		if (!m_buffer) {
 			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
@@ -137,7 +137,7 @@ public:
 		return m_buffer->getSamples(nb_samples, process);
 	}
 
-	double *getSamplesInterleaved(unsigned int nb_samples,
+	const double *getSamplesInterleaved(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process)
 	{
 		if (!m_buffer) {
@@ -147,7 +147,7 @@ public:
 		return m_buffer->getSamplesInterleaved(nb_samples, process);
 	}
 
-	short *getSamplesRawInterleaved(unsigned int nb_samples)
+	const short *getSamplesRawInterleaved(unsigned int nb_samples)
 	{
 		if (!m_buffer) {
 			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");

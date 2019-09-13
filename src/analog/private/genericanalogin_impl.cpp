@@ -54,13 +54,13 @@ public:
 		return DeviceIn::getSamples(nb_samples, processSample);
 	}
 
-	double *getSamplesInterleaved(unsigned int nb_samples,
+	const double *getSamplesInterleaved(unsigned int nb_samples,
 						bool processed = false)
 	{
 		return DeviceIn::getSamplesInterleaved(nb_samples, processSample);
 	}
 
-	short *getSamplesRawInterleaved(unsigned int nb_samples)
+	const short *getSamplesRawInterleaved(unsigned int nb_samples)
 	{
 		return DeviceIn::getSamplesRawInterleaved(nb_samples);
 	}
