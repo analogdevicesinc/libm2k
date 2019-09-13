@@ -115,7 +115,7 @@ std::vector<unsigned short> M2kDigital::getSamples(unsigned int nb_samples)
 	return m_pimpl->getSamples(nb_samples);
 }
 
-unsigned short *M2kDigital::getSamplesP(unsigned int nb_samples)
+const unsigned short *M2kDigital::getSamplesP(unsigned int nb_samples)
 {
 	return m_pimpl->getSamplesP(nb_samples);
 }

@@ -82,7 +82,7 @@ std::vector<unsigned short> Buffer::getSamples(unsigned int nb_samples)
 	return m_pimpl->getSamples(nb_samples);
 }
 
-unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
+const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 {
 	return m_pimpl->getSamplesP(nb_samples);
 }
@@ -93,12 +93,12 @@ std::vector<std::vector<double>> Buffer::getSamples(unsigned int nb_samples,
 	return m_pimpl->getSamples(nb_samples, process);
 }
 
-double *Buffer::getSamplesInterleaved(unsigned int nb_samples, std::function<double (int16_t, unsigned int)> process)
+const double *Buffer::getSamplesInterleaved(unsigned int nb_samples, std::function<double (int16_t, unsigned int)> process)
 {
 	return m_pimpl->getSamplesInterleaved(nb_samples, process);
 }
 
-short *Buffer::getSamplesRawInterleaved(unsigned int nb_samples)
+const short *Buffer::getSamplesRawInterleaved(unsigned int nb_samples)
 {
 	return m_pimpl->getSamplesRawInterleaved(nb_samples);
 }

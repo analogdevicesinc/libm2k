@@ -96,7 +96,7 @@ public:
 	* @param nb_samples The number of samples that will be retrieved
 	* @return A pointer to the interleaved samples
 	*/
-	double* getSamplesInterleaved(unsigned int nb_samples);
+	const double* getSamplesInterleaved(unsigned int nb_samples);
 
 
 	/**
@@ -105,7 +105,7 @@ public:
 	* @param nb_samples The number of samples that will be retrieved
 	* @return A pointer to the interleaved raw samples
 	*/
-	short* getSamplesRawInterleaved(unsigned int nb_samples);
+	const short* getSamplesRawInterleaved(unsigned int nb_samples);
 
 	/**
 	* @brief Convert the raw value of a sample into volts
@@ -178,7 +178,7 @@ public:
 	*
 	* @return A pointer to the average raw value of both channels
 	*/
-	short *getVoltageRawP();
+	const short *getVoltageRawP();
 
 
 	/**
@@ -186,7 +186,7 @@ public:
 	*
 	* @return A pointer to the average voltage of both channels
 	*/
-	double *getVoltageP();
+	const double *getVoltageP();
 
 	/**
 	 * @brief Set the vertical offset, in Volts, of a specific channel
