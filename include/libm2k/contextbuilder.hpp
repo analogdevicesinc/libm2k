@@ -57,9 +57,13 @@ public:
 	*/
 	static std::vector<std::string> listDevices();
 	/**
+	 * @private
+	 */
+	static Context* deviceOpen(const char*);
+	/**
 	* @private
 	*/
-	static Context* deviceOpen(const char*);
+	static Context* deviceOpen(struct iio_context*, const char*);
 	/**
 	* @private
 	*/
@@ -67,12 +71,15 @@ public:
 	/**
 	* @private
 	*/
-	static M2k* m2kOpen(const char *);
+	static M2k* m2kOpen(const char*);
+	/**
+	* @private
+	*/
+	static M2k* m2kOpen(struct iio_context*, const char*);
 	/**
 	* @private
 	*/
 	static M2k* m2kOpen();
-
 	/**
 	* @private
 	*/
@@ -99,6 +106,7 @@ private:
  * @{
  */
 
+
 /**
 * @private
 */
@@ -106,6 +114,7 @@ LIBM2K_API Context* deviceOpen()
 {
 	return ContextBuilder::deviceOpen();
 }
+
 
 /**
  * @private
@@ -117,6 +126,15 @@ LIBM2K_API Context* deviceOpen(const char* uri)
 
 
 /**
+ * @private
+ */
+LIBM2K_API Context* deviceOpen(struct iio_context* ctx, const char* uri)
+{
+	return ContextBuilder::deviceOpen(ctx, uri);
+}
+
+
+/**
  * @brief Open a device based on its uri
  * @param uri Describe the location of the context
  * @return M2k object
@@ -124,6 +142,18 @@ LIBM2K_API Context* deviceOpen(const char* uri)
 LIBM2K_API M2k* m2kOpen(const char* uri)
 {
 	return ContextBuilder::m2kOpen(uri);
+}
+
+
+/**
+ * @brief Open a device based on its uri
+ * @param ctx A pointer to an iio_context structure
+ * @param uri Describe the location of the context
+ * @return M2k object
+ */
+LIBM2K_API M2k* m2kOpen(struct iio_context* ctx, const char* uri)
+{
+	return ContextBuilder::m2kOpen(ctx, uri);
 }
 
 
@@ -145,6 +175,7 @@ LIBM2K_API std::vector<std::string> listDevices()
 {
 	return ContextBuilder::listDevices();
 }
+
 
 /**
  * @brief Destroy the given context
