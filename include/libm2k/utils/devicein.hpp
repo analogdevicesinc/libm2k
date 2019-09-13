@@ -42,11 +42,12 @@ public:
 	virtual ~DeviceIn();
 
 	virtual std::vector<unsigned short> getSamples(unsigned int nb_samples);
-	virtual unsigned short* getSamplesP(unsigned int nb_samples);
+	virtual const unsigned short* getSamplesP(unsigned int nb_samples);
 	virtual std::vector<std::vector<double> > getSamples(unsigned int nb_samples,
 					std::function<double (int16_t, unsigned int)> process);
-	virtual double *getSamplesInterleaved(unsigned int nb_samples,
+	virtual const double *getSamplesInterleaved(unsigned int nb_samples,
 					std::function<double (int16_t, unsigned int)> process);
+	virtual const short *getSamplesRawInterleaved(unsigned int nb_samples);
 	virtual short *getSamplesRawInterleaved(unsigned int nb_samples);
 	virtual void flushBuffer();
 

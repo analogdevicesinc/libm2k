@@ -202,7 +202,7 @@ public:
 	 * @param nb_samples The number of samples that will be retrieved
 	 * @return A pointer to the data
 	 */
-	unsigned short *getSamplesP(unsigned int nb_samples);
+	const unsigned short *getSamplesP(unsigned int nb_samples);
 
 	/* Enable/disable TX channels only*/
 

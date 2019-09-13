@@ -51,13 +51,13 @@ public:
 
 	void setChannels(std::vector<Channel*> channels);
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
-	unsigned short* getSamplesP(unsigned int nb_samples);
+	const unsigned short* getSamplesP(unsigned int nb_samples);
 
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
-	double *getSamplesInterleaved(unsigned int nb_samples,
+	const double *getSamplesInterleaved(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
-	short *getSamplesRawInterleaved(unsigned int nb_samples);
+	const short *getSamplesRawInterleaved(unsigned int nb_samples);
 	void stop();
 	void setCyclic(bool enable);
 	void flushBuffer();

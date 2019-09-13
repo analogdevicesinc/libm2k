@@ -245,7 +245,7 @@ public:
 		}
 	}
 
-	unsigned short* getSamplesP(int nb_samples)
+	const unsigned short* getSamplesP(int nb_samples)
 	{
 		__try {
 			if (!anyChannelEnabled(DIO_INPUT)) {
