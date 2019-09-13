@@ -118,6 +118,26 @@ Context* ContextBuilder::deviceOpen(const char *uri)
 	return dev;
 }
 
+Context* ContextBuilder::deviceOpen(struct iio_context* ctx, const char* uri)
+{
+	for (Context* dev : s_connectedDevices) {
+		if (dev->getUri() == std::string(uri)) {
+			return dev;
+		}
+	}
+
+	if (!ctx) {
+		return nullptr;
+	}
+
+	DeviceTypes dev_type = ContextBuilder::identifyDevice(ctx);
+
+	Context* dev = buildDevice(dev_type, std::string(uri), ctx, true);
+	s_connectedDevices.push_back(dev);
+
+	return dev;
+}
+
 /* Connect to the first usb device that was found
 TODO: try to use the "local" context,
 before trying the "usb" one. */
@@ -128,6 +148,20 @@ Context* ContextBuilder::deviceOpen()
 		return nullptr;
 	}
 	return deviceOpen(lst.at(0).c_str());
+}
+
+M2k *ContextBuilder::m2kOpen(struct iio_context* ctx, const char *uri)
+{
+	auto dev = deviceOpen(ctx, uri);
+	if (!dev) {
+		return nullptr;
+	}
+
+	auto m2k = dev->toM2k();
+	if (m2k) {
+		return m2k;
+	}
+	return nullptr;
 }
 
 M2k *ContextBuilder::m2kOpen(const char *uri)
