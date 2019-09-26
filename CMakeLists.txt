@@ -42,13 +42,8 @@ if (ENABLE_DOC)
     add_subdirectory(doc)
 endif()
 
-FIND_PACKAGE(SWIG)
-if (NOT SWIG_FOUND)
-	set(ENABLE_PYTHON OFF)
-endif()
-
-if (NOT SWIG_FOUND)
-	set(ENABLE_CSHARP OFF)
+if (ENABLE_PYTHON OR ENABLE_CSHARP)
+	FIND_PACKAGE(SWIG REQUIRED)
 endif()
 
 # build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
