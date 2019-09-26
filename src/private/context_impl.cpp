@@ -269,12 +269,12 @@ public:
 		}
 	}
 
-	std::unordered_set<std::string> getAllDevices(iio_context *ctx)
+	std::unordered_set<std::string> getAllDevices()
 	{
-		unsigned int nb_devices = iio_context_get_devices_count(ctx);
+		unsigned int nb_devices = iio_context_get_devices_count(m_context);
 		std::unordered_set<std::string> device_list;
 		for (unsigned int i = 0; i < nb_devices; ++i) {
-			auto dev = iio_context_get_device(ctx, i);
+			auto dev = iio_context_get_device(m_context, i);
 			device_list.emplace(std::string(iio_device_get_name(dev)));
 		}
 		return device_list;
@@ -282,7 +282,7 @@ public:
 
 	std::vector<std::string> scanAllAnalogIn()
 	{
-		auto dev_list = getAllDevices(m_context);
+		auto dev_list = getAllDevices();
 		std::vector<std::string> aIn_lst = {};
 		std::exception e;
 		for (auto dev : dev_list) {
@@ -297,7 +297,7 @@ public:
 
 	std::vector<std::string> scanAllAnalogOut()
 	{
-		auto dev_list = getAllDevices(m_context);
+		auto dev_list = getAllDevices();
 		std::vector<std::string> aOut_lst = {};
 		for (auto dev : dev_list) {
 			if (isIioDeviceBufferCapable(dev) &&

@@ -78,9 +78,9 @@ bool Context::iioChannelHasAttribute(iio_channel* chn, std::string const& attr)
 	return ContextImpl::iioChannelHasAttribute(chn, attr);
 }
 
-std::unordered_set<std::string> Context::getAllDevices(iio_context *ctx)
+std::unordered_set<std::string> Context::getAllDevices()
 {
-	return m_pimpl->getAllDevices(ctx);
+	return m_pimpl->getAllDevices();
 }
 
 std::vector<std::string> Context::scanAllAnalogIn()

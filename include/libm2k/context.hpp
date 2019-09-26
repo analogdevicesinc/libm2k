@@ -75,7 +75,7 @@ public:
 	std::string getContextAttributeValue(std::string attr);
 	std::string getContextDescription();
 	std::string getSerialNumber();
-	std::unordered_set<std::string> getAllDevices(iio_context *ctx);
+	std::unordered_set<std::string> getAllDevices();
 
 	libm2k::devices::M2k* toM2k();
 
