@@ -272,7 +272,7 @@ public:
 		m_analog_channels[chnIdx]->setLongValue("trigger_level", static_cast<long long>(level));
 	}
 
-	int getAnalogLevel(unsigned int chnIdx)
+	double getAnalogLevel(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
