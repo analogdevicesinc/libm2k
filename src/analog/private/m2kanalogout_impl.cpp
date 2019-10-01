@@ -264,7 +264,7 @@ public:
 		m_samplerate.at(1) = getSampleRate(1);
 
 		for (unsigned int i = 0; i < nb_samples; i++) {
-			raw_data_buffer.push_back(processSample(data[i], chnIdx, true));
+			raw_data_buffer.push_back(data[i]);
 		}
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
 
@@ -295,7 +295,7 @@ public:
 		m_samplerate.at(1) = getSampleRate(1);
 
 		for (unsigned int i = 0; i < nb_samples; i++) {
-			raw_data_buffer.push_back(processSample(data[i], chnIdx, false));
+			raw_data_buffer.push_back(processSample(data[i], chnIdx));
 		}
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
 
@@ -320,7 +320,7 @@ public:
 			size_t size = data.at(chn).size();
 			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < size; i++) {
-				raw_data_buffer.push_back(processSample(data[chn][i], chn, true));
+				raw_data_buffer.push_back(data[chn][i]);
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		}
@@ -341,7 +341,7 @@ public:
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
 			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < nb_samples; i++) {
-				raw_data_buffer.push_back(processSample(data[chn + nb_channels * i], chn, true));
+				raw_data_buffer.push_back(data[chn + nb_channels * i]);
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		}
@@ -367,7 +367,7 @@ public:
 			size_t size = data.at(chn).size();
 			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < size; i++) {
-				raw_data_buffer.push_back(processSample(data[chn][i], chn, false));
+				raw_data_buffer.push_back(processSample(data[chn][i], chn));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 			data_buffers.push_back(raw_data_buffer);
@@ -389,7 +389,7 @@ public:
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
 			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < nb_samples; i++) {
-				raw_data_buffer.push_back(processSample(data[chn + nb_channels * i], chn, false));
+				raw_data_buffer.push_back(processSample(data[chn + nb_channels * i], chn));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 			data_buffers.push_back(raw_data_buffer);
@@ -431,20 +431,11 @@ public:
 		m_dac_devices.at(chn)->stop();
 	}
 
-	short processSample(double value, unsigned int channel, bool raw)
+	short processSample(double value, unsigned int channel)
 	{
-		if (raw) {
-			short raw_value = value;
-			raw_value = (-raw_value) << 4;
-
-			// This should go away once channel type gets
-			// changed from 'le:S16/16>>0' to 'le:S12/16>>4'
-			return raw_value;
-		} else {
-			return convertVoltsToRaw(value, m_calib_vlsb.at(channel),
-						 getFilterCompensation(
-							 m_samplerate.at(channel)));
-		}
+		return convertVoltsToRaw(value, m_calib_vlsb.at(channel),
+					 getFilterCompensation(
+						 m_samplerate.at(channel)));
 	}
 
 	void enableChannel(unsigned int chnIdx, bool enable)
