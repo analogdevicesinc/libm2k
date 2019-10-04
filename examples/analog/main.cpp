@@ -14,6 +14,11 @@ using namespace libm2k::devices;
 int main(int argc, char* argv[])
 {
 	M2k *ctx = m2kOpen();
+	if (!ctx) {
+		std::cout << "Connection Error: No ADALM2000 device available/connected to your PC." << std::endl;
+		return 1;
+	}
+
 	ctx->calibrateADC();
 	ctx->calibrateDAC();
 
