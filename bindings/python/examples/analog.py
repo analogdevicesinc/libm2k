@@ -20,11 +20,11 @@ ain.enableChannel(1,True)
 ain.setSampleRate(100000)
 ain.setRange(0,-10,10)
 
-trig.setSource(0) # Channel 0 as source
+trig.setAnalogSource(0) # Channel 0 as source
 trig.setAnalogCondition(0,libm2k.RISING_EDGE)
-trig.setLevel(0,0.5)  # Set trigger level at 0.5
-trig.setDelay(0) # Trigger is centered
-trig.setTriggerMode(1,libm2k.ANALOG)
+trig.setAnalogLevel(0,0.5)  # Set trigger level at 0.5
+trig.setAnalogDelay(0) # Trigger is centered
+trig.setAnalogMode(1, libm2k.ANALOG)
 
 aout.setSampleRate(0, 750000)
 aout.setSampleRate(1, 750000)
