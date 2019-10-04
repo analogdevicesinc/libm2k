@@ -135,9 +135,12 @@ LIBM2K_API Context* deviceOpen(struct iio_context* ctx, const char* uri)
 
 
 /**
- * @brief Open a device based on its uri
+ * @brief Open an ADALM2000 based on a given uri
  * @param uri Describe the location of the context
- * @return M2k object
+ * @return M2k object or nullptr if no ADALM2000 was found/available
+ *
+ * @note the uri can be something similar to:
+ * "ip:192.168.2.1" or "usb:1.6.5"
  */
 LIBM2K_API M2k* m2kOpen(const char* uri)
 {
@@ -146,10 +149,13 @@ LIBM2K_API M2k* m2kOpen(const char* uri)
 
 
 /**
- * @brief Open a device based on its uri
+ * @brief Open an ADALM2000 based on an existing iio_context and uri
  * @param ctx A pointer to an iio_context structure
  * @param uri Describe the location of the context
- * @return M2k object
+ * @return M2k object or nullptr if no ADALM2000 was found/available
+ *
+ * @note the uri can be something similar to:
+ * "ip:192.168.2.1" or "usb:1.6.5"
  */
 LIBM2K_API M2k* m2kOpen(struct iio_context* ctx, const char* uri)
 {
@@ -158,8 +164,10 @@ LIBM2K_API M2k* m2kOpen(struct iio_context* ctx, const char* uri)
 
 
 /**
- *@brief Open a device based on its USB uri
- * @return  M2k object
+ * @brief Open an ADALM2000
+ * @return M2k object or nullptr if no ADALM2000 was found/available
+ *
+ * @note this will try to open USB connected devices
  */
 LIBM2K_API M2k* m2kOpen()
 {
