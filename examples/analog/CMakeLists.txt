@@ -8,8 +8,6 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/include
 )
 add_executable(${PROJECT_NAME} "main.cpp")
-add_executable(getSamples "getSamples.cpp")
 
 target_link_libraries(${PROJECT_NAME} libm2k)
-target_link_libraries(getSamples libm2k)
 
