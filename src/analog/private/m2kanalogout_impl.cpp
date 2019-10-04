@@ -449,6 +449,11 @@ public:
 		return m_dac_devices.at(chnIdx)->isChannelEnabled(0);
 	}
 
+	std::vector<double> getAvailableSampleRates(unsigned int chnIdx)
+	{
+		return m_dac_devices.at(chnIdx)->getAvailableSampleRates();
+	}
+
 private:
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;
