@@ -258,6 +258,11 @@ double M2kAnalogIn::getSampleRate(unsigned int chn_idx)
 	return m_pimpl->getSampleRate(chn_idx);
 }
 
+std::vector<double> M2kAnalogIn::getAvailableSampleRates()
+{
+	return m_pimpl->getAvailableSampleRates();
+}
+
 double M2kAnalogIn::setSampleRate(double samplerate)
 {
 	return m_pimpl->setSampleRate(samplerate);

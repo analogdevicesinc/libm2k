@@ -310,6 +310,12 @@ public:
 
 
 	/**
+	 * @brief getAvailableSampleRates
+	 * @return The list of available samplerates for this device
+	 */
+	std::vector<double> getAvailableSampleRates();
+
+	/**
 	* @brief Set the global sample rate
 	*
 	* @param samplerate A double value to set the sample rate to
