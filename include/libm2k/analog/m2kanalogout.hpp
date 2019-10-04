@@ -118,6 +118,14 @@ public:
 
 
 	/**
+	 * @brief getAvailableSampleRates
+	 * @param chn The index corresponding to the required channel
+	 * @return The list of available samplerates for this device
+	 */
+	std::vector<double> getAvailableSampleRates(unsigned int chn);
+
+
+	/**
 	* @brief Set the sample rate for both channels
 	*
 	* @param samplerates A list containing the sample rates of each channel

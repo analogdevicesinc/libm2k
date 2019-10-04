@@ -67,6 +67,11 @@ double M2kAnalogOut::getSampleRate(unsigned int chn_idx)
 	return m_pimpl->getSampleRate(chn_idx);
 }
 
+std::vector<double> M2kAnalogOut::getAvailableSampleRates(unsigned int chn)
+{
+	return m_pimpl->getAvailableSampleRates(chn);
+}
+
 std::vector<double> M2kAnalogOut::setSampleRate(std::vector<double> samplerates)
 {
 	return m_pimpl->setSampleRate(samplerates);
