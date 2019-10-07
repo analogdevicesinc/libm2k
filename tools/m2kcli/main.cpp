@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include "commands/command.h"
+#include "commands/analog/analog_in.h"
 #include <libm2k/contextbuilder.hpp>
 
 static const char *const helpMessage = "Usage:\n"
@@ -42,6 +43,11 @@ int main(int argc, char **argv)
 		if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
 			std::cout << helpMessage;
 			return 0;
+		}
+		if (std::string(argv[1]) == "analog-in") {
+			command = new libm2k::cli::AnalogIn(argc, argv);
+		} else {
+			throw std::runtime_error("Invalid command.\n");
 		}
 		quiet = command->parseArguments(output);
 	}
