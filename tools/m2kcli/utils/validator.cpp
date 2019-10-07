@@ -25,6 +25,12 @@ void Validator::validate(const std::string &argument, const char *argumentName, 
 	value = std::stoi(strValue);
 }
 
+void Validator::validate(const std::string &argument, const char *argumentName, double &value)
+{
+	std::string strValue = validateName(argument, argumentName);
+	validate(strValue, value);
+}
+
 void Validator::validate(const std::string &argument, const char *argumentName, bool &value)
 {
 	std::string strValue = validateName(argument, argumentName);
