@@ -28,6 +28,9 @@ using namespace std;
 M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev, bool sync) :
 	m_pimpl(std::unique_ptr<M2kDigitalImpl>(new M2kDigitalImpl(ctx, logic_dev, sync)))
 {
+
+
+	// test format should fail
 }
 
 M2kDigital::~M2kDigital()
