@@ -37,9 +37,14 @@ option(ENABLE_LOG "Build with logging support" OFF)
 option(ENABLE_EXCEPTIONS "Build with exception handling support" ON)
 option(ENABLE_PYTHON "Build Python bindings" ON)
 option(ENABLE_CSHARP "Build C# bindings" ON)
+option(ENABLE_TOOLS "Build the tools" OFF)
 
 if (ENABLE_DOC)
     add_subdirectory(doc)
+endif()
+
+if (ENABLE_TOOLS)
+	add_subdirectory(tools)
 endif()
 
 if (ENABLE_PYTHON OR ENABLE_CSHARP)
