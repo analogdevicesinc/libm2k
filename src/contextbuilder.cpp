@@ -222,3 +222,48 @@ DeviceTypes ContextBuilder::identifyDevice(iio_context *ctx)
 	}
 	return type;
 }
+
+Context *libm2k::devices::deviceOpen()
+{
+	return ContextBuilder::deviceOpen();
+}
+
+Context *libm2k::devices::deviceOpen(const char *uri)
+{
+	return ContextBuilder::deviceOpen(uri);
+}
+
+Context *libm2k::devices::deviceOpen(struct iio_context *ctx, const char *uri)
+{
+	return ContextBuilder::deviceOpen(ctx, uri);
+}
+
+M2k *libm2k::devices::m2kOpen(const char *uri)
+{
+	return ContextBuilder::m2kOpen(uri);
+}
+
+M2k *libm2k::devices::m2kOpen(struct iio_context *ctx, const char *uri)
+{
+	return ContextBuilder::m2kOpen(ctx, uri);
+}
+
+M2k *libm2k::devices::m2kOpen()
+{
+	return ContextBuilder::m2kOpen();
+}
+
+std::vector<std::string> libm2k::devices::listDevices()
+{
+	return ContextBuilder::listDevices();
+}
+
+void libm2k::devices::deviceClose(Context *ctx, bool deinit)
+{
+	ContextBuilder::deviceClose(ctx, deinit);
+}
+
+void libm2k::devices::deviceCloseAll()
+{
+	ContextBuilder::deviceCloseAll();
+}
