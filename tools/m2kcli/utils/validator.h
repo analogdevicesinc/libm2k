@@ -24,6 +24,8 @@ class Validator {
 public:
 	static void validate(const std::string &argument, const char *argumentName, int &value);
 
+	static void validate(const std::string &argument, const char *argumentName, double &value);
+
 	static void validate(const std::string &argument, const char *argumentName, bool &value);
 
 	static void validate(const std::string &argument, const char *argumentName, std::string &value);

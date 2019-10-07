@@ -17,6 +17,7 @@
 #include "commands/analog/analog_in.h"
 #include "commands/analog/analog_out.h"
 #include "commands/digital/digital.h"
+#include "commands/analog/power_supply.h"
 #include <libm2k/contextbuilder.hpp>
 
 static const char *const helpMessage = "Usage:\n"
@@ -46,12 +47,15 @@ int main(int argc, char **argv)
 			std::cout << helpMessage;
 			return 0;
 		}
+
 		if (std::string(argv[1]) == "analog-in") {
 			command = new libm2k::cli::AnalogIn(argc, argv);
 		} else if (std::string(argv[1]) == "analog-out") {
 			command = new libm2k::cli::AnalogOut(argc, argv);
 		} else if (std::string(argv[1]) == "digital") {
 			command = new libm2k::cli::Digital(argc, argv);
+		} else if (std::string(argv[1]) == "power-supply") {
+			command = new libm2k::cli::PowerSupply(argc, argv);
 		} else {
 			throw std::runtime_error("Invalid command.\n");
 		}
