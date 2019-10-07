@@ -35,6 +35,10 @@ handle_doxygen() {
 	./CI/travis/doxygen.sh
 }
 
+handle_clangformat() {
+	./CI/travis/clangformat.sh
+}
+
 LIBNAME="$1"
 OS_TYPE=${2:-default}
 OS_VERSION="$3"
