@@ -110,28 +110,19 @@ private:
 /**
 * @private
 */
-LIBM2K_API Context* deviceOpen()
-{
-	return ContextBuilder::deviceOpen();
-}
+LIBM2K_API Context* deviceOpen();
 
 
 /**
  * @private
  */
-LIBM2K_API Context* deviceOpen(const char* uri)
-{
-	return ContextBuilder::deviceOpen(uri);
-}
+LIBM2K_API Context* deviceOpen(const char* uri);
 
 
 /**
  * @private
  */
-LIBM2K_API Context* deviceOpen(struct iio_context* ctx, const char* uri)
-{
-	return ContextBuilder::deviceOpen(ctx, uri);
-}
+LIBM2K_API Context* deviceOpen(struct iio_context* ctx, const char* uri);
 
 
 /**
@@ -139,10 +130,7 @@ LIBM2K_API Context* deviceOpen(struct iio_context* ctx, const char* uri)
  * @param uri Describe the location of the context
  * @return M2k object
  */
-LIBM2K_API M2k* m2kOpen(const char* uri)
-{
-	return ContextBuilder::m2kOpen(uri);
-}
+LIBM2K_API M2k* m2kOpen(const char* uri);
 
 
 /**
@@ -151,30 +139,21 @@ LIBM2K_API M2k* m2kOpen(const char* uri)
  * @param uri Describe the location of the context
  * @return M2k object
  */
-LIBM2K_API M2k* m2kOpen(struct iio_context* ctx, const char* uri)
-{
-	return ContextBuilder::m2kOpen(ctx, uri);
-}
+LIBM2K_API M2k* m2kOpen(struct iio_context* ctx, const char* uri);
 
 
 /**
  *@brief Open a device based on its USB uri
  * @return  M2k object
  */
-LIBM2K_API M2k* m2kOpen()
-{
-	return ContextBuilder::m2kOpen();
-}
+LIBM2K_API M2k* m2kOpen();
 
 
 /**
  * @brief List all available devices
  * @return A list containing the available devices
  */
-LIBM2K_API std::vector<std::string> listDevices()
-{
-	return ContextBuilder::listDevices();
-}
+LIBM2K_API std::vector<std::string> listDevices();
 
 
 /**
@@ -182,19 +161,13 @@ LIBM2K_API std::vector<std::string> listDevices()
  * @param ctx The context to be destroyed
  * @param deinit If deinit is set to false, running contexts won't be affected
  */
-LIBM2K_API void deviceClose(Context* ctx, bool deinit = true)
-{
-	ContextBuilder::deviceClose(ctx, deinit);
-}
+LIBM2K_API void deviceClose(Context* ctx, bool deinit = true);
 
 
 /**
  * @brief Close all the devices
  */
-LIBM2K_API void deviceCloseAll()
-{
-	ContextBuilder::deviceCloseAll();
-}
+LIBM2K_API void deviceCloseAll();
 
 /**
  * @}
