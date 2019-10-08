@@ -473,7 +473,8 @@ out_cleanup:
 		m_ad5625_dev->setDoubleValue(1, 2048, "raw", true);
 
 		// write to DAC
-		std::vector<short> vec_data(256, 0);
+		int16_t value = processRawSample(0);
+		std::vector<short> vec_data(256, value);
 		std::vector<std::vector<short>> vec_data_all;
 		__try {
 			vec_data_all.push_back(vec_data);
@@ -555,8 +556,9 @@ out_cleanup:
 		// connect ADC to DAC
 		setCalibrationMode(DAC);
 
+		int16_t value = processRawSample(1024);
 		// Use the positive half scale point for gain calibration
-		std::vector<short> vec_data(256, 1024);
+		std::vector<short> vec_data(256, value);
 		std::vector<std::vector<short>> vec_data_all;
 		__try {
 			vec_data_all.push_back(vec_data);
@@ -774,6 +776,12 @@ out_cleanup:
 		m_m2k_fabric->setStringValue("calibration_mode", strMode);
 		m_calibration_mode = mode;
 		return true;
+	}
+
+	int16_t processRawSample(int16_t value)
+	{
+		/* 12-bit DAC values must be 16-bit MSB aligned. */
+		return ((-value) << 4);
 	}
 
 private:
