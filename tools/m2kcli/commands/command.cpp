@@ -22,11 +22,15 @@ Command::Command(int argc, char **argv)
 {
 	this->argc = argc;
 	this->argv = argv;
+	context = nullptr;
 	bool help = false;
+	if (argc < 3) {
+		help = true;
+		return;
+	}
 	for (int i = 2; i < argc; i++) {
 		std::string argument(argv[i]);
 		if (argument == "--help" || argument == "-h") {
-			context = nullptr;
 			help = true;
 			break;
 		} else if (std::string(argv[i]) == "auto") {

@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 	std::vector<std::pair<std::string, std::string>> output;
 	libm2k::cli::Command *command;
 	try {
-		if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
+		if (argc < 2 || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
 			std::cout << helpMessage;
 			return 0;
 		}
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 		} else if (std::string(argv[1]) == "power-supply") {
 			command = new libm2k::cli::PowerSupply(argc, argv);
 		} else {
-			throw std::runtime_error("Invalid command.\n");
+			throw std::runtime_error("m2kcli: '" +  std::string(argv[1]) + "' is not a m2kcli command. See 'm2kcli --help'.\n");
 		}
 		quiet = command->parseArguments(output);
 	}
