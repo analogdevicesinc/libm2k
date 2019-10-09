@@ -72,6 +72,9 @@ Source: "C:\projects\libm2k\build-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is
 ;Source: "C:\projects\libm2k\build-win32\*.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode
 ;Source: "C:\projects\libm2k\build-win64\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode
 
+Source: "C:\projects\libm2k\build-win32\m2kcli.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode; Tasks: install_libm2k_tools;
+Source: "C:\projects\libm2k\build-win64\m2kcli.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libm2k_tools;
+
 Source: "C:\projects\libm2k\build-win32\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib"; Check: not Is64BitInstallMode
 Source: "C:\projects\libm2k\build-win64\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib\amd64"; Check: Is64BitInstallMode
 Source: "C:\projects\libm2k\include\*"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\include"; Flags: ignoreversion recursesubdirs
@@ -98,6 +101,7 @@ Source: "C:\projects\libm2k\build-win64\libm2k-sharp-cxx-wrap.dll"; DestDir: "{c
 Name: "install_python_bindings"; 				Description: "Install libm2k Python-3.7 bindings";
 Name: "install_libiio"; 						Description: "Install libiio"; 	Check: Not isIioInstalled;
 Name: "install_libiio_force"; 					Description: "Overwrite libiio ( libiio is already installed in your system. Overwrite? )"; Check: isIioInstalled;
+Name: "install_libm2k_tools";  					Description: "Install libm2k tools";
 
 [Run]
 Filename: "{tmp}\libm2k-py37-amd64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings; Flags: skipifsilent

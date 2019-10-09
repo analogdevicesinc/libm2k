@@ -43,10 +43,6 @@ if (ENABLE_DOC)
     add_subdirectory(doc)
 endif()
 
-if (ENABLE_TOOLS)
-	add_subdirectory(tools)
-endif()
-
 if (ENABLE_PYTHON OR ENABLE_CSHARP)
 	FIND_PACKAGE(SWIG REQUIRED)
 endif()
@@ -184,6 +180,11 @@ endif()
 #Add and build the examples
 if (BUILD_EXAMPLES)
 	add_subdirectory(examples)
+endif()
+
+#Add and build libm2k tools
+if (ENABLE_TOOLS)
+	add_subdirectory(tools)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
