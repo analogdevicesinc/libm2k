@@ -14,6 +14,7 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <cctype>
 #include "validator.h"
 
 void Validator::validate(const std::string &argument, const char *argumentName, int &value)
@@ -77,7 +78,6 @@ std::map<std::string, std::string> Validator::validate(std::vector<std::string> 
 
 void Validator::validate(std::string strNumber, double &number)
 {
-	double result;
 	auto i = std::istringstream(strNumber);
 	i >> number;
 	if (i.fail() && !i.eof()) {
