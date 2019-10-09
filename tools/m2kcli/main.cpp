@@ -49,15 +49,20 @@ int main(int argc, char **argv)
 		}
 
 		if (std::string(argv[1]) == "analog-in") {
-			command = new libm2k::cli::AnalogIn(argc, argv);
+			libm2k::cli::AnalogIn analogIn(argc, argv);
+			command = &analogIn;
 		} else if (std::string(argv[1]) == "analog-out") {
-			command = new libm2k::cli::AnalogOut(argc, argv);
+			libm2k::cli::AnalogOut analogOut(argc, argv);
+			command = &analogOut;
 		} else if (std::string(argv[1]) == "digital") {
-			command = new libm2k::cli::Digital(argc, argv);
+			libm2k::cli::Digital digital(argc, argv);
+			command = &digital;
 		} else if (std::string(argv[1]) == "power-supply") {
-			command = new libm2k::cli::PowerSupply(argc, argv);
+			libm2k::cli::PowerSupply powerSupply(argc, argv);
+			command = &powerSupply;
 		} else {
-			throw std::runtime_error("m2kcli: '" +  std::string(argv[1]) + "' is not a m2kcli command. See 'm2kcli --help'.\n");
+			throw std::runtime_error("m2kcli: '" + std::string(argv[1]) +
+						 "' is not a m2kcli command. See 'm2kcli --help'.\n");
 		}
 		quiet = command->parseArguments(output);
 	}
