@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.1.3)
-project(m2kcli)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
+
+project(m2kcli LANGUAGES CXX C VERSION ${LIBM2K_VERSION})
 
 if (MSVC)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../deps/wingetopt/src)
@@ -11,7 +12,7 @@ endif (MSVC)
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${IIO_INCLUDE_DIR}
+        ${IIO_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}/include
 )
 
