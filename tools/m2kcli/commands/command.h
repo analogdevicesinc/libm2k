@@ -26,6 +26,8 @@ namespace cli {
 
 class Command {
 public:
+	Command() = default;
+
 	Command(int argc, char **argv);
 
 	virtual bool parseArguments(std::vector<std::pair<std::string, std::string>> &output) = 0;
@@ -41,6 +43,8 @@ protected:
 
 	static void
 	addOutputMessage(std::vector<std::pair<std::string, std::string>> &output, const char *key, std::string value);
+
+	static unsigned int getIndexOfElement(std::string element, const std::vector<const char *> &list);
 };
 }
 }

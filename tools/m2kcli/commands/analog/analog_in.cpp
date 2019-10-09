@@ -268,10 +268,12 @@ void AnalogIn::handleSet()
 		} else if (argument == "oversampling_ratio") {
 			analogIn->setOversamplingRatio(std::stod(value));
 		} else if (argument == "trigger_source") {
-			int enum_index = std::distance(triggerSource.begin(),
-						       std::find(triggerSource.begin(), triggerSource.end(), value));
+			int enumIndex = getIndexOfElement(value, triggerSource);
+			if (enumIndex == -1) {
+				throw std::runtime_error("Invalid trigger source: '" + std::string(value) + "'.\n");
+			}
 			analogIn->getTrigger()->setAnalogSource(
-				static_cast<libm2k::analog::M2K_TRIGGER_SOURCE>(enum_index));
+				static_cast<libm2k::analog::M2K_TRIGGER_SOURCE>(enumIndex));
 		} else if (argument == "trigger_delay") {
 			analogIn->getTrigger()->setAnalogDelay(std::stoi(value));
 		} else if (argument == "kernel_buffers") {
@@ -299,7 +301,10 @@ void AnalogIn::handleSetChannel()
 		getline(iss, value, '=');
 
 		if (argument == "range") {
-			int enumIndex = std::distance(range.begin(), std::find(range.begin(), range.end(), value));
+			int enumIndex = getIndexOfElement(value, range);
+			if (enumIndex == -1) {
+				throw std::runtime_error("Invalid range: '" + std::string(value) + "'.\n");
+			}
 			for (int &channel : channels) {
 				analogIn->setRange(static_cast<libm2k::analog::ANALOG_IN_CHANNEL>(channel),
 						   static_cast<libm2k::analog::M2K_RANGE>(enumIndex));
@@ -308,17 +313,20 @@ void AnalogIn::handleSetChannel()
 			for (int &channel : channels) {
 				analogIn->getTrigger()->setAnalogLevel(channel, std::stod(value));
 			}
-		} else if (argument == "trigger_analog_condition") {
-			int enumIndex = std::distance(triggerCondition.begin(),
-						      std::find(triggerCondition.begin(), triggerCondition.end(),
-								value));
+		} else if (argument == "trigger_condition") {
+			int enumIndex = getIndexOfElement(value, triggerCondition);
+			if (enumIndex == -1) {
+				throw std::runtime_error("Invalid trigger condition: '" + std::string(value) + "'.\n");
+			}
 			for (int &channel : channels) {
 				analogIn->getTrigger()->setAnalogCondition(channel,
 									   static_cast<libm2k::analog::M2K_TRIGGER_CONDITION>(enumIndex));
 			}
 		} else if (argument == "trigger_mode") {
-			int enumIndex = std::distance(triggerMode.begin(),
-						      std::find(triggerMode.begin(), triggerMode.end(), value));
+			int enumIndex = getIndexOfElement(value, triggerMode);
+			if (enumIndex == -1) {
+				throw std::runtime_error("Invalid trigger mode: '" + std::string(value) + "'.\n");
+			}
 			for (int &channel : channels) {
 				analogIn->getTrigger()->setAnalogMode(channel,
 								      static_cast<libm2k::analog::M2K_TRIGGER_MODE>(enumIndex));
