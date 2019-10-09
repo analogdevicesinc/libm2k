@@ -12,6 +12,7 @@
  * GNU General Public License for more details.
  */
 
+#include <algorithm>
 #include "command.h"
 #include <libm2k/contextbuilder.hpp>
 
@@ -46,6 +47,11 @@ Command::Command(int argc, char **argv)
 	}
 }
 
+libm2k::devices::M2k *Command::getContext()
+{
+	return context;
+}
+
 std::vector<std::string> Command::getArguments()
 {
 	std::vector<std::string> arguments;
@@ -67,7 +73,11 @@ Command::addOutputMessage(std::vector<std::pair<std::string, std::string>> &outp
 	output.push_back(outputMessage);
 }
 
-libm2k::devices::M2k *Command::getContext()
+unsigned int Command::getIndexOfElement(std::string element, const std::vector<const char *> &list)
 {
-	return context;
+	auto it = std::find(list.begin(), list.end(), element);
+	if (it == list.end()) {
+		return -1;
+	}
+	return distance(list.begin(), it);;
 }

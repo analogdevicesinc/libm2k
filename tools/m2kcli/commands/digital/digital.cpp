@@ -234,9 +234,10 @@ void Digital::handleSet()
 		} else if (argument == "trigger_delay") {
 			digital->getTrigger()->setDigitalDelay(std::stoi(value));
 		} else if (argument == "trigger_mode") {
-			int enumIndex = std::distance(triggerMode.begin(),
-						      std::find(triggerMode.begin(), triggerMode.end(),
-								value));
+			int enumIndex = getIndexOfElement(value, triggerMode);
+			if (enumIndex == -1) {
+				throw std::runtime_error("Invalid trigger mode: '" + std::string(value) + "'.\n");
+			}
 			digital->getTrigger()->setDigitalMode(
 				static_cast<libm2k::digital::DIO_TRIGGER_MODE>(enumIndex));
 		} else {
@@ -267,18 +268,19 @@ void Digital::handleSetChannel()
 						     std::stoi(value));
 			}
 		} else if (argument == "output_mode") {
-			int enumIndex = std::distance(outputMode.begin(),
-						      std::find(outputMode.begin(), outputMode.end(),
-								value));
+			int enumIndex = getIndexOfElement(value, outputMode);
+			if (enumIndex == -1) {
+				throw std::runtime_error("Invalid output mode: '" + std::string(value) + "'.\n");
+			}
 			for (int &channel : channels) {
 				digital->setOutputMode(static_cast<libm2k::digital::DIO_CHANNEL>(channel),
 						       static_cast<libm2k::digital::DIO_MODE>(enumIndex));
 			}
 		} else if (argument == "trigger_condition") {
-		} else if (argument == "triggerCondition") {
-			int enumIndex = std::distance(triggerCondition.begin(),
-						      std::find(triggerCondition.begin(),
-								triggerCondition.end(), value));
+			int enumIndex = getIndexOfElement(value, triggerCondition);
+			if (enumIndex == -1) {
+				throw std::runtime_error("Invalid trigger condition: '" + std::string(value) + "'.\n");
+			}
 			for (int &channel : channels) {
 				digital->getTrigger()->setDigitalCondition(channel,
 									   static_cast<libm2k::analog::M2K_TRIGGER_CONDITION>(enumIndex));

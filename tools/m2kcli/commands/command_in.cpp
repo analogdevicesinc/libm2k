@@ -26,12 +26,12 @@ void CommandIn::printSamplesCsvFormat(std::vector<uint16_t> &samples)
 
 void CommandIn::printSamplesCsvFormat(std::vector<std::vector<double>> &samples)
 {
-	int nbChannels = samples.size();
+	int nbChannels = samples.size() - 1;
 	for (unsigned long i = 0; i < samples[0].size(); i++) {
-		for (int j = 0; j < nbChannels - 1; j++) {
+		for (int j = 0; j < nbChannels; j++) {
 			std::cout << std::setprecision(16) << samples[j][i] << ',';
 		}
-		std::cout << std::setprecision(16) << samples[nbChannels - 1][i] << std::endl;
+		std::cout << std::setprecision(16) << samples[nbChannels][i] << std::endl;
 	}
 }
 
