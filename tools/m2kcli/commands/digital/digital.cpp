@@ -191,9 +191,9 @@ void Digital::handleGetChannel(std::vector<std::pair<std::string, std::string>> 
 				addOutputMessage(output, ("output_mode_channel_" + std::to_string(channel)).c_str(),
 						 std::string(outputMode[digital->getOutputMode(channel)]));
 			}
-		} else if (argument == "trigger_digital_condition") {
+		} else if (argument == "trigger_condition") {
 			for (int &channel : channels) {
-				addOutputMessage(output, ("trigger_digital_condition_channel_" +
+				addOutputMessage(output, ("trigger_condition_channel_" +
 							  std::to_string(channel)).c_str(), std::string(
 					triggerCondition[digital->getTrigger()->getDigitalCondition(channel)]));
 			}
@@ -203,7 +203,7 @@ void Digital::handleGetChannel(std::vector<std::pair<std::string, std::string>> 
 						 std::to_string(digital->getValueRaw(channel)));
 				addOutputMessage(output, ("output_mode_channel_" + std::to_string(channel)).c_str(),
 						 std::string(outputMode[digital->getOutputMode(channel)]));
-				addOutputMessage(output, ("trigger_digital_condition_channel_" +
+				addOutputMessage(output, ("trigger_condition_channel_" +
 							  std::to_string(channel)).c_str(), std::string(
 					triggerCondition[digital->getTrigger()->getDigitalCondition(channel)]));
 			}
@@ -274,6 +274,7 @@ void Digital::handleSetChannel()
 				digital->setOutputMode(static_cast<libm2k::digital::DIO_CHANNEL>(channel),
 						       static_cast<libm2k::digital::DIO_MODE>(enumIndex));
 			}
+		} else if (argument == "trigger_condition") {
 		} else if (argument == "triggerCondition") {
 			int enumIndex = std::distance(triggerCondition.begin(),
 						      std::find(triggerCondition.begin(),
@@ -368,4 +369,4 @@ const char *const Digital::helpMessage = "Usage:\n"
 					 "                        attributes: \n"
 					 "                            value - {0 | 1}\n"
 					 "                            output_mode - {open_drain | push_pull}\n"
-					 "                            trigger_digital_condition - {raising_edge | falling_edge | low_level | high_level | any_edge | no_trigger}\n";
+					 "                            trigger_condition - {rising_edge | falling_edge | low_level | high_level | any_edge | no_trigger}\n";

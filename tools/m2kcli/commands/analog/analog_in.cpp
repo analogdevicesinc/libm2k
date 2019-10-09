@@ -208,9 +208,9 @@ void AnalogIn::handleGetChannel(std::vector<std::pair<std::string, std::string>>
 				addOutputMessage(output, ("trigger_level_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(analogIn->getTrigger()->getAnalogLevel(channel)));
 			}
-		} else if (argument == "trigger_analog_condition") {
+		} else if (argument == "trigger_condition") {
 			for (int &channel : channels) {
-				addOutputMessage(output, ("trigger_analog_condition_channel_" +
+				addOutputMessage(output, ("trigger_condition_channel_" +
 							  std::to_string(channel)).c_str(), std::string(
 					triggerCondition[analogIn->getTrigger()->getAnalogCondition(channel)]));
 			}
@@ -233,7 +233,7 @@ void AnalogIn::handleGetChannel(std::vector<std::pair<std::string, std::string>>
 							 static_cast<libm2k::analog::ANALOG_IN_CHANNEL>(channel))]));
 				addOutputMessage(output, ("trigger_level_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(analogIn->getTrigger()->getAnalogLevel(channel)));
-				addOutputMessage(output, ("trigger_analog_condition_channel_" +
+				addOutputMessage(output, ("trigger_condition_channel_" +
 							  std::to_string(channel)).c_str(), std::string(
 					triggerCondition[analogIn->getTrigger()->getAnalogCondition(channel)]));
 				addOutputMessage(output, ("trigger_mode_channel_" + std::to_string(channel)).c_str(),
@@ -400,14 +400,14 @@ const char *const AnalogIn::helpMessage = "Usage:\n"
 					  "                        attributes:\n"
 					  "                            range\n"
 					  "                            trigger_level\n"
-					  "                            trigger_analog_condition\n"
+					  "                            trigger_condition\n"
 					  "                            trigger_mode\n"
 					  "                            trigger_hysteresis\n"
 					  "                            all\n"
 					  "  -s, --set [<attribute>=<value>...]\n"
 					  "                        set the value of the specified global attributes\n"
 					  "                        attribute:\n"
-					  "                            sampling_frequency - {10 | 100 | ... | 100000000}\n"
+					  "                            sampling_frequency - {1000 | 10000 | 100000 | 1000000 | 10000000 | 100000000}\n"
 					  "                            oversampling_ratio - int\n"
 					  "                            trigger_source - {channel_1 | channel_2 | channel_1_or_channel_2 | channel_1_and_channel_2 | channel_1_xor_channel_2}\n"
 					  "                            trigger_delay - int\n"
@@ -415,9 +415,9 @@ const char *const AnalogIn::helpMessage = "Usage:\n"
 					  "  -S, --set-channel channel=<index> [<attribute>=<value> ...]\n"
 					  "                        set the value of the specified attributes corresponding to the given channel\n"
 					  "                        attributes: \n"
-					  "                            range - {high | low}"
-					  "                            trigger_level - int"
-					  "                            trigger_analog_condition - {raising_edge | falling_edge | low_level | high_level}\n"
+					  "                            range - {high | low}\n"
+					  "                            trigger_level - int\n"
+					  "                            trigger_condition - {rising_edge | falling_edge | low_level | high_level}\n"
 					  "                            trigger_mode - {always | analog | digital | digital_or_analog | digital_and_analog | digital_xor_analog | \n"
 					  "                                            n_digital_or_analog | n_digital_and_analog | n_digital_xor_analog}\n"
 					  "                            trigger_hysteresis - int\n";
