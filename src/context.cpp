@@ -83,6 +83,11 @@ bool Context::iioDevHasAttribute(iio_device* dev, std::string const& attr)
 	return ContextImpl::iioDevHasAttribute(dev, attr);
 }
 
+std::string Context::getFirmwareVersion()
+{
+	return m_pimpl->getFirmwareVersion();
+}
+
 bool Context::iioChannelHasAttribute(iio_channel* chn, std::string const& attr)
 {
 	return ContextImpl::iioChannelHasAttribute(chn, attr);
