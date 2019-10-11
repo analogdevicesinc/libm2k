@@ -59,12 +59,15 @@ namespace utils {
 
 		static std::string getHardwareRevision(struct iio_context *ctx);
 
+		static std::string getFirmwareVersion(struct iio_context *ctx);
+
 		static double average(double *data, size_t numElements);
 
 		static std::vector<double> getAvailableSamplerates(struct iio_device*);
 
 		static DEVICE_DIRECTION getIioDeviceDirection(iio_device *dev);
 		static std::vector<std::string> split(std::string, std::string);
+		static int compareVersions(std::string v1, std::string v2);
 	private:
 		static std::string parseIniSection(std::string line);
 		static std::pair<std::string, std::vector<std::string>>

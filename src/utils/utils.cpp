@@ -166,7 +166,7 @@ std::string Utils::getHardwareRevision(struct iio_context *ctx)
 {
 	const char *hw_rev_attr_val = iio_context_get_attr_value(ctx,
 			"hw_model");
-	std::string rev;
+	std::string rev = "";
 
 	if (hw_rev_attr_val) {
 		std::string const s = hw_rev_attr_val;
@@ -180,6 +180,17 @@ std::string Utils::getHardwareRevision(struct iio_context *ctx)
 	}
 
 	return rev;
+}
+
+std::string Utils::getFirmwareVersion(struct iio_context *ctx)
+{
+	const char *hw_fw_version = iio_context_get_attr_value(ctx,
+			"fw_version");
+
+	if (!hw_fw_version) {
+		throw_exception(EXC_INVALID_PARAMETER, "Can't determine firmware version.");
+	}
+	return hw_fw_version;
 }
 
 double Utils::average(double *data, size_t numElements)
@@ -254,4 +265,26 @@ DEVICE_DIRECTION Utils::getIioDeviceDirection(struct iio_device* dev)
 		}
 	}
 	return dir;
+}
+
+int Utils::compareVersions(std::string v1, std::string v2)
+{
+	while ((v1.find(".") != std::string::npos) ||
+			(v2.find(".") != std::string::npos)) {
+		if (v1.find(".") != std::string::npos) {
+			v1.erase(v1.find("."), 1);
+		}
+		if (v2.find(".") != std::string::npos) {
+			v2.erase(v2.find("."), 1);
+		}
+	}
+	if (v1.size() < v2.size()) {
+		std::string surplus("0", (v2.size() - v1.size()));
+		v1.append(surplus);
+	} else if (v2.size() < v1.size()) {
+		std::string surplus("0", (v1.size() - v2.size()));
+		v2.append(surplus);
+	}
+
+	return v1.compare(v2);
 }

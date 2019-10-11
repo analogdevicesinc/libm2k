@@ -416,6 +416,11 @@ public:
 
 	}
 
+	std::string getFirmwareVersion()
+	{
+		return Utils::getFirmwareVersion(m_context);
+	}
+
 protected:
 	struct iio_context* m_context;
 	std::vector<libm2k::analog::DMM*> m_instancesDMM;
