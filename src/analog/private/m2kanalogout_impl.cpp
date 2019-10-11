@@ -100,18 +100,12 @@ public:
 
 	double getCalibscale(unsigned int index)
 	{
-		if (index >= m_dac_devices.size()) {
-			throw invalid_parameter_exception("M2kAnalogOut: No such channel available for calibscale");
-		}
-		return m_dac_devices.at(index)->getDoubleValue("calibscale");
+		return getDacDevice(index)->getDoubleValue("calibscale");
 	}
 
 	double setCalibscale(unsigned int index, double calibscale)
 	{
-		if (index >= m_dac_devices.size()) {
-			throw invalid_parameter_exception("M2kAnalogOut: No such channel available for calibscale");
-		}
-		m_dac_devices.at(index)->setDoubleValue(calibscale, "calibscale");
+		getDacDevice(index)->setDoubleValue(calibscale, "calibscale");
 		return getCalibscale(index);
 	}
 
@@ -127,7 +121,7 @@ public:
 
 	double getOversamplingRatio(unsigned int chn_idx)
 	{
-		return m_dac_devices.at(chn_idx)->getDoubleValue("oversampling_ratio");
+		return getDacDevice(chn_idx)->getDoubleValue("oversampling_ratio");
 	}
 
 	std::vector<double> setOversamplingRatio(std::vector<double> oversampling_ratio)
@@ -143,7 +137,7 @@ public:
 
 	double setOversamplingRatio(unsigned int chn_idx, double oversampling_ratio)
 	{
-		return m_dac_devices.at(chn_idx)->setDoubleValue(oversampling_ratio,
+		return getDacDevice(chn_idx)->setDoubleValue(oversampling_ratio,
 								 "oversampling_ratio");
 	}
 
@@ -159,7 +153,7 @@ public:
 
 	double getSampleRate(unsigned int chn_idx)
 	{
-		return m_dac_devices.at(chn_idx)->getDoubleValue("sampling_frequency");
+		return getDacDevice(chn_idx)->getDoubleValue("sampling_frequency");
 	}
 
 	std::vector<double> setSampleRate(std::vector<double> samplerates)
@@ -175,7 +169,7 @@ public:
 
 	double setSampleRate(unsigned int chn_idx, double samplerate)
 	{
-		return m_dac_devices.at(chn_idx)->setDoubleValue(samplerate,
+		return getDacDevice(chn_idx)->setDoubleValue(samplerate,
 								 "sampling_frequency");
 	}
 
@@ -186,20 +180,13 @@ public:
 				dac->setBoolValue(en, "dma_sync");
 			}
 		} else {
-			if (chn >= m_dac_devices.size()) {
-				throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
-			}
-			m_dac_devices.at(chn)->setBoolValue(en, "dma_sync");
+			getDacDevice(chn)->setBoolValue(en, "dma_sync");
 		}
 	}
 
 	bool getSyncedDma(int chn = -1)
 	{
-		if (chn >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
-		}
-
-		return m_dac_devices.at(chn)->getBoolValue("dma_sync");
+		return getDacDevice(chn)->getBoolValue("dma_sync");
 	}
 
 	void setCyclic(bool en)
@@ -212,19 +199,13 @@ public:
 
 	void setCyclic(unsigned int chn, bool en)
 	{
-		if (chn >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
-		}
+		getDacDevice(chn)->setCyclic(en);
 		m_cyclic.at(chn) = en;
-		m_dac_devices.at(chn)->setCyclic(en);
 	}
 
 	bool getCyclic(unsigned int chn)
 	{
-		if (chn >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
-		}
-		return m_cyclic.at(chn);
+		return getDacDevice(chn);
 	}
 
 	int convertVoltsToRaw(double voltage, double vlsb,
@@ -418,11 +399,8 @@ public:
 
 	void stop(unsigned int chn)
 	{
-		if (chn >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Analog Out stop: No such channel");
-		}
 		m_m2k_fabric->setBoolValue(chn, true, "powerdown", true);
-		m_dac_devices.at(chn)->stop();
+		getDacDevice(chn)->stop();
 	}
 
 	short processSample(double value, unsigned int channel)
@@ -434,24 +412,25 @@ public:
 
 	void enableChannel(unsigned int chnIdx, bool enable)
 	{
-		if (chnIdx >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel");
-		}
-
-		m_dac_devices.at(chnIdx)->enableChannel(0, enable);
+		getDacDevice(chnIdx)->enableChannel(0, enable);
 	}
 
 	bool isChannelEnabled(unsigned int chnIdx)
 	{
+		return getDacDevice(chnIdx)->isChannelEnabled(0);
+	}
+
+	DeviceOut* getDacDevice(unsigned int chnIdx)
+	{
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel");
 		}
-		return m_dac_devices.at(chnIdx)->isChannelEnabled(0);
+		return m_dac_devices.at(chnIdx);
 	}
 
 	std::vector<double> getAvailableSampleRates(unsigned int chnIdx)
 	{
-		return m_dac_devices.at(chnIdx)->getAvailableSampleRates();
+		return getDacDevice(chnIdx)->getAvailableSampleRates();
 	}
 
 private:
