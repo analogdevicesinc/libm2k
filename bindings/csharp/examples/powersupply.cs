@@ -30,7 +30,7 @@ namespace examples
 
             double voltage = ain.getVoltage(ANALOG_IN_CHANNEL.ANALOG_IN_CHANNEL_1);
             Console.WriteLine(voltage);
-            libm2k.deviceClose(ctx);
+	    libm2k.contextClose(ctx);
         }
     }
 }

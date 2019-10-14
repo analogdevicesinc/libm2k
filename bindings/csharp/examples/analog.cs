@@ -75,7 +75,7 @@ namespace examples
             }
 
             aout.stop();
-            libm2k.deviceClose(ctx);
+	    libm2k.contextClose(ctx);
         }
     }
 }
