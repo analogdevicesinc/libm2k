@@ -21,7 +21,7 @@
 namespace libm2k {
 namespace cli {
 
-class CommandOut : virtual public Command { ;
+class CommandOut : virtual public Command {
 protected:
 
 	static void getSamplesCsvFormat(std::string &file, std::vector<uint16_t> &samples);

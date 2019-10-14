@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 		}
 	}
 	if (command->getContext() != nullptr) {
-		libm2k::devices::deviceClose(command->getContext(), true);
+		libm2k::contexts::contextClose(command->getContext(), true);
 	}
 	return 0;
 }
