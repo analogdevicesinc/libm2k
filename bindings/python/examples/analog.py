@@ -47,4 +47,4 @@ for i in range(10): # gets 10 triggered samples then quits
     plt.show()
     time.sleep(0.1)
 
-libm2k.deviceClose(ctx)
+libm2k.contextClose(ctx)

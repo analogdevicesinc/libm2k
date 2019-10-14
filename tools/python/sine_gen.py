@@ -89,6 +89,6 @@ def main():
     input( " Press any key to stop generation ")
 
     siggen.stop()
-    libm2k.deviceClose(ctx)
+    libm2k.contextClose(ctx)
 
 main()
