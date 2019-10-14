@@ -7,7 +7,7 @@
 using namespace std;
 using namespace libm2k;
 using namespace libm2k::analog;
-using namespace libm2k::devices;
+using namespace libm2k::contexts;
 
 #define PS_CHANNEL (0)
 #define PS_VOLTAGE (1.7)

@@ -41,7 +41,7 @@ class M2kCalibration;
  * @brief Contains the representation of the M2K
  * @{
  */
-namespace devices {
+namespace contexts {
 
 /**
 * @defgroup m2k M2k

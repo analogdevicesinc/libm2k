@@ -33,7 +33,7 @@ extern "C" {
 
 using namespace std;
 using namespace libm2k::utils;
-using namespace libm2k::devices;
+using namespace libm2k::contexts;
 
 class DeviceIn::DeviceInImpl {
 public:

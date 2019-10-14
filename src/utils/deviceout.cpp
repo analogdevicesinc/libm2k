@@ -21,7 +21,7 @@
 
 using namespace std;
 using namespace libm2k::utils;
-using namespace libm2k::devices;
+using namespace libm2k::contexts;
 
 /*
  * Represents an iio_device
