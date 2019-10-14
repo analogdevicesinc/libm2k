@@ -31,7 +31,7 @@
 
 using namespace libm2k::analog;
 using namespace libm2k::digital;
-using namespace libm2k::devices;
+using namespace libm2k::contexts;
 using namespace libm2k::utils;
 
 class Context::ContextImpl {
@@ -383,7 +383,7 @@ public:
 
 	M2k* toM2k(Context *parent)
 	{
-		libm2k::devices::M2k* dev = dynamic_cast<M2k*>(parent);
+		libm2k::contexts::M2k* dev = dynamic_cast<M2k*>(parent);
 		if(dev) {
 			return dev;
 		} else {

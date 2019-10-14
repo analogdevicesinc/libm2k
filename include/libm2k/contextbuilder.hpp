@@ -36,7 +36,7 @@ enum DeviceTypes {
 namespace libm2k {
 
 
-namespace devices {
+namespace contexts {
 
     /**
      * @private

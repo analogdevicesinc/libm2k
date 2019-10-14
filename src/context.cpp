@@ -21,7 +21,7 @@
 
 using namespace libm2k::analog;
 using namespace libm2k::digital;
-using namespace libm2k::devices;
+using namespace libm2k::contexts;
 using namespace libm2k::utils;
 
 Context::Context(std::string uri, struct iio_context *ctx, std::string name, bool sync) :
@@ -144,12 +144,12 @@ std::string Context::getUri()
 	return m_pimpl->getUri();
 }
 
-void libm2k::devices::Context::scanAllPowerSupply()
+void libm2k::contexts::Context::scanAllPowerSupply()
 {
 	m_pimpl->scanAllPowerSupply();
 }
 
-void libm2k::devices::Context::scanAllDigital()
+void libm2k::contexts::Context::scanAllDigital()
 {
 	m_pimpl->scanAllDigital();
 }

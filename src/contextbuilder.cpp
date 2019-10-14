@@ -28,7 +28,7 @@
 #include <memory>
 
 
-using namespace libm2k::devices;
+using namespace libm2k::contexts;
 using namespace libm2k::utils;
 
 std::vector<Context*> ContextBuilder::s_connectedDevices = {};
@@ -238,17 +238,17 @@ Context *libm2k::devices::deviceOpen(struct iio_context *ctx, const char *uri)
 	return ContextBuilder::deviceOpen(ctx, uri);
 }
 
-M2k *libm2k::devices::m2kOpen(const char *uri)
+M2k *libm2k::contexts::m2kOpen(const char *uri)
 {
 	return ContextBuilder::m2kOpen(uri);
 }
 
-M2k *libm2k::devices::m2kOpen(struct iio_context *ctx, const char *uri)
+M2k *libm2k::contexts::m2kOpen(struct iio_context *ctx, const char *uri)
 {
 	return ContextBuilder::m2kOpen(ctx, uri);
 }
 
-M2k *libm2k::devices::m2kOpen()
+M2k *libm2k::contexts::m2kOpen()
 {
 	return ContextBuilder::m2kOpen();
 }

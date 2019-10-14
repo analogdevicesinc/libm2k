@@ -7,7 +7,7 @@
 using namespace std;
 using namespace libm2k;
 using namespace libm2k::analog;
-using namespace libm2k::devices;
+using namespace libm2k::contexts;
 
 int main(int argc, char* argv[])
 {

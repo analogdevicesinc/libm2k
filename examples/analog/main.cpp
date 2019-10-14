@@ -9,7 +9,7 @@
 using namespace std;
 using namespace libm2k;
 using namespace libm2k::analog;
-using namespace libm2k::devices;
+using namespace libm2k::contexts;
 #define M_PI 3.14
 int main(int argc, char* argv[])
 {
