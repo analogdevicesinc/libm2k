@@ -11,20 +11,20 @@
 function libDef = definelibm2k()
 libDef = clibgen.LibraryDefinition("libm2kData.xml");
 %% OutputFolder and Libraries 
-libDef.OutputFolder = "/work/libm2k/bindings/matlab";
+libDef.OutputFolder = "/tmp/libm2k/bindings/matlab";
 libDef.Libraries = "/usr/local/lib/libm2k.so";
 
 %% C++ class |iio_context| with MATLAB name |clib.libm2k.iio_context| 
-iio_contextDefinition = addClass(libDef, "iio_context", "MATLABName", "clib.libm2k.iio_context", ...
-    "Description", "clib.libm2k.iio_context    Representation of C++ class iio_context"); % This description is shown as help to user. Modify it to appropriate description.
+% iio_contextDefinition = addClass(libDef, "iio_context", "MATLABName", "clib.libm2k.iio_context", ...
+%     "Description", "clib.libm2k.iio_context    Representation of C++ class iio_context"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ class |iio_channel| with MATLAB name |clib.libm2k.iio_channel| 
-iio_channelDefinition = addClass(libDef, "iio_channel", "MATLABName", "clib.libm2k.iio_channel", ...
-    "Description", "clib.libm2k.iio_channel    Representation of C++ class iio_channel"); % This description is shown as help to user. Modify it to appropriate description.
+% iio_channelDefinition = addClass(libDef, "iio_channel", "MATLABName", "clib.libm2k.iio_channel", ...
+%     "Description", "clib.libm2k.iio_channel    Representation of C++ class iio_channel"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ class |iio_device| with MATLAB name |clib.libm2k.iio_device| 
-iio_deviceDefinition = addClass(libDef, "iio_device", "MATLABName", "clib.libm2k.iio_device", ...
-    "Description", "clib.libm2k.iio_device    Representation of C++ class iio_device"); % This description is shown as help to user. Modify it to appropriate description.
+% iio_deviceDefinition = addClass(libDef, "iio_device", "MATLABName", "clib.libm2k.iio_device", ...
+%     "Description", "clib.libm2k.iio_device    Representation of C++ class iio_device"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ enumeration |DeviceTypes| with MATLAB name |clib.libm2k.DeviceTypes| 
 addEnumeration(libDef, "DeviceTypes", "int32",...
@@ -37,16 +37,16 @@ addEnumeration(libDef, "DeviceTypes", "int32",...
     "Description", "clib.libm2k.DeviceTypes    Representation of C++ enumeration DeviceTypes"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ class |iio_buffer| with MATLAB name |clib.libm2k.iio_buffer| 
-iio_bufferDefinition = addClass(libDef, "iio_buffer", "MATLABName", "clib.libm2k.iio_buffer", ...
-    "Description", "clib.libm2k.iio_buffer    Representation of C++ class iio_buffer"); % This description is shown as help to user. Modify it to appropriate description.
+% iio_bufferDefinition = addClass(libDef, "iio_buffer", "MATLABName", "clib.libm2k.iio_buffer", ...
+%     "Description", "clib.libm2k.iio_buffer    Representation of C++ class iio_buffer"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ class |iio_context_info| with MATLAB name |clib.libm2k.iio_context_info| 
-iio_context_infoDefinition = addClass(libDef, "iio_context_info", "MATLABName", "clib.libm2k.iio_context_info", ...
-    "Description", "clib.libm2k.iio_context_info    Representation of C++ class iio_context_info"); % This description is shown as help to user. Modify it to appropriate description.
+% iio_context_infoDefinition = addClass(libDef, "iio_context_info", "MATLABName", "clib.libm2k.iio_context_info", ...
+%     "Description", "clib.libm2k.iio_context_info    Representation of C++ class iio_context_info"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ class |iio_scan_context| with MATLAB name |clib.libm2k.iio_scan_context| 
-iio_scan_contextDefinition = addClass(libDef, "iio_scan_context", "MATLABName", "clib.libm2k.iio_scan_context", ...
-    "Description", "clib.libm2k.iio_scan_context    Representation of C++ class iio_scan_context"); % This description is shown as help to user. Modify it to appropriate description.
+% iio_scan_contextDefinition = addClass(libDef, "iio_scan_context", "MATLABName", "clib.libm2k.iio_scan_context", ...
+%     "Description", "clib.libm2k.iio_scan_context    Representation of C++ class iio_scan_context"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ enumeration |iio_chan_type| with MATLAB name |clib.libm2k.iio_chan_type| 
 addEnumeration(libDef, "iio_chan_type", "int32",...
@@ -195,6 +195,118 @@ addProperty(iio_data_formatDefinition, "scale", "double", ...
 % C++ Signature: unsigned int iio_data_format::repeat
 addProperty(iio_data_formatDefinition, "repeat", "uint32", ...
     "Description", "uint32    Data Member of C++ class iio_data_format::repeat"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ class |no_device_exception| with MATLAB name |clib.libm2k.no_device_exception| 
+no_device_exceptionDefinition = addClass(libDef, "no_device_exception", "MATLABName", "clib.libm2k.no_device_exception", ...
+    "Description", "clib.libm2k.no_device_exception    Representation of C++ class no_device_exception"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ class constructor for C++ class |no_device_exception| 
+% C++ Signature: no_device_exception::no_device_exception(std::string const & what)
+no_device_exceptionConstructor1Definition = addConstructor(no_device_exceptionDefinition, ...
+    "no_device_exception::no_device_exception(std::string const & what)", ...
+    "Description", "clib.libm2k.no_device_exception    Constructor of C++ class no_device_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(no_device_exceptionConstructor1Definition, "what", "string", "input");
+validate(no_device_exceptionConstructor1Definition);
+
+%% C++ class constructor for C++ class |no_device_exception| 
+% C++ Signature: no_device_exception::no_device_exception(char const * what)
+%no_device_exceptionConstructor2Definition = addConstructor(no_device_exceptionDefinition, ...
+%    "no_device_exception::no_device_exception(char const * what)", ...
+%    "Description", "clib.libm2k.no_device_exception    Constructor of C++ class no_device_exception"); % This description is shown as help to user. Modify it to appropriate description.
+%defineArgument(no_device_exceptionConstructor2Definition, "what", <MLTYPE>, "input", <SHAPE>); % '<MLTYPE>' can be int8,string, or char
+%validate(no_device_exceptionConstructor2Definition);
+
+%% C++ class constructor for C++ class |no_device_exception| 
+% C++ Signature: no_device_exception::no_device_exception(no_device_exception const & input1)
+no_device_exceptionConstructor3Definition = addConstructor(no_device_exceptionDefinition, ...
+    "no_device_exception::no_device_exception(no_device_exception const & input1)", ...
+    "Description", "clib.libm2k.no_device_exception    Constructor of C++ class no_device_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(no_device_exceptionConstructor3Definition, "input1", "clib.libm2k.no_device_exception", "input");
+validate(no_device_exceptionConstructor3Definition);
+
+%% C++ class |instrument_already_in_use_exception| with MATLAB name |clib.libm2k.instrument_already_in_use_exception| 
+instrument_already_in_use_exceptionDefinition = addClass(libDef, "instrument_already_in_use_exception", "MATLABName", "clib.libm2k.instrument_already_in_use_exception", ...
+    "Description", "clib.libm2k.instrument_already_in_use_exception    Representation of C++ class instrument_already_in_use_exception"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ class constructor for C++ class |instrument_already_in_use_exception| 
+% C++ Signature: instrument_already_in_use_exception::instrument_already_in_use_exception(std::string const & what)
+instrument_already_in_use_exceptConstructor1Definition = addConstructor(instrument_already_in_use_exceptionDefinition, ...
+    "instrument_already_in_use_exception::instrument_already_in_use_exception(std::string const & what)", ...
+    "Description", "clib.libm2k.instrument_already_in_use_exception    Constructor of C++ class instrument_already_in_use_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(instrument_already_in_use_exceptConstructor1Definition, "what", "string", "input");
+validate(instrument_already_in_use_exceptConstructor1Definition);
+
+%% C++ class constructor for C++ class |instrument_already_in_use_exception| 
+% C++ Signature: instrument_already_in_use_exception::instrument_already_in_use_exception(char const * what)
+%instrument_already_in_use_exceptConstructor2Definition = addConstructor(instrument_already_in_use_exceptionDefinition, ...
+%    "instrument_already_in_use_exception::instrument_already_in_use_exception(char const * what)", ...
+%    "Description", "clib.libm2k.instrument_already_in_use_exception    Constructor of C++ class instrument_already_in_use_exception"); % This description is shown as help to user. Modify it to appropriate description.
+%defineArgument(instrument_already_in_use_exceptConstructor2Definition, "what", <MLTYPE>, "input", <SHAPE>); % '<MLTYPE>' can be int8,string, or char
+%validate(instrument_already_in_use_exceptConstructor2Definition);
+
+%% C++ class constructor for C++ class |instrument_already_in_use_exception| 
+% C++ Signature: instrument_already_in_use_exception::instrument_already_in_use_exception(instrument_already_in_use_exception const & input1)
+instrument_already_in_use_exceptConstructor3Definition = addConstructor(instrument_already_in_use_exceptionDefinition, ...
+    "instrument_already_in_use_exception::instrument_already_in_use_exception(instrument_already_in_use_exception const & input1)", ...
+    "Description", "clib.libm2k.instrument_already_in_use_exception    Constructor of C++ class instrument_already_in_use_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(instrument_already_in_use_exceptConstructor3Definition, "input1", "clib.libm2k.instrument_already_in_use_exception", "input");
+validate(instrument_already_in_use_exceptConstructor3Definition);
+
+%% C++ class |invalid_parameter_exception| with MATLAB name |clib.libm2k.invalid_parameter_exception| 
+invalid_parameter_exceptionDefinition = addClass(libDef, "invalid_parameter_exception", "MATLABName", "clib.libm2k.invalid_parameter_exception", ...
+    "Description", "clib.libm2k.invalid_parameter_exception    Representation of C++ class invalid_parameter_exception"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ class constructor for C++ class |invalid_parameter_exception| 
+% C++ Signature: invalid_parameter_exception::invalid_parameter_exception(std::string const & what)
+invalid_parameter_exceptionConstructor1Definition = addConstructor(invalid_parameter_exceptionDefinition, ...
+    "invalid_parameter_exception::invalid_parameter_exception(std::string const & what)", ...
+    "Description", "clib.libm2k.invalid_parameter_exception    Constructor of C++ class invalid_parameter_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(invalid_parameter_exceptionConstructor1Definition, "what", "string", "input");
+validate(invalid_parameter_exceptionConstructor1Definition);
+
+%% C++ class constructor for C++ class |invalid_parameter_exception| 
+% C++ Signature: invalid_parameter_exception::invalid_parameter_exception(char const * what)
+%invalid_parameter_exceptionConstructor2Definition = addConstructor(invalid_parameter_exceptionDefinition, ...
+%    "invalid_parameter_exception::invalid_parameter_exception(char const * what)", ...
+%    "Description", "clib.libm2k.invalid_parameter_exception    Constructor of C++ class invalid_parameter_exception"); % This description is shown as help to user. Modify it to appropriate description.
+%defineArgument(invalid_parameter_exceptionConstructor2Definition, "what", <MLTYPE>, "input", <SHAPE>); % '<MLTYPE>' can be int8,string, or char
+%validate(invalid_parameter_exceptionConstructor2Definition);
+
+%% C++ class constructor for C++ class |invalid_parameter_exception| 
+% C++ Signature: invalid_parameter_exception::invalid_parameter_exception(invalid_parameter_exception const & input1)
+invalid_parameter_exceptionConstructor3Definition = addConstructor(invalid_parameter_exceptionDefinition, ...
+    "invalid_parameter_exception::invalid_parameter_exception(invalid_parameter_exception const & input1)", ...
+    "Description", "clib.libm2k.invalid_parameter_exception    Constructor of C++ class invalid_parameter_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(invalid_parameter_exceptionConstructor3Definition, "input1", "clib.libm2k.invalid_parameter_exception", "input");
+validate(invalid_parameter_exceptionConstructor3Definition);
+
+%% C++ class |timeout_exception| with MATLAB name |clib.libm2k.timeout_exception| 
+timeout_exceptionDefinition = addClass(libDef, "timeout_exception", "MATLABName", "clib.libm2k.timeout_exception", ...
+    "Description", "clib.libm2k.timeout_exception    Representation of C++ class timeout_exception"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ class constructor for C++ class |timeout_exception| 
+% C++ Signature: timeout_exception::timeout_exception(std::string const & what)
+timeout_exceptionConstructor1Definition = addConstructor(timeout_exceptionDefinition, ...
+    "timeout_exception::timeout_exception(std::string const & what)", ...
+    "Description", "clib.libm2k.timeout_exception    Constructor of C++ class timeout_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(timeout_exceptionConstructor1Definition, "what", "string", "input");
+validate(timeout_exceptionConstructor1Definition);
+
+%% C++ class constructor for C++ class |timeout_exception| 
+% C++ Signature: timeout_exception::timeout_exception(char const * what)
+%timeout_exceptionConstructor2Definition = addConstructor(timeout_exceptionDefinition, ...
+%    "timeout_exception::timeout_exception(char const * what)", ...
+%    "Description", "clib.libm2k.timeout_exception    Constructor of C++ class timeout_exception"); % This description is shown as help to user. Modify it to appropriate description.
+%defineArgument(timeout_exceptionConstructor2Definition, "what", <MLTYPE>, "input", <SHAPE>); % '<MLTYPE>' can be int8,string, or char
+%validate(timeout_exceptionConstructor2Definition);
+
+%% C++ class constructor for C++ class |timeout_exception| 
+% C++ Signature: timeout_exception::timeout_exception(timeout_exception const & input1)
+timeout_exceptionConstructor3Definition = addConstructor(timeout_exceptionDefinition, ...
+    "timeout_exception::timeout_exception(timeout_exception const & input1)", ...
+    "Description", "clib.libm2k.timeout_exception    Constructor of C++ class timeout_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(timeout_exceptionConstructor3Definition, "input1", "clib.libm2k.timeout_exception", "input");
+validate(timeout_exceptionConstructor3Definition);
 
 %% C++ function |iio_create_scan_context| with MATLAB name |clib.libm2k.iio_create_scan_context|
 % C++ Signature: iio_scan_context * iio_create_scan_context(char const * backend,unsigned int flags)
@@ -1348,6 +1460,48 @@ addProperty(iio_data_formatDefinition, "repeat", "uint32", ...
 %defineOutput(iio_device_reg_readDefinition, "RetVal", "int32");
 %validate(iio_device_reg_readDefinition);
 
+%% C++ function |throw_exception| with MATLAB name |clib.libm2k.throw_exception|
+% C++ Signature: void throw_exception(libm2k::M2K_EXCEPTION exc_type,std::string exception)
+throw_exceptionDefinition = addFunction(libDef, ...
+    "void throw_exception(libm2k::M2K_EXCEPTION exc_type,std::string exception)", ...
+    "MATLABName", "clib.libm2k.throw_exception", ...
+    "Description", "clib.libm2k.throw_exception    Representation of C++ function throw_exception"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(throw_exceptionDefinition, "exc_type", "clib.libm2k.libm2k.M2K_EXCEPTION");
+defineArgument(throw_exceptionDefinition, "exception", "string");
+validate(throw_exceptionDefinition);
+
+%% C++ enumeration |libm2k::CALIBRATION_MODE| with MATLAB name |clib.libm2k.libm2k.CALIBRATION_MODE| 
+addEnumeration(libDef, "libm2k::CALIBRATION_MODE", "int32",...
+    [...
+      "ADC_REF1",...  % 0
+      "ADC_REF2",...  % 1
+      "ADC_GND",...  % 2
+      "DAC",...  % 3
+      "NONE",...  % 4
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.CALIBRATION_MODE", ...
+    "Description", "clib.libm2k.libm2k.CALIBRATION_MODE    Representation of C++ enumeration libm2k::CALIBRATION_MODE"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ enumeration |libm2k::GAIN_MODE| with MATLAB name |clib.libm2k.libm2k.GAIN_MODE| 
+addEnumeration(libDef, "libm2k::GAIN_MODE", "int32",...
+    [...
+      "LOW_GAIN",...  % 0
+      "HIGH_GAIN",...  % 1
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.GAIN_MODE", ...
+    "Description", "clib.libm2k.libm2k.GAIN_MODE    Representation of C++ enumeration libm2k::GAIN_MODE"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ enumeration |libm2k::M2K_EXCEPTION| with MATLAB name |clib.libm2k.libm2k.M2K_EXCEPTION| 
+addEnumeration(libDef, "libm2k::M2K_EXCEPTION", "int32",...
+    [...
+      "EXC_OUT_OF_RANGE",...  % 0
+      "EXC_RUNTIME_ERROR",...  % 1
+      "EXC_INVALID_PARAMETER",...  % 2
+      "EXC_TIMEOUT",...  % 3
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.M2K_EXCEPTION", ...
+    "Description", "clib.libm2k.libm2k.M2K_EXCEPTION    Representation of C++ enumeration libm2k::M2K_EXCEPTION"); % This description is shown as help to user. Modify it to appropriate description.
+
 %% C++ class |libm2k::M2kCalibration| with MATLAB name |clib.libm2k.libm2k.M2kCalibration| 
 M2kCalibrationDefinition = addClass(libDef, "libm2k::M2kCalibration", "MATLABName", "clib.libm2k.libm2k.M2kCalibration", ...
     "Description", "clib.libm2k.libm2k.M2kCalibration    Representation of C++ class libm2k::M2kCalibration"); % This description is shown as help to user. Modify it to appropriate description.
@@ -1564,27 +1718,33 @@ defineArgument(setCalibrationModeDefinition, "input1", "int32");
 defineOutput(setCalibrationModeDefinition, "RetVal", "logical");
 validate(setCalibrationModeDefinition);
 
-%% C++ class |libm2k::analog::DMM| with MATLAB name |clib.libm2k.libm2k.analog.DMM| 
-DMMDefinition = addClass(libDef, "libm2k::analog::DMM", "MATLABName", "clib.libm2k.libm2k.analog.DMM", ...
-    "Description", "clib.libm2k.libm2k.analog.DMM    Representation of C++ class libm2k::analog::DMM"); % This description is shown as help to user. Modify it to appropriate description.
+%% C++ class |libm2k::Logger| with MATLAB name |clib.libm2k.libm2k.Logger| 
+LoggerDefinition = addClass(libDef, "libm2k::Logger", "MATLABName", "clib.libm2k.libm2k.Logger", ...
+    "Description", "clib.libm2k.libm2k.Logger    Representation of C++ class libm2k::Logger"); % This description is shown as help to user. Modify it to appropriate description.
 
-%% C++ enumeration |libm2k::analog::ANALOG_IN_CHANNEL| with MATLAB name |clib.libm2k.libm2k.analog.ANALOG_IN_CHANNEL| 
-addEnumeration(libDef, "libm2k::analog::ANALOG_IN_CHANNEL", "int32",...
-    [...
-      "ANALOG_IN_CHANNEL_1",...  % 0
-      "ANALOG_IN_CHANNEL_2",...  % 1
-    ],...
-    "MATLABName", "clib.libm2k.libm2k.analog.ANALOG_IN_CHANNEL", ...
-    "Description", "clib.libm2k.libm2k.analog.ANALOG_IN_CHANNEL    Representation of C++ enumeration libm2k::analog::ANALOG_IN_CHANNEL"); % This description is shown as help to user. Modify it to appropriate description.
+%% C++ class method |getInstance| for C++ class |libm2k::Logger| 
+% C++ Signature: libm2k::Logger & libm2k::Logger::getInstance()
+getInstanceDefinition = addMethod(LoggerDefinition, ...
+    "libm2k::Logger & libm2k::Logger::getInstance()", ...
+    "Description", "clib.libm2k.libm2k.Logger.getInstance    Method of C++ class libm2k::Logger::getInstance"); % This description is shown as help to user. Modify it to appropriate description.
+defineOutput(getInstanceDefinition, "RetVal", "clib.libm2k.libm2k.Logger");
+validate(getInstanceDefinition);
 
-%% C++ enumeration |libm2k::analog::M2K_RANGE| with MATLAB name |clib.libm2k.libm2k.analog.M2K_RANGE| 
-addEnumeration(libDef, "libm2k::analog::M2K_RANGE", "int32",...
-    [...
-      "PLUS_MINUS_25V",...  % 0
-      "PLUS_MINUS_2_5V",...  % 1
-    ],...
-    "MATLABName", "clib.libm2k.libm2k.analog.M2K_RANGE", ...
-    "Description", "clib.libm2k.libm2k.analog.M2K_RANGE    Representation of C++ enumeration libm2k::analog::M2K_RANGE"); % This description is shown as help to user. Modify it to appropriate description.
+%% C++ class method |warn| for C++ class |libm2k::Logger| 
+% C++ Signature: void libm2k::Logger::warn(std::string message)
+warnDefinition = addMethod(LoggerDefinition, ...
+    "void libm2k::Logger::warn(std::string message)", ...
+    "Description", "clib.libm2k.libm2k.Logger.warn    Method of C++ class libm2k::Logger::warn"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(warnDefinition, "message", "string");
+validate(warnDefinition);
+
+%% C++ class constructor for C++ class |libm2k::Logger| 
+% C++ Signature: libm2k::Logger::Logger(libm2k::Logger const & input1)
+LoggerConstructor1Definition = addConstructor(LoggerDefinition, ...
+    "libm2k::Logger::Logger(libm2k::Logger const & input1)", ...
+    "Description", "clib.libm2k.libm2k.Logger    Constructor of C++ class libm2k::Logger"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(LoggerConstructor1Definition, "input1", "clib.libm2k.libm2k.Logger", "input");
+validate(LoggerConstructor1Definition);
 
 %% C++ enumeration |libm2k::analog::M2K_TRIGGER_CONDITION| with MATLAB name |clib.libm2k.libm2k.analog.M2K_TRIGGER_CONDITION| 
 addEnumeration(libDef, "libm2k::analog::M2K_TRIGGER_CONDITION", "int32",...
@@ -1614,6 +1774,28 @@ addEnumeration(libDef, "libm2k::analog::M2K_TRIGGER_MODE", "int32",...
     ],...
     "MATLABName", "clib.libm2k.libm2k.analog.M2K_TRIGGER_MODE", ...
     "Description", "clib.libm2k.libm2k.analog.M2K_TRIGGER_MODE    Representation of C++ enumeration libm2k::analog::M2K_TRIGGER_MODE"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ class |libm2k::analog::DMM| with MATLAB name |clib.libm2k.libm2k.analog.DMM| 
+DMMDefinition = addClass(libDef, "libm2k::analog::DMM", "MATLABName", "clib.libm2k.libm2k.analog.DMM", ...
+    "Description", "clib.libm2k.libm2k.analog.DMM    Representation of C++ class libm2k::analog::DMM"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ enumeration |libm2k::analog::ANALOG_IN_CHANNEL| with MATLAB name |clib.libm2k.libm2k.analog.ANALOG_IN_CHANNEL| 
+addEnumeration(libDef, "libm2k::analog::ANALOG_IN_CHANNEL", "int32",...
+    [...
+      "ANALOG_IN_CHANNEL_1",...  % 0
+      "ANALOG_IN_CHANNEL_2",...  % 1
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.analog.ANALOG_IN_CHANNEL", ...
+    "Description", "clib.libm2k.libm2k.analog.ANALOG_IN_CHANNEL    Representation of C++ enumeration libm2k::analog::ANALOG_IN_CHANNEL"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ enumeration |libm2k::analog::M2K_RANGE| with MATLAB name |clib.libm2k.libm2k.analog.M2K_RANGE| 
+addEnumeration(libDef, "libm2k::analog::M2K_RANGE", "int32",...
+    [...
+      "PLUS_MINUS_25V",...  % 0
+      "PLUS_MINUS_2_5V",...  % 1
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.analog.M2K_RANGE", ...
+    "Description", "clib.libm2k.libm2k.analog.M2K_RANGE    Representation of C++ enumeration libm2k::analog::M2K_RANGE"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ enumeration |libm2k::analog::M2K_TRIGGER_SOURCE| with MATLAB name |clib.libm2k.libm2k.analog.M2K_TRIGGER_SOURCE| 
 addEnumeration(libDef, "libm2k::analog::M2K_TRIGGER_SOURCE", "int32",...
@@ -1793,6 +1975,22 @@ setAnalogModeDefinition = addMethod(M2kHardwareTriggerDefinition, ...
 defineArgument(setAnalogModeDefinition, "chnIdx", "uint32");
 defineArgument(setAnalogModeDefinition, "mode", "clib.libm2k.libm2k.analog.M2K_TRIGGER_MODE");
 validate(setAnalogModeDefinition);
+
+%% C++ class method |getDigitalMode| for C++ class |libm2k::analog::M2kHardwareTrigger| 
+% C++ Signature: libm2k::digital::DIO_TRIGGER_MODE libm2k::analog::M2kHardwareTrigger::getDigitalMode()
+getDigitalModeDefinition = addMethod(M2kHardwareTriggerDefinition, ...
+    "libm2k::digital::DIO_TRIGGER_MODE libm2k::analog::M2kHardwareTrigger::getDigitalMode()", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kHardwareTrigger.getDigitalMode    Method of C++ class libm2k::analog::M2kHardwareTrigger::getDigitalMode"); % This description is shown as help to user. Modify it to appropriate description.
+defineOutput(getDigitalModeDefinition, "RetVal", "clib.libm2k.libm2k.digital.DIO_TRIGGER_MODE");
+validate(getDigitalModeDefinition);
+
+%% C++ class method |setDigitalMode| for C++ class |libm2k::analog::M2kHardwareTrigger| 
+% C++ Signature: void libm2k::analog::M2kHardwareTrigger::setDigitalMode(libm2k::digital::DIO_TRIGGER_MODE mode)
+setDigitalModeDefinition = addMethod(M2kHardwareTriggerDefinition, ...
+    "void libm2k::analog::M2kHardwareTrigger::setDigitalMode(libm2k::digital::DIO_TRIGGER_MODE mode)", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kHardwareTrigger.setDigitalMode    Method of C++ class libm2k::analog::M2kHardwareTrigger::setDigitalMode"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setDigitalModeDefinition, "mode", "clib.libm2k.libm2k.digital.DIO_TRIGGER_MODE");
+validate(setDigitalModeDefinition);
 
 %% C++ class method |getAnalogSource| for C++ class |libm2k::analog::M2kHardwareTrigger| 
 % C++ Signature: libm2k::analog::M2K_TRIGGER_SOURCE libm2k::analog::M2kHardwareTrigger::getAnalogSource()
@@ -2046,12 +2244,12 @@ validate(getScalingFactorDefinition);
 
 %% C++ class method |setRange| for C++ class |libm2k::analog::M2kAnalogIn| 
 % C++ Signature: void libm2k::analog::M2kAnalogIn::setRange(libm2k::analog::ANALOG_IN_CHANNEL channel,libm2k::analog::M2K_RANGE range)
-setRangeDefinition = addMethod(M2kAnalogInDefinition, ...
-    "void libm2k::analog::M2kAnalogIn::setRange(libm2k::analog::ANALOG_IN_CHANNEL channel,libm2k::analog::M2K_RANGE range)", ...
-    "Description", "clib.libm2k.libm2k.analog.M2kAnalogIn.setRange    Method of C++ class libm2k::analog::M2kAnalogIn::setRange"); % This description is shown as help to user. Modify it to appropriate description.
-defineArgument(setRangeDefinition, "channel", "clib.libm2k.libm2k.analog.ANALOG_IN_CHANNEL");
-defineArgument(setRangeDefinition, "range", "clib.libm2k.libm2k.analog.M2K_RANGE");
-validate(setRangeDefinition);
+% setRangeDefinition = addMethod(M2kAnalogInDefinition, ...
+%     "void libm2k::analog::M2kAnalogIn::setRange(libm2k::analog::ANALOG_IN_CHANNEL channel,libm2k::analog::M2K_RANGE range)", ...
+%     "Description", "clib.libm2k.libm2k.analog.M2kAnalogIn.setRange    Method of C++ class libm2k::analog::M2kAnalogIn::setRange"); % This description is shown as help to user. Modify it to appropriate description.
+% defineArgument(setRangeDefinition, "channel", "clib.libm2k.libm2k.analog.ANALOG_IN_CHANNEL");
+% defineArgument(setRangeDefinition, "range", "clib.libm2k.libm2k.analog.M2K_RANGE");
+% validate(setRangeDefinition);
 
 %% C++ class method |setRange| for C++ class |libm2k::analog::M2kAnalogIn| 
 % C++ Signature: void libm2k::analog::M2kAnalogIn::setRange(libm2k::analog::ANALOG_IN_CHANNEL channel,double min,double max)
@@ -2438,43 +2636,43 @@ validate(convertVoltsToRawDefinition);
 
 %% C++ class method |push| for C++ class |libm2k::analog::M2kAnalogOut| 
 % C++ Signature: void libm2k::analog::M2kAnalogOut::push(unsigned int chnIdx,double * data,unsigned int nb_samples)
-%pushDefinition = addMethod(M2kAnalogOutDefinition, ...
-%    "void libm2k::analog::M2kAnalogOut::push(unsigned int chnIdx,double * data,unsigned int nb_samples)", ...
-%    "Description", "clib.libm2k.libm2k.analog.M2kAnalogOut.push    Method of C++ class libm2k::analog::M2kAnalogOut::push"); % This description is shown as help to user. Modify it to appropriate description.
-%defineArgument(pushDefinition, "chnIdx", "uint32");
-%defineArgument(pushDefinition, "data", "double", <DIRECTION>, <SHAPE>);
-%defineArgument(pushDefinition, "nb_samples", "uint32");
-%validate(pushDefinition);
+pushDefinition = addMethod(M2kAnalogOutDefinition, ...
+   "void libm2k::analog::M2kAnalogOut::push(unsigned int chnIdx,double * data,unsigned int nb_samples)", ...
+   "Description", "clib.libm2k.libm2k.analog.M2kAnalogOut.push    Method of C++ class libm2k::analog::M2kAnalogOut::push"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(pushDefinition, "chnIdx", "uint32");
+defineArgument(pushDefinition, "data", "double", "input", "nb_samples");
+defineArgument(pushDefinition, "nb_samples", "uint32");
+validate(pushDefinition);
 
 %% C++ class method |pushRaw| for C++ class |libm2k::analog::M2kAnalogOut| 
 % C++ Signature: void libm2k::analog::M2kAnalogOut::pushRaw(unsigned int chnIdx,short * data,unsigned int nb_samples)
-%pushRawDefinition = addMethod(M2kAnalogOutDefinition, ...
-%    "void libm2k::analog::M2kAnalogOut::pushRaw(unsigned int chnIdx,short * data,unsigned int nb_samples)", ...
-%    "Description", "clib.libm2k.libm2k.analog.M2kAnalogOut.pushRaw    Method of C++ class libm2k::analog::M2kAnalogOut::pushRaw"); % This description is shown as help to user. Modify it to appropriate description.
-%defineArgument(pushRawDefinition, "chnIdx", "uint32");
-%defineArgument(pushRawDefinition, "data", "int16", <DIRECTION>, <SHAPE>);
-%defineArgument(pushRawDefinition, "nb_samples", "uint32");
-%validate(pushRawDefinition);
+pushRawDefinition = addMethod(M2kAnalogOutDefinition, ...
+   "void libm2k::analog::M2kAnalogOut::pushRaw(unsigned int chnIdx,short * data,unsigned int nb_samples)", ...
+   "Description", "clib.libm2k.libm2k.analog.M2kAnalogOut.pushRaw    Method of C++ class libm2k::analog::M2kAnalogOut::pushRaw"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(pushRawDefinition, "chnIdx", "uint32");
+defineArgument(pushRawDefinition, "data", "int16", "input", "nb_samples");
+defineArgument(pushRawDefinition, "nb_samples", "uint32");
+validate(pushRawDefinition);
 
 %% C++ class method |pushInterleaved| for C++ class |libm2k::analog::M2kAnalogOut| 
 % C++ Signature: void libm2k::analog::M2kAnalogOut::pushInterleaved(double * data,unsigned int nb_channels,unsigned int nb_samples_per_channel)
-%pushInterleavedDefinition = addMethod(M2kAnalogOutDefinition, ...
-%    "void libm2k::analog::M2kAnalogOut::pushInterleaved(double * data,unsigned int nb_channels,unsigned int nb_samples_per_channel)", ...
-%    "Description", "clib.libm2k.libm2k.analog.M2kAnalogOut.pushInterleaved    Method of C++ class libm2k::analog::M2kAnalogOut::pushInterleaved"); % This description is shown as help to user. Modify it to appropriate description.
-%defineArgument(pushInterleavedDefinition, "data", "double", <DIRECTION>, <SHAPE>);
-%defineArgument(pushInterleavedDefinition, "nb_channels", "uint32");
-%defineArgument(pushInterleavedDefinition, "nb_samples_per_channel", "uint32");
-%validate(pushInterleavedDefinition);
+pushInterleavedDefinition = addMethod(M2kAnalogOutDefinition, ...
+   "void libm2k::analog::M2kAnalogOut::pushInterleaved(double * data,unsigned int nb_channels,unsigned int nb_samples_per_channel)", ...
+   "Description", "clib.libm2k.libm2k.analog.M2kAnalogOut.pushInterleaved    Method of C++ class libm2k::analog::M2kAnalogOut::pushInterleaved"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(pushInterleavedDefinition, "data", "double", "input", "nb_samples_per_channel");
+defineArgument(pushInterleavedDefinition, "nb_channels", "uint32");
+defineArgument(pushInterleavedDefinition, "nb_samples_per_channel", "uint32");
+validate(pushInterleavedDefinition);
 
 %% C++ class method |pushRawInterleaved| for C++ class |libm2k::analog::M2kAnalogOut| 
 % C++ Signature: void libm2k::analog::M2kAnalogOut::pushRawInterleaved(short * data,unsigned int nb_channels,unsigned int nb_samples_per_channel)
-%pushRawInterleavedDefinition = addMethod(M2kAnalogOutDefinition, ...
-%    "void libm2k::analog::M2kAnalogOut::pushRawInterleaved(short * data,unsigned int nb_channels,unsigned int nb_samples_per_channel)", ...
-%    "Description", "clib.libm2k.libm2k.analog.M2kAnalogOut.pushRawInterleaved    Method of C++ class libm2k::analog::M2kAnalogOut::pushRawInterleaved"); % This description is shown as help to user. Modify it to appropriate description.
-%defineArgument(pushRawInterleavedDefinition, "data", "int16", <DIRECTION>, <SHAPE>);
-%defineArgument(pushRawInterleavedDefinition, "nb_channels", "uint32");
-%defineArgument(pushRawInterleavedDefinition, "nb_samples_per_channel", "uint32");
-%validate(pushRawInterleavedDefinition);
+pushRawInterleavedDefinition = addMethod(M2kAnalogOutDefinition, ...
+   "void libm2k::analog::M2kAnalogOut::pushRawInterleaved(short * data,unsigned int nb_channels,unsigned int nb_samples_per_channel)", ...
+   "Description", "clib.libm2k.libm2k.analog.M2kAnalogOut.pushRawInterleaved    Method of C++ class libm2k::analog::M2kAnalogOut::pushRawInterleaved"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(pushRawInterleavedDefinition, "data", "int16", "input", "nb_samples_per_channel");
+defineArgument(pushRawInterleavedDefinition, "nb_channels", "uint32");
+defineArgument(pushRawInterleavedDefinition, "nb_samples_per_channel", "uint32");
+validate(pushRawInterleavedDefinition);
 
 %% C++ class method |setDacCalibVlsb| for C++ class |libm2k::analog::M2kAnalogOut| 
 % C++ Signature: void libm2k::analog::M2kAnalogOut::setDacCalibVlsb(unsigned int chn,double vlsb)
@@ -2526,13 +2724,82 @@ GenericAnalogInDefinition = addClass(libDef, "libm2k::analog::GenericAnalogIn", 
 GenericAnalogOutDefinition = addClass(libDef, "libm2k::analog::GenericAnalogOut", "MATLABName", "clib.libm2k.libm2k.analog.GenericAnalogOut", ...
     "Description", "clib.libm2k.libm2k.analog.GenericAnalogOut    Representation of C++ class libm2k::analog::GenericAnalogOut"); % This description is shown as help to user. Modify it to appropriate description.
 
+%% C++ class |libm2k::analog::iio_context| with MATLAB name |clib.libm2k.libm2k.analog.iio_context| 
+% iio_contextDefinition = addClass(libDef, "libm2k::analog::iio_context", "MATLABName", "clib.libm2k.libm2k.analog.iio_context", ...
+%     "Description", "clib.libm2k.libm2k.analog.iio_context    Representation of C++ class libm2k::analog::iio_context"); % This description is shown as help to user. Modify it to appropriate description.
+
 %% C++ class |libm2k::analog::M2kPowerSupply| with MATLAB name |clib.libm2k.libm2k.analog.M2kPowerSupply| 
 M2kPowerSupplyDefinition = addClass(libDef, "libm2k::analog::M2kPowerSupply", "MATLABName", "clib.libm2k.libm2k.analog.M2kPowerSupply", ...
     "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply    Representation of C++ class libm2k::analog::M2kPowerSupply"); % This description is shown as help to user. Modify it to appropriate description.
 
-%% C++ class |libm2k::analog::PowerSupply| with MATLAB name |clib.libm2k.libm2k.analog.PowerSupply| 
-PowerSupplyDefinition = addClass(libDef, "libm2k::analog::PowerSupply", "MATLABName", "clib.libm2k.libm2k.analog.PowerSupply", ...
-    "Description", "clib.libm2k.libm2k.analog.PowerSupply    Representation of C++ class libm2k::analog::PowerSupply"); % This description is shown as help to user. Modify it to appropriate description.
+%% C++ class constructor for C++ class |libm2k::analog::M2kPowerSupply| 
+% C++ Signature: libm2k::analog::M2kPowerSupply::M2kPowerSupply(libm2k::analog::iio_context * ctx,std::string write_dev,std::string read_dev,bool sync)
+%M2kPowerSupplyConstructor1Definition = addConstructor(M2kPowerSupplyDefinition, ...
+%    "libm2k::analog::M2kPowerSupply::M2kPowerSupply(libm2k::analog::iio_context * ctx,std::string write_dev,std::string read_dev,bool sync)", ...
+%    "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply    Constructor of C++ class libm2k::analog::M2kPowerSupply"); % This description is shown as help to user. Modify it to appropriate description.
+%defineArgument(M2kPowerSupplyConstructor1Definition, "ctx", "clib.libm2k.libm2k.analog.iio_context", "input", <SHAPE>);
+%defineArgument(M2kPowerSupplyConstructor1Definition, "write_dev", "string");
+%defineArgument(M2kPowerSupplyConstructor1Definition, "read_dev", "string");
+%defineArgument(M2kPowerSupplyConstructor1Definition, "sync", "logical");
+%validate(M2kPowerSupplyConstructor1Definition);
+
+%% C++ class method |init| for C++ class |libm2k::analog::M2kPowerSupply| 
+% C++ Signature: void libm2k::analog::M2kPowerSupply::init()
+initDefinition = addMethod(M2kPowerSupplyDefinition, ...
+    "void libm2k::analog::M2kPowerSupply::init()", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply.init    Method of C++ class libm2k::analog::M2kPowerSupply::init"); % This description is shown as help to user. Modify it to appropriate description.
+validate(initDefinition);
+
+%% C++ class method |enableChannel| for C++ class |libm2k::analog::M2kPowerSupply| 
+% C++ Signature: void libm2k::analog::M2kPowerSupply::enableChannel(unsigned int chn,bool en)
+enableChannelDefinition = addMethod(M2kPowerSupplyDefinition, ...
+    "void libm2k::analog::M2kPowerSupply::enableChannel(unsigned int chn,bool en)", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply.enableChannel    Method of C++ class libm2k::analog::M2kPowerSupply::enableChannel"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(enableChannelDefinition, "chn", "uint32");
+defineArgument(enableChannelDefinition, "en", "logical");
+validate(enableChannelDefinition);
+
+%% C++ class method |enableAll| for C++ class |libm2k::analog::M2kPowerSupply| 
+% C++ Signature: void libm2k::analog::M2kPowerSupply::enableAll(bool en)
+enableAllDefinition = addMethod(M2kPowerSupplyDefinition, ...
+    "void libm2k::analog::M2kPowerSupply::enableAll(bool en)", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply.enableAll    Method of C++ class libm2k::analog::M2kPowerSupply::enableAll"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(enableAllDefinition, "en", "logical");
+validate(enableAllDefinition);
+
+%% C++ class method |readChannel| for C++ class |libm2k::analog::M2kPowerSupply| 
+% C++ Signature: double libm2k::analog::M2kPowerSupply::readChannel(unsigned int chn)
+readChannelDefinition = addMethod(M2kPowerSupplyDefinition, ...
+    "double libm2k::analog::M2kPowerSupply::readChannel(unsigned int chn)", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply.readChannel    Method of C++ class libm2k::analog::M2kPowerSupply::readChannel"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(readChannelDefinition, "chn", "uint32");
+defineOutput(readChannelDefinition, "RetVal", "double");
+validate(readChannelDefinition);
+
+%% C++ class method |pushChannel| for C++ class |libm2k::analog::M2kPowerSupply| 
+% C++ Signature: void libm2k::analog::M2kPowerSupply::pushChannel(unsigned int chn,double value)
+pushChannelDefinition = addMethod(M2kPowerSupplyDefinition, ...
+    "void libm2k::analog::M2kPowerSupply::pushChannel(unsigned int chn,double value)", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply.pushChannel    Method of C++ class libm2k::analog::M2kPowerSupply::pushChannel"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(pushChannelDefinition, "chn", "uint32");
+defineArgument(pushChannelDefinition, "value", "double");
+validate(pushChannelDefinition);
+
+%% C++ class method |powerDownDacs| for C++ class |libm2k::analog::M2kPowerSupply| 
+% C++ Signature: void libm2k::analog::M2kPowerSupply::powerDownDacs(bool powerdown)
+powerDownDacsDefinition = addMethod(M2kPowerSupplyDefinition, ...
+    "void libm2k::analog::M2kPowerSupply::powerDownDacs(bool powerdown)", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply.powerDownDacs    Method of C++ class libm2k::analog::M2kPowerSupply::powerDownDacs"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(powerDownDacsDefinition, "powerdown", "logical");
+validate(powerDownDacsDefinition);
+
+%% C++ class method |anyChannelEnabled| for C++ class |libm2k::analog::M2kPowerSupply| 
+% C++ Signature: bool libm2k::analog::M2kPowerSupply::anyChannelEnabled()
+anyChannelEnabledDefinition = addMethod(M2kPowerSupplyDefinition, ...
+    "bool libm2k::analog::M2kPowerSupply::anyChannelEnabled()", ...
+    "Description", "clib.libm2k.libm2k.analog.M2kPowerSupply.anyChannelEnabled    Method of C++ class libm2k::analog::M2kPowerSupply::anyChannelEnabled"); % This description is shown as help to user. Modify it to appropriate description.
+defineOutput(anyChannelEnabledDefinition, "RetVal", "logical");
+validate(anyChannelEnabledDefinition);
 
 %% C++ class |libm2k::analog::DMM_READING| with MATLAB name |clib.libm2k.libm2k.analog.DMM_READING| 
 DMM_READINGDefinition = addClass(libDef, "libm2k::analog::DMM_READING", "MATLABName", "clib.libm2k.libm2k.analog.DMM_READING", ...
@@ -2573,6 +2840,88 @@ addProperty(DMM_READINGDefinition, "value", "double", ...
 addProperty(DMM_READINGDefinition, "unit", "string", ...
     "Description", "string    Data Member of C++ class libm2k::analog::DMM_READING::unit"); % This description is shown as help to user. Modify it to appropriate description.
 
+%% C++ class |libm2k::analog::PowerSupply| with MATLAB name |clib.libm2k.libm2k.analog.PowerSupply| 
+PowerSupplyDefinition = addClass(libDef, "libm2k::analog::PowerSupply", "MATLABName", "clib.libm2k.libm2k.analog.PowerSupply", ...
+    "Description", "clib.libm2k.libm2k.analog.PowerSupply    Representation of C++ class libm2k::analog::PowerSupply"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ class constructor for C++ class |libm2k::analog::PowerSupply| 
+% C++ Signature: libm2k::analog::PowerSupply::PowerSupply(libm2k::analog::iio_context * ctx,std::string write_dev,std::string read_dev)
+%PowerSupplyConstructor1Definition = addConstructor(PowerSupplyDefinition, ...
+%    "libm2k::analog::PowerSupply::PowerSupply(libm2k::analog::iio_context * ctx,std::string write_dev,std::string read_dev)", ...
+%    "Description", "clib.libm2k.libm2k.analog.PowerSupply    Constructor of C++ class libm2k::analog::PowerSupply"); % This description is shown as help to user. Modify it to appropriate description.
+%defineArgument(PowerSupplyConstructor1Definition, "ctx", "clib.libm2k.libm2k.analog.iio_context", "input", <SHAPE>);
+%defineArgument(PowerSupplyConstructor1Definition, "write_dev", "string");
+%defineArgument(PowerSupplyConstructor1Definition, "read_dev", "string");
+%validate(PowerSupplyConstructor1Definition);
+
+%% C++ class method |enableChannel| for C++ class |libm2k::analog::PowerSupply| 
+% C++ Signature: void libm2k::analog::PowerSupply::enableChannel(unsigned int chnidx,bool enable)
+enableChannelDefinition = addMethod(PowerSupplyDefinition, ...
+    "void libm2k::analog::PowerSupply::enableChannel(unsigned int chnidx,bool enable)", ...
+    "Description", "clib.libm2k.libm2k.analog.PowerSupply.enableChannel    Method of C++ class libm2k::analog::PowerSupply::enableChannel"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(enableChannelDefinition, "chnidx", "uint32");
+defineArgument(enableChannelDefinition, "enable", "logical");
+validate(enableChannelDefinition);
+
+%% C++ enumeration |libm2k::digital::DIO_TRIGGER_MODE| with MATLAB name |clib.libm2k.libm2k.digital.DIO_TRIGGER_MODE| 
+addEnumeration(libDef, "libm2k::digital::DIO_TRIGGER_MODE", "int32",...
+    [...
+      "DIO_OR",...  % 0
+      "DIO_AND",...  % 1
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.digital.DIO_TRIGGER_MODE", ...
+    "Description", "clib.libm2k.libm2k.digital.DIO_TRIGGER_MODE    Representation of C++ enumeration libm2k::digital::DIO_TRIGGER_MODE"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ enumeration |libm2k::digital::DIO_DIRECTION| with MATLAB name |clib.libm2k.libm2k.digital.DIO_DIRECTION| 
+addEnumeration(libDef, "libm2k::digital::DIO_DIRECTION", "int32",...
+    [...
+      "DIO_INPUT",...  % 0
+      "DIO_OUTPUT",...  % 1
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.digital.DIO_DIRECTION", ...
+    "Description", "clib.libm2k.libm2k.digital.DIO_DIRECTION    Representation of C++ enumeration libm2k::digital::DIO_DIRECTION"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ enumeration |libm2k::digital::DIO_CHANNEL| with MATLAB name |clib.libm2k.libm2k.digital.DIO_CHANNEL| 
+addEnumeration(libDef, "libm2k::digital::DIO_CHANNEL", "int32",...
+    [...
+      "DIO_CHANNEL_0",...  % 0
+      "DIO_CHANNEL_1",...  % 1
+      "DIO_CHANNEL_2",...  % 2
+      "DIO_CHANNEL_3",...  % 3
+      "DIO_CHANNEL_4",...  % 4
+      "DIO_CHANNEL_5",...  % 5
+      "DIO_CHANNEL_6",...  % 6
+      "DIO_CHANNEL_7",...  % 7
+      "DIO_CHANNEL_8",...  % 8
+      "DIO_CHANNEL_9",...  % 9
+      "DIO_CHANNEL_10",...  % 10
+      "DIO_CHANNEL_11",...  % 11
+      "DIO_CHANNEL_12",...  % 12
+      "DIO_CHANNEL_13",...  % 13
+      "DIO_CHANNEL_14",...  % 14
+      "DIO_CHANNEL_15",...  % 15
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.digital.DIO_CHANNEL", ...
+    "Description", "clib.libm2k.libm2k.digital.DIO_CHANNEL    Representation of C++ enumeration libm2k::digital::DIO_CHANNEL"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ enumeration |libm2k::digital::DIO_LEVEL| with MATLAB name |clib.libm2k.libm2k.digital.DIO_LEVEL| 
+addEnumeration(libDef, "libm2k::digital::DIO_LEVEL", "int32",...
+    [...
+      "LOW",...  % 0
+      "HIGH",...  % 1
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.digital.DIO_LEVEL", ...
+    "Description", "clib.libm2k.libm2k.digital.DIO_LEVEL    Representation of C++ enumeration libm2k::digital::DIO_LEVEL"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ enumeration |libm2k::digital::DIO_MODE| with MATLAB name |clib.libm2k.libm2k.digital.DIO_MODE| 
+addEnumeration(libDef, "libm2k::digital::DIO_MODE", "int32",...
+    [...
+      "DIO_OPENDRAIN",...  % 0
+      "DIO_PUSHPULL",...  % 1
+    ],...
+    "MATLABName", "clib.libm2k.libm2k.digital.DIO_MODE", ...
+    "Description", "clib.libm2k.libm2k.digital.DIO_MODE    Representation of C++ enumeration libm2k::digital::DIO_MODE"); % This description is shown as help to user. Modify it to appropriate description.
+
 %% C++ class |libm2k::digital::M2kDigital| with MATLAB name |clib.libm2k.libm2k.digital.M2kDigital| 
 M2kDigitalDefinition = addClass(libDef, "libm2k::digital::M2kDigital", "MATLABName", "clib.libm2k.libm2k.digital.M2kDigital", ...
     "Description", "clib.libm2k.libm2k.digital.M2kDigital    Representation of C++ class libm2k::digital::M2kDigital"); % This description is shown as help to user. Modify it to appropriate description.
@@ -2603,6 +2952,15 @@ defineArgument(setDirectionDefinition, "mask", "uint16");
 validate(setDirectionDefinition);
 
 %% C++ class method |setDirection| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::setDirection(unsigned int index,libm2k::digital::DIO_DIRECTION dir)
+setDirectionDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::setDirection(unsigned int index,libm2k::digital::DIO_DIRECTION dir)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.setDirection    Method of C++ class libm2k::digital::M2kDigital::setDirection"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setDirectionDefinition, "index", "uint32");
+defineArgument(setDirectionDefinition, "dir", "clib.libm2k.libm2k.digital.DIO_DIRECTION");
+validate(setDirectionDefinition);
+
+%% C++ class method |setDirection| for C++ class |libm2k::digital::M2kDigital| 
 % C++ Signature: void libm2k::digital::M2kDigital::setDirection(unsigned int index,bool dir)
 setDirectionDefinition = addMethod(M2kDigitalDefinition, ...
     "void libm2k::digital::M2kDigital::setDirection(unsigned int index,bool dir)", ...
@@ -2611,14 +2969,86 @@ defineArgument(setDirectionDefinition, "index", "uint32");
 defineArgument(setDirectionDefinition, "dir", "logical");
 validate(setDirectionDefinition);
 
+%% C++ class method |setDirection| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::setDirection(libm2k::digital::DIO_CHANNEL index,bool dir)
+setDirectionDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::setDirection(libm2k::digital::DIO_CHANNEL index,bool dir)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.setDirection    Method of C++ class libm2k::digital::M2kDigital::setDirection"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setDirectionDefinition, "index", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineArgument(setDirectionDefinition, "dir", "logical");
+validate(setDirectionDefinition);
+
+%% C++ class method |setDirection| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::setDirection(libm2k::digital::DIO_CHANNEL index,libm2k::digital::DIO_DIRECTION dir)
+setDirectionDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::setDirection(libm2k::digital::DIO_CHANNEL index,libm2k::digital::DIO_DIRECTION dir)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.setDirection    Method of C++ class libm2k::digital::M2kDigital::setDirection"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setDirectionDefinition, "index", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineArgument(setDirectionDefinition, "dir", "clib.libm2k.libm2k.digital.DIO_DIRECTION");
+validate(setDirectionDefinition);
+
+%% C++ class method |getDirection| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: libm2k::digital::DIO_DIRECTION libm2k::digital::M2kDigital::getDirection(libm2k::digital::DIO_CHANNEL index)
+getDirectionDefinition = addMethod(M2kDigitalDefinition, ...
+    "libm2k::digital::DIO_DIRECTION libm2k::digital::M2kDigital::getDirection(libm2k::digital::DIO_CHANNEL index)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.getDirection    Method of C++ class libm2k::digital::M2kDigital::getDirection"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(getDirectionDefinition, "index", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineOutput(getDirectionDefinition, "RetVal", "clib.libm2k.libm2k.digital.DIO_DIRECTION");
+validate(getDirectionDefinition);
+
+%% C++ class method |setValueRaw| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::setValueRaw(libm2k::digital::DIO_CHANNEL index,libm2k::digital::DIO_LEVEL level)
+setValueRawDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::setValueRaw(libm2k::digital::DIO_CHANNEL index,libm2k::digital::DIO_LEVEL level)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.setValueRaw    Method of C++ class libm2k::digital::M2kDigital::setValueRaw"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setValueRawDefinition, "index", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineArgument(setValueRawDefinition, "level", "clib.libm2k.libm2k.digital.DIO_LEVEL");
+validate(setValueRawDefinition);
+
 %% C++ class method |push| for C++ class |libm2k::digital::M2kDigital| 
 % C++ Signature: void libm2k::digital::M2kDigital::push(unsigned short * data,unsigned int nb_samples)
-%pushDefinition = addMethod(M2kDigitalDefinition, ...
-%    "void libm2k::digital::M2kDigital::push(unsigned short * data,unsigned int nb_samples)", ...
-%    "Description", "clib.libm2k.libm2k.digital.M2kDigital.push    Method of C++ class libm2k::digital::M2kDigital::push"); % This description is shown as help to user. Modify it to appropriate description.
-%defineArgument(pushDefinition, "data", "uint16", <DIRECTION>, <SHAPE>);
-%defineArgument(pushDefinition, "nb_samples", "uint32");
-%validate(pushDefinition);
+pushDefinition = addMethod(M2kDigitalDefinition, ...
+   "void libm2k::digital::M2kDigital::push(unsigned short * data,unsigned int nb_samples)", ...
+   "Description", "clib.libm2k.libm2k.digital.M2kDigital.push    Method of C++ class libm2k::digital::M2kDigital::push"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(pushDefinition, "data", "uint16", "input", "nb_samples");
+defineArgument(pushDefinition, "nb_samples", "uint32");
+validate(pushDefinition);
+
+%% C++ class method |setValueRaw| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::setValueRaw(unsigned int index,libm2k::digital::DIO_LEVEL level)
+setValueRawDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::setValueRaw(unsigned int index,libm2k::digital::DIO_LEVEL level)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.setValueRaw    Method of C++ class libm2k::digital::M2kDigital::setValueRaw"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setValueRawDefinition, "index", "uint32");
+defineArgument(setValueRawDefinition, "level", "clib.libm2k.libm2k.digital.DIO_LEVEL");
+validate(setValueRawDefinition);
+
+%% C++ class method |setValueRaw| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::setValueRaw(libm2k::digital::DIO_CHANNEL index,bool level)
+setValueRawDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::setValueRaw(libm2k::digital::DIO_CHANNEL index,bool level)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.setValueRaw    Method of C++ class libm2k::digital::M2kDigital::setValueRaw"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setValueRawDefinition, "index", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineArgument(setValueRawDefinition, "level", "logical");
+validate(setValueRawDefinition);
+
+%% C++ class method |getValueRaw| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: libm2k::digital::DIO_LEVEL libm2k::digital::M2kDigital::getValueRaw(libm2k::digital::DIO_CHANNEL index)
+getValueRawDefinition = addMethod(M2kDigitalDefinition, ...
+    "libm2k::digital::DIO_LEVEL libm2k::digital::M2kDigital::getValueRaw(libm2k::digital::DIO_CHANNEL index)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.getValueRaw    Method of C++ class libm2k::digital::M2kDigital::getValueRaw"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(getValueRawDefinition, "index", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineOutput(getValueRawDefinition, "RetVal", "clib.libm2k.libm2k.digital.DIO_LEVEL");
+validate(getValueRawDefinition);
+
+%% C++ class method |getValueRaw| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: libm2k::digital::DIO_LEVEL libm2k::digital::M2kDigital::getValueRaw(unsigned int index)
+getValueRawDefinition = addMethod(M2kDigitalDefinition, ...
+    "libm2k::digital::DIO_LEVEL libm2k::digital::M2kDigital::getValueRaw(unsigned int index)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.getValueRaw    Method of C++ class libm2k::digital::M2kDigital::getValueRaw"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(getValueRawDefinition, "index", "uint32");
+defineOutput(getValueRawDefinition, "RetVal", "clib.libm2k.libm2k.digital.DIO_LEVEL");
+validate(getValueRawDefinition);
 
 %% C++ class method |stop| for C++ class |libm2k::digital::M2kDigital| 
 % C++ Signature: void libm2k::digital::M2kDigital::stop()
@@ -2645,6 +3075,15 @@ defineArgument(enableChannelDefinition, "index", "uint32");
 defineArgument(enableChannelDefinition, "enable", "logical");
 validate(enableChannelDefinition);
 
+%% C++ class method |enableChannel| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::enableChannel(libm2k::digital::DIO_CHANNEL index,bool enable)
+enableChannelDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::enableChannel(libm2k::digital::DIO_CHANNEL index,bool enable)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.enableChannel    Method of C++ class libm2k::digital::M2kDigital::enableChannel"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(enableChannelDefinition, "index", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineArgument(enableChannelDefinition, "enable", "logical");
+validate(enableChannelDefinition);
+
 %% C++ class method |enableAllOut| for C++ class |libm2k::digital::M2kDigital| 
 % C++ Signature: void libm2k::digital::M2kDigital::enableAllOut(bool enable)
 enableAllOutDefinition = addMethod(M2kDigitalDefinition, ...
@@ -2652,6 +3091,51 @@ enableAllOutDefinition = addMethod(M2kDigitalDefinition, ...
     "Description", "clib.libm2k.libm2k.digital.M2kDigital.enableAllOut    Method of C++ class libm2k::digital::M2kDigital::enableAllOut"); % This description is shown as help to user. Modify it to appropriate description.
 defineArgument(enableAllOutDefinition, "enable", "logical");
 validate(enableAllOutDefinition);
+
+%% C++ class method |anyChannelEnabled| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: bool libm2k::digital::M2kDigital::anyChannelEnabled(libm2k::digital::DIO_DIRECTION dir)
+anyChannelEnabledDefinition = addMethod(M2kDigitalDefinition, ...
+    "bool libm2k::digital::M2kDigital::anyChannelEnabled(libm2k::digital::DIO_DIRECTION dir)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.anyChannelEnabled    Method of C++ class libm2k::digital::M2kDigital::anyChannelEnabled"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(anyChannelEnabledDefinition, "dir", "clib.libm2k.libm2k.digital.DIO_DIRECTION");
+defineOutput(anyChannelEnabledDefinition, "RetVal", "logical");
+validate(anyChannelEnabledDefinition);
+
+%% C++ class method |setOutputMode| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::setOutputMode(libm2k::digital::DIO_CHANNEL chn,libm2k::digital::DIO_MODE mode)
+setOutputModeDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::setOutputMode(libm2k::digital::DIO_CHANNEL chn,libm2k::digital::DIO_MODE mode)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.setOutputMode    Method of C++ class libm2k::digital::M2kDigital::setOutputMode"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setOutputModeDefinition, "chn", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineArgument(setOutputModeDefinition, "mode", "clib.libm2k.libm2k.digital.DIO_MODE");
+validate(setOutputModeDefinition);
+
+%% C++ class method |setOutputMode| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: void libm2k::digital::M2kDigital::setOutputMode(unsigned int chn,libm2k::digital::DIO_MODE mode)
+setOutputModeDefinition = addMethod(M2kDigitalDefinition, ...
+    "void libm2k::digital::M2kDigital::setOutputMode(unsigned int chn,libm2k::digital::DIO_MODE mode)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.setOutputMode    Method of C++ class libm2k::digital::M2kDigital::setOutputMode"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(setOutputModeDefinition, "chn", "uint32");
+defineArgument(setOutputModeDefinition, "mode", "clib.libm2k.libm2k.digital.DIO_MODE");
+validate(setOutputModeDefinition);
+
+%% C++ class method |getOutputMode| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: libm2k::digital::DIO_MODE libm2k::digital::M2kDigital::getOutputMode(libm2k::digital::DIO_CHANNEL chn)
+getOutputModeDefinition = addMethod(M2kDigitalDefinition, ...
+    "libm2k::digital::DIO_MODE libm2k::digital::M2kDigital::getOutputMode(libm2k::digital::DIO_CHANNEL chn)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.getOutputMode    Method of C++ class libm2k::digital::M2kDigital::getOutputMode"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(getOutputModeDefinition, "chn", "clib.libm2k.libm2k.digital.DIO_CHANNEL");
+defineOutput(getOutputModeDefinition, "RetVal", "clib.libm2k.libm2k.digital.DIO_MODE");
+validate(getOutputModeDefinition);
+
+%% C++ class method |getOutputMode| for C++ class |libm2k::digital::M2kDigital| 
+% C++ Signature: libm2k::digital::DIO_MODE libm2k::digital::M2kDigital::getOutputMode(unsigned int chn)
+getOutputModeDefinition = addMethod(M2kDigitalDefinition, ...
+    "libm2k::digital::DIO_MODE libm2k::digital::M2kDigital::getOutputMode(unsigned int chn)", ...
+    "Description", "clib.libm2k.libm2k.digital.M2kDigital.getOutputMode    Method of C++ class libm2k::digital::M2kDigital::getOutputMode"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(getOutputModeDefinition, "chn", "uint32");
+defineOutput(getOutputModeDefinition, "RetVal", "clib.libm2k.libm2k.digital.DIO_MODE");
+validate(getOutputModeDefinition);
 
 %% C++ class method |setSampleRateIn| for C++ class |libm2k::digital::M2kDigital| 
 % C++ Signature: double libm2k::digital::M2kDigital::setSampleRateIn(double samplerate)
@@ -2710,6 +3194,30 @@ getTriggerDefinition = addMethod(M2kDigitalDefinition, ...
    "Description", "clib.libm2k.libm2k.digital.M2kDigital.getTrigger    Method of C++ class libm2k::digital::M2kDigital::getTrigger"); % This description is shown as help to user. Modify it to appropriate description.
 defineOutput(getTriggerDefinition, "RetVal", "clib.libm2k.libm2k.analog.M2kHardwareTrigger", 1);
 validate(getTriggerDefinition);
+
+%% C++ class |libm2k::digital::channel| with MATLAB name |clib.libm2k.libm2k.digital.channel| 
+channelDefinition = addClass(libDef, "libm2k::digital::channel", "MATLABName", "clib.libm2k.libm2k.digital.channel", ...
+    "Description", "clib.libm2k.libm2k.digital.channel    Representation of C++ class libm2k::digital::channel"); % This description is shown as help to user. Modify it to appropriate description.
+
+%% C++ class constructor for C++ class |libm2k::digital::channel| 
+% C++ Signature: libm2k::digital::channel::channel()
+channelConstructor1Definition = addConstructor(channelDefinition, ...
+    "libm2k::digital::channel::channel()", ...
+    "Description", "clib.libm2k.libm2k.digital.channel    Constructor of C++ class libm2k::digital::channel"); % This description is shown as help to user. Modify it to appropriate description.
+validate(channelConstructor1Definition);
+
+%% C++ class constructor for C++ class |libm2k::digital::channel| 
+% C++ Signature: libm2k::digital::channel::channel(libm2k::digital::channel const & input1)
+channelConstructor2Definition = addConstructor(channelDefinition, ...
+    "libm2k::digital::channel::channel(libm2k::digital::channel const & input1)", ...
+    "Description", "clib.libm2k.libm2k.digital.channel    Constructor of C++ class libm2k::digital::channel"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(channelConstructor2Definition, "input1", "clib.libm2k.libm2k.digital.channel", "input");
+validate(channelConstructor2Definition);
+
+%% C++ class public data member |m_direction| for C++ class |libm2k::digital::channel| 
+% C++ Signature: libm2k::digital::DIO_DIRECTION libm2k::digital::channel::m_direction
+addProperty(channelDefinition, "m_direction", "clib.libm2k.libm2k.digital.DIO_DIRECTION", ...
+    "Description", "clib.libm2k.libm2k.digital.DIO_DIRECTION    Data Member of C++ class libm2k::digital::channel::m_direction"); % This description is shown as help to user. Modify it to appropriate description.
 
 %% C++ class |libm2k::digital::GenericDigital| with MATLAB name |clib.libm2k.libm2k.digital.GenericDigital| 
 GenericDigitalDefinition = addClass(libDef, "libm2k::digital::GenericDigital", "MATLABName", "clib.libm2k.libm2k.digital.GenericDigital", ...
@@ -2880,12 +3388,12 @@ validate(getAnalogInDefinition);
 
 %% C++ class method |getAnalogIn| for C++ class |libm2k::devices::M2k| 
 % C++ Signature: libm2k::analog::M2kAnalogIn * libm2k::devices::M2k::getAnalogIn(std::string dev_name)
-%getAnalogInDefinition = addMethod(M2kDefinition, ...
-%    "libm2k::analog::M2kAnalogIn * libm2k::devices::M2k::getAnalogIn(std::string dev_name)", ...
-%    "Description", "clib.libm2k.libm2k.devices.M2k.getAnalogIn    Method of C++ class libm2k::devices::M2k::getAnalogIn"); % This description is shown as help to user. Modify it to appropriate description.
-%defineArgument(getAnalogInDefinition, "dev_name", "string");
-%defineOutput(getAnalogInDefinition, "RetVal", "clib.libm2k.libm2k.analog.M2kAnalogIn", <SHAPE>);
-%validate(getAnalogInDefinition);
+getAnalogInDefinition = addMethod(M2kDefinition, ...
+   "libm2k::analog::M2kAnalogIn * libm2k::devices::M2k::getAnalogIn(std::string dev_name)", ...
+   "Description", "clib.libm2k.libm2k.devices.M2k.getAnalogIn    Method of C++ class libm2k::devices::M2k::getAnalogIn"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(getAnalogInDefinition, "dev_name", "string");
+defineOutput(getAnalogInDefinition, "RetVal", "clib.libm2k.libm2k.analog.M2kAnalogIn", 1);
+validate(getAnalogInDefinition);
 
 %% C++ class method |getAnalogOut| for C++ class |libm2k::devices::M2k| 
 % C++ Signature: libm2k::analog::M2kAnalogOut * libm2k::devices::M2k::getAnalogOut()
@@ -3073,21 +3581,21 @@ validate(getUriDefinition);
 
 %% C++ class method |getDMM| for C++ class |libm2k::devices::Context| 
 % C++ Signature: libm2k::analog::DMM * libm2k::devices::Context::getDMM(unsigned int input1)
-%getDMMDefinition = addMethod(ContextDefinition, ...
-%    "libm2k::analog::DMM * libm2k::devices::Context::getDMM(unsigned int input1)", ...
-%    "Description", "clib.libm2k.libm2k.devices.Context.getDMM    Method of C++ class libm2k::devices::Context::getDMM"); % This description is shown as help to user. Modify it to appropriate description.
-%defineArgument(getDMMDefinition, "input1", "uint32");
-%defineOutput(getDMMDefinition, "RetVal", "clib.libm2k.libm2k.analog.DMM", <SHAPE>);
-%validate(getDMMDefinition);
+getDMMDefinition = addMethod(ContextDefinition, ...
+   "libm2k::analog::DMM * libm2k::devices::Context::getDMM(unsigned int input1)", ...
+   "Description", "clib.libm2k.libm2k.devices.Context.getDMM    Method of C++ class libm2k::devices::Context::getDMM"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(getDMMDefinition, "input1", "uint32");
+defineOutput(getDMMDefinition, "RetVal", "clib.libm2k.libm2k.analog.DMM", 1);
+validate(getDMMDefinition);
 
 %% C++ class method |getDMM| for C++ class |libm2k::devices::Context| 
 % C++ Signature: libm2k::analog::DMM * libm2k::devices::Context::getDMM(std::string input1)
-%getDMMDefinition = addMethod(ContextDefinition, ...
-%    "libm2k::analog::DMM * libm2k::devices::Context::getDMM(std::string input1)", ...
-%    "Description", "clib.libm2k.libm2k.devices.Context.getDMM    Method of C++ class libm2k::devices::Context::getDMM"); % This description is shown as help to user. Modify it to appropriate description.
-%defineArgument(getDMMDefinition, "input1", "string");
-%defineOutput(getDMMDefinition, "RetVal", "clib.libm2k.libm2k.analog.DMM", <SHAPE>);
-%validate(getDMMDefinition);
+getDMMDefinition = addMethod(ContextDefinition, ...
+   "libm2k::analog::DMM * libm2k::devices::Context::getDMM(std::string input1)", ...
+   "Description", "clib.libm2k.libm2k.devices.Context.getDMM    Method of C++ class libm2k::devices::Context::getDMM"); % This description is shown as help to user. Modify it to appropriate description.
+defineArgument(getDMMDefinition, "input1", "string");
+defineOutput(getDMMDefinition, "RetVal", "clib.libm2k.libm2k.analog.DMM", 1);
+validate(getDMMDefinition);
 
 %% C++ class method |getContextAttributeValue| for C++ class |libm2k::devices::Context| 
 % C++ Signature: std::string libm2k::devices::Context::getContextAttributeValue(std::string attr)
@@ -3221,12 +3729,12 @@ validate(ContextBuilderConstructor2Definition);
 
 %% C++ function |libm2k::devices::deviceOpen| with MATLAB name |clib.libm2k.libm2k.devices.deviceOpen|
 % C++ Signature: libm2k::devices::Context * libm2k::devices::deviceOpen()
-deviceOpenDefinition = addFunction(libDef, ...
-   "libm2k::devices::Context * libm2k::devices::deviceOpen()", ...
-   "MATLABName", "clib.libm2k.libm2k.devices.deviceOpen", ...
-   "Description", "clib.libm2k.libm2k.devices.deviceOpen    Representation of C++ function libm2k::devices::deviceOpen"); % This description is shown as help to user. Modify it to appropriate description.
-defineOutput(deviceOpenDefinition, "RetVal", "clib.libm2k.libm2k.devices.Context", 1);
-validate(deviceOpenDefinition);
+%deviceOpenDefinition = addFunction(libDef, ...
+%    "libm2k::devices::Context * libm2k::devices::deviceOpen()", ...
+%    "MATLABName", "clib.libm2k.libm2k.devices.deviceOpen", ...
+%    "Description", "clib.libm2k.libm2k.devices.deviceOpen    Representation of C++ function libm2k::devices::deviceOpen"); % This description is shown as help to user. Modify it to appropriate description.
+%defineOutput(deviceOpenDefinition, "RetVal", "clib.libm2k.libm2k.devices.Context", <SHAPE>);
+%validate(deviceOpenDefinition);
 
 %% C++ function |libm2k::devices::deviceOpen| with MATLAB name |clib.libm2k.libm2k.devices.deviceOpen|
 % C++ Signature: libm2k::devices::Context * libm2k::devices::deviceOpen(char const * uri)
