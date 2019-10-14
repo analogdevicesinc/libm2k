@@ -27,9 +27,9 @@
 #include <unordered_set>
 #include <map>
 
-enum DeviceTypes {
-	DevFMCOMMS,
-	DevM2K,
+enum ContextTypes {
+	CtxFMCOMMS,
+	CtxM2K,
 	Other
 };
 
@@ -55,19 +55,19 @@ public:
 	/**
 	* @private
 	*/
-	static std::vector<std::string> listDevices();
+	static std::vector<std::string> getAllContexts();
 	/**
 	 * @private
 	 */
-	static Context* deviceOpen(const char*);
+	static Context* contextOpen(const char*);
 	/**
 	* @private
 	*/
-	static Context* deviceOpen(struct iio_context*, const char*);
+	static Context* contextOpen(struct iio_context*, const char*);
 	/**
 	* @private
 	*/
-	static Context* deviceOpen();
+	static Context* contextOpen();
 	/**
 	* @private
 	*/
@@ -83,15 +83,15 @@ public:
 	/**
 	* @private
 	*/
-	static void deviceClose(Context*, bool deinit = true);
+	static void contextClose(Context*, bool deinit = true);
 
-	static void deviceCloseAll();
+	static void contextCloseAll();
 private:
-	static std::map<DeviceTypes, std::vector<std::string>> m_dev_map;
-	static std::map<DeviceTypes, std::string> m_dev_name_map;
+	static std::map<ContextTypes, std::vector<std::string>> m_dev_map;
+	static std::map<ContextTypes, std::string> m_dev_name_map;
 	//                std::shared_ptr<M2KImpl> m_pimpl;
-	static DeviceTypes identifyDevice(iio_context *ctx);
-	static Context* buildDevice(DeviceTypes type,
+	static ContextTypes identifyContext(iio_context *ctx);
+	static Context* buildContext(ContextTypes type,
 		std::string uri,
 		struct iio_context *ctx,
 		bool sync);
@@ -110,19 +110,19 @@ private:
 /**
 * @private
 */
-LIBM2K_API Context* deviceOpen();
+LIBM2K_API Context* contextOpen();
 
 
 /**
  * @private
  */
-LIBM2K_API Context* deviceOpen(const char* uri);
+LIBM2K_API Context* contextOpen(const char* uri);
 
 
 /**
  * @private
  */
-LIBM2K_API Context* deviceOpen(struct iio_context* ctx, const char* uri);
+LIBM2K_API Context* contextOpen(struct iio_context* ctx, const char* uri);
 
 
 /**
@@ -158,10 +158,10 @@ LIBM2K_API M2k* m2kOpen();
 
 
 /**
- * @brief List all available devices
- * @return A list containing the available devices
+ * @brief List all available contexts
+ * @return A list containing the available contexts
  */
-LIBM2K_API std::vector<std::string> listDevices();
+LIBM2K_API std::vector<std::string> getAllContexts();
 
 
 /**
@@ -169,13 +169,13 @@ LIBM2K_API std::vector<std::string> listDevices();
  * @param ctx The context to be destroyed
  * @param deinit If deinit is set to false, running contexts won't be affected
  */
-LIBM2K_API void deviceClose(Context* ctx, bool deinit = true);
+LIBM2K_API void contextClose(Context* ctx, bool deinit = true);
 
 
 /**
  * @brief Close all the devices
  */
-LIBM2K_API void deviceCloseAll();
+LIBM2K_API void contextCloseAll();
 
 /**
  * @}

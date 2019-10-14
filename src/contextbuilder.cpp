@@ -32,16 +32,16 @@ using namespace libm2k::contexts;
 using namespace libm2k::utils;
 
 std::vector<Context*> ContextBuilder::s_connectedDevices = {};
-std::map<DeviceTypes, std::vector<std::string>> ContextBuilder::m_dev_map = {
-	{DeviceTypes::DevFMCOMMS, {"cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy"}},
-	{DeviceTypes::DevM2K, {"m2k-adc", "m2k-dac-a",
+std::map<ContextTypes, std::vector<std::string>> ContextBuilder::m_dev_map = {
+	{ContextTypes::CtxFMCOMMS, {"cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy"}},
+	{ContextTypes::CtxM2K, {"m2k-adc", "m2k-dac-a",
 			       "m2k-dac-b", "m2k-logic-analyzer-rx",
 			       "m2k-logic-analyzer-tx", "m2k-logic-analyzer"}}
 };
 
-std::map<DeviceTypes, std::string> ContextBuilder::m_dev_name_map = {
-	{DeviceTypes::DevFMCOMMS, "FMMCOMMS"},
-	{DeviceTypes::DevM2K, "M2K"},
+std::map<ContextTypes, std::string> ContextBuilder::m_dev_name_map = {
+	{ContextTypes::CtxFMCOMMS, "FMMCOMMS"},
+	{ContextTypes::CtxM2K, "M2K"},
 	{Other, "Generic"}
 };
 
@@ -53,7 +53,7 @@ ContextBuilder::~ContextBuilder()
 {
 }
 
-std::vector<std::string> ContextBuilder::listDevices()
+std::vector<std::string> ContextBuilder::getAllContexts()
 {
 	struct iio_context_info **info;
 	unsigned int nb_contexts;
@@ -84,12 +84,12 @@ out_destroy_context:
 	return uris;
 }
 
-Context* ContextBuilder::buildDevice(DeviceTypes type, std::string uri,
+Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 			struct iio_context* ctx, bool sync) // enum Device Name
 {
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
-		case DevM2K: return new M2k(uri, ctx, name, sync);
+		case CtxM2K: return new M2k(uri, ctx, name, sync);
 
 		case Other:
 		default:
@@ -97,7 +97,7 @@ Context* ContextBuilder::buildDevice(DeviceTypes type, std::string uri,
 	}
 }
 
-Context* ContextBuilder::deviceOpen(const char *uri)
+Context* ContextBuilder::contextOpen(const char *uri)
 {
 	for (Context* dev : s_connectedDevices) {
 		if (dev->getUri() == std::string(uri)) {
@@ -110,15 +110,15 @@ Context* ContextBuilder::deviceOpen(const char *uri)
 		return nullptr;
 	}
 
-	DeviceTypes dev_type = ContextBuilder::identifyDevice(ctx);
+	ContextTypes dev_type = ContextBuilder::identifyContext(ctx);
 
-	Context* dev = buildDevice(dev_type, std::string(uri), ctx, true);
+	Context* dev = buildContext(dev_type, std::string(uri), ctx, true);
 	s_connectedDevices.push_back(dev);
 
 	return dev;
 }
 
-Context* ContextBuilder::deviceOpen(struct iio_context* ctx, const char* uri)
+Context* ContextBuilder::contextOpen(struct iio_context* ctx, const char* uri)
 {
 	for (Context* dev : s_connectedDevices) {
 		if (dev->getUri() == std::string(uri)) {
@@ -130,9 +130,9 @@ Context* ContextBuilder::deviceOpen(struct iio_context* ctx, const char* uri)
 		return nullptr;
 	}
 
-	DeviceTypes dev_type = ContextBuilder::identifyDevice(ctx);
+	ContextTypes dev_type = ContextBuilder::identifyContext(ctx);
 
-	Context* dev = buildDevice(dev_type, std::string(uri), ctx, true);
+	Context* dev = buildContext(dev_type, std::string(uri), ctx, true);
 	s_connectedDevices.push_back(dev);
 
 	return dev;
@@ -141,18 +141,18 @@ Context* ContextBuilder::deviceOpen(struct iio_context* ctx, const char* uri)
 /* Connect to the first usb device that was found
 TODO: try to use the "local" context,
 before trying the "usb" one. */
-Context* ContextBuilder::deviceOpen()
+Context* ContextBuilder::contextOpen()
 {
-	auto lst = listDevices();
+	auto lst = getAllContexts();
 	if (lst.size() <= 0) {
 		return nullptr;
 	}
-	return deviceOpen(lst.at(0).c_str());
+	return contextOpen(lst.at(0).c_str());
 }
 
 M2k *ContextBuilder::m2kOpen(struct iio_context* ctx, const char *uri)
 {
-	auto dev = deviceOpen(ctx, uri);
+	auto dev = contextOpen(ctx, uri);
 	if (!dev) {
 		return nullptr;
 	}
@@ -166,7 +166,7 @@ M2k *ContextBuilder::m2kOpen(struct iio_context* ctx, const char *uri)
 
 M2k *ContextBuilder::m2kOpen(const char *uri)
 {
-	auto dev = deviceOpen(uri);
+	auto dev = contextOpen(uri);
 	if (!dev) {
 		return nullptr;
 	}
@@ -180,7 +180,7 @@ M2k *ContextBuilder::m2kOpen(const char *uri)
 
 M2k *ContextBuilder::m2kOpen()
 {
-	auto dev = deviceOpen();
+	auto dev = contextOpen();
 	if (!dev) {
 		return nullptr;
 	}
@@ -192,7 +192,7 @@ M2k *ContextBuilder::m2kOpen()
 	return nullptr;
 }
 
-void ContextBuilder::deviceClose(Context* device, bool deinit)
+void ContextBuilder::contextClose(Context* device, bool deinit)
 {
 	if (deinit) {
 		device->deinitialize();
@@ -204,16 +204,16 @@ void ContextBuilder::deviceClose(Context* device, bool deinit)
 	delete device;
 }
 
-void ContextBuilder::deviceCloseAll()
+void ContextBuilder::contextCloseAll()
 {
 	while (s_connectedDevices.size() > 0) {
-		deviceClose(s_connectedDevices.at(0));
+		contextClose(s_connectedDevices.at(0));
 	}
 }
 
-DeviceTypes ContextBuilder::identifyDevice(iio_context *ctx)
+ContextTypes ContextBuilder::identifyContext(iio_context *ctx)
 {
-	DeviceTypes type = Other;
+	ContextTypes type = Other;
 	for (auto dev : m_dev_map) {
 		bool found = Utils::devicesFoundInContext(ctx, dev.second);
 		if (found) {
@@ -223,19 +223,19 @@ DeviceTypes ContextBuilder::identifyDevice(iio_context *ctx)
 	return type;
 }
 
-Context *libm2k::devices::deviceOpen()
+Context *libm2k::contexts::contextOpen()
 {
-	return ContextBuilder::deviceOpen();
+	return ContextBuilder::contextOpen();
 }
 
-Context *libm2k::devices::deviceOpen(const char *uri)
+Context *libm2k::contexts::contextOpen(const char *uri)
 {
-	return ContextBuilder::deviceOpen(uri);
+	return ContextBuilder::contextOpen(uri);
 }
 
-Context *libm2k::devices::deviceOpen(struct iio_context *ctx, const char *uri)
+Context *libm2k::contexts::contextOpen(struct iio_context *ctx, const char *uri)
 {
-	return ContextBuilder::deviceOpen(ctx, uri);
+	return ContextBuilder::contextOpen(ctx, uri);
 }
 
 M2k *libm2k::contexts::m2kOpen(const char *uri)
@@ -253,17 +253,17 @@ M2k *libm2k::contexts::m2kOpen()
 	return ContextBuilder::m2kOpen();
 }
 
-std::vector<std::string> libm2k::devices::listDevices()
+std::vector<std::string> libm2k::contexts::getAllContexts()
 {
-	return ContextBuilder::listDevices();
+	return ContextBuilder::getAllContexts();
 }
 
-void libm2k::devices::deviceClose(Context *ctx, bool deinit)
+void libm2k::contexts::contextClose(Context *ctx, bool deinit)
 {
-	ContextBuilder::deviceClose(ctx, deinit);
+	ContextBuilder::contextClose(ctx, deinit);
 }
 
-void libm2k::devices::deviceCloseAll()
+void libm2k::contexts::contextCloseAll()
 {
-	ContextBuilder::deviceCloseAll();
+	ContextBuilder::contextCloseAll();
 }
