@@ -45,7 +45,7 @@ namespace examples
                 Console.Write(val + " \n");
             }
             dig.stop();
-            libm2k.deviceClose(ctx);
+	    libm2k.contextClose(ctx);
         }
     }
 }
