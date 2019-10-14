@@ -32,10 +32,10 @@ public:
 
 	virtual bool parseArguments(std::vector<std::pair<std::string, std::string>> &output) = 0;
 
-	libm2k::devices::M2k *getContext();
+	libm2k::contexts::M2k *getContext();
 
 protected:
-	libm2k::devices::M2k *context;
+	libm2k::contexts::M2k *context;
 	int argc;
 	char **argv;
 

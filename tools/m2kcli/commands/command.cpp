@@ -35,10 +35,10 @@ Command::Command(int argc, char **argv)
 			help = true;
 			break;
 		} else if (std::string(argv[i]) == "auto") {
-			context = libm2k::devices::m2kOpen();
+			context = libm2k::contexts::m2kOpen();
 			break;
 		} else if (Validator::validateUri(argv[i])) {
-			context = libm2k::devices::m2kOpen(argv[i]);
+			context = libm2k::contexts::m2kOpen(argv[i]);
 			break;
 		}
 	}
@@ -47,7 +47,7 @@ Command::Command(int argc, char **argv)
 	}
 }
 
-libm2k::devices::M2k *Command::getContext()
+libm2k::contexts::M2k *Command::getContext()
 {
 	return context;
 }
