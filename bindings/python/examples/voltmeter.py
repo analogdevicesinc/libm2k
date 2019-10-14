@@ -13,4 +13,4 @@ ain.enableChannel(channel,True)
 print(ain.getVoltage()[channel])
 
 
-l.deviceClose(ctx)
+l.contextClose(ctx)

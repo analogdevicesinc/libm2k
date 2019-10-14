@@ -13,4 +13,4 @@ ain=ctx.getAnalogIn()
 ain.enableChannel(0,True)
 print(ain.getVoltage()[0])
 
-libm2k.deviceClose(ctx)
+libm2k.contextClose(ctx)
