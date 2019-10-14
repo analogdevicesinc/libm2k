@@ -47,7 +47,7 @@ int main()
 		cout<<bitset<16>(val)<<endl;
 	}
 	dig->stop();
-	deviceClose(ctx);
+	contextClose(ctx);
 
 	return 0;
 }

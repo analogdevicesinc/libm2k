@@ -75,5 +75,5 @@ int main(int argc, char* argv[])
 	}
 	cout <<"end";
 	aout->stop();
-	deviceClose(ctx);
+	contextClose(ctx);
 }
