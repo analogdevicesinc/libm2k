@@ -99,7 +99,7 @@ private:
 };
 
 /**
- * @addtogroup devices
+ * @addtogroup contexts
  * @{
  * @defgroup context ContextBuilder
  * @brief Creates/destroys the context
