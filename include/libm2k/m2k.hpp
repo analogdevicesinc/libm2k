@@ -37,7 +37,7 @@ class M2kDigital;
 
 class M2kCalibration;
 
-/** @defgroup devices Devices
+/** @defgroup contexts Contexts
  * @brief Contains the representation of the M2K
  * @{
  */
