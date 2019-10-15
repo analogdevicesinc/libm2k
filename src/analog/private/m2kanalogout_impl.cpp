@@ -205,7 +205,10 @@ public:
 
 	bool getCyclic(unsigned int chn)
 	{
-		return getDacDevice(chn);
+		if (chn >= m_dac_devices.size()) {
+			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		}
+		return m_cyclic.at(chn);
 	}
 
 	int convertVoltsToRaw(double voltage, double vlsb,
