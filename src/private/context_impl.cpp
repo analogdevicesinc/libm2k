@@ -25,6 +25,7 @@
 #include <libm2k/analog/dmm.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2k.hpp>
+#include <libm2k/lidar.hpp>
 #include <iio.h>
 #include <iostream>
 #include <memory>

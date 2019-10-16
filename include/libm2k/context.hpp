@@ -44,6 +44,7 @@ namespace digital {
 }
 
 namespace contexts {
+class Lidar;
 class M2k;
 
 class LIBM2K_API Context {
