@@ -3,6 +3,9 @@
 * For example, in the command line: mcs digital.cs -reference:libm2k-sharp.dll
 * Please make sure that libm2k-sharp.dll and libm2k-sharp-cxx-wrap.dll are in your build folder.
 * Please make sure that the location of libm2k is in the PATH.
+*
+* This example will generate a binary counter on the first N_BITS of the
+* digital interface and read them back - no additional connection required
 */
 
 using System;
