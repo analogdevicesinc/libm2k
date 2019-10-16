@@ -1,3 +1,5 @@
+# This example reads the analog voltage from channel 0 of the analog input
+
 import libm2k as l
 
 channel = 0

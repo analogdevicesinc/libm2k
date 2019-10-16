@@ -1,3 +1,6 @@
+# This example will generate a binary counter on the first N_BITS of the
+# digital interface and read them back - no additional connection required
+
 import libm2k
 
 n_bits=4
