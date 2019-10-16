@@ -1,3 +1,12 @@
+# This example assumes the following connections:
+# W1 -> 1+
+# W2 -> 2+
+# GND -> 1-
+# GND -> 2-
+#
+# The application will generate a sine and triangular wave on W1 and W2. The signal is fed back into the analog input
+# and the voltage values are displayed on the screen
+
 import libm2k
 import matplotlib.pyplot as plt
 import time
