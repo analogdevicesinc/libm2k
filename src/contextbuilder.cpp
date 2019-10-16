@@ -18,6 +18,7 @@
  */
 
 #include <libm2k/m2k.hpp>
+#include <libm2k/lidar.hpp>
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -36,13 +37,16 @@ std::vector<Context*> ContextBuilder::s_connectedDevices = {};
 std::map<ContextTypes, std::vector<std::string>> ContextBuilder::m_dev_map = {
 	{ContextTypes::CtxFMCOMMS, {"cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy"}},
 	{ContextTypes::CtxM2K, {"m2k-adc", "m2k-dac-a",
-			       "m2k-dac-b", "m2k-logic-analyzer-rx",
-			       "m2k-logic-analyzer-tx", "m2k-logic-analyzer"}}
+				"m2k-dac-b", "m2k-logic-analyzer-rx",
+				"m2k-logic-analyzer-tx", "m2k-logic-analyzer"}},
+	{ContextTypes::CtxLIDAR, {"ad7091", "ltc2471", "xadc", "ad5627", "ad9528",
+				  "7c700000.axi-pulse-capture", "axi-ad9094-hpc"}}
 };
 
 std::map<ContextTypes, std::string> ContextBuilder::m_dev_name_map = {
 	{ContextTypes::CtxFMCOMMS, "FMMCOMMS"},
 	{ContextTypes::CtxM2K, "M2K"},
+	{ContextTypes::CtxLIDAR, "LIDAR"},
 	{Other, "Generic"}
 };
 
@@ -91,7 +95,7 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
 		case CtxM2K: return new M2k(uri, ctx, name, sync);
-
+		case CtxLIDAR: return new Lidar(uri, ctx, name, sync);
 		case Other:
 		default:
 		return new Context(uri, ctx, name, sync);
