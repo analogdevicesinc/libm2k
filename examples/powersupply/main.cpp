@@ -1,3 +1,8 @@
+// This exammple assumes connection:
+// 1+ to V+
+// 1- to GND
+// This example turns on the power supply and sets it to 1.7V and then reads back the value
+
 #include <iostream>
 #include <libm2k/m2k.hpp>
 #include <libm2k/contextbuilder.hpp>

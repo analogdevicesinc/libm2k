@@ -1,3 +1,12 @@
+// This example assumes the following connections:
+// W1 -> 1+
+// W2 -> 2+
+// GND -> 1-
+// GND -> 2-
+//
+// The application will generate a sine and triangular wave on W1 and W2. The signal is fed back into the analog input
+// and the voltage values are displayed on the screen
+
 #include <iostream>
 #include <math.h>
 #include <libm2k/m2k.hpp>
@@ -30,7 +39,7 @@ int main(int argc, char* argv[])
 	ain->enableChannel(0, true);
 	ain->enableChannel(1, true);
 	ain->setSampleRate(100000);
-	ain->setRange((ANALOG_IN_CHANNEL)0,-10.0,10.0); // nu are idxchannel
+	ain->setRange((ANALOG_IN_CHANNEL)0,-10.0,10.0);
 	ain->setRange((ANALOG_IN_CHANNEL)1,PLUS_MINUS_25V);
 
 	// setup analog trigger
