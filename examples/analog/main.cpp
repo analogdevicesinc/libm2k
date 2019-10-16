@@ -19,7 +19,11 @@ using namespace std;
 using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::contexts;
+
 #define M_PI 3.14
+// uncomment the following definition to test triggering
+//#define TRIGGERING
+
 int main(int argc, char* argv[])
 {
 	M2k *ctx = m2kOpen();
@@ -42,12 +46,14 @@ int main(int argc, char* argv[])
 	ain->setRange((ANALOG_IN_CHANNEL)0,-10.0,10.0);
 	ain->setRange((ANALOG_IN_CHANNEL)1,PLUS_MINUS_25V);
 
+#ifdef TRIGGERING
 	// setup analog trigger
 	trig->setAnalogSource(CHANNEL_1);
 	trig->setAnalogCondition(0,RISING_EDGE);
 	trig->setAnalogLevel(0, 0.5);
 	trig->setAnalogDelay(0);
 	trig->setAnalogMode(0,ANALOG);
+#endif
 
 	// setup analog output
 	aout->setSampleRate(0,750000);
