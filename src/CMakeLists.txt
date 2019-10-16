@@ -17,16 +17,20 @@ include_directories(
 	${LOG4CPP_INCLUDE_DIR}
 )
 
+FILE(GLOB_RECURSE SRC_LIST  *.cpp)
 
-FILE(GLOB SRC_LIST  *.cpp *.cc */*.cpp */*/*.cpp)
-FILE(GLOB HEADERS_LIST
-	${CMAKE_SOURCE_DIR}/include/libm2k/*/*.hpp
-        ${CMAKE_SOURCE_DIR}/include/libm2k/*.hpp
-        ${CMAKE_SOURCE_DIR}/src/devices/*/*.hpp
-        ${CMAKE_SOURCE_DIR}/src/*.hpp)
+FILE(GLOB_RECURSE HEADERS_LIST ${CMAKE_SOURCE_DIR}/include/libm2k/*.hpp)
 
-FILE(GLOB DEVICES ${CMAKE_SOURCE_DIR}/src/devices/*/*.cpp)
-
+if (ENABLE_TOOLS)
+	FILE(GLOB_RECURSE COMMUNICATION_SRC_LIST ../tools/communication/src/*.cpp)
+	list(APPEND SRC_LIST ${COMMUNICATION_SRC_LIST})
+else()
+	foreach(filepath ${HEADERS_LIST})
+		if(${filepath} MATCHES "${CMAKE_SOURCE_DIR}/include/libm2k/tools/*")
+			list(REMOVE_ITEM HEADERS_LIST ${filepath})
+		endif()
+	endforeach()
+endif()
 
 #Create the libm2k library
 add_library(${PROJECT_NAME} SHARED
