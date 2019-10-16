@@ -1,3 +1,5 @@
+// This example reads the analog voltage from channel 0 of the analog input
+
 #include <iostream>
 #include <libm2k/m2k.hpp>
 #include <libm2k/contextbuilder.hpp>
