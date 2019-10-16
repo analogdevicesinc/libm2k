@@ -3,6 +3,11 @@
 * For example, in the command line: mcs powersupply.cs -reference:libm2k-sharp.dll
 * Please make sure that libm2k-sharp.dll and libm2k-sharp-cxx-wrap.dll are in your build folder.
 * Please make sure that the location of libm2k is in the PATH.
+*
+* This exammple assumes connection:
+* 1+ to V+
+* 1- to GND
+* This example turns on the power supply and sets it to 1.7V and then reads back the value
 */
 
 using System;

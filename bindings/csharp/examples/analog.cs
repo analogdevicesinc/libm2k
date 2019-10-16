@@ -3,6 +3,15 @@
 * For example, in the command line: mcs analog.cs -reference:libm2k-sharp.dll
 * Please make sure that libm2k-sharp.dll and libm2k-sharp-cxx-wrap.dll are in your build folder.
 * Please make sure that the location of libm2k is in the PATH.
+*
+* This example assumes the following connections:
+* W1 -> 1+
+* W2 -> 2+
+* GND -> 1-
+* GND -> 2-
+*
+* The application will generate a sine and triangular wave on W1 and W2. The signal is fed back into the analog input
+* and the voltage values are displayed on the screen
 */
 
 using System;
@@ -30,13 +39,13 @@ namespace examples
             ain.setSampleRate(100000);
             ain.setRange((ANALOG_IN_CHANNEL)0, -10.0, 10.0); // nu are idxchannel
             ain.setRange((ANALOG_IN_CHANNEL)1, M2K_RANGE.PLUS_MINUS_25V);
-
-            // setup analog trigger
-            trig.setAnalogSource(M2K_TRIGGER_SOURCE.CHANNEL_1);
-            trig.setAnalogCondition(0, M2K_TRIGGER_CONDITION.RISING_EDGE);
-            trig.setAnalogLevel(0, 0.5);
-            trig.setAnalogDelay(0);
-            trig.setAnalogMode(0, M2K_TRIGGER_MODE.ALWAYS);
+            
+            // Uncomment the following block to enable triggering
+            // trig.setAnalogSource(M2K_TRIGGER_SOURCE.CHANNEL_1);
+            // trig.setAnalogCondition(0, M2K_TRIGGER_CONDITION.RISING_EDGE);
+            // trig.setAnalogLevel(0, 0.5);
+            // trig.setAnalogDelay(0);
+            // trig.setAnalogMode(0, M2K_TRIGGER_MODE.ALWAYS);
 
             // setup analog output
             aout.setSampleRate(0, 750000);
