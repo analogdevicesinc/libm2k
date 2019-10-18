@@ -266,11 +266,11 @@ public:
 	*
 	* @param data A pointer to the interleaved data
 	* @param nb_channels the number of channels on which we want to push
-	* @param nb_samples_per_channel the number of samples per channel
+	* @param nb_samples the number of samples total (samples_per_channel * channels)
 	* @note Make sure the samples are interleaved
 	* @note Both DACs will be powered up
 	*/
-	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples_per_channel);
+	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples);
 
 
 	/**
@@ -278,11 +278,11 @@ public:
 	*
 	* @param data A pointer to the interleaved raw data
 	* @param nb_channels the number of channels on which we want to push
-	* @param nb_samples_per_channel the number of raw samples per channel
+	* @param nb_samples the number of samples total (samples_per_channel * channels)
 	* @note Make sure the raw samples are interleaved
 	* @note Both DACs will be powered up
 	*/
-	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples_per_channel);
+	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples);
 
 	/**
 	* @brief Set the calibration gain for the given channel

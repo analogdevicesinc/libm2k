@@ -308,6 +308,9 @@ public:
 
 	void pushRaw(short *data, unsigned int nb_channels, unsigned int nb_samples)
 	{
+		if ((nb_samples % nb_channels) !=0) {
+                        throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
+                }
 		std::vector<std::vector<short>> data_buffers;
 		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
 		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
@@ -318,7 +321,7 @@ public:
 
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
 			std::vector<short> raw_data_buffer = {};
-			for (unsigned int i = 0, off = 0; i < nb_samples; i++, off += nb_channels) {
+			for (unsigned int i = 0, off = 0; i < (nb_samples/nb_channels); i++, off += nb_channels) {
 				raw_data_buffer.push_back(data[chn + off]);
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
@@ -356,6 +359,9 @@ public:
 
 	void push(double *data, unsigned int nb_channels, unsigned int nb_samples)
 	{
+		if ((nb_samples % nb_channels) !=0) {
+                        throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
+                }
 		std::vector<std::vector<short>> data_buffers;
 		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
 		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
@@ -366,7 +372,7 @@ public:
 
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
 			std::vector<short> raw_data_buffer = {};
-			for (unsigned int i = 0, off = 0; i < nb_samples; i++, off += nb_channels) {
+			for (unsigned int i = 0, off = 0; i < (nb_samples/nb_channels); i++, off += nb_channels) {
 				raw_data_buffer.push_back(processSample(data[chn + off], chn));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
