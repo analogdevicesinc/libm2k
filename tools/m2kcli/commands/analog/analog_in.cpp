@@ -137,11 +137,11 @@ void AnalogIn::handleCapture()
 	if (!format.empty() && format == "binary") {
 
 		if (raw) {
-			short *tempSamples = analogIn->getSamplesRawInterleaved(bufferSize);
+			short *tempSamples = (short*) analogIn->getSamplesRawInterleaved(bufferSize);
 			std::vector<uint16_t> samples(tempSamples, tempSamples + bufferSize);
 			printSamplesBinaryFormat(samples);
 		} else {
-			double *tempSamples = analogIn->getSamplesInterleaved(bufferSize);
+			double *tempSamples = (double*) analogIn->getSamplesInterleaved(bufferSize);
 			std::vector<double> samples(tempSamples, tempSamples + bufferSize);
 			printSamplesBinaryFormat(samples);
 		}
