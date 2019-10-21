@@ -10,6 +10,14 @@
 %include "exception.i"
 %include "typemaps.i"
 %include "stdint.i"
+
+#ifdef COMMUNICATION
+#ifdef SWIGCSHARP
+%include "arrays_csharp.i"
+%apply uint8_t INPUT[] {uint8_t* data}
+#endif
+#endif
+
 %allowexception;
 %feature("autodoc", "3");
 
@@ -69,6 +77,13 @@
 
 #endif
 
+#ifdef SWIGPYTHON
+#ifdef COMMUNICATION
+%include <pybuffer.i>
+%pybuffer_mutable_binary(uint8_t *data, uint8_t bytes_number);
+#endif
+#endif
+
 namespace std {
 	%template(VectorI) vector<int>;
 	%template(VectorS) vector<short>;
@@ -111,6 +126,10 @@ namespace std {
 	#include <libm2k/m2kcalibration.hpp>
 	#include <libm2k/m2kexceptions.hpp>
 	#include <libm2k/m2k.hpp>
+#ifdef COMMUNICATION
+	#include <libm2k/tools/spi.hpp>
+	#include <libm2k/tools/spi_extra.hpp>
+#endif
 	typedef std::vector<libm2k::analog::DMM_READING> DMMReading;
 	typedef std::vector<libm2k::analog::DMM*> DMMs;
 	typedef std::vector<libm2k::analog::M2kAnalogIn*> M2kAnalogIns;
@@ -119,6 +138,29 @@ namespace std {
 	typedef std::vector<libm2k::M2K_TRIGGER_CONDITION_DIGITAL> M2kConditionDigital;
 	typedef std::vector<libm2k::M2K_TRIGGER_MODE> M2kModes;
 %}
+
+#ifdef COMMUNICATION
+#ifdef SWIGCSHARP
+	typedef struct spi_init_param {
+		uint32_t 	max_speed_hz;
+		uint8_t 	chip_select;
+		enum 		spi_mode mode;
+		m2k_spi_init 	*extra;
+	}spi_init_param;
+#endif
+
+%ignore spi_init(struct spi_desc**, const struct spi_init_param *);
+
+%inline %{
+	spi_desc *spi_init(const struct spi_init_param *param)
+	{
+		spi_desc *temp;
+		spi_init(&temp, param);
+		return temp;
+	}
+%}
+#endif
+
 
 #ifdef SWIGPYTHON
 	%exception {
@@ -170,6 +212,11 @@ namespace std {
 %include <libm2k/m2kcalibration.hpp>
 %include <libm2k/m2kexceptions.hpp>
 %include <libm2k/m2k.hpp>
+
+#ifdef COMMUNICATION
+%include <libm2k/tools/spi.hpp>
+%include <libm2k/tools/spi_extra.hpp>
+#endif
 
 %template(DMMReading) std::vector<libm2k::analog::DMM_READING>;
 %template(DMMs) std::vector<libm2k::analog::DMM*>;
