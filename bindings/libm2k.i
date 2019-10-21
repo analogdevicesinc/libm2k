@@ -127,7 +127,8 @@ namespace std {
 	#include <libm2k/m2kexceptions.hpp>
 	#include <libm2k/m2k.hpp>
 #ifdef COMMUNICATION
-
+	#include <libm2k/tools/spi.hpp>
+	#include <libm2k/tools/spi_extra.hpp>
 #endif
 	typedef std::vector<libm2k::analog::DMM_READING> DMMReading;
 	typedef std::vector<libm2k::analog::DMM*> DMMs;
@@ -139,7 +140,25 @@ namespace std {
 %}
 
 #ifdef COMMUNICATION
+#ifdef SWIGCSHARP
+	typedef struct spi_init_param {
+		uint32_t 	max_speed_hz;
+		uint8_t 	chip_select;
+		enum 		spi_mode mode;
+		m2k_spi_init 	*extra;
+	}spi_init_param;
+#endif
 
+%ignore spi_init(struct spi_desc**, const struct spi_init_param *);
+
+%inline %{
+	spi_desc *spi_init(const struct spi_init_param *param)
+	{
+		spi_desc *temp;
+		spi_init(&temp, param);
+		return temp;
+	}
+%}
 #endif
 
 
@@ -195,7 +214,8 @@ namespace std {
 %include <libm2k/m2k.hpp>
 
 #ifdef COMMUNICATION
-
+%include <libm2k/tools/spi.hpp>
+%include <libm2k/tools/spi_extra.hpp>
 #endif
 
 %template(DMMReading) std::vector<libm2k::analog::DMM_READING>;
