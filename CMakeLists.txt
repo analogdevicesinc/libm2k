@@ -170,6 +170,13 @@ install(FILES ${LIBM2K_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 
 configure_file(libm2k.iss.cmakein ${CMAKE_CURRENT_BINARY_DIR}/libm2k.iss @ONLY)
 
+#Add and build libm2k tools
+if (ENABLE_TOOLS)
+	message("---- Building tools")
+	add_subdirectory(tools)
+	add_definitions(-DCOMMUNICATION)
+endif()
+
 #Add and build python bindings
 if (ENABLE_PYTHON AND SWIG_FOUND)
 	message("---- Building Python bindings")
@@ -185,11 +192,6 @@ endif()
 #Add and build the examples
 if (BUILD_EXAMPLES)
 	add_subdirectory(examples)
-endif()
-
-#Add and build libm2k tools
-if (ENABLE_TOOLS)
-	add_subdirectory(tools)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
