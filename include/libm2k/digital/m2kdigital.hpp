@@ -340,6 +340,13 @@ public:
 	*/
 	libm2k::analog::M2kHardwareTrigger* getTrigger();
 
+
+	/**
+	 * @brief Set the kernel buffers to a specific value
+	 * @param count the number of kernel buffers
+	 */
+	void setKernelBuffersCountIn(unsigned int count);
+
 	/** @} */
 
 private:
