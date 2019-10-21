@@ -186,7 +186,13 @@ public:
 	/**
 	* @brief Stop all digital channels from sending the signals
 	*/
-	void stop();
+	void stopBufferOut();
+
+
+	/**
+	 * @brief Destroy the buffer
+	 */
+	void flushBufferIn();
 
 
 	/**

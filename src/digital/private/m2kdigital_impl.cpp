@@ -226,9 +226,14 @@ public:
 		m_dev_write->push(data, 0, nb_samples, getCyclic(), true);
 	}
 
-	void stop()
+	void stopBufferOut()
 	{
 		m_dev_write->stop();
+	}
+
+	void flushBufferIn()
+	{
+		m_dev_read->flushBuffer();
 	}
 
 	std::vector<unsigned short> getSamples(int nb_samples)

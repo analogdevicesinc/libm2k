@@ -49,7 +49,7 @@ int main()
 	{
 		cout<<bitset<16>(val)<<endl;
 	}
-	dig->stop();
+	dig->stopBufferOut();
 	contextClose(ctx);
 
 	return 0;
