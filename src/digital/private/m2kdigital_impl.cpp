@@ -109,7 +109,7 @@ public:
 			m_dev_read->enableChannel(i, true);
 		}
 
-		m_dev_read->setKernelBuffersCount(25);
+		setKernelBuffersCountIn(1);
 	}
 
 	void setKernelBuffersCountIn(unsigned int count)

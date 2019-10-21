@@ -102,6 +102,7 @@ public:
 			m_adc_hw_vert_offset_raw.at(i) = 2048;
 			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
 		}
+		setKernelBuffersCount(1);
 	}
 
 	void syncDevice()
