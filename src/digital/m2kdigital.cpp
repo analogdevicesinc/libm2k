@@ -145,6 +145,11 @@ M2kHardwareTrigger *M2kDigital::getTrigger()
 	return m_pimpl->getTrigger();
 }
 
+void M2kDigital::setKernelBuffersCountIn(unsigned int count)
+{
+	m_pimpl->setKernelBuffersCountIn(count);
+}
+
 void M2kDigital::setOutputMode(DIO_CHANNEL chn, DIO_MODE mode)
 {
 	m_pimpl->setOutputMode(chn, mode);
