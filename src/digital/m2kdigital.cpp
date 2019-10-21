@@ -105,9 +105,14 @@ void M2kDigital::push(unsigned short *data, unsigned int nb_samples)
 	m_pimpl->push(data, nb_samples);
 }
 
-void M2kDigital::stop()
+void M2kDigital::stopBufferOut()
 {
-	m_pimpl->stop();
+	m_pimpl->stopBufferOut();
+}
+
+void M2kDigital::flushBufferIn()
+{
+	m_pimpl->flushBufferIn();
 }
 
 std::vector<unsigned short> M2kDigital::getSamples(unsigned int nb_samples)

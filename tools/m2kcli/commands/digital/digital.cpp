@@ -142,7 +142,7 @@ void Digital::handleGenerate()
 	std::cout << "Press ENTER to stop the generation... ";
 	std::cin.clear();
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	digital->stop();
+	digital->stopBufferOut();
 }
 
 void Digital::handleGet(std::vector<std::pair<std::string, std::string>> &output)
