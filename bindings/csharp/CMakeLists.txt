@@ -17,15 +17,27 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set_property(SOURCE ../${PROJECT_NAME}.i PROPERTY SWIG_MODULE_NAME "libm2k")
 
-execute_process(
-	COMMAND ${SWIG_EXECUTABLE} -csharp -c++  -outdir ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/libm2kCSHARP_wrap.cxx -dllimport ${CSHARP_WRAPPER_DLL}
-	-I${CMAKE_SOURCE_DIR}/include -I${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../${PROJECT_NAME}.i
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	OUTPUT_VARIABLE swig_generated_output
-	RESULT_VARIABLE swig_generated_res
-	ERROR_VARIABLE swig_generated_error
-	INPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../${PROJECT_NAME}.i
+if(ENABLE_TOOLS)
+	execute_process(
+		COMMAND ${SWIG_EXECUTABLE} -csharp -c++ -DCOMMUNICATION -outdir ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/libm2kCSHARP_wrap.cxx -dllimport ${CSHARP_WRAPPER_DLL}
+		-I${CMAKE_SOURCE_DIR}/include -I${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../${PROJECT_NAME}.i
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		OUTPUT_VARIABLE swig_generated_output
+		RESULT_VARIABLE swig_generated_res
+		ERROR_VARIABLE swig_generated_error
+		INPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../${PROJECT_NAME}.i
+		)
+else()
+	execute_process(
+			COMMAND ${SWIG_EXECUTABLE} -csharp -c++ -outdir ${CMAKE_CURRENT_BINARY_DIR} -o ${CMAKE_CURRENT_BINARY_DIR}/libm2kCSHARP_wrap.cxx -dllimport ${CSHARP_WRAPPER_DLL}
+			-I${CMAKE_SOURCE_DIR}/include -I${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../${PROJECT_NAME}.i
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			OUTPUT_VARIABLE swig_generated_output
+			RESULT_VARIABLE swig_generated_res
+			ERROR_VARIABLE swig_generated_error
+			INPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../${PROJECT_NAME}.i
 	)
+endif()
 
 if (${swig_generated_res})
 	message("------- SWIG failed to generate the C# wrapper.")

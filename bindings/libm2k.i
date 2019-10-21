@@ -10,6 +10,14 @@
 %include "exception.i"
 %include "typemaps.i"
 %include "stdint.i"
+
+#ifdef COMMUNICATION
+#ifdef SWIGCSHARP
+%include "arrays_csharp.i"
+%apply uint8_t INPUT[] {uint8_t* data}
+#endif
+#endif
+
 %allowexception;
 %feature("autodoc", "3");
 
@@ -69,6 +77,13 @@
 
 #endif
 
+#ifdef SWIGPYTHON
+#ifdef COMMUNICATION
+%include <pybuffer.i>
+%pybuffer_mutable_binary(uint8_t *data, uint8_t bytes_number);
+#endif
+#endif
+
 namespace std {
 	%template(VectorI) vector<int>;
 	%template(VectorS) vector<short>;
@@ -111,6 +126,9 @@ namespace std {
 	#include <libm2k/m2kcalibration.hpp>
 	#include <libm2k/m2kexceptions.hpp>
 	#include <libm2k/m2k.hpp>
+#ifdef COMMUNICATION
+
+#endif
 	typedef std::vector<libm2k::analog::DMM_READING> DMMReading;
 	typedef std::vector<libm2k::analog::DMM*> DMMs;
 	typedef std::vector<libm2k::analog::M2kAnalogIn*> M2kAnalogIns;
@@ -119,6 +137,11 @@ namespace std {
 	typedef std::vector<libm2k::M2K_TRIGGER_CONDITION_DIGITAL> M2kConditionDigital;
 	typedef std::vector<libm2k::M2K_TRIGGER_MODE> M2kModes;
 %}
+
+#ifdef COMMUNICATION
+
+#endif
+
 
 #ifdef SWIGPYTHON
 	%exception {
@@ -170,6 +193,10 @@ namespace std {
 %include <libm2k/m2kcalibration.hpp>
 %include <libm2k/m2kexceptions.hpp>
 %include <libm2k/m2k.hpp>
+
+#ifdef COMMUNICATION
+
+#endif
 
 %template(DMMReading) std::vector<libm2k::analog::DMM_READING>;
 %template(DMMs) std::vector<libm2k::analog::DMM*>;
