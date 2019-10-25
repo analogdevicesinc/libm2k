@@ -128,7 +128,13 @@ std::unordered_set<std::string> Utils::getAllDevices(iio_context *ctx)
 	std::unordered_set<std::string> device_list;
 	for (unsigned int i = 0; i < nb_devices; ++i) {
 		auto dev = iio_context_get_device(ctx, i);
-		device_list.emplace(std::string(iio_device_get_name(dev)));
+		auto name = iio_device_get_name(dev);
+		if (name) {
+			device_list.emplace(std::string(name));
+		} else {
+			auto id = iio_device_get_id(dev);
+			device_list.emplace(std::string(id));
+		}
 	}
 	return device_list;
 }
