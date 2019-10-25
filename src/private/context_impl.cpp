@@ -93,6 +93,11 @@ public:
 
 	}
 
+	unsigned int getAnalogInCount()
+	{
+		return m_instancesAnalogIn.size();
+	}
+
 	GenericAnalogIn* getAnalogIn(unsigned int index)
 	{
 		if (index < m_instancesAnalogIn.size()) {
@@ -110,6 +115,11 @@ public:
 			}
 		}
 		return nullptr;
+	}
+
+	unsigned int getAnalogOutCount()
+	{
+		return m_instancesAnalogOut.size();
 	}
 
 	GenericAnalogOut* getAnalogOut(unsigned int index)
@@ -344,6 +354,11 @@ public:
 	std::vector<DMM*> getAllDmm()
 	{
 		return m_instancesDMM;
+	}
+
+	unsigned int getDmmCount()
+	{
+		return m_instancesDMM.size();
 	}
 
 

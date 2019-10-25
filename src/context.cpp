@@ -48,6 +48,11 @@ void Context::deinitialize()
 	m_pimpl->deinitialize();
 }
 
+unsigned int Context::getAnalogInCount()
+{
+	return m_pimpl->getAnalogInCount();
+}
+
 GenericAnalogIn* Context::getAnalogIn(unsigned int index)
 {
 	return m_pimpl->getAnalogIn(index);
@@ -56,6 +61,11 @@ GenericAnalogIn* Context::getAnalogIn(unsigned int index)
 GenericAnalogIn* Context::getAnalogIn(std::string dev_name)
 {
 	return m_pimpl->getAnalogIn(dev_name);
+}
+
+unsigned int Context::getAnalogOutCount()
+{
+	return m_pimpl->getAnalogOutCount();
 }
 
 GenericAnalogOut* Context::getAnalogOut(unsigned int index)
@@ -96,6 +106,11 @@ std::vector<std::string> Context::scanAllAnalogOut()
 void Context::scanAllDMM()
 {
 	m_pimpl->scanAllDMM();
+}
+
+unsigned int Context::getDmmCount()
+{
+	return m_pimpl->getDmmCount();
 }
 
 DMM* Context::getDMM(std::string dev_name)
