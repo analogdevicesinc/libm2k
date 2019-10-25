@@ -81,6 +81,9 @@ public:
 
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);
+	unsigned int getDmmCount();
+	unsigned int getAnalogInCount();
+	unsigned int getAnalogOutCount();
 protected:
 	class ContextImpl;
 	std::shared_ptr<ContextImpl> m_pimpl;
