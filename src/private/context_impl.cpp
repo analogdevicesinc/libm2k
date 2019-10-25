@@ -281,13 +281,8 @@ public:
 
 	std::unordered_set<std::string> getAllDevices()
 	{
-		unsigned int nb_devices = iio_context_get_devices_count(m_context);
-		std::unordered_set<std::string> device_list;
-		for (unsigned int i = 0; i < nb_devices; ++i) {
-			auto dev = iio_context_get_device(m_context, i);
-			device_list.emplace(std::string(iio_device_get_name(dev)));
-		}
-		return device_list;
+
+		return Utils::getAllDevices(m_context);
 	}
 
 	std::vector<std::string> scanAllAnalogIn()
