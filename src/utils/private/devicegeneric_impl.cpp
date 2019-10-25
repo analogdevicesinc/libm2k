@@ -51,7 +51,7 @@ public:
 		if (dev_name != "") {
 			m_dev = iio_context_find_device(context, dev_name.c_str());
 			if (!m_dev) {
-				throw_exception(EXC_INVALID_PARAMETER, "Device: No such device");
+				throw_exception(EXC_INVALID_PARAMETER, "Device: No such device", __FILE__, __LINE__);
 			}
 
 			__try {
@@ -110,7 +110,8 @@ public:
 	Channel* getChannel(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_channel_list.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel: " + to_string(chnIdx));
+			throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel: " + to_string(chnIdx),
+					__FILE__, __LINE__);
 		}
 		return m_channel_list.at(chnIdx);
 	}
@@ -152,7 +153,8 @@ public:
 		bool cyclic = true, bool multiplex = false)
 	{
 		if (!m_buffer) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic, multiplex);
@@ -162,7 +164,8 @@ public:
 			  bool cyclic = true, bool multiplex = false)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic, multiplex);
@@ -171,7 +174,8 @@ public:
 	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic);
@@ -187,7 +191,8 @@ public:
 	std::vector<unsigned short> getSamples(unsigned int nb_samples)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamples(nb_samples);
@@ -198,7 +203,8 @@ public:
 					std::function<double(int16_t, unsigned int)> process)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamples(nb_samples, process);
@@ -207,296 +213,504 @@ public:
 	string getName()
 	{
 		if (!m_dev) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: No available device");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: No available device", __FILE__, __LINE__);
 		}
 		return iio_device_get_name(m_dev);
 	}
 
 	double getDoubleValue(std::string attr)
 	{
+		std::string errstr = "";
 		double value = 0;
 		std::string dev_name = getName();
 
 		if (Context::iioDevHasAttribute(m_dev, attr)) {
-			iio_device_attr_read_double(m_dev, attr.c_str(),
-				&value);
+			int ret = iio_device_attr_read_double(m_dev, attr.c_str(), &value);
+			if (ret < 0) {
+				errstr += "Error reading attribute " +  dev_name + "\n ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
-					attr + " attribute");
+			errstr += dev_name + " has no "	+ attr + " attribute ";
+			goto out_cleanup;
 		}
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return value;
 	}
 
 	double getDoubleValue(unsigned int chn_idx, std::string attr, bool output = false)
 	{
 		double value = 0;
+		int ret = 0;
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
+		std::string name, errstr = "";
 		std::string dev_name = getName();
+		struct iio_channel* chn;
 
 		if (chn_idx >= nb_channels) {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no such channel");
+			errstr = dev_name + " has no such channel";
+			goto out_cleanup;
 		}
 
-		std::string name = "voltage" + std::to_string(chn_idx);
-		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		name = "voltage" + std::to_string(chn_idx);
+		chn = iio_device_find_channel(m_dev, name.c_str(), output);
+
 		if (Context::iioChannelHasAttribute(chn, attr)) {
-			iio_channel_attr_read_double(chn, attr.c_str(), &value);
+			ret = iio_channel_attr_read_double(chn, attr.c_str(), &value);
+			if (ret < 0) {
+				errstr = "Can't read attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
-					attr + " attribute for the selected channel");
+			errstr = dev_name + " has no " +
+				attr + " attribute for the selected channel";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return value;
 	}
 
 	double setDoubleValue(double value, std::string attr)
 	{
+		int ret = 0;
+		std::string errstr = "";
 		std::string dev_name = iio_device_get_name(m_dev);
 		if (Context::iioDevHasAttribute(m_dev, attr)) {
-			iio_device_attr_write_double(m_dev, attr.c_str(),
-				value);
+			ret = iio_device_attr_write_double(m_dev, attr.c_str(), value);
+			if (ret < 0) {
+				errstr = "Can't write attribute " + attr + "\n";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
-					attr + " attribute");
+			errstr = dev_name + " has no " + attr + " attribute";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return getDoubleValue(attr);
 	}
 
 	double setDoubleValue(unsigned int chn_idx, double value, std::string attr, bool output = false)
 	{
+		int ret = 0;
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
+		std::string errstr = "";
+		std::string name = "";
 		std::string dev_name = getName();
+		struct iio_channel *chn;
+
 		if (chn_idx >= nb_channels) {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no such channel");
+			errstr = dev_name + " has no such channel";
+			goto out_cleanup;
 		}
 
-		std::string name = "voltage" + std::to_string(chn_idx);
-		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		name = "voltage" + std::to_string(chn_idx);
+		chn = iio_device_find_channel(m_dev, name.c_str(), output);
+
 		if (Context::iioChannelHasAttribute(chn, attr)) {
-			iio_channel_attr_write_double(chn, attr.c_str(),
-				value);
+			ret = iio_channel_attr_write_double(chn, attr.c_str(), value);
+			if (ret < 0) {
+				errstr = "Can't write attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr +
-					" attribute for the selected channel");
+			errstr = dev_name + " has no " + attr +	" attribute for the selected channel";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return getDoubleValue(chn_idx, attr, output);
 	}
 
 	int getLongValue(std::string attr)
 	{
+		int ret = 0;
 		long long value = 0;
+		std::string errstr = "";
 		std::string dev_name = getName();
 
 		if (Context::iioDevHasAttribute(m_dev, attr)) {
-			iio_device_attr_read_longlong(m_dev, attr.c_str(),
-				&value);
+			ret = iio_device_attr_read_longlong(m_dev, attr.c_str(), &value);
+			if (ret < 0) {
+				errstr = "Can't read attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
-					attr + " attribute");
+			errstr = dev_name + " has no " + attr + " attribute";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return value;
 	}
 
 	int getLongValue(unsigned int chn_idx, std::string attr, bool output = false)
 	{
+		int ret = 0;
 		long long value = 0;
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
+		std::string errstr = "";
+		std::string name = "";
 		std::string dev_name = getName();
+		struct iio_channel *chn;
 
 		if (chn_idx >= nb_channels) {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no such channel");
+			errstr = dev_name + " has no such channel";
+			goto out_cleanup;
 		}
 
-		std::string name = "voltage" + std::to_string(chn_idx);
-		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		name = "voltage" + std::to_string(chn_idx);
+		chn = iio_device_find_channel(m_dev, name.c_str(), output);
 		if (Context::iioChannelHasAttribute(chn, attr)) {
-			iio_channel_attr_read_longlong(chn, attr.c_str(), &value);
+			ret = iio_channel_attr_read_longlong(chn, attr.c_str(), &value);
+			if (ret < 0) {
+				errstr = "Can't read attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
-					attr + " attribute for the selected channel");
+			errstr = dev_name + " has no " + attr + " attribute for the selected channel";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return value;
 	}
 
 	int setLongValue(int value, std::string attr)
 	{
+		int ret = 0;
+		std::string errstr = "";
 		std::string dev_name = iio_device_get_name(m_dev);
 		if (Context::iioDevHasAttribute(m_dev, attr)) {
-			iio_device_attr_write_longlong(m_dev, attr.c_str(),
-				value);
+			ret = iio_device_attr_write_longlong(m_dev, attr.c_str(), value);
+			if (ret < 0) {
+				errstr = "Can't write attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
-					attr + " attribute");
+			errstr = dev_name + " has no " + attr + " attribute";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return getLongValue(attr);
 	}
 
 	int setLongValue(unsigned int chn_idx, int value, std::string attr, bool output = false)
 	{
+		int ret = 0;
+		std::string errstr = "";
+		std::string name = "";
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 		std::string dev_name = getName();
+		struct iio_channel* chn;
+
 		if (chn_idx >= nb_channels) {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no such channel");
+			errstr = dev_name + " has no such channel";
+			goto out_cleanup;
 		}
 
-		std::string name = "voltage" + std::to_string(chn_idx);
-		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		name = "voltage" + std::to_string(chn_idx);
+		chn = iio_device_find_channel(m_dev, name.c_str(), output);
 		if (Context::iioChannelHasAttribute(chn, attr)) {
-			iio_channel_attr_write_longlong(chn, attr.c_str(),
-				value);
+			ret = iio_channel_attr_write_longlong(chn, attr.c_str(), value);
+			if (ret < 0) {
+				errstr = "Can't write attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr +
-					" attribute for the selected channel");
+			errstr = dev_name + " has no " + attr +	" attribute for the selected channel";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return getLongValue(chn_idx, attr, output);
 	}
 
 	bool getBoolValue(string attr)
 	{
+		int ret = 0;
 		bool value = 0;
+		std::string errstr = "";
 		std::string dev_name = getName();
 
 		if (Context::iioDevHasAttribute(m_dev, attr)) {
-			iio_device_attr_read_bool(m_dev, attr.c_str(),
-				&value);
+			ret = iio_device_attr_read_bool(m_dev, attr.c_str(), &value);
+			if (ret < 0) {
+				errstr = "Can't read attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr + " attribute");
+			errstr =  dev_name + " has no " + attr + " attribute";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return value;
 	}
 
 	bool getBoolValue(unsigned int chn_idx, string attr, bool output = false)
 	{
+		int ret = 0;
 		bool value = 0;
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 		std::string dev_name = getName();
+		std::string errstr, name = "";
+		struct iio_channel *chn;
 
 		if (chn_idx >= nb_channels) {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no such channel");
+			errstr = dev_name + " has no such channel";
+			goto out_cleanup;
 		}
 
-		std::string name = "voltage" + std::to_string(chn_idx);
-		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		name = "voltage" + std::to_string(chn_idx);
+		chn = iio_device_find_channel(m_dev, name.c_str(), output);
 		if (Context::iioChannelHasAttribute(chn, attr)) {
-			iio_channel_attr_read_bool(chn, attr.c_str(),
-				&value);
+			ret = iio_channel_attr_read_bool(chn, attr.c_str(), &value);
+			if (ret < 0) {
+				errstr = "Can't read attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr +
-					" attribute for the selected channel");
+			errstr = dev_name + " has no " + attr +	" attribute for the selected channel";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return value;
 	}
 
 	bool setBoolValue(bool value, string attr)
 	{
+		int ret = 0;
+		std::string errstr = "";
 		std::string dev_name = iio_device_get_name(m_dev);
 		if (Context::iioDevHasAttribute(m_dev, attr)) {
-			iio_device_attr_write_bool(m_dev, attr.c_str(), value);
+			ret = iio_device_attr_write_bool(m_dev, attr.c_str(), value);
+			if (ret < 0) {
+				errstr = "Can't write attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr +
-					" attribute");
+			errstr = dev_name + " has no " + attr +	" attribute";
+			goto out_cleanup;
+		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
 		}
 		return getBoolValue(attr);
 	}
 
 	bool setBoolValue(unsigned int chn_idx, bool value, string attr, bool output = false)
 	{
+		int ret = 0;
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 		std::string dev_name = getName();
+		std::string errstr, name = "";
+		struct iio_channel *chn;
+
 		if (chn_idx >= nb_channels) {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no such channel");
+			errstr = dev_name + " has no such channel";
+			goto out_cleanup;
 		}
 
-		std::string name = "voltage" + std::to_string(chn_idx);
-		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		name = "voltage" + std::to_string(chn_idx);
+		chn = iio_device_find_channel(m_dev, name.c_str(), output);
 		if (Context::iioChannelHasAttribute(chn, attr)) {
-			iio_channel_attr_write_bool(chn, attr.c_str(),
-				value);
+			ret = iio_channel_attr_write_bool(chn, attr.c_str(), value);
+			if (ret < 0) {
+				errstr = "Can't write attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr +
-					" attribute for the selected channel");
+			errstr = dev_name + " has no " + attr + " attribute for the selected channel";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return getBoolValue(chn_idx, attr, output);
 	}
 
 	string setStringValue(string attr, string value)
 	{
+		ssize_t ret = 0;
+		std::string errstr = "";
 		std::string dev_name = iio_device_get_name(m_dev);
 		if (Context::iioDevHasAttribute(m_dev, attr)) {
-			iio_device_attr_write(m_dev, attr.c_str(), value.c_str());
+			ret = iio_device_attr_write(m_dev, attr.c_str(), value.c_str());
+			if (ret < 0) {
+				errstr = "Can't write attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr + " attribute");
+			errstr = dev_name + " has no " + attr + " attribute";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return getStringValue(attr);
 	}
 
 	string setStringValue(unsigned int chn_idx, string attr, string value, bool output = false)
 	{
+		std::string errstr = "";
+		ssize_t ret = 0;
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 		std::string dev_name = getName();
+		std::string name = "";
+		struct iio_channel *chn;
+
 		if (chn_idx >= nb_channels) {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no such channel");
+			errstr = dev_name + " has no such channel";
+			goto out_cleanup;
 		}
 
-		std::string name = "voltage" + std::to_string(chn_idx);
-		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		name = "voltage" + std::to_string(chn_idx);
+		chn = iio_device_find_channel(m_dev, name.c_str(), output);
 		if (Context::iioChannelHasAttribute(chn, attr)) {
-			iio_channel_attr_write(chn, attr.c_str(), value.c_str());
+			ret = iio_channel_attr_write(chn, attr.c_str(), value.c_str());
+			if (ret < 0) {
+				errstr = "Can't write attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr +
-					" attribute for the selected channel");
+			errstr = dev_name + " has no " + attr + " attribute for the selected channel";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return getStringValue(chn_idx, attr, output);
 	}
 
 	string getStringValue(string attr)
 	{
+		ssize_t ret = 0;
+		std::string errstr = "";
 		char value[100];
 		std::string dev_name = getName();
 
 		if (Context::iioDevHasAttribute(m_dev, attr)) {
-			iio_device_attr_read(m_dev, attr.c_str(),
-				value, sizeof(value));
+			ret = iio_device_attr_read(m_dev, attr.c_str(), value, sizeof(value));
+			if (ret < 0) {
+				errstr = "Can't read attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr + " attribute");
+			errstr = dev_name + " has no " + attr + " attribute";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return std::string(value);
 	}
 
 	string getStringValue(unsigned int chn_idx, string attr, bool output = false)
 	{
+		ssize_t ret = 0;
 		char value[100];
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 		std::string dev_name = getName();
+		std::string name, errstr = "";
+		struct iio_channel *chn;
 
 		if (chn_idx >= nb_channels) {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no such channel");
+			errstr = dev_name + " has no such channel";
+			goto out_cleanup;
 		}
 
-		std::string name = "voltage" + std::to_string(chn_idx);
-		auto chn = iio_device_find_channel(m_dev, name.c_str(), output);
+		name = "voltage" + std::to_string(chn_idx);
+		chn = iio_device_find_channel(m_dev, name.c_str(), output);
 		if (Context::iioChannelHasAttribute(chn, attr)) {
-			iio_channel_attr_read(chn, attr.c_str(),
-					value, sizeof(value));
+			ret = iio_channel_attr_read(chn, attr.c_str(), value, sizeof(value));
+			if (ret < 0) {
+				errstr = "Can't read attribute " + attr + " ";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, dev_name +
-					" has no " + attr +
-					" attribute for the selected channel");
+			errstr = dev_name + " has no " + attr + " attribute for the selected channel";
+			goto out_cleanup;
 		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
+		}
+
 		return value;
 	}
 
@@ -505,10 +719,9 @@ public:
 		std::vector<double> values = {};
 		std::vector<std::string> str_values;
 		char buf[1024];
-		int ret;
+		ssize_t ret;
 
-		ret = iio_device_attr_read(m_dev, "sampling_frequency_available",
-					   buf, sizeof(buf));
+		ret = iio_device_attr_read(m_dev, "sampling_frequency_available", buf, sizeof(buf));
 
 		if (ret > 0) {
 			str_values = Utils::split(buf, " ");
@@ -519,14 +732,14 @@ public:
 		}
 
 		if (values.empty()) {
-			ret = iio_device_attr_read(m_dev, "sampling_frequency",
-						   buf, sizeof(buf));
+			ret = iio_device_attr_read(m_dev, "sampling_frequency", buf, sizeof(buf));
 
 			if (!ret) {
 				__try {
 					values.push_back(std::stoul(buf));
-				} __catch (exception_type &e) {
-					throw_exception(EXC_INVALID_PARAMETER, "Device: Not a valid samplerate.");
+				} __catch (exception_type &) {
+					throw_exception(EXC_INVALID_PARAMETER, "Device: Not a valid samplerate.",
+							__FILE__, __LINE__);
 				}
 			}
 		}
@@ -540,7 +753,7 @@ public:
 		int ret = iio_device_reg_write(m_dev, address, value);
 		if (ret) {
 			throw_exception(EXC_INVALID_PARAMETER, "Device: can't write register" +
-							  std::string(std::strerror(-ret)));
+					std::string(std::strerror(-ret)), __FILE__, __LINE__);
 		}
 	}
 
@@ -573,7 +786,7 @@ public:
 		if (chn_idx < m_channel_list.size()) {
 			m_channel_list.at(chn_idx)->convert(avg, src);
 		} else {
-			throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel", __FILE__, __LINE__);
 		}
 	}
 
@@ -582,14 +795,14 @@ public:
 		if (chn_idx < m_channel_list.size()) {
 			m_channel_list.at(chn_idx)->convert(avg, src);
 		} else {
-			throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel", __FILE__, __LINE__);
 		}
 	}
 
 	void setKernelBuffersCount(unsigned int count)
 	{
 		if (!m_dev) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: no such device");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: no such device", __FILE__, __LINE__);
 		}
 		iio_device_set_kernel_buffers_count(m_dev, count);
 	}
@@ -597,7 +810,7 @@ public:
 	bool isValidDmmChannel(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_channel_list.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Device: no such DMM channel");
+			throw_exception(EXC_OUT_OF_RANGE, "Device: no such DMM channel", __FILE__, __LINE__);
 		}
 
 		auto chn = m_channel_list.at(chnIdx);
@@ -620,7 +833,7 @@ public:
 		int ret = iio_context_get_attr(m_context, attrIdx, &name, &value);
 		if (ret < 0) {
 			throw_exception(EXC_RUNTIME_ERROR, "Device: Can't get context attribute " +
-					std::to_string(attrIdx));
+					std::to_string(attrIdx), __FILE__, __LINE__);
 		}
 		pair.first = std::string(name);
 		pair.second = std::string(value);

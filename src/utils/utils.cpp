@@ -67,7 +67,8 @@ std::vector<ini_device_struct> Utils::parseIniFile(std::string path)
 				}
 
 			} else {
-				throw_exception(EXC_INVALID_PARAMETER, "Invalid configuration file: " + path);
+				throw_exception(EXC_INVALID_PARAMETER, "Invalid configuration file: " + path,
+						__FILE__, __LINE__);
 			}
 		}
 		if (device.key_val_pairs.size() != 0) {
@@ -191,7 +192,7 @@ std::vector<double> Utils::getAvailableSamplerates(iio_device *dev)
 	std::vector<double> values;
 	std::vector<std::string> str_values;
 	char buf[1024];
-	int ret;
+	ssize_t ret;
 
 	ret = iio_device_attr_read(dev, "sampling_frequency_available",
 				   buf, sizeof(buf));

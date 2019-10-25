@@ -51,7 +51,7 @@ public:
 		if (dev_name != "") {
 			m_dev = iio_context_find_device(context, dev_name.c_str());
 			if (!m_dev) {
-				throw_exception(EXC_INVALID_PARAMETER, "Device: No such device");
+				throw_exception(EXC_INVALID_PARAMETER, "Device: No such device", __FILE__, __LINE__);
 			}
 
 			__try {
@@ -110,7 +110,8 @@ public:
 	std::vector<unsigned short> getSamples(unsigned int nb_samples)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamples(nb_samples);
@@ -120,7 +121,8 @@ public:
 	unsigned short* getSamplesP(unsigned int nb_samples)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamplesP(nb_samples);
@@ -131,7 +133,8 @@ public:
 					std::function<double(int16_t, unsigned int)> process)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamples(nb_samples, process);
@@ -141,7 +144,8 @@ public:
 					std::function<double(int16_t, unsigned int)> process)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamplesInterleaved(nb_samples, process);
@@ -150,7 +154,8 @@ public:
 	short *getSamplesRawInterleaved(unsigned int nb_samples)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		return m_buffer->getSamplesRawInterleaved(nb_samples);
@@ -159,7 +164,8 @@ public:
 	void flushBuffer()
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->flushBuffer();
 	}

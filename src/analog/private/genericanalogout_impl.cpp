@@ -78,7 +78,8 @@ public:
 	void setCyclic(unsigned int chn, bool en)
 	{
 		if (chn >= getNbChannels()) {
-			throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
+			throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel",
+					__FILE__, __LINE__);
 		}
 		m_cyclic.at(chn) = en;
 	}
@@ -86,7 +87,8 @@ public:
 	bool getCyclic(unsigned int chn)
 	{
 		if (chn >= getNbChannels()) {
-			throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
+			throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel",
+					__FILE__, __LINE__);
 		}
 		return m_cyclic.at(chn);
 	}

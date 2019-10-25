@@ -123,21 +123,21 @@ public:
 
 		if (m_analog_channels.size() < 1) {
 			throw_exception(EXC_INVALID_PARAMETER,
-					"hardware trigger has no analog channels");
+					"hardware trigger has no analog channels", __FILE__, __LINE__);
 		}
 
 		if (m_digital_channels.size() < 1) {
 			throw_exception(EXC_INVALID_PARAMETER,
-					"hardware trigger has no digital channels");
+					"hardware trigger has no digital channels", __FILE__, __LINE__);
 		}
 
 		if (m_logic_channels.size() < 1) {
 			throw_exception(EXC_INVALID_PARAMETER,
-					"hardware trigger has no trigger_logic channels");
+					"hardware trigger has no trigger_logic channels", __FILE__, __LINE__) ;
 		}
 
 		if (!m_delay_trigger) {
-			throw_exception(EXC_INVALID_PARAMETER, "no delay trigger available");
+			throw_exception(EXC_INVALID_PARAMETER, "no delay trigger available", __FILE__, __LINE__);
 		}
 
 		if (init) {
@@ -150,7 +150,7 @@ public:
 
 		m_digital_trigger_device = make_shared<DeviceIn>(ctx, "m2k-logic-analyzer-rx");
 		if (!m_digital_trigger_device) {
-			throw_exception(EXC_INVALID_PARAMETER, "no digital trigger available");
+			throw_exception(EXC_INVALID_PARAMETER, "no digital trigger available", __FILE__, __LINE__);
 		}
 	}
 
@@ -164,14 +164,15 @@ public:
 	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range", __FILE__, __LINE__);
 		}
 
 		std::string buf = m_analog_channels[chnIdx]->getStringValue("trigger");
 		auto it = std::find(m_trigger_analog_cond.begin(),
 				    m_trigger_analog_cond.end(), buf.c_str());
 		if  (it == m_trigger_analog_cond.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger",
+					__FILE__, __LINE__);
 		}
 
 		return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_analog_cond.begin());
@@ -181,7 +182,7 @@ public:
 	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range", __FILE__, __LINE__);
 		}
 
 		if (cond == ANY_EDGE) {
@@ -194,14 +195,15 @@ public:
 	M2K_TRIGGER_CONDITION getExternalCondition(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range", __FILE__, __LINE__);
 		}
 		std::string buf = m_digital_channels[chnIdx]->getStringValue("trigger");
 
 		auto it = std::find(m_trigger_digital_cond.begin(),
 				    m_trigger_digital_cond.end(), buf.c_str());
 		if  (it == m_trigger_digital_cond.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger",
+					__FILE__, __LINE__);
 		}
 
 		return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_digital_cond.begin());
@@ -210,7 +212,7 @@ public:
 	void setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range", __FILE__, __LINE__);
 		}
 
 		m_digital_channels[chnIdx]->setStringValue("trigger", m_trigger_digital_cond[cond]);
@@ -226,7 +228,8 @@ public:
 		auto it = std::find(available_digital_conditions.begin(),
 				    available_digital_conditions.end(), trigger_val.c_str());
 		if (it == available_digital_conditions.end()) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: Cannot read channel attribute: trigger");
+			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: Cannot read channel attribute: trigger",
+					__FILE__, __LINE__);
 		}
 
 		return static_cast<M2K_TRIGGER_CONDITION>
@@ -255,7 +258,8 @@ public:
 	int getAnalogLevelRaw(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		double val = m_analog_channels[chnIdx]->getDoubleValue("trigger_level");
@@ -266,7 +270,8 @@ public:
 	void setAnalogLevelRaw(unsigned int chnIdx, int level)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		m_analog_channels[chnIdx]->setLongValue("trigger_level", static_cast<long long>(level));
@@ -275,7 +280,8 @@ public:
 	double getAnalogLevel(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		int raw = getAnalogLevelRaw(chnIdx);
@@ -286,7 +292,8 @@ public:
 	void setAnalogLevel(unsigned int chnIdx, double v_level)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		int raw = (v_level - m_offset.at(chnIdx)) / m_scaling.at(chnIdx);
@@ -296,7 +303,8 @@ public:
 	int getAnalogHysteresis(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		double val = m_analog_channels[chnIdx]->getDoubleValue("trigger_hysteresis");
@@ -306,7 +314,8 @@ public:
 	void setAnalogHysteresis(unsigned int chnIdx, int histeresis)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		m_analog_channels[chnIdx]->setLongValue("trigger_hysteresis", static_cast<long long>(histeresis));
@@ -315,14 +324,16 @@ public:
 	M2K_TRIGGER_MODE getAnalogMode(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		std::string buf = m_logic_channels[chnIdx]->getStringValue("mode");
 		auto it = std::find(m_trigger_mode.begin(),
 				    m_trigger_mode.end(), buf.c_str());
 		if  (it == m_trigger_mode.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: mode");
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: mode",
+					__FILE__, __LINE__);
 		}
 
 		return static_cast<M2K_TRIGGER_MODE>(it - m_trigger_mode.begin());
@@ -331,7 +342,8 @@ public:
 	void setAnalogMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		m_logic_channels[chnIdx]->setStringValue("mode", m_trigger_mode[mode].c_str());
@@ -352,7 +364,8 @@ public:
 		auto it = std::find(m_trigger_logic_mode.begin(), m_trigger_logic_mode.end(),
 				    trigger_mode.c_str());
 		if (it == m_trigger_logic_mode.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Cannot read channel attribute: trigger logic mode");
+			throw_exception(EXC_OUT_OF_RANGE, "Cannot read channel attribute: trigger logic mode",
+					__FILE__, __LINE__);
 		}
 		return static_cast<DIO_TRIGGER_MODE>(it - m_trigger_logic_mode.begin());
 	}
@@ -364,7 +377,8 @@ public:
 		auto it = std::find(m_trigger_source.begin(),
 				    m_trigger_source.end(), buf.c_str());
 		if  (it == m_trigger_source.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source");
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source",
+					__FILE__, __LINE__);
 		}
 
 		return static_cast<M2K_TRIGGER_SOURCE>(it - m_trigger_source.begin());
@@ -402,7 +416,8 @@ public:
 	void setAnalogSourceChannel(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Source channel index is out of range");
+			throw_exception(EXC_OUT_OF_RANGE, "Source channel index is out of range",
+					__FILE__, __LINE__);
 		}
 
 		// Currently we don't need trigger on multiple channels simultaneously

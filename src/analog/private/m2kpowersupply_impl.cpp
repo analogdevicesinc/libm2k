@@ -42,7 +42,8 @@ public:
 			m_dev_write = make_shared<DeviceOut>(ctx, write_dev);
 			if (!m_dev_write) {
 				m_dev_write = nullptr;
-				throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: No device was found for writing");
+				throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: No device was found for writing",
+						__FILE__, __LINE__);
 			}
 		}
 
@@ -50,32 +51,37 @@ public:
 			m_dev_read = make_shared<DeviceIn>(ctx, read_dev);
 			if (!m_dev_read) {
 				m_dev_read = nullptr;
-				throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: No device was found for reading");
+				throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: No device was found for reading",
+						__FILE__, __LINE__);
 			}
 		}
 
 		if (m_dev_read->isChannel(2, false)) {
 			m_read_channel_idx.push_back(2);
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 1st read channel");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 1st read channel",
+					__FILE__, __LINE__);
 		}
 
 		if (m_dev_read->isChannel(1, false)) {
 			m_read_channel_idx.push_back(1);
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 2nd read channels");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 2nd read channels",
+					__FILE__, __LINE__);
 		}
 
 		if (m_dev_write->isChannel(0, true)) {
 			m_write_channel_idx.push_back(0);
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 1st write channel");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 1st write channel",
+					__FILE__, __LINE__);
 		}
 
 		if (m_dev_write->isChannel(1, true)) {
 			m_write_channel_idx.push_back(1);
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 2nd write channels");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power Supply: Unable to find 2nd write channels",
+					__FILE__, __LINE__);
 		}
 
 		m_channels_enabled.push_back(false);
@@ -84,11 +90,13 @@ public:
 
 		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 		if (!m_m2k_fabric) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Cannot find m2k fabric device");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Cannot find m2k fabric device",
+					__FILE__, __LINE__);
 		}
 
 		if (!m_m2k_fabric->isChannel(2, true)) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Cannot find powerdown channels");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Power supply: Cannot find powerdown channels",
+					__FILE__, __LINE__);
 		}
 
 		/* If neg powerdown channel is available */
@@ -153,7 +161,7 @@ public:
 	void enableChannel(unsigned int chnIdx, bool en)
 	{
 		if (chnIdx >= m_write_channel_idx.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel", __FILE__, __LINE__);
 		}
 		m_dev_write->setBoolValue(m_write_channel_idx.at(chnIdx), !en, "powerdown", true);
 
@@ -209,7 +217,8 @@ public:
 				return calib_pair.second;
 			}
 		}
-		throw_exception(EXC_INVALID_PARAMETER, "M2k Power Supply: No such calibration coefficient");
+		throw_exception(EXC_INVALID_PARAMETER, "M2k Power Supply: No such calibration coefficient",
+				__FILE__, __LINE__);
 		return 0;
 	}
 
@@ -226,7 +235,8 @@ public:
 		double value = 0;
 
 		if (idx >= m_read_channel_idx.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel",
+					__FILE__, __LINE__);
 		}
 
 		__try {
@@ -242,7 +252,7 @@ public:
 			val = m_dev_read->getDoubleValue(m_read_channel_idx.at(idx), "raw", false);
 			value = ((val * m_read_coefficients.at(idx)) + offset) * gain;
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 		return value;
 	}
@@ -254,11 +264,12 @@ public:
 		double val;
 
 		if (chnIdx >= m_write_channel_idx.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2k PowerSupply: No such channel", __FILE__, __LINE__);
 		}
 
 		if (std::abs(value) > 5) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K power supplies are limited to 5V");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K power supplies are limited to 5V",
+					__FILE__, __LINE__);
 		}
 
 		if (chnIdx == 0) {

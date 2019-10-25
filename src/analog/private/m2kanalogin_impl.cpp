@@ -229,7 +229,8 @@ public:
 		bool enabled;
 
 		if (ch >= getNbChannels()) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: no such channel");
+			throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: no such channel",
+					__FILE__, __LINE__);
 		}
 
 		mode = m_trigger->getAnalogMode(ch);
@@ -288,7 +289,8 @@ public:
 		bool enabled;
 
 		if (ch >= getNbChannels()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogIn: no such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogIn: no such channel",
+					__FILE__, __LINE__);
 		}
 		mode = m_trigger->getAnalogMode(ch);
 		m_trigger->setAnalogMode(ch, ALWAYS);
@@ -359,7 +361,7 @@ public:
 			res = m_trigger->getAnalogCondition(chnIdx);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_RUNTIME_ERROR, "M2KAnalogIn trigger condition error: "  +
-					string(e.what()));
+					string(e.what()), __FILE__, __LINE__);
 		}
 		return res;
 	}
@@ -376,7 +378,7 @@ public:
 			res = m_trigger->getDigitalCondition(chnIdx);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger condition error: "  +
-					string(e.what()));
+					string(e.what()), __FILE__, __LINE__);
 		}
 		return res;
 	}

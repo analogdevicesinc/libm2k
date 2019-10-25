@@ -179,7 +179,7 @@ public:
 	double getAdcCalibrationGain(unsigned int chn)
 	{
 		if (chn >= getAnalogIn()->getNbChannels()) {
-			throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
+			throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel", __FILE__, __LINE__);
 		}
 		if (chn == 0) {
 			return m_calibration->adcGainChannel0();
@@ -191,7 +191,7 @@ public:
 	int getAdcCalibrationOffset(unsigned int chn)
 	{
 		if (chn >= getAnalogIn()->getNbChannels()) {
-			throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
+			throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel", __FILE__, __LINE__);
 		}
 		if (chn == 0) {
 			return m_calibration->adcOffsetChannel0();
@@ -249,7 +249,7 @@ public:
 	{
 		M2kPowerSupply* pSupply = dynamic_cast<M2kPowerSupply*>(m_instancesPowerSupply.at(0));
 		if (!pSupply) {
-			throw_exception(EXC_INVALID_PARAMETER, "No M2K power supply");
+			throw_exception(EXC_INVALID_PARAMETER, "No M2K power supply", __FILE__, __LINE__);
 		}
 		return pSupply;
 	}
@@ -258,7 +258,7 @@ public:
 	{
 		M2kDigital* logic = dynamic_cast<M2kDigital*>(m_instancesDigital.at(0));
 		if (!logic) {
-			throw_exception(EXC_INVALID_PARAMETER, "No M2K digital device found");
+			throw_exception(EXC_INVALID_PARAMETER, "No M2K digital device found", __FILE__, __LINE__);
 		}
 		return logic;
 	}

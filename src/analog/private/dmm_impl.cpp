@@ -89,7 +89,7 @@ public:
 			value = channel->getDoubleValue("input");
 		} else {
 			throw_exception(EXC_INVALID_PARAMETER, "DMM: Cannot read channel " +
-					getName() + " : " + chn_name);
+					getName() + " : " + chn_name, __FILE__, __LINE__);
 		}
 
 		if (channel->hasAttribute("offset")) {

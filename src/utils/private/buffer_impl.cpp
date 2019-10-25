@@ -25,6 +25,7 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+#include <cstring>
 
 using namespace std;
 using namespace libm2k::utils;
@@ -36,12 +37,14 @@ public:
 
 		if (!m_dev) {
 			m_dev = nullptr;
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device not found, so no buffer can be created");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device not found, so no buffer can be created",
+					__FILE__, __LINE__);
 		}
 
 		unsigned int dev_count = iio_device_get_buffer_attrs_count(m_dev);
 		if (dev_count <= 0) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device is not buffer capable, no buffer can be created");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Device is not buffer capable, no buffer can be created",
+					__FILE__, __LINE__);
 		}
 		m_buffer = nullptr;
 		m_last_nb_samples = 0;
@@ -66,8 +69,10 @@ public:
 	void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
 			  bool cyclic = true, bool multiplex = false)
 	{
+		std::string errstr = "";
 		if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+			errstr = "Device not output buffer capable, so no buffer was created";
+			goto out_cleanup;
 		}
 
 		destroy();
@@ -82,7 +87,8 @@ public:
 		m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+			errstr = "Buffer: Can't create the TX buffer";
+			goto out_cleanup;
 		}
 
 		if (channel < m_channel_list.size() ) {
@@ -98,10 +104,20 @@ public:
 				}
 
 			}
-			iio_buffer_push(m_buffer);
+			int ret = iio_buffer_push(m_buffer);
+			if (ret < 0) {
+				errstr += "Buffer: Push error :";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+			errstr += "Buffer: Please setup channels before pushing data";
+			goto out_cleanup;
+		}
 
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
 		}
 	}
 
@@ -109,9 +125,11 @@ public:
 	void push(std::vector<short> const &data, unsigned int channel = 0,
 		bool cyclic = true, bool multiplex = false)
 	{
+		std::string errstr = "";
 		size_t size = data.size();
 		if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+			errstr += "Device not output buffer capable, so no buffer was created";
+			goto out_cleanup;
 		}
 
 		destroy();
@@ -126,7 +144,8 @@ public:
 		m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+			errstr +=  "Buffer: Can't create the TX buffer";
+			goto out_cleanup;
 		}
 
 		if (channel < m_channel_list.size() ) {
@@ -142,19 +161,31 @@ public:
 				}
 
 			}
-			iio_buffer_push(m_buffer);
+			int ret = iio_buffer_push(m_buffer);
+			if (ret < 0) {
+				errstr += "Buffer: Push error :";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+			errstr += "Buffer: Please setup channels before pushing data";
+			goto out_cleanup;
+		}
 
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
 		}
 	}
 
 	void push(std::vector<unsigned short> const &data, unsigned int channel = 0,
 		bool cyclic = true, bool multiplex = false)
 	{
+		std::string errstr = "";
 		size_t size = data.size();
 		if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+			errstr = "Device not output buffer capable, so no buffer was created";
+			goto out_cleanup;
 		}
 
 		destroy();
@@ -169,7 +200,8 @@ public:
 		m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+			errstr = "Buffer: Can't create the TX buffer";
+			goto out_cleanup;
 		}
 
 		if (channel < m_channel_list.size() ) {
@@ -185,18 +217,30 @@ public:
 				}
 
 			}
-			iio_buffer_push(m_buffer);
+			int ret = iio_buffer_push(m_buffer);
+			if (ret < 0) {
+				errstr += "Buffer: Push error :";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+			errstr += "Buffer: Please setup channels before pushing data";
+			goto out_cleanup;
+		}
 
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
 		}
 	}
 
 	void push(std::vector<double> const &data, unsigned int channel = 0, bool cyclic = true)
 	{
+		std::string errstr = "";
 		size_t size = data.size();
 		if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+			errstr = "Device not output buffer capable, so no buffer was created";
+			goto out_cleanup;
 		}
 
 		destroy();
@@ -211,14 +255,26 @@ public:
 		m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+			errstr = "Buffer: Can't create the TX buffer";
+			goto out_cleanup;
 		}
 
 		if (channel < m_channel_list.size() ) {
 			m_channel_list.at(channel)->write(m_buffer, data);
-			iio_buffer_push(m_buffer);
+			int ret = iio_buffer_push(m_buffer);
+			if (ret < 0) {
+				errstr += "Buffer: Push error :";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+			errstr += "Buffer: Please setup channels before pushing data";
+			goto out_cleanup;
+		}
+
+	out_cleanup:
+		if (errstr != ""){
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
 		}
 	}
 
@@ -227,7 +283,8 @@ public:
 		size_t data_ch_nb = data.size();
 
 		if (data_ch_nb > m_channel_list.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Buffer: Please setup channels before pushing data");
+			throw_exception(EXC_OUT_OF_RANGE, "Buffer: Please setup channels before pushing data",
+					__FILE__, __LINE__);
 		}
 
 		for (unsigned int i = 0; i < data_ch_nb; i++) {
@@ -237,8 +294,10 @@ public:
 
 	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 	{
+		std::string errstr = "";
 		if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+			errstr = "Device not output buffer capable, so no buffer was created";
+			goto out_cleanup;
 		}
 
 		destroy();
@@ -253,21 +312,35 @@ public:
 		m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+			errstr = "Buffer: Can't create the TX buffer";
+			goto out_cleanup;
 		}
 
 		if (channel < m_channel_list.size() ) {
 			m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
-			iio_buffer_push(m_buffer);
+			ssize_t ret = iio_buffer_push(m_buffer);
+			if (ret < 0) {
+				errstr += "Buffer: Push error :";
+				errstr += std::strerror(-ret);
+				goto out_cleanup;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+			errstr += "Buffer: Please setup channels before pushing data";
+			goto out_cleanup;
+		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
 		}
 	}
 
 	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 	{
+		std::string errstr = "";
 		if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
+			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created",
+					__FILE__, __LINE__);
 		}
 
 		destroy();
@@ -282,21 +355,32 @@ public:
 		m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer",
+					__FILE__, __LINE__);
 		}
 
 		if (channel < m_channel_list.size() ) {
 			m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
-			iio_buffer_push(m_buffer);
+			int ret = iio_buffer_push(m_buffer);
+			if (ret < 0) {
+				errstr += "Buffer: Push error :";
+				errstr += std::strerror(-ret);
+				goto err;
+			}
 		} else {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
+			errstr += "Buffer: Please setup channels before pushing data";
+			goto err;
 		}
+
+	err:
+		throw_exception(EXC_INVALID_PARAMETER, errstr, __FILE__, __LINE__);
 	}
 
 	std::vector<unsigned short> getSamples(int nb_samples)
 	{
 		if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created");
+			throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created",
+					__FILE__, __LINE__);
 		}
 
 		m_data_short.clear();
@@ -309,7 +393,8 @@ public:
 		}
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer",
+					__FILE__, __LINE__);
 		}
 
 		int ret = iio_buffer_refill(m_buffer);
@@ -317,7 +402,8 @@ public:
 
 		if (ret < 0) {
 			destroy();
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer",
+					__FILE__, __LINE__);
 		}
 
 
@@ -336,7 +422,8 @@ public:
 	unsigned short *getSamplesP(int nb_samples)
 	{
 		if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created");
+			throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created",
+					__FILE__, __LINE__);
 		}
 
 		bool new_buffer = (nb_samples != m_last_nb_samples);
@@ -347,7 +434,8 @@ public:
 		}
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer",
+					__FILE__, __LINE__);
 		}
 
 		int ret = iio_buffer_refill(m_buffer);
@@ -355,7 +443,8 @@ public:
 
 		if (ret < 0) {
 			destroy();
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer",
+					__FILE__, __LINE__);
 		}
 
 		unsigned short* data = (unsigned short*)iio_buffer_start(m_buffer);
@@ -368,7 +457,8 @@ public:
 		bool anyChannelEnabled = false;
 		std::vector<bool> channels_enabled;
 		if (Utils::getIioDeviceDirection(m_dev) != INPUT) {
-			throw_exception(EXC_INVALID_PARAMETER, "Device not found, so no buffer was created");
+			throw_exception(EXC_INVALID_PARAMETER, "Device not found, so no buffer was created",
+					__FILE__, __LINE__);
 		}
 
 		for (auto chn : m_channel_list) {
@@ -378,7 +468,8 @@ public:
 		}
 
 		if (!anyChannelEnabled) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: No channel enabled for RX buffer");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: No channel enabled for RX buffer",
+					__FILE__, __LINE__);
 		}
 
 		for (auto chn : m_channel_list) {
@@ -393,14 +484,16 @@ public:
 		}
 
 		if (!m_buffer) {
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the RX buffer");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the RX buffer",
+					__FILE__, __LINE__);
 		}
 
 		ssize_t ret = iio_buffer_refill(m_buffer);
 
 		if (ret < 0) {
 			destroy();
-			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer",
+					__FILE__, __LINE__);
 		}
 
 		short* p_dat = (short*) m_channel_list.at(0)->getFirst(m_buffer);

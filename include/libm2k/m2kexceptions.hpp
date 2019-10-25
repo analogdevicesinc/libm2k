@@ -79,8 +79,11 @@ public:
 
 static std::exception e;
 
-static void throw_exception(libm2k::M2K_EXCEPTION exc_type, std::string exception)
+static void throw_exception(libm2k::M2K_EXCEPTION exc_type, std::string exception,
+			    std::string file, int line)
 {
+	exception += "; File: " + file;
+	exception += "; Line: " + std::to_string(line);
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	switch (exc_type) {
 	case libm2k::EXC_OUT_OF_RANGE: {

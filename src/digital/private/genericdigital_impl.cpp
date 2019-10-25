@@ -78,7 +78,7 @@ public:
 		if (index < getNbChannels()) {
 			enableChannel(index, enable);
 		} else {
-			throw_exception(EXC_OUT_OF_RANGE, "Cannot enable digital channel.");
+			throw_exception(EXC_OUT_OF_RANGE, "Cannot enable digital channel.", __FILE__, __LINE__);
 		}
 	}
 

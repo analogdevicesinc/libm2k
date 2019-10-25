@@ -43,7 +43,8 @@ public:
 
 		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 		if (!m_m2k_fabric) {
-			throw_exception(EXC_INVALID_PARAMETER, "Analog out: Cannot find m2k fabric device");
+			throw_exception(EXC_INVALID_PARAMETER, "Analog out: Cannot find m2k fabric device",
+					__FILE__, __LINE__);
 		}
 
 		m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 )));
@@ -206,7 +207,8 @@ public:
 	bool getCyclic(unsigned int chn)
 	{
 		if (chn >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel",
+					__FILE__, __LINE__);
 		}
 		return m_cyclic.at(chn);
 	}
@@ -237,7 +239,8 @@ public:
 	void pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples)
 	{
 		if (chnIdx >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel",
+					__FILE__, __LINE__);
 		}
 		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
 		setSyncedDma(true, chnIdx);
@@ -265,7 +268,7 @@ public:
 	void push(unsigned int chnIdx, double *data, unsigned int nb_samples)
 	{
 		if (chnIdx >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel", __FILE__, __LINE__);
 		}
 		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
 		setSyncedDma(true, chnIdx);
@@ -379,7 +382,7 @@ public:
 	double getScalingFactor(unsigned int chn)
 	{
 		if (chn >= m_calib_vlsb.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "No such channel", __FILE__, __LINE__);
 		}
 		return (-1 * (1 / m_calib_vlsb.at(chn)) * 16) /
 				getFilterCompensation(getSampleRate(chn));
@@ -426,7 +429,8 @@ public:
 	DeviceOut* getDacDevice(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_dac_devices.size()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel",
+					__FILE__, __LINE__);
 		}
 		return m_dac_devices.at(chnIdx);
 	}

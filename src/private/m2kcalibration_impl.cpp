@@ -112,7 +112,7 @@ public:
 			m_m2k_adc->enableChannel(0, true);
 			m_m2k_adc->enableChannel(1, true);
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 	}
 
@@ -133,7 +133,7 @@ public:
 			m_m2k_dac->enableChannel(0, true);
 			m_m2k_dac->enableChannel(1, true);
 		} __catch(exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 	}
 
@@ -150,7 +150,7 @@ public:
 			m_m2k_adc->enableChannel(0, m_adc_channels_enabled.at(0));
 			m_m2k_adc->enableChannel(1, m_adc_channels_enabled.at(1));
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 	}
 
@@ -165,7 +165,7 @@ public:
 			m_m2k_dac->enableChannel(0, m_dac_channels_enabled.at(0));
 			m_m2k_dac->enableChannel(1, m_dac_channels_enabled.at(1));
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 	}
 
@@ -176,7 +176,7 @@ public:
 			m_m2k_adc->setSampleRate(1e8);
 			m_m2k_adc->setOversamplingRatio(1);
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 	}
 
@@ -188,7 +188,7 @@ public:
 			m_m2k_dac->setSampleRate(1, 75E6);
 			m_m2k_dac->setOversamplingRatio(1, 1);
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 	}
 
@@ -218,7 +218,7 @@ public:
 		__try {
 			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 		if (ch_data.size() == 0) {
 			return false;
@@ -267,7 +267,7 @@ public:
 		__try {
 			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 		if (ch_data.size() == 0) {
 			return false;
@@ -395,7 +395,7 @@ public:
 			__try {
 				ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 			} __catch (exception_type &e) {
-				throw_exception(EXC_INVALID_PARAMETER, e.what());
+				throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 			}
 			if (ch_data.size() == 0) {
 				goto out_cleanup;
@@ -496,7 +496,7 @@ out_cleanup:
 
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "DAC offset calibration failed: "
-					+ std::string(e.what()));
+					+ std::string(e.what()), __FILE__, __LINE__);
 		}
 
 		// Allow some time for the voltage to settle
@@ -506,7 +506,7 @@ out_cleanup:
 			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {
 			ch_data.clear();
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 		if (ch_data.size() == 0) {
 			return false;
@@ -536,7 +536,7 @@ out_cleanup:
 			m_m2k_dac->enableChannel(0, false);
 			m_m2k_dac->enableChannel(1, false);
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 
 		setCalibrationMode(NONE);
@@ -578,7 +578,7 @@ out_cleanup:
 			m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "DAC gain calibration failed: "
-					+ std::string(e.what()));
+					+ std::string(e.what()), __FILE__, __LINE__);
 		}
 
 		// Allow some time for the voltage to settle
@@ -588,7 +588,7 @@ out_cleanup:
 		__try {
 			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 		if (ch_data.size() == 0) {
 			return false;
@@ -620,7 +620,7 @@ out_cleanup:
 			m_m2k_dac->enableChannel(1, false);
 		} __catch (exception_type &e) {
 			//		throw std::runtime_error(
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 
 		setCalibrationMode(NONE);
@@ -660,7 +660,7 @@ out_cleanup:
 			return true;
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "ADC calibration failed: " +
-					std::string(e.what()));
+					std::string(e.what()), __FILE__, __LINE__);
 		}
 	calibration_fail:
 		m_cancel=false;
@@ -706,7 +706,7 @@ out_cleanup:
 			return true;
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "DAC calibration failed " +
-					std::string(e.what()));
+					std::string(e.what()), __FILE__, __LINE__);
 		}
 	calibration_fail:
 		m_cancel=false;
@@ -739,7 +739,7 @@ out_cleanup:
 
 			return true;
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, e.what());
+			throw_exception(EXC_INVALID_PARAMETER, e.what(), __FILE__, __LINE__);
 		}
 	calibration_fail:
 		m_cancel=false;

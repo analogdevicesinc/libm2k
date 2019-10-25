@@ -51,7 +51,7 @@ public:
 		if (dev_name != "") {
 			m_dev = iio_context_find_device(context, dev_name.c_str());
 			if (!m_dev) {
-				throw_exception(EXC_INVALID_PARAMETER, "Device: No such device");
+				throw_exception(EXC_INVALID_PARAMETER, "Device: No such device", __FILE__, __LINE__);
 			}
 
 			__try {
@@ -111,7 +111,8 @@ public:
 		bool cyclic = true, bool multiplex = false)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic, multiplex);
@@ -121,7 +122,8 @@ public:
 			  bool cyclic = true, bool multiplex = false)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic, multiplex);
@@ -132,7 +134,8 @@ public:
 			  bool cyclic, bool multiplex)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, nb_samples, cyclic, multiplex);
@@ -141,7 +144,8 @@ public:
 	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, cyclic);
@@ -150,7 +154,8 @@ public:
 	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, nb_samples, cyclic);
@@ -159,7 +164,8 @@ public:
 	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 	{
 		if (!m_buffer) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable",
+					__FILE__, __LINE__);
 		}
 		m_buffer->setChannels(m_channel_list);
 		m_buffer->push(data, channel, nb_samples, cyclic);

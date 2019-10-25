@@ -28,6 +28,7 @@
 #include <iio.h>
 #include <iostream>
 #include <memory>
+#include <cstring>
 
 using namespace libm2k::analog;
 using namespace libm2k::digital;
@@ -164,7 +165,8 @@ public:
 		DEVICE_DIRECTION dir = NO_DIRECTION;
 		auto dev = iio_context_find_device(m_context, dev_name.c_str());
 		if (!dev) {
-			throw_exception(EXC_RUNTIME_ERROR, "No device found with name: " + dev_name);
+			throw_exception(EXC_RUNTIME_ERROR, "No device found with name: " + dev_name,
+					__FILE__, __LINE__);
 		}
 
 		auto chn_count = iio_device_get_channels_count(dev);
@@ -192,7 +194,8 @@ public:
 	{
 		auto dev = iio_context_find_device(m_context, dev_name.c_str());
 		if (!dev) {
-			throw_exception(EXC_INVALID_PARAMETER, "No device found with name: " + dev_name);
+			throw_exception(EXC_INVALID_PARAMETER, "No device found with name: " + dev_name,
+					__FILE__, __LINE__);
 		}
 
 		auto chn = iio_device_get_channel(dev, 0);
@@ -362,7 +365,8 @@ public:
 		__try {
 			val = m_context_attributes.at(attr);
 		} __catch (std::exception &) {
-			throw_exception(EXC_INVALID_PARAMETER, "No such context attribute" + attr);
+			throw_exception(EXC_INVALID_PARAMETER, "No such context attribute" + attr,
+					__FILE__, __LINE__);
 		}
 		return val;
 	}
@@ -415,19 +419,31 @@ private:
 		const char *name;
 		const char *value;
 		char ctx_git_tag[8];
-		unsigned int ctx_major, ctx_minor;
-		iio_context_get_version(m_context, &ctx_major, &ctx_minor, ctx_git_tag);
-		unsigned int attr_no = iio_context_get_attrs_count(m_context);
+		unsigned int ctx_major, ctx_minor, attr_no;
+		std::string errstr = "";
+		int ret = iio_context_get_version(m_context, &ctx_major, &ctx_minor, ctx_git_tag);
+		if (ret < 0) {
+			errstr = "Error: get version ";
+			errstr += std::strerror(-ret);
+			goto out_cleanup;
+		}
+
+		attr_no = iio_context_get_attrs_count(m_context);
 		for (unsigned int i = 0; i < attr_no; i++) {
 			std::pair<std::string, std::string> pair;
 			int ret = iio_context_get_attr(m_context, i, &name, &value);
 			if (ret < 0) {
-				throw_exception(EXC_RUNTIME_ERROR, "Device: Can't get context attribute " +
-						std::to_string(i));
+				errstr = "Device: Can't get context attribute " + std::to_string(i);
+				goto out_cleanup;
 			}
 			pair.first = std::string(name);
 			pair.second = std::string(value);
 			m_context_attributes.insert(pair);
+		}
+
+	out_cleanup:
+		if (errstr != "") {
+			throw_exception(EXC_RUNTIME_ERROR, errstr, __FILE__, __LINE__);
 		}
 	}
 

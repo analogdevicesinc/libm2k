@@ -51,7 +51,8 @@ public:
 				m_dev_write = make_shared<DeviceOut>(ctx, m_dev_name_write);
 			} __catch (exception_type &e) {
 				m_dev_write = nullptr;
-				throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for writing");
+				throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for writing",
+						__FILE__, __LINE__);
 			}
 		}
 
@@ -60,14 +61,16 @@ public:
 				m_dev_read = make_shared<DeviceIn>(ctx, m_dev_name_read);
 			} __catch (exception_type &e) {
 				m_dev_read = nullptr;
-				throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for reading");
+				throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for reading",
+						__FILE__, __LINE__);
 			}
 		}
 
 		if (!m_dev_read || !m_dev_write) {
 			m_dev_read = nullptr;
 			m_dev_write = nullptr;
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: logic device not found");
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: logic device not found",
+					__FILE__, __LINE__);
 		}
 
 		if (sync) {
@@ -156,7 +159,7 @@ public:
 			}
 			setStringValue(index, "direction", dir_str);
 		} else {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel.");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel.", __FILE__, __LINE__);
 		}
 
 	}
@@ -164,7 +167,7 @@ public:
 	DIO_DIRECTION getDirection(DIO_CHANNEL index)
 	{
 		if (index >= getNbChannels()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel", __FILE__, __LINE__);
 		}
 
 		std::string dir_str = getStringValue(index, "direction");
@@ -177,7 +180,7 @@ public:
 	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 	{
 		if (index >= getNbChannels()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel", __FILE__, __LINE__);
 		}
 		long long val = static_cast<long long>(level);
 		setDoubleValue(index, val, "raw");
@@ -192,7 +195,7 @@ public:
 	DIO_LEVEL getValueRaw(DIO_CHANNEL index)
 	{
 		if (index >= getNbChannels()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel", __FILE__, __LINE__);
 		}
 		long long val;
 		val = getDoubleValue(index, "raw");
@@ -208,7 +211,7 @@ public:
 	void push(std::vector<unsigned short> const &data)
 	{
 		if (!anyChannelEnabled(DIO_OUTPUT)) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.");
+			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.", __FILE__, __LINE__);
 		}
 		m_dev_write->push(data, 0, getCyclic(), true);
 	}
@@ -216,7 +219,7 @@ public:
 	void push(unsigned short *data, unsigned int nb_samples)
 	{
 		if (!anyChannelEnabled(DIO_OUTPUT)) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.");
+			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.", __FILE__, __LINE__);
 		}
 		m_dev_write->push(data, 0, nb_samples, getCyclic(), true);
 	}
@@ -230,7 +233,8 @@ public:
 	{
 		__try {
 			if (!anyChannelEnabled(DIO_INPUT)) {
-				throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
+				throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.",
+						__FILE__, __LINE__);
 
 			}
 
@@ -241,7 +245,7 @@ public:
 			return m_dev_read->getSamples(nb_samples);
 
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()), __FILE__, __LINE__);
 		}
 	}
 
@@ -249,7 +253,8 @@ public:
 	{
 		__try {
 			if (!anyChannelEnabled(DIO_INPUT)) {
-				throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
+				throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.",
+						__FILE__, __LINE__);
 
 			}
 
@@ -260,7 +265,8 @@ public:
 			return m_dev_read->getSamplesP(nb_samples);
 
 		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()),
+					__FILE__, __LINE__);
 		}
 	}
 
@@ -270,7 +276,8 @@ public:
 			m_dev_write->enableChannel(index, enable);
 			m_tx_channels_enabled.at(index) = enable;
 		} else {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel",
+					__FILE__, __LINE__);
 		}
 	}
 
@@ -280,7 +287,8 @@ public:
 			m_dev_write->enableChannel(index, enable);
 			m_tx_channels_enabled.at(index) = enable;
 		} else {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel",
+					__FILE__, __LINE__);
 		}
 	}
 
@@ -335,7 +343,8 @@ public:
 		auto it = std::find(m_output_mode.begin(), m_output_mode.end(),
 				    output_mode.c_str());
 		if (it == m_output_mode.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot read channel attribute: output mode");
+			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot read channel attribute: output mode",
+					__FILE__, __LINE__);
 		}
 
 		return static_cast<DIO_MODE>(it - m_output_mode.begin());
