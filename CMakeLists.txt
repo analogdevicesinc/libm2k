@@ -96,6 +96,8 @@ else()
 	add_definitions(-D_EXCEPTIONS=1)
 endif()
 
+configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmakein ${CMAKE_CURRENT_SOURCE_DIR}/include/libm2k/config.hpp @ONLY)
+
 # Set the default install path to /usr
 if (NOT WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "default install path" FORCE)

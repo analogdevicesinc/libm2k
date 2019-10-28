@@ -21,6 +21,7 @@
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
+#include <libm2k/config.hpp>
 #include <iio.h>
 #include <algorithm>
 #include <vector>
@@ -211,6 +212,12 @@ void ContextBuilder::contextCloseAll()
 	}
 }
 
+std::string ContextBuilder::getVersion()
+{
+	return "v" + std::string(PROJECT_VERSION) +
+		"-g" + std::string(PROJECT_VERSION_GIT);
+}
+
 ContextTypes ContextBuilder::identifyContext(iio_context *ctx)
 {
 	ContextTypes type = Other;
@@ -266,4 +273,9 @@ void libm2k::contexts::contextClose(Context *ctx, bool deinit)
 void libm2k::contexts::contextCloseAll()
 {
 	ContextBuilder::contextCloseAll();
+}
+
+std::string libm2k::contexts::getVersion()
+{
+	return ContextBuilder::getVersion();
 }

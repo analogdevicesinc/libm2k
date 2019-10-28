@@ -21,13 +21,14 @@
 #include <libm2k/contextbuilder.hpp>
 
 static const char *const helpMessage = "Usage:\n"
-				       "m2kcli [-h | --help]\n"
+				       "m2kcli [-h | --help] [-v | --version]\n"
 				       "       <command> [<args>]\n"
 				       "\n"
 				       "Control the ADALM2000\n"
 				       "\n"
 				       "Optional arguments:\n"
 				       "  -h, --help            show this help message and exit\n"
+				       "  -v, --version         show the libm2k version and exit\n"
 				       "\n"
 				       "Commands:\n"
 				       "  These commands represent the components of the ADALM2000\n"
@@ -45,6 +46,11 @@ int main(int argc, char **argv)
 	try {
 		if (argc < 2 || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
 			std::cout << helpMessage;
+			return 0;
+		}
+
+		if (argc < 2 || std::string(argv[1]) == "--version" || std::string(argv[1]) == "-v") {
+			std::cout << libm2k::contexts::getVersion() << std::endl;
 			return 0;
 		}
 

@@ -86,6 +86,8 @@ public:
 	static void contextClose(Context*, bool deinit = true);
 
 	static void contextCloseAll();
+
+	static std::string getVersion();
 private:
 	static std::map<ContextTypes, std::vector<std::string>> m_dev_map;
 	static std::map<ContextTypes, std::string> m_dev_name_map;
@@ -176,6 +178,14 @@ LIBM2K_API void contextClose(Context* ctx, bool deinit = true);
  * @brief Close all the devices
  */
 LIBM2K_API void contextCloseAll();
+
+
+/**
+ * @brief Get library version
+ * @return a string containing the libm2k version
+ */
+LIBM2K_API std::string getVersion();
+
 
 /**
  * @}
