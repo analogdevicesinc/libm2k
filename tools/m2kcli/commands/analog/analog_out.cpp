@@ -114,7 +114,7 @@ void AnalogOut::handleGenerate()
 				analogOut->pushRaw(channels[0], samplesChannel);
 			} else {
 				analogOut->pushRawInterleaved(reinterpret_cast<short *>(samples.data()),
-							      channels.size(), samples.size() / channels.size());
+							      channels.size(), samples.size());
 			}
 		} else {
 			std::vector<double> samples;
@@ -124,7 +124,7 @@ void AnalogOut::handleGenerate()
 				analogOut->push(channels[0], samplesChannel);
 			} else {
 				analogOut->pushInterleaved(reinterpret_cast<double *>(samples.data()), channels.size(),
-							   samples.size() / channels.size());
+							   samples.size());
 			}
 		}
 
