@@ -96,12 +96,7 @@ public:
 			m_individual_powerdown = true;
 		}
 
-		powerDownDacs(true);
 		loadCalibrationCoefficients();
-
-		for (unsigned int i : m_write_channel_idx) {
-			m_dev_write->setDoubleValue(i, 0.0, "raw", true);
-		}
 
 		m_write_coefficients.push_back(4095.0 / (5.02 * 1.2 ));
 		m_write_coefficients.push_back(4095.0 / (-5.1 * 1.2 ));
@@ -120,12 +115,13 @@ public:
 
 	void syncDevice()
 	{
-		m_channels_enabled.at(0) = m_dev_write->getBoolValue(m_write_channel_idx.at(0), "powerdown", true);
-		m_channels_enabled.at(1) = m_dev_write->getBoolValue(m_write_channel_idx.at(1), "powerdown", true);
+		m_channels_enabled.at(0) = !m_dev_write->getBoolValue(m_write_channel_idx.at(0), "powerdown", true);
+		m_channels_enabled.at(1) = !m_dev_write->getBoolValue(m_write_channel_idx.at(1), "powerdown", true);
 	}
 
 	void init()
 	{
+		powerDownDacs(true);
 		for (unsigned int i : m_write_channel_idx) {
 			m_dev_write->setDoubleValue(i, 0.0, "raw", true);
 		}

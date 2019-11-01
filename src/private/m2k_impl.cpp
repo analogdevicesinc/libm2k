@@ -79,6 +79,9 @@ public:
 
 				/* ADF4360 global clock power down */
 				m_m2k_fabric->setBoolValue(true, "clk_powerdown");
+				for (auto ps : m_instancesPowerSupply) {
+					ps->powerDownDacs(true);
+				}
 			}
 		}
 
