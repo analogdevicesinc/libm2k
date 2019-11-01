@@ -5,3 +5,5 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/include
         ${IIO_INCLUDE_DIRS}
 )
+
+#add_subdirectory(utils)
