@@ -350,40 +350,6 @@ public:
 		return std::pair<double, double>(0, m2k_range.second / 10);
 	}
 
-	M2K_TRIGGER_CONDITION getAnalogCondition(ANALOG_IN_CHANNEL chnIdx) const
-	{
-		M2K_TRIGGER_CONDITION res = NO_TRIGGER;
-		__try {
-			res = m_trigger->getAnalogCondition(chnIdx);
-		} __catch (exception_type &e) {
-			throw_exception(EXC_RUNTIME_ERROR, "M2KAnalogIn trigger condition error: "  +
-					string(e.what()));
-		}
-		return res;
-	}
-
-	void setAnalogCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
-	{
-		m_trigger->setAnalogCondition(chnIdx, cond);
-	}
-
-	M2K_TRIGGER_CONDITION getDigitalCondition(ANALOG_IN_CHANNEL chnIdx) const
-	{
-		M2K_TRIGGER_CONDITION res = NO_TRIGGER;
-		__try {
-			res = m_trigger->getDigitalCondition(chnIdx);
-		} __catch (exception_type &e) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2KAnalogIn trigger condition error: "  +
-					string(e.what()));
-		}
-		return res;
-	}
-
-	void setDigitalCondition(ANALOG_IN_CHANNEL chnIdx, M2K_TRIGGER_CONDITION cond)
-	{
-		m_trigger->setDigitalCondition(chnIdx, cond);
-	}
-
 	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 	{
 		const char *str_gain_mode = "";
