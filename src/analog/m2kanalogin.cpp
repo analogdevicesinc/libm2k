@@ -30,8 +30,8 @@ using namespace std::placeholders;
 #define LOW_MIN -25
 
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
-			 std::string adc_dev, bool sync) :
-	m_pimpl(std::unique_ptr<M2kAnalogInImpl>(new M2kAnalogInImpl(ctx, adc_dev, sync)))
+			 std::string adc_dev, bool sync, M2kHardwareTrigger *trigger) :
+	m_pimpl(std::unique_ptr<M2kAnalogInImpl>(new M2kAnalogInImpl(ctx, adc_dev, sync, trigger)))
 {
 }
 

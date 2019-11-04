@@ -24,8 +24,7 @@ using namespace std;
 
 typedef std::pair<Channel *, std::string> channel_pair;
 
-M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx) :
-	m_pimpl(std::unique_ptr<M2kHardwareTriggerImpl>(new M2kHardwareTriggerImpl(ctx)))
+M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx, std::string fw_version)
 {
 }
 

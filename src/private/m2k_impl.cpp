@@ -62,6 +62,9 @@ public:
 		m_instancesAnalogOut.clear();
 		m_instancesPowerSupply.clear();
 
+		m_firmware_version = getFirmwareVersion();
+		m_trigger = new M2kHardwareTrigger(ctx, m_firmware_version);
+
 		scanAllAnalogIn();
 		scanAllAnalogOut();
 		scanAllPowerSupply();
@@ -86,6 +89,10 @@ public:
 		}
 
 		delete m_calibration;
+
+		if (m_trigger) {
+			delete m_trigger;
+		}
 
 		for (auto ain : m_instancesAnalogIn) {
 			delete ain;
@@ -136,7 +143,7 @@ public:
 
 	void scanAllAnalogIn()
 	{
-		M2kAnalogIn* aIn = new libm2k::analog::M2kAnalogIn(m_context, "m2k-adc", m_sync);
+		M2kAnalogIn* aIn = new libm2k::analog::M2kAnalogIn(m_context, "m2k-adc", m_sync, m_trigger);
 		m_instancesAnalogIn.push_back(aIn);
 	}
 
@@ -155,7 +162,7 @@ public:
 
 	void scanAllDigital()
 	{
-		libm2k::digital::M2kDigital* logic = new libm2k::digital::M2kDigital(m_context, "m2k-logic-analyzer", m_sync);
+		libm2k::digital::M2kDigital* logic = new libm2k::digital::M2kDigital(m_context, "m2k-logic-analyzer", m_sync, m_trigger);
 		m_instancesDigital.push_back(logic);
 	}
 
@@ -360,10 +367,12 @@ public:
 
 private:
 	M2kCalibration* m_calibration;
+	libm2k::analog::M2kHardwareTrigger *m_trigger;
 	std::vector<analog::M2kAnalogOut*> m_instancesAnalogOut;
 	std::vector<analog::M2kAnalogIn*> m_instancesAnalogIn;
 	std::vector<analog::M2kPowerSupply*> m_instancesPowerSupply;
 	std::vector<digital::M2kDigital*> m_instancesDigital;
 	bool m_sync;
 	bool m_deinit;
+	std::string m_firmware_version;
 };

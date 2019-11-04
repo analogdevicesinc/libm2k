@@ -25,8 +25,8 @@ using namespace libm2k::analog;
 using namespace std;
 
 
-M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev, bool sync) :
-	m_pimpl(std::unique_ptr<M2kDigitalImpl>(new M2kDigitalImpl(ctx, logic_dev, sync)))
+M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger) :
+	m_pimpl(std::unique_ptr<M2kDigitalImpl>(new M2kDigitalImpl(ctx, logic_dev, sync, trigger)))
 {
 }
 

@@ -45,7 +45,7 @@ public:
 	/**
 	* @private
 	*/
-	M2kDigital(struct iio_context* ctx, std::string logic_dev, bool sync);
+	M2kDigital(struct iio_context* ctx, std::string logic_dev, bool sync, libm2k::analog::M2kHardwareTrigger *trigger);
 
 
 	/**
