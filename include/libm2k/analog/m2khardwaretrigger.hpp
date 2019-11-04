@@ -49,7 +49,7 @@ public:
 	/**
 	 * @private
 	 */
-	M2kHardwareTrigger(struct iio_context *ctx);
+	M2kHardwareTrigger(struct iio_context *ctx, std::string fw_version);
 
 	/**
 	 * @private

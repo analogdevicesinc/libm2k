@@ -39,10 +39,10 @@ public:
 		"push-pull",
 	};
 
-	M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, bool sync) :
+	M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger) :
 		DeviceGeneric(ctx, logic_dev)
 	{
-		m_trigger = new M2kHardwareTrigger(ctx);
+		m_trigger = trigger;
 		m_dev_name_write = logic_dev + "-tx";
 		m_dev_name_read = logic_dev + "-rx";
 
@@ -77,10 +77,6 @@ public:
 
 	~M2kDigitalImpl()
 	{
-		if (m_trigger) {
-			delete m_trigger;
-			m_trigger = NULL;
-		}
 	}
 
 	void syncDevice()

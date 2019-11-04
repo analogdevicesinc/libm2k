@@ -34,9 +34,9 @@ namespace std {
 	#include <libm2k/analog/enums.hpp>
 	#include <libm2k/analog/genericanalogin.hpp>
 	#include <libm2k/analog/genericanalogout.hpp>
+	#include <libm2k/analog/m2khardwaretrigger.hpp>
 	#include <libm2k/analog/m2kanalogin.hpp>
 	#include <libm2k/analog/m2kanalogout.hpp>
-	#include <libm2k/analog/m2khardwaretrigger.hpp>
 	#include <libm2k/analog/m2kpowersupply.hpp>
 	#include <libm2k/analog/powersupply.hpp>
 
@@ -92,9 +92,9 @@ namespace std {
 %include <libm2k/analog/enums.hpp>
 %include <libm2k/analog/genericanalogin.hpp>
 %include <libm2k/analog/genericanalogout.hpp>
+%include <libm2k/analog/m2khardwaretrigger.hpp>
 %include <libm2k/analog/m2kanalogin.hpp>
 %include <libm2k/analog/m2kanalogout.hpp>
-%include <libm2k/analog/m2khardwaretrigger.hpp>
 %include <libm2k/analog/m2kpowersupply.hpp>
 %include <libm2k/analog/powersupply.hpp>
 

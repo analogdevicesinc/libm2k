@@ -42,14 +42,14 @@ using namespace std::placeholders;
 
 class M2kAnalogIn::M2kAnalogInImpl : public DeviceIn {
 public:
-	M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sync) :
+	M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger) :
 		DeviceIn(ctx, adc_dev),
 		m_need_processing(false),
 		m_trigger(nullptr)
 	{
 		m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 		m_ad5625_dev = std::make_shared<DeviceGeneric>(ctx, "ad5625");
-		m_trigger = new M2kHardwareTrigger(ctx);
+		m_trigger =  trigger;
 
 		/* Filters applied while decimating affect the
 		/ amplitude of the received  data */
@@ -79,9 +79,6 @@ public:
 
 	~M2kAnalogInImpl()
 	{
-		if (m_trigger) {
-			delete m_trigger;
-		}
 	}
 
 	void init()

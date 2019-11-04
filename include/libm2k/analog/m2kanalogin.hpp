@@ -47,7 +47,7 @@ public:
 	/**
 	 * @private
 	 */
-	M2kAnalogIn(struct iio_context*, std::string adc_dev, bool sync);
+	M2kAnalogIn(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
 
 
 	/**
