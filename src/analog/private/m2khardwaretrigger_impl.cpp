@@ -17,6 +17,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifndef M2KHARDWARETRIGGER_IMPL_HPP
+#define M2KHARDWARETRIGGER_IMPL_HPP
+
 #include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/utils/devicein.hpp>
 #include <libm2k/analog/m2khardwaretrigger.hpp>
@@ -33,6 +36,8 @@ using namespace libm2k::digital;
 using namespace std;
 
 class M2kHardwareTrigger::M2kHardwareTriggerImpl : public DeviceIn {
+
+
 	std::vector<std::string> m_trigger_analog_cond = {
 		"edge-rising",
 		"edge-falling",
@@ -161,6 +166,96 @@ public:
 		m_digital_channels.clear();
 	}
 
+	virtual bool hasExternalTriggerOut()
+	{
+		return m_logic_channels.at(1)->hasAttribute("out_select");
+	}
+
+	virtual bool hasExternalTriggerIn()
+	{
+		return false;
+	}
+
+	virtual bool hasCrossIntrumentTrigger()
+	{
+		return m_logic_channels.at(1)->hasAttribute("out_select");
+	}
+
+	virtual void setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT out_select)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog external output is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual M2K_TRIGGER_OUT_SELECT getAnalogExternalOutSelect()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog external output is not available on "
+						       "the current board; Check the firmware version.");
+	}
+
+
+	// at init this should be set to ext_trigger_in???
+	virtual void setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the digital external source is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual M2K_TRIGGER_SOURCE_DIGITAL getDigitalSource()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the digital external source is not available on "
+						       "the current board; Check the firmware version.");
+	}
+
+	M2K_TRIGGER_CONDITION getDigitalExternalCondition()
+	{
+		std::string buf = m_digital_trigger_device->getStringValue(16, "trigger");
+
+		auto it = std::find(m_trigger_digital_cond.begin(),
+				    m_trigger_digital_cond.end(), buf.c_str());
+		if  (it == m_trigger_digital_cond.end()) {
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
+		}
+
+		return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_digital_cond.begin());
+	}
+
+	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION ext_cond)
+	{
+		m_digital_trigger_device->setStringValue(16, "trigger",
+							 m_trigger_digital_cond[ext_cond]);
+	}
+
+	M2K_TRIGGER_CONDITION getAnalogExternalCondition(unsigned int chnIdx)
+	{
+		if (chnIdx >= m_num_channels) {
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+		}
+		std::string buf = m_digital_channels[chnIdx]->getStringValue("trigger");
+
+		auto it = std::find(m_trigger_digital_cond.begin(),
+				    m_trigger_digital_cond.end(), buf.c_str());
+		if  (it == m_trigger_digital_cond.end()) {
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
+		}
+
+		return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_digital_cond.begin());
+	}
+
+
+	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+	{
+		if (chnIdx >= m_num_channels) {
+			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
+		}
+
+		m_digital_channels[chnIdx]->setStringValue("trigger", m_trigger_digital_cond[cond]);
+	}
+
 	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
@@ -184,36 +279,7 @@ public:
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
-		if (cond == ANY_EDGE) {
-			return; //or throw?
-		}
-
 		m_analog_channels[chnIdx]->setStringValue("trigger", m_trigger_analog_cond[cond]);
-	}
-
-	M2K_TRIGGER_CONDITION getExternalCondition(unsigned int chnIdx)
-	{
-		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
-		}
-		std::string buf = m_digital_channels[chnIdx]->getStringValue("trigger");
-
-		auto it = std::find(m_trigger_digital_cond.begin(),
-				    m_trigger_digital_cond.end(), buf.c_str());
-		if  (it == m_trigger_digital_cond.end()) {
-			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
-		}
-
-		return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_digital_cond.begin());
-	}
-
-	void setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
-	{
-		if (chnIdx >= m_num_channels) {
-			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
-		}
-
-		m_digital_channels[chnIdx]->setStringValue("trigger", m_trigger_digital_cond[cond]);
 	}
 
 
@@ -357,7 +423,7 @@ public:
 		return static_cast<DIO_TRIGGER_MODE>(it - m_trigger_logic_mode.begin());
 	}
 
-	M2K_TRIGGER_SOURCE getAnalogSource()
+	virtual M2K_TRIGGER_SOURCE_ANALOG getAnalogSource()
 	{
 		std::string buf = m_delay_trigger->getStringValue("logic_mode");
 
@@ -367,24 +433,29 @@ public:
 			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source");
 		}
 
-		return static_cast<M2K_TRIGGER_SOURCE>(it - m_trigger_source.begin());
+		return static_cast<M2K_TRIGGER_SOURCE_ANALOG>(it - m_trigger_source.begin());
 	}
 
-	void setAnalogSource(M2K_TRIGGER_SOURCE src)
+	virtual void setAnalogSource(M2K_TRIGGER_SOURCE_ANALOG src)
 	{
+		if (src >= m_trigger_source.size()) {
+			throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+					"the provided analog source is not supported on "
+					"the current board; Check the firmware version.");
+		}
 		std::string src_str = m_trigger_source[src];
 		m_delay_trigger->setStringValue("logic_mode", src_str);
 	}
 
 	/*
- * Convenience function to be used when willing to use the trigger for only one
- * channel at a time.
- */
+	 * Convenience function to be used when willing to use the trigger for only one
+	 * channel at a time.
+	 */
 	int getAnalogSourceChannel()
 	{
 		int chnIdx = -1;
 
-		M2K_TRIGGER_SOURCE src = getAnalogSource();
+		M2K_TRIGGER_SOURCE_ANALOG src = getAnalogSource();
 
 		// Returning the channel index if a single channel is set as a source
 		// and -1 if multiple channels are set.
@@ -396,9 +467,9 @@ public:
 	}
 
 	/*
- * Convenience function to be used when willing to enable the trigger for only
- * one channel at a time.
- */
+	 * Convenience function to be used when willing to enable the trigger for only
+	 * one channel at a time.
+	 */
 	void setAnalogSourceChannel(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
@@ -408,7 +479,7 @@ public:
 		// Currently we don't need trigger on multiple channels simultaneously
 		// Also options 'a_OR_b', 'a_AND_b' and 'a_XOR_b' don't scale well for
 		// 3, 4, .. channels (combinations rise exponentially).
-		M2K_TRIGGER_SOURCE src = static_cast<M2K_TRIGGER_SOURCE>(chnIdx);
+		M2K_TRIGGER_SOURCE_ANALOG src = static_cast<M2K_TRIGGER_SOURCE_ANALOG>(chnIdx);
 		setAnalogSource(src);
 	}
 
@@ -471,7 +542,7 @@ public:
 
 		for (unsigned int i = 0; i < m_num_channels; i++) {
 			settings->analog_condition.push_back(getAnalogCondition(i));
-			settings->digital_condition.push_back(getExternalCondition(i));
+			settings->digital_condition.push_back(getDigitalExternalCondition());
 			settings->level.push_back(getAnalogLevel(i));
 			settings->hysteresis.push_back(getAnalogHysteresis(i));
 			settings->mode.push_back(getAnalogMode(i));
@@ -486,7 +557,7 @@ public:
 	{
 		for (unsigned int i = 0; i < m_num_channels; i++) {
 			setAnalogCondition(i, settings->analog_condition[i]);
-			setExternalCondition(i, settings->digital_condition[i]);
+			setDigitalExternalCondition(settings->digital_condition[i]);
 			setAnalogLevel(i, settings->level[i]);
 			setAnalogLevelRaw(i, settings->raw_level[i]);
 			setAnalogHysteresis(i, settings->hysteresis[i]);
@@ -502,7 +573,7 @@ public:
 		m_offset[chnIdx] = offset;
 	}
 
-private:
+protected:
 	struct iio_device *m_trigger_device;
 	std::vector<Channel *> m_analog_channels;
 	std::vector<Channel *> m_digital_channels;
@@ -517,4 +588,8 @@ private:
 	std::vector<bool> m_analog_enabled;
 	std::vector<bool> m_digital_enabled;
 	std::vector<double> m_scaling, m_offset;
+
+	double m_firmware_version;
 };
+
+#endif

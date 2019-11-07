@@ -99,6 +99,9 @@ public:
 			m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, ALWAYS);
 			m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, ALWAYS);
 
+			m_trigger_src = m_m2k_trigger->getAnalogSource();
+			m_m2k_trigger->setAnalogSource(CHANNEL_1);
+
 			/* Save the previous values for sampling frequency and oversampling ratio */
 			adc_sampl_freq = m_m2k_adc->getSampleRate();
 			adc_oversampl = m_m2k_adc->getOversamplingRatio();
@@ -142,6 +145,8 @@ public:
 		__try {
 			m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, m_trigger0_mode);
 			m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
+
+			m_m2k_trigger->setAnalogSource(m_trigger_src);
 
 			/* Restore the previous values for sampling frequency and oversampling ratio */
 			m_m2k_adc->setSampleRate(adc_sampl_freq);
@@ -803,6 +808,7 @@ private:
 
 	M2K_TRIGGER_MODE m_trigger0_mode;
 	M2K_TRIGGER_MODE m_trigger1_mode;
+	M2K_TRIGGER_SOURCE m_trigger_src;
 	double adc_sampl_freq;
 	double adc_oversampl;
 	double dac_a_sampl_freq;

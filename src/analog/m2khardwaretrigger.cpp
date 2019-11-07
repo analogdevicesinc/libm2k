@@ -17,15 +17,21 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "private/m2khardwaretrigger_impl.cpp"
+#include "private/m2khardwaretrigger_v0.24_impl.cpp"
 
 using namespace libm2k::analog;
 using namespace std;
 
 typedef std::pair<Channel *, std::string> channel_pair;
 
-M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx, std::string fw_version)
+M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx, const std::string& fw_version)
 {
+	int diff = Utils::compareVersions(fw_version, "v0.24");
+	if (diff > 0) {	//fw_ver < 0.24
+		m_pimpl = std::unique_ptr<M2kHardwareTriggerImpl>(new M2kHardwareTriggerImpl(ctx));
+	} else {
+		m_pimpl = std::unique_ptr<M2kHardwareTriggerV024Impl>(new M2kHardwareTriggerV024Impl(ctx));
+	}
 }
 
 M2kHardwareTrigger::~M2kHardwareTrigger()
@@ -42,19 +48,65 @@ void M2kHardwareTrigger::setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CON
 	m_pimpl->setAnalogCondition(chnIdx, cond);
 }
 
-M2K_TRIGGER_CONDITION M2kHardwareTrigger::getExternalCondition(unsigned int chnIdx)
+
+M2K_TRIGGER_CONDITION M2kHardwareTrigger::getDigitalExternalCondition()
 {
-	return m_pimpl->getExternalCondition(chnIdx);
+	return m_pimpl->getDigitalExternalCondition();
 }
 
-void M2kHardwareTrigger::setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+void M2kHardwareTrigger::setDigitalExternalCondition(M2K_TRIGGER_CONDITION cond)
 {
-	m_pimpl->setExternalCondition(chnIdx, cond);
+	m_pimpl->setDigitalExternalCondition(cond);
+}
+
+M2K_TRIGGER_CONDITION M2kHardwareTrigger::getAnalogExternalCondition(unsigned int chnIdx)
+{
+	return m_pimpl->getAnalogExternalCondition(chnIdx);
+}
+
+void M2kHardwareTrigger::setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+{
+	m_pimpl->setAnalogExternalCondition(chnIdx, cond);
+}
+
+void M2kHardwareTrigger::setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)
+{
+	m_pimpl->setDigitalSource(external_src);
+}
+
+M2K_TRIGGER_SOURCE_DIGITAL M2kHardwareTrigger::getDigitalSource() const
+{
+	return m_pimpl->getDigitalSource();
+}
+
+M2K_TRIGGER_OUT_SELECT M2kHardwareTrigger::getAnalogExternalOutSelect()
+{
+	return m_pimpl->getAnalogExternalOutSelect();
+}
+
+bool M2kHardwareTrigger::hasExternalTriggerIn() const
+{
+	return m_pimpl->hasExternalTriggerIn();
+}
+
+bool M2kHardwareTrigger::hasExternalTriggerOut() const
+{
+	return m_pimpl->hasExternalTriggerOut();
+}
+
+bool M2kHardwareTrigger::hasCrossInstrumentTrigger() const
+{
+	return m_pimpl->hasCrossIntrumentTrigger();
+}
+
+void M2kHardwareTrigger::setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT output_select)
+{
+	m_pimpl->setAnalogExternalOutSelect(output_select);
 }
 
 M2K_TRIGGER_CONDITION M2kHardwareTrigger::getDigitalCondition(unsigned int chnIdx)
 {
-	return m_pimpl->getDigitalCondition(chnIdx);
+	m_pimpl->getDigitalCondition(chnIdx);
 }
 
 void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
@@ -112,12 +164,12 @@ void M2kHardwareTrigger::setAnalogHysteresis(unsigned int chnIdx, int histeresis
 	m_pimpl->setAnalogHysteresis(chnIdx, histeresis);
 }
 
-M2K_TRIGGER_SOURCE M2kHardwareTrigger::getAnalogSource()
+M2K_TRIGGER_SOURCE_ANALOG M2kHardwareTrigger::getAnalogSource()
 {
 	return m_pimpl->getAnalogSource();
 }
 
-void M2kHardwareTrigger::setAnalogSource(M2K_TRIGGER_SOURCE src)
+void M2kHardwareTrigger::setAnalogSource(M2K_TRIGGER_SOURCE_ANALOG src)
 {
 	m_pimpl->setAnalogSource(src);
 }

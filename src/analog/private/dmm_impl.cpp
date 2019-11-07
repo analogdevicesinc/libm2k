@@ -33,6 +33,7 @@ public:
 	DMMImpl(struct iio_context *ctx, std::string dev, bool sync) :
 		DeviceIn (ctx, dev, true)
 	{
+		m_dev_name = dev;
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			if (isValidDmmChannel(i)) {
 				m_channel_id_list.insert(std::pair<std::string, unsigned int>
@@ -139,5 +140,6 @@ public:
 	}
 private:
 	std::map<std::string, unsigned int> m_channel_id_list;
+	std::string m_dev_name;
 };
 

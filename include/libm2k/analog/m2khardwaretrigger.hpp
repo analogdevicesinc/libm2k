@@ -34,7 +34,6 @@ namespace libm2k {
  * @{
  */
 namespace analog {
-class M2kAnalogIn;
 
 /**
  * @defgroup m2ktrigger HardwareTrigger
@@ -49,7 +48,7 @@ public:
 	/**
 	 * @private
 	 */
-	M2kHardwareTrigger(struct iio_context *ctx, std::string fw_version);
+	M2kHardwareTrigger(struct iio_context *ctx, const std::string& fw_version);
 
 	/**
 	 * @private
@@ -127,7 +126,7 @@ public:
 	 * @param chnIdx the required channel
 	 * @return the trigger condition
 	 */
-	M2K_TRIGGER_CONDITION getExternalCondition(unsigned int chnIdx);
+//	M2K_TRIGGER_CONDITION getExternalCondition(unsigned int chnIdx);
 
 
 	/**
@@ -136,8 +135,7 @@ public:
 	 * @param chnIdx the required channel
 	 * @param cond the trigger condition
 	 */
-	void setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
-
+//	void setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
 
 
 	/**
@@ -191,14 +189,14 @@ public:
 	 * @brief Get the source of the analog trigger
 	 * @return analog trigger source (channel1, channel2, etc)
 	 */
-	M2K_TRIGGER_SOURCE getAnalogSource();
+	M2K_TRIGGER_SOURCE_ANALOG getAnalogSource();
 
 
 	/**
 	 * @brief Set the source of the analog trigger
 	 * @param src analog trigger source (channel1, channel2, etc)
 	 */
-	void setAnalogSource(M2K_TRIGGER_SOURCE src);
+	void setAnalogSource(M2K_TRIGGER_SOURCE_ANALOG src);
 
 
 	/**
@@ -333,8 +331,27 @@ public:
 	* @private
 	*/
 	void setCalibParameters(unsigned int chnIdx, double scaling, double vert_offset);
+
+	M2K_TRIGGER_CONDITION getAnalogExternalCondition(unsigned int chnIdx);
+	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
+
+	M2K_TRIGGER_CONDITION getDigitalExternalCondition();
+	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION cond);
+
+	void setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT output_select);
+	M2K_TRIGGER_OUT_SELECT getAnalogExternalOutSelect();
+
+
+	bool hasExternalTriggerIn() const;
+	bool hasExternalTriggerOut() const;
+	bool hasCrossInstrumentTrigger() const;
+
+	void setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src);
+	M2K_TRIGGER_SOURCE_DIGITAL getDigitalSource() const;
+
 private:
 	class M2kHardwareTriggerImpl;
+	class M2kHardwareTriggerV024Impl;
 	std::unique_ptr<M2kHardwareTriggerImpl> m_pimpl;
 };
 }
