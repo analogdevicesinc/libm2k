@@ -39,6 +39,8 @@ public:
 
 	static void validate(const std::string &argument, const char *argumentName, std::vector<int> &value);
 
+	static void validate(const std::string &argument, const char *argumentName, std::vector<uint8_t > &value);
+
 	static std::map<std::string, std::string> validate(std::vector<std::string> arguments);
 
 	static void validate(std::string strNumber, double &number);
@@ -51,6 +53,8 @@ private:
 	static std::string validateName(const std::string &argument, const char *argumentName);
 
 	static bool is_number(const std::string &s);
+
+	static bool is_hexa_number(const std::string &s);
 };
 
 

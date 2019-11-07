@@ -27,10 +27,13 @@
 void Validator::validate(const std::string &argument, const char *argumentName, int &value)
 {
 	std::string strValue = validateName(argument, argumentName);
-	if (!is_number(strValue)) {
+	if (is_number(strValue)) {
+		value = std::stoi(strValue);
+	} else if(is_hexa_number(strValue)) {
+		value = std::stoul(strValue, nullptr, 16);
+	} else {
 		throw std::invalid_argument(std::string(argumentName) + " must be an integer\n");
 	}
-	value = std::stoi(strValue);
 }
 
 void Validator::validate(const std::string &argument, const char *argumentName, double &value)
@@ -64,6 +67,24 @@ void Validator::validate(const std::string &argument, const char *argumentName, 
 				"8 | 9 | 10 | 11 | 12 | 13 | 14 | 15}\n");
 		}
 		value.push_back(std::stoi(strValue));
+	}
+}
+
+void Validator::validate(const std::string &argument, const char *argumentName, std::vector<uint8_t > &value)
+{
+	std::string strValue = validateName(argument, argumentName);
+	std::istringstream iss(strValue);
+	while (getline(iss, strValue, ',')) {
+		if (is_number(strValue)) {
+			value.push_back(std::stoi(strValue));
+		} else if (is_hexa_number(strValue)) {
+			value.push_back(std::stoul(strValue, nullptr, 16));
+		} else {
+			for (auto c : strValue) {
+				value.push_back((uint8_t )c);
+			}
+		}
+
 	}
 }
 
@@ -134,4 +155,11 @@ bool Validator::is_number(const std::string &s)
 		++it;
 	}
 	return !s.empty() && it == s.end();
+}
+
+bool Validator::is_hexa_number(const std::string &s)
+{
+	return s.compare(0, 2, "0x") == 0
+	       && s.size() > 2
+	       && s.find_first_not_of("0123456789abcdefABCDEF", 2) == std::string::npos;
 }
