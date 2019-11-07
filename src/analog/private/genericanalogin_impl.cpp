@@ -36,6 +36,7 @@ public:
         GenericAnalogInImpl(iio_context *ctx, std::string adc_dev) :
                 DeviceIn(ctx, adc_dev)
         {
+		m_dev_name = adc_dev;
         }
 
 	~GenericAnalogInImpl()

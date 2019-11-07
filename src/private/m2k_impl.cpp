@@ -65,6 +65,10 @@ public:
 		m_firmware_version = getFirmwareVersion();
 		m_trigger = new M2kHardwareTrigger(ctx, m_firmware_version);
 
+		if (!m_trigger) {
+			throw_exception(EXC_INVALID_PARAMETER, "Can't instantiate M2K board; M2K trigger is invalid.");
+		}
+
 		scanAllAnalogIn();
 		scanAllAnalogOut();
 		scanAllPowerSupply();

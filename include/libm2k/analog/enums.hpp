@@ -84,7 +84,6 @@ namespace analog {
 		NO_TRIGGER = 5,
 	};
 
-
 	/**
 	* @enum M2K_TRIGGER_MODE
 	* @brief Triggering mode
@@ -93,7 +92,7 @@ namespace analog {
 	enum M2K_TRIGGER_MODE {
 		ALWAYS = 0,
 		ANALOG = 1,
-		DIGITAL = 2,
+		EXTERNAL = 2,
 		DIGITAL_OR_ANALOG = 3,
 		DIGITAL_AND_ANALOG = 4,
 		DIGITAL_XOR_ANALOG = 5,
@@ -104,16 +103,40 @@ namespace analog {
 
 
 	/**
-	* @enum M2K_TRIGGER_SOURCE
+	* @enum M2K_TRIGGER_ANALOG_SOURCE
 	* @brief The source of triggering
 	*
 	*/
-	enum M2K_TRIGGER_SOURCE {
+	enum M2K_TRIGGER_SOURCE_ANALOG {
 		CHANNEL_1 = 0,
 		CHANNEL_2 = 1,
 		CHANNEL_1_OR_CHANNEL_2 = 2,
 		CHANNEL_1_AND_CHANNEL_2 = 3,
 		CHANNEL_1_XOR_CHANNEL_2 = 4,
+		SRC_DIGITAL_IN = 5,
+		CHANNEL_1_OR_SRC_LOGIC_ANALYZER = 6,
+		CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 7,
+		CHANNEL_1_OR_CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 8,
+	};
+
+	enum M2K_TRIGGER_SOURCE_DIGITAL {
+		SRC_TRIGGER_IN = 0,
+		SRC_ANALOG_IN = 1,
+		SRC_NONE = 2
+	};
+
+
+	/**
+	 * @enum M2K_TRIGGER_OUT_SELECT
+	 * @brief select
+	 */
+
+	enum M2K_TRIGGER_OUT_SELECT {
+		SELECT_NONE = 0,
+		SELECT_TRIGGER_I_SAME_CHAN = 1,
+		SELECT_TRIGGER_IN = 2,
+		SELECT_ANALOG_IN = 3,
+		SELECT_DIGITAL_IN = 4
 	};
 
 
@@ -129,7 +152,7 @@ namespace analog {
 		std::vector<double> level; ///< Trigger's level
 		std::vector<int> hysteresis; ///< Trigger's hysteresis
 		std::vector<M2K_TRIGGER_MODE> mode; ///<Triggering mode
-		M2K_TRIGGER_SOURCE trigger_source; ///< Triggering source
+		M2K_TRIGGER_SOURCE_ANALOG trigger_source; ///< Triggering source
 		int delay; ///< Trigger's delay
 	};
 }
