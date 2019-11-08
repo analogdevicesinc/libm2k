@@ -211,7 +211,7 @@ public:
 						       "the current board; Check the firmware version.");
 	}
 
-	M2K_TRIGGER_CONDITION getDigitalExternalCondition()
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition()
 	{
 		std::string buf = m_digital_trigger_device->getStringValue(16, "trigger");
 
@@ -221,16 +221,16 @@ public:
 			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
 		}
 
-		return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_digital_cond.begin());
+		return static_cast<M2K_TRIGGER_CONDITION_DIGITAL>(it - m_trigger_digital_cond.begin());
 	}
 
-	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION ext_cond)
+	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION_DIGITAL ext_cond)
 	{
 		m_digital_trigger_device->setStringValue(16, "trigger",
 							 m_trigger_digital_cond[ext_cond]);
 	}
 
-	M2K_TRIGGER_CONDITION getAnalogExternalCondition(unsigned int chnIdx)
+	M2K_TRIGGER_CONDITION_DIGITAL getAnalogExternalCondition(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
@@ -243,20 +243,24 @@ public:
 			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
 		}
 
-		return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_digital_cond.begin());
+		return static_cast<M2K_TRIGGER_CONDITION_DIGITAL>(it - m_trigger_digital_cond.begin());
 	}
 
 
-	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond)
 	{
 		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
+		if (cond == NO_TRIGGER_DIGITAL) {
+			throw_exception(EXC_INVALID_PARAMETER, "Analog External condition: can't set NO_TRIGGER for this channel.");
+		}
+
 		m_digital_channels[chnIdx]->setStringValue("trigger", m_trigger_digital_cond[cond]);
 	}
 
-	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx)
+	M2K_TRIGGER_CONDITION_ANALOG getAnalogCondition(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
@@ -269,11 +273,11 @@ public:
 			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
 		}
 
-		return static_cast<M2K_TRIGGER_CONDITION>(it - m_trigger_analog_cond.begin());
+		return static_cast<M2K_TRIGGER_CONDITION_ANALOG>(it - m_trigger_analog_cond.begin());
 
 	}
 
-	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_ANALOG cond)
 	{
 		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
@@ -283,7 +287,7 @@ public:
 	}
 
 
-	M2K_TRIGGER_CONDITION getDigitalCondition(DIO_CHANNEL chn)
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(DIO_CHANNEL chn)
 	{
 		std::string trigger_val = m_digital_trigger_device->getStringValue(chn, "trigger", false);
 		std::vector<std::string> available_digital_conditions =
@@ -295,23 +299,23 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: Cannot read channel attribute: trigger");
 		}
 
-		return static_cast<M2K_TRIGGER_CONDITION>
+		return static_cast<M2K_TRIGGER_CONDITION_DIGITAL>
 				(it - available_digital_conditions.begin());
 	}
 
-	M2K_TRIGGER_CONDITION getDigitalCondition(unsigned int chn)
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(unsigned int chn)
 	{
 		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
 		return getDigitalCondition(idx);
 	}
 
-	void setDigitalCondition(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION cond)
+	void setDigitalCondition(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION_DIGITAL cond)
 	{
 		std::string trigger_val = M2kHardwareTrigger::getAvailableDigitalConditions()[cond];
 		m_digital_trigger_device->setStringValue(chn, "trigger", trigger_val, false);
 	}
 
-	void setDigitalCondition(unsigned int chn, M2K_TRIGGER_CONDITION cond)
+	void setDigitalCondition(unsigned int chn, M2K_TRIGGER_CONDITION_DIGITAL cond)
 	{
 		DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
 		setDigitalCondition(idx, cond);

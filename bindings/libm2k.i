@@ -56,7 +56,8 @@ namespace std {
 	typedef std::vector<libm2k::analog::DMM*> DMMs;
 	typedef std::vector<libm2k::analog::M2kAnalogIn*> M2kAnalogIns;
 	typedef std::vector<libm2k::analog::M2kAnalogOut*> M2kAnalogOuts;
-	typedef std::vector<libm2k::analog::M2K_TRIGGER_CONDITION> M2kConditions;
+	typedef std::vector<libm2k::analog::M2K_TRIGGER_CONDITION_ANALOG> M2kConditionAnalog;
+	typedef std::vector<libm2k::analog::M2K_TRIGGER_CONDITION_DIGITAL> M2kConditionDigital;
 	typedef std::vector<libm2k::analog::M2K_TRIGGER_MODE> M2kModes;
 %}
 
@@ -115,5 +116,6 @@ namespace std {
 %template(DMMs) std::vector<libm2k::analog::DMM*>;
 %template(M2kAnalogIns) std::vector<libm2k::analog::M2kAnalogIn*>;
 %template(M2kAnalogOuts) std::vector<libm2k::analog::M2kAnalogOut*>;
-%template(M2kConditions) std::vector<libm2k::analog::M2K_TRIGGER_CONDITION>;
+%template(M2kConditionAnalog) std::vector<libm2k::analog::M2K_TRIGGER_CONDITION_ANALOG>;
+%template(M2kConditionDigital) std::vector<libm2k::analog::M2K_TRIGGER_CONDITION_DIGITAL>;
 %template(M2kModes) std::vector<libm2k::analog::M2K_TRIGGER_MODE>;

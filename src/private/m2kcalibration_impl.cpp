@@ -808,7 +808,7 @@ private:
 
 	M2K_TRIGGER_MODE m_trigger0_mode;
 	M2K_TRIGGER_MODE m_trigger1_mode;
-	M2K_TRIGGER_SOURCE m_trigger_src;
+	M2K_TRIGGER_SOURCE_ANALOG m_trigger_src;
 	double adc_sampl_freq;
 	double adc_oversampl;
 	double dac_a_sampl_freq;

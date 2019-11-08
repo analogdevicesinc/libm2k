@@ -38,33 +38,33 @@ M2kHardwareTrigger::~M2kHardwareTrigger()
 {
 }
 
-M2K_TRIGGER_CONDITION M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
+M2K_TRIGGER_CONDITION_ANALOG M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
 {
 	return m_pimpl->getAnalogCondition(chnIdx);
 }
 
-void M2kHardwareTrigger::setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+void M2kHardwareTrigger::setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_ANALOG cond)
 {
 	m_pimpl->setAnalogCondition(chnIdx, cond);
 }
 
 
-M2K_TRIGGER_CONDITION M2kHardwareTrigger::getDigitalExternalCondition()
+M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTrigger::getDigitalExternalCondition()
 {
 	return m_pimpl->getDigitalExternalCondition();
 }
 
-void M2kHardwareTrigger::setDigitalExternalCondition(M2K_TRIGGER_CONDITION cond)
+void M2kHardwareTrigger::setDigitalExternalCondition(M2K_TRIGGER_CONDITION_DIGITAL cond)
 {
 	m_pimpl->setDigitalExternalCondition(cond);
 }
 
-M2K_TRIGGER_CONDITION M2kHardwareTrigger::getAnalogExternalCondition(unsigned int chnIdx)
+M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTrigger::getAnalogExternalCondition(unsigned int chnIdx)
 {
 	return m_pimpl->getAnalogExternalCondition(chnIdx);
 }
 
-void M2kHardwareTrigger::setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+void M2kHardwareTrigger::setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond)
 {
 	m_pimpl->setAnalogExternalCondition(chnIdx, cond);
 }
@@ -104,12 +104,12 @@ void M2kHardwareTrigger::setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT outpu
 	m_pimpl->setAnalogExternalOutSelect(output_select);
 }
 
-M2K_TRIGGER_CONDITION M2kHardwareTrigger::getDigitalCondition(unsigned int chnIdx)
+M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTrigger::getDigitalCondition(unsigned int chnIdx)
 {
 	m_pimpl->getDigitalCondition(chnIdx);
 }
 
-void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond)
+void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond)
 {
 	m_pimpl->setDigitalCondition(chnIdx, cond);
 }
