@@ -22,7 +22,7 @@
 
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/analog/enums.hpp>
-#include <libm2k/analog/m2khardwaretrigger.hpp>
+#include <libm2k/m2khardwaretrigger.hpp>
 #include <vector>
 #include <map>
 #include <memory>
@@ -474,7 +474,7 @@ public:
 	*
 	* @return A pointer to the hardware trigger trigger
 	*/
-	libm2k::analog::M2kHardwareTrigger* getTrigger();
+	libm2k::M2kHardwareTrigger* getTrigger();
 
 private:
 	class M2kAnalogInImpl;

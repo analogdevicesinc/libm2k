@@ -19,13 +19,13 @@
 
 #include "private/m2kdigital_impl.cpp"
 
+using namespace libm2k;
 using namespace libm2k::utils;
 using namespace libm2k::digital;
-using namespace libm2k::analog;
 using namespace std;
 
 
-M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger) :
+M2kDigital::M2kDigital(struct iio_context *ctx, std::string logic_dev, bool sync, libm2k::M2kHardwareTrigger *trigger) :
 	m_pimpl(std::unique_ptr<M2kDigitalImpl>(new M2kDigitalImpl(ctx, logic_dev, sync, trigger)))
 {
 }
@@ -145,7 +145,7 @@ bool M2kDigital::anyChannelEnabled(DIO_DIRECTION dir)
 	return m_pimpl->anyChannelEnabled(dir);
 }
 
-M2kHardwareTrigger *M2kDigital::getTrigger()
+libm2k::M2kHardwareTrigger *M2kDigital::getTrigger()
 {
 	return m_pimpl->getTrigger();
 }

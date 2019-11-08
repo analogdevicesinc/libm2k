@@ -283,7 +283,7 @@ void Digital::handleSetChannel()
 			}
 			for (int &channel : channels) {
 				digital->getTrigger()->setDigitalCondition(channel,
-									   static_cast<libm2k::analog::M2K_TRIGGER_CONDITION_DIGITAL>(enumIndex));
+									   static_cast<libm2k::M2K_TRIGGER_CONDITION_DIGITAL>(enumIndex));
 			}
 		} else {
 			throw std::runtime_error("Invalid attribute: " + argument + '\n');

@@ -21,7 +21,7 @@ set(DOCUMENTED_FILES "${SOURCES_DIR}/m2k.hpp \\
                       ${SOURCES_DIR}/analog/m2kpowersupply.hpp \\
                       ${SOURCES_DIR}/analog/dmm.hpp \\
                       ${SOURCES_DIR}/analog/enums.hpp \\
-		      ${SOURCES_DIR}/analog/m2khardwaretrigger.hpp \\
+		      ${SOURCES_DIR}/m2khardwaretrigger.hpp \\
                       "
 )
 
