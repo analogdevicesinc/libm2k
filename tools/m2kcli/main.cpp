@@ -25,6 +25,7 @@
 #include "commands/analog/analog_out.h"
 #include "commands/digital/digital.h"
 #include "commands/analog/power_supply.h"
+#include "commands/communication/spi.h"
 #include <libm2k/contextbuilder.hpp>
 
 static const char *const helpMessage = "Usage:\n"
@@ -43,7 +44,8 @@ static const char *const helpMessage = "Usage:\n"
 				       "    analog-in           control the analogical input component\n"
 				       "    analog-out          control the analogical output component\n"
 				       "    digital             control the digital component\n"
-				       "    power-supply        control the power supply\n";
+				       "    power-supply        control the power supply\n"
+				       "    spi			control the functionality of spi\n";
 
 int main(int argc, char **argv)
 {
@@ -73,6 +75,9 @@ int main(int argc, char **argv)
 		} else if (std::string(argv[1]) == "power-supply") {
 			libm2k::cli::PowerSupply powerSupply(argc, argv);
 			command = &powerSupply;
+		} else if (std::string(argv[1]) == "spi") {
+			libm2k::cli::Spi spi(argc, argv);
+			command = &spi;
 		} else {
 			throw std::runtime_error("m2kcli: '" + std::string(argv[1]) +
 						 "' is not a m2kcli command. See 'm2kcli --help'.\n");
