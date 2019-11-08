@@ -273,7 +273,7 @@ void AnalogIn::handleSet()
 				throw std::runtime_error("Invalid trigger source: '" + std::string(value) + "'.\n");
 			}
 			analogIn->getTrigger()->setAnalogSource(
-				static_cast<libm2k::analog::M2K_TRIGGER_SOURCE>(enumIndex));
+				static_cast<libm2k::analog::M2K_TRIGGER_SOURCE_ANALOG>(enumIndex));
 		} else if (argument == "trigger_delay") {
 			analogIn->getTrigger()->setAnalogDelay(std::stoi(value));
 		} else if (argument == "kernel_buffers") {
@@ -320,7 +320,7 @@ void AnalogIn::handleSetChannel()
 			}
 			for (int &channel : channels) {
 				analogIn->getTrigger()->setAnalogCondition(channel,
-									   static_cast<libm2k::analog::M2K_TRIGGER_CONDITION>(enumIndex));
+									   static_cast<libm2k::analog::M2K_TRIGGER_CONDITION_ANALOG>(enumIndex));
 			}
 		} else if (argument == "trigger_mode") {
 			int enumIndex = getIndexOfElement(value, triggerMode);

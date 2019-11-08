@@ -71,17 +71,29 @@ namespace analog {
 
 
 	/**
-	* @enum M2K_TRIGGER_CONDITION
-	* @brief Condition of triggering
+	* @enum M2K_TRIGGER_CONDITION_ANALOG for the analog side.
+	* @brief Condition of triggering.
 	*
 	*/
-	enum M2K_TRIGGER_CONDITION {
-		RISING_EDGE = 0,
-		FALLING_EDGE = 1,
-		LOW_LEVEL = 2,
-		HIGH_LEVEL = 3,
-		ANY_EDGE = 4,
-		NO_TRIGGER = 5,
+	enum M2K_TRIGGER_CONDITION_ANALOG {
+		RISING_EDGE_ANALOG = 0,
+		FALLING_EDGE_ANALOG = 1,
+		LOW_LEVEL_ANALOG = 2,
+		HIGH_LEVEL_ANALOG = 3
+	};
+
+	/**
+	* @enum M2K_TRIGGER_CONDITION_DIGITAL for the digital side.
+	* @brief Condition of triggering.
+	*
+	*/
+	enum M2K_TRIGGER_CONDITION_DIGITAL {
+		RISING_EDGE_DIGITAL = 0,
+		FALLING_EDGE_DIGITAL = 1,
+		LOW_LEVEL_DIGITAL = 2,
+		HIGH_LEVEL_DIGITAL = 3,
+		ANY_EDGE_DIGITAL = 4,
+		NO_TRIGGER_DIGITAL = 5,
 	};
 
 	/**
@@ -146,8 +158,8 @@ namespace analog {
 	*
 	*/
 	struct SETTINGS {
-		std::vector<M2K_TRIGGER_CONDITION> analog_condition; ///< Analogical trigger's condition
-		std::vector<M2K_TRIGGER_CONDITION> digital_condition; ///< Digital trigger's condition
+		std::vector<M2K_TRIGGER_CONDITION_ANALOG> analog_condition; ///< Analogical trigger's condition
+		std::vector<M2K_TRIGGER_CONDITION_DIGITAL> digital_condition; ///< Digital trigger's condition
 		std::vector<int> raw_level; ///< Trigger's raw level
 		std::vector<double> level; ///< Trigger's level
 		std::vector<int> hysteresis; ///< Trigger's hysteresis

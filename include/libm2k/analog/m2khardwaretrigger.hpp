@@ -109,7 +109,7 @@ public:
 	 * @param chnIdx the required channel
 	 * @return the trigger condition
 	 */
-	M2K_TRIGGER_CONDITION getAnalogCondition(unsigned int chnIdx);
+	M2K_TRIGGER_CONDITION_ANALOG getAnalogCondition(unsigned int chnIdx);
 
 
 	/**
@@ -117,25 +117,7 @@ public:
 	 * @param chnIdx the required channel
 	 * @param cond the specific trigger condition
 	 */
-	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
-
-
-	/**
-	 * @brief Get the trigger condition for one of the external trigger pins,
-	 *  on a specific channel
-	 * @param chnIdx the required channel
-	 * @return the trigger condition
-	 */
-//	M2K_TRIGGER_CONDITION getExternalCondition(unsigned int chnIdx);
-
-
-	/**
-	 * @brief Set the trigger condition for one of the external trigger pins,
-	 *  on a specific channel
-	 * @param chnIdx the required channel
-	 * @param cond the trigger condition
-	 */
-//	void setExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
+	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_ANALOG cond);
 
 
 	/**
@@ -143,7 +125,7 @@ public:
 	 * @param chnIdx the required channel
 	 * @return the trigger condition
 	 */
-	M2K_TRIGGER_CONDITION getDigitalCondition(unsigned int chnIdx);
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(unsigned int chnIdx);
 
 
 	/**
@@ -151,7 +133,7 @@ public:
 	 * @param chnIdx the required channel
 	 * @param cond the specific trigger condition
 	 */
-	void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
+	void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond);
 
 
 
@@ -332,11 +314,11 @@ public:
 	*/
 	void setCalibParameters(unsigned int chnIdx, double scaling, double vert_offset);
 
-	M2K_TRIGGER_CONDITION getAnalogExternalCondition(unsigned int chnIdx);
-	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION cond);
+	M2K_TRIGGER_CONDITION_DIGITAL getAnalogExternalCondition(unsigned int chnIdx);
+	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond);
 
-	M2K_TRIGGER_CONDITION getDigitalExternalCondition();
-	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION cond);
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition();
+	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION_DIGITAL cond);
 
 	void setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT output_select);
 	M2K_TRIGGER_OUT_SELECT getAnalogExternalOutSelect();
