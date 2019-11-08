@@ -129,6 +129,8 @@ namespace std {
 #ifdef COMMUNICATION
 	#include <libm2k/tools/spi.hpp>
 	#include <libm2k/tools/spi_extra.hpp>
+	#include <libm2k/tools/i2c.hpp>
+	#include <libm2k/tools/i2c_extra.hpp>
 #endif
 	typedef std::vector<libm2k::analog::DMM_READING> DMMReading;
 	typedef std::vector<libm2k::analog::DMM*> DMMs;
@@ -147,15 +149,29 @@ namespace std {
 		enum 		spi_mode mode;
 		m2k_spi_init 	*extra;
 	}spi_init_param;
+
+	typedef struct i2c_init_param {
+		uint32_t 	max_speed_hz;
+		uint16_t 	slave_address;
+		m2k_i2c_init 	*extra;
+	} i2c_init_param;
 #endif
 
 %ignore spi_init(struct spi_desc**, const struct spi_init_param *);
+%ignore i2c_init(struct i2c_desc**, const struct i2c_init_param *);
 
 %inline %{
 	spi_desc *spi_init(const struct spi_init_param *param)
 	{
 		spi_desc *temp;
 		spi_init(&temp, param);
+		return temp;
+	}
+
+	i2c_desc *i2c_init(const struct i2c_init_param *param)
+	{
+		i2c_desc *temp;
+		i2c_init(&temp, param);
 		return temp;
 	}
 %}
@@ -216,6 +232,8 @@ namespace std {
 #ifdef COMMUNICATION
 %include <libm2k/tools/spi.hpp>
 %include <libm2k/tools/spi_extra.hpp>
+%include <libm2k/tools/i2c.hpp>
+%include <libm2k/tools/i2c_extra.hpp>
 #endif
 
 %template(DMMReading) std::vector<libm2k::analog::DMM_READING>;
