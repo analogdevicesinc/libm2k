@@ -20,7 +20,7 @@
 #ifndef M2KHARDWARETRIGGER_HPP
 #define M2KHARDWARETRIGGER_HPP
 
-#include <libm2k/analog/enums.hpp>
+#include <libm2k/enums.hpp>
 #include <libm2k/digital/enums.hpp>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/m2k.hpp>
@@ -28,12 +28,6 @@
 #include <memory>
 
 namespace libm2k {
-
-/**
- * @addtogroup analog
- * @{
- */
-namespace analog {
 
 /**
  * @defgroup m2ktrigger HardwareTrigger
@@ -336,7 +330,6 @@ private:
 	class M2kHardwareTriggerV024Impl;
 	std::unique_ptr<M2kHardwareTriggerImpl> m_pimpl;
 };
-}
 }
 
 #endif //M2KHARDWARETRIGGER_HPP

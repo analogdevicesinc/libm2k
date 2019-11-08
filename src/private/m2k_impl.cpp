@@ -371,7 +371,7 @@ public:
 
 private:
 	M2kCalibration* m_calibration;
-	libm2k::analog::M2kHardwareTrigger *m_trigger;
+	libm2k::M2kHardwareTrigger *m_trigger;
 	std::vector<analog::M2kAnalogOut*> m_instancesAnalogOut;
 	std::vector<analog::M2kAnalogIn*> m_instancesAnalogIn;
 	std::vector<analog::M2kPowerSupply*> m_instancesPowerSupply;

@@ -30,7 +30,7 @@ using namespace std::placeholders;
 #define LOW_MIN -25
 
 M2kAnalogIn::M2kAnalogIn(iio_context * ctx,
-			 std::string adc_dev, bool sync, M2kHardwareTrigger *trigger) :
+			 std::string adc_dev, bool sync, libm2k::M2kHardwareTrigger *trigger) :
 	m_pimpl(std::unique_ptr<M2kAnalogInImpl>(new M2kAnalogInImpl(ctx, adc_dev, sync, trigger)))
 {
 }
@@ -108,7 +108,7 @@ double M2kAnalogIn::getCalibscale(unsigned int index)
 	return m_pimpl->getCalibscale(index);
 }
 
-M2kHardwareTrigger *M2kAnalogIn::getTrigger()
+libm2k::M2kHardwareTrigger *M2kAnalogIn::getTrigger()
 {
 	return m_pimpl->getTrigger();
 }

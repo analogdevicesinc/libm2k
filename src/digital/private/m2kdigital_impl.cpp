@@ -393,5 +393,5 @@ private:
 	std::string m_dev_name_write;
 	std::vector<bool> m_tx_channels_enabled;
 	std::vector<bool> m_rx_channels_enabled;
-	libm2k::analog::M2kHardwareTrigger *m_trigger;
+	libm2k::M2kHardwareTrigger *m_trigger;
 };

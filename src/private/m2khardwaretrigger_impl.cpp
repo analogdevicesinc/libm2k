@@ -20,9 +20,9 @@
 #ifndef M2KHARDWARETRIGGER_IMPL_HPP
 #define M2KHARDWARETRIGGER_IMPL_HPP
 
+#include <libm2k/m2khardwaretrigger.hpp>
 #include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/utils/devicein.hpp>
-#include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <libm2k/utils/channel.hpp>
 #include <libm2k/digital/enums.hpp>
 #include <libm2k/m2kexceptions.hpp>
@@ -30,8 +30,8 @@
 #include <algorithm>
 #include <iio.h>
 
+using namespace libm2k;
 using namespace libm2k::utils;
-using namespace libm2k::analog;
 using namespace libm2k::digital;
 using namespace std;
 

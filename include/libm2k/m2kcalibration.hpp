@@ -21,8 +21,7 @@
 #define M2KCALIBRATION_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/analog/enums.hpp>
-#include <libm2k/analog/m2khardwaretrigger.hpp>
+#include <libm2k/m2khardwaretrigger.hpp>
 #include <cstdint>
 #include <cstdlib>
 #include <string>

@@ -17,10 +17,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/m2khardwaretrigger.hpp>
 #include <libm2k/m2kcalibration.hpp>
+#include <libm2k/utils/devicegeneric.hpp>
 #include <libm2k/analog/m2kanalogout.hpp>
-#include <libm2k/analog/m2khardwaretrigger.hpp>
 #include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>

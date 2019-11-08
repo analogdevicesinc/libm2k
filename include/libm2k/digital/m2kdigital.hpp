@@ -23,7 +23,7 @@
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/digital/enums.hpp>
 #include <libm2k/analog/enums.hpp>
-#include <libm2k/analog/m2khardwaretrigger.hpp>
+#include <libm2k/m2khardwaretrigger.hpp>
 #include <string>
 #include <vector>
 
@@ -45,7 +45,7 @@ public:
 	/**
 	* @private
 	*/
-	M2kDigital(struct iio_context* ctx, std::string logic_dev, bool sync, libm2k::analog::M2kHardwareTrigger *trigger);
+	M2kDigital(struct iio_context* ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger);
 
 
 	/**
@@ -344,7 +344,7 @@ public:
 	* @brief Get the hardware trigger handler
 	* @return the trigger object
 	*/
-	libm2k::analog::M2kHardwareTrigger* getTrigger();
+	libm2k::M2kHardwareTrigger* getTrigger();
 
 
 	/**

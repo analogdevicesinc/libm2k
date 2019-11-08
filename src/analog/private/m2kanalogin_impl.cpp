@@ -519,7 +519,7 @@ private:
 	bool m_need_processing;
 
 	double m_samplerate;
-	libm2k::analog::M2kHardwareTrigger *m_trigger;
+	libm2k::M2kHardwareTrigger *m_trigger;
 	std::vector<M2K_RANGE> m_input_range;
 
 	std::vector<double> m_adc_calib_gain;

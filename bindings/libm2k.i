@@ -29,12 +29,13 @@ namespace std {
 	}
 
 	#include <libm2k/m2kglobal.hpp>
+	#include <libm2k/enums.hpp>
 	#include <libm2k/utils/enums.hpp>
 	#include <libm2k/analog/dmm.hpp>
 	#include <libm2k/analog/enums.hpp>
 	#include <libm2k/analog/genericanalogin.hpp>
 	#include <libm2k/analog/genericanalogout.hpp>
-	#include <libm2k/analog/m2khardwaretrigger.hpp>
+	#include <libm2k/m2khardwaretrigger.hpp>
 	#include <libm2k/analog/m2kanalogin.hpp>
 	#include <libm2k/analog/m2kanalogout.hpp>
 	#include <libm2k/analog/m2kpowersupply.hpp>
@@ -46,7 +47,6 @@ namespace std {
 
 	#include <libm2k/context.hpp>
 	#include <libm2k/contextbuilder.hpp>
-	#include <libm2k/enums.hpp>
 	#include <libm2k/fmcomms.hpp>
 	#include <libm2k/logger.hpp>
 	#include <libm2k/m2kcalibration.hpp>
@@ -56,9 +56,9 @@ namespace std {
 	typedef std::vector<libm2k::analog::DMM*> DMMs;
 	typedef std::vector<libm2k::analog::M2kAnalogIn*> M2kAnalogIns;
 	typedef std::vector<libm2k::analog::M2kAnalogOut*> M2kAnalogOuts;
-	typedef std::vector<libm2k::analog::M2K_TRIGGER_CONDITION_ANALOG> M2kConditionAnalog;
-	typedef std::vector<libm2k::analog::M2K_TRIGGER_CONDITION_DIGITAL> M2kConditionDigital;
-	typedef std::vector<libm2k::analog::M2K_TRIGGER_MODE> M2kModes;
+	typedef std::vector<libm2k::M2K_TRIGGER_CONDITION_ANALOG> M2kConditionAnalog;
+	typedef std::vector<libm2k::M2K_TRIGGER_CONDITION_DIGITAL> M2kConditionDigital;
+	typedef std::vector<libm2k::M2K_TRIGGER_MODE> M2kModes;
 %}
 
 #ifdef SWIGPYTHON
@@ -88,12 +88,13 @@ namespace std {
 
 %include <std_shared_ptr.i>
 %include <libm2k/m2kglobal.hpp>
+%include <libm2k/enums.hpp>
 %include <libm2k/utils/enums.hpp>
 %include <libm2k/analog/dmm.hpp>
 %include <libm2k/analog/enums.hpp>
 %include <libm2k/analog/genericanalogin.hpp>
 %include <libm2k/analog/genericanalogout.hpp>
-%include <libm2k/analog/m2khardwaretrigger.hpp>
+%include <libm2k/m2khardwaretrigger.hpp>
 %include <libm2k/analog/m2kanalogin.hpp>
 %include <libm2k/analog/m2kanalogout.hpp>
 %include <libm2k/analog/m2kpowersupply.hpp>
@@ -105,7 +106,6 @@ namespace std {
 
 %include <libm2k/context.hpp>
 %include <libm2k/contextbuilder.hpp>
-%include <libm2k/enums.hpp>
 %include <libm2k/fmcomms.hpp>
 %include <libm2k/logger.hpp>
 %include <libm2k/m2kcalibration.hpp>
@@ -116,6 +116,6 @@ namespace std {
 %template(DMMs) std::vector<libm2k::analog::DMM*>;
 %template(M2kAnalogIns) std::vector<libm2k::analog::M2kAnalogIn*>;
 %template(M2kAnalogOuts) std::vector<libm2k::analog::M2kAnalogOut*>;
-%template(M2kConditionAnalog) std::vector<libm2k::analog::M2K_TRIGGER_CONDITION_ANALOG>;
-%template(M2kConditionDigital) std::vector<libm2k::analog::M2K_TRIGGER_CONDITION_DIGITAL>;
-%template(M2kModes) std::vector<libm2k::analog::M2K_TRIGGER_MODE>;
+%template(M2kConditionAnalog) std::vector<libm2k::M2K_TRIGGER_CONDITION_ANALOG>;
+%template(M2kConditionDigital) std::vector<libm2k::M2K_TRIGGER_CONDITION_DIGITAL>;
+%template(M2kModes) std::vector<libm2k::M2K_TRIGGER_MODE>;

@@ -30,8 +30,8 @@
 #include <algorithm>
 #include <iio.h>
 
+using namespace libm2k;
 using namespace libm2k::utils;
-using namespace libm2k::analog;
 using namespace libm2k::digital;
 using namespace std;
 
@@ -153,6 +153,7 @@ public:
 
 			return static_cast<M2K_TRIGGER_OUT_SELECT>(it - m_digital_out_select.begin());
 		}
+		return SELECT_NONE;
 	}
 
 	void setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)

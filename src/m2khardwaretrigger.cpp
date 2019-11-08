@@ -19,7 +19,7 @@
 
 #include "private/m2khardwaretrigger_v0.24_impl.cpp"
 
-using namespace libm2k::analog;
+using namespace libm2k;
 using namespace std;
 
 typedef std::pair<Channel *, std::string> channel_pair;
@@ -106,7 +106,7 @@ void M2kHardwareTrigger::setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT outpu
 
 M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTrigger::getDigitalCondition(unsigned int chnIdx)
 {
-	m_pimpl->getDigitalCondition(chnIdx);
+	return m_pimpl->getDigitalCondition(chnIdx);
 }
 
 void M2kHardwareTrigger::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond)
