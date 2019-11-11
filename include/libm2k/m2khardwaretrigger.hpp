@@ -51,6 +51,11 @@ public:
 
 
 	/**
+	 * @private
+	 */
+	void init();
+
+	/**
 	 * @brief Get the raw analog trigger level for one channel
 	 * @param chnIdx the required channel
 	 * @return the raw analog trigger level

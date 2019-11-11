@@ -38,6 +38,11 @@ M2kHardwareTrigger::~M2kHardwareTrigger()
 {
 }
 
+void M2kHardwareTrigger::init()
+{
+	m_pimpl->init();
+}
+
 M2K_TRIGGER_CONDITION_ANALOG M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
 {
 	return m_pimpl->getAnalogCondition(chnIdx);

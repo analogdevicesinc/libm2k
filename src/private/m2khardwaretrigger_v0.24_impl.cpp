@@ -113,6 +113,13 @@ public:
 	{
 	}
 
+	void init()
+	{
+		M2kHardwareTriggerImpl::init();
+		setAnalogExternalOutSelect(SELECT_NONE);
+		setDigitalSource(SRC_NONE);
+	}
+
 	bool hasExternalTriggerOut()
 	{
 		return m_logic_channels.at(1)->hasAttribute("out_select");

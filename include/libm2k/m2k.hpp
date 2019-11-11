@@ -66,8 +66,14 @@ public:
 
 
 	/**
-	* @private
-	*/
+	 * @brief Initialize the M2K device to default settings:
+	 *	- maximum samplerates
+	 *	- set oversampling ratio to 1
+	 *	- set AnalogIn range to low range
+	 *	- set kernel buffers count to 1 (both analog and digital)
+	 *	- reset calibration coefficients - a calibration is needed afterwards
+	 *	- disable all TX digital channels and enable all RX digital channels
+	 */
 	void init();
 
 
