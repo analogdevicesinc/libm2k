@@ -363,23 +363,24 @@ public:
 		setAnalogLevelRaw(chnIdx, raw);
 	}
 
-	int getAnalogHysteresis(unsigned int chnIdx)
+	double getAnalogHysteresis(unsigned int chnIdx)
 	{
 		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
-		double val = m_analog_channels[chnIdx]->getDoubleValue("trigger_hysteresis");
-		return static_cast<int>(val);
+		double hysteresis_raw = m_analog_channels[chnIdx]->getDoubleValue("trigger_hysteresis");
+		return (hysteresis_raw * m_scaling.at(chnIdx));
 	}
 
-	void setAnalogHysteresis(unsigned int chnIdx, int histeresis)
+	void setAnalogHysteresis(unsigned int chnIdx, double hysteresis)
 	{
 		if (chnIdx >= m_num_channels) {
 			throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 		}
 
-		m_analog_channels[chnIdx]->setLongValue("trigger_hysteresis", static_cast<long long>(histeresis));
+		int hysteresis_raw = hysteresis / m_scaling.at(chnIdx);
+		m_analog_channels[chnIdx]->setLongValue("trigger_hysteresis", static_cast<long long>(hysteresis_raw));
 	}
 
 	M2K_TRIGGER_MODE getAnalogMode(unsigned int chnIdx)

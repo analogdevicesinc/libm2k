@@ -333,7 +333,7 @@ void AnalogIn::handleSetChannel()
 			}
 		} else if (argument == "trigger_hysteresis") {
 			for (int &channel : channels) {
-				analogIn->getTrigger()->setAnalogHysteresis(channel, std::stoi(value));
+				analogIn->getTrigger()->setAnalogHysteresis(channel, std::stod(value));
 			}
 		} else {
 			throw std::runtime_error("Invalid attribute: " + argument + '\n');
@@ -428,4 +428,4 @@ const char *const AnalogIn::helpMessage = "Usage:\n"
 					  "                            trigger_condition - {rising_edge | falling_edge | low_level | high_level}\n"
 					  "                            trigger_mode - {always | analog | digital | digital_or_analog | digital_and_analog | digital_xor_analog | \n"
 					  "                                            n_digital_or_analog | n_digital_and_analog | n_digital_xor_analog}\n"
-					  "                            trigger_hysteresis - int\n";
+					  "                            trigger_hysteresis - double (in Volts)\n";

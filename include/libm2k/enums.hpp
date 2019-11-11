@@ -137,7 +137,7 @@ namespace libm2k {
 		std::vector<M2K_TRIGGER_CONDITION_DIGITAL> digital_condition; ///< Digital trigger's condition
 		std::vector<int> raw_level; ///< Trigger's raw level
 		std::vector<double> level; ///< Trigger's level
-		std::vector<int> hysteresis; ///< Trigger's hysteresis
+		std::vector<double> hysteresis; ///< Trigger's hysteresis
 		std::vector<M2K_TRIGGER_MODE> mode; ///<Triggering mode
 		M2K_TRIGGER_SOURCE_ANALOG trigger_source; ///< Triggering source
 		int delay; ///< Trigger's delay

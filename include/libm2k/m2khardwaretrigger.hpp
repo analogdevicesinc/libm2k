@@ -85,17 +85,17 @@ public:
 	/**
 	 * @brief Get the analog hysteresis value for one channel
 	 * @param chnIdx the required channel
-	 * @return the value of the hysteresis
+	 * @return the value of the hysteresis in Volts
 	 */
-	int getAnalogHysteresis(unsigned int chnIdx);
+	double getAnalogHysteresis(unsigned int chnIdx);
 
 
 	/**
 	 * @brief Set the analog hysteresis value for one channel
 	 * @param chnIdx the required channel
-	 * @param histeresis
+	 * @param hysteresis in Volts
 	 */
-	void setAnalogHysteresis(unsigned int chnIdx, int histeresis);
+	void setAnalogHysteresis(unsigned int chnIdx, double hysteresis);
 
 
 	/**

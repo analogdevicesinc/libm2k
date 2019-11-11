@@ -154,14 +154,14 @@ void M2kHardwareTrigger::setAnalogLevel(unsigned int chnIdx, double v_level)
 	m_pimpl->setAnalogLevel(chnIdx, v_level);
 }
 
-int M2kHardwareTrigger::getAnalogHysteresis(unsigned int chnIdx)
+double M2kHardwareTrigger::getAnalogHysteresis(unsigned int chnIdx)
 {
 	return m_pimpl->getAnalogHysteresis(chnIdx);
 }
 
-void M2kHardwareTrigger::setAnalogHysteresis(unsigned int chnIdx, int histeresis)
+void M2kHardwareTrigger::setAnalogHysteresis(unsigned int chnIdx, double hysteresis)
 {
-	m_pimpl->setAnalogHysteresis(chnIdx, histeresis);
+	m_pimpl->setAnalogHysteresis(chnIdx, hysteresis);
 }
 
 M2K_TRIGGER_SOURCE_ANALOG M2kHardwareTrigger::getAnalogSource()
