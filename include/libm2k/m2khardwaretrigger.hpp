@@ -308,21 +308,93 @@ public:
 	*/
 	void setCalibParameters(unsigned int chnIdx, double scaling, double vert_offset);
 
+
+	/**
+	 * @brief getAnalogExternalCondition
+	 * @param chnIdx : integer - the index of the required channel
+	 * @return M2K_TRIGGER_CONDITION_DIGITAL
+	 */
 	M2K_TRIGGER_CONDITION_DIGITAL getAnalogExternalCondition(unsigned int chnIdx);
+
+
+	/**
+	 * @brief setAnalogExternalCondition
+	 * @param chnIdx : integer - the index of the required channel
+	 * @param cond : M2K_TRIGGER_CONDITION_DIGITAL
+	 */
 	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond);
 
+
+	/**
+	 * @brief getDigitalExternalCondition
+	 * @return M2K_TRIGGER_CONDITION_DIGITAL
+	 */
 	M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition();
+
+
+	/**
+	 * @brief setDigitalExternalCondition
+	 * @param cond : M2K_TRIGGER_CONDITION_DIGITAL
+	 */
 	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION_DIGITAL cond);
 
+
+	/**
+	 * @brief Select what should be redirected on the TO (trigger out) pin.
+	 *	The options are (none, trigger in, digital in, analog in).
+	 * @param output_select : of type M2K_TRIGGER_OUT_SELECT:
+	 *	SELECT_TRIGGER_IN - forwards trigger events from TI pin(trigger in);
+	 *	SELECT_DIGITAL_IN - forwards trigger events from DigitalIn interface;
+	 *      SELECT_ANALOG_IN  - forwards trigger events from AnalogIn interface;
+	 *	SELECT_NONE - no trigger event is forwarded;
+	 * @note Only available from firmware v0.24.
+	 */
 	void setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT output_select);
+
+
+	/**
+	 * @brief Check which trigger events are forwarded on the TO (trigger out) pin.
+	 * @return M2K_TRIGGER_OUT_SELECT : {SELECT_NONE, SELECT_TRIGGER_IN,
+	 *	SELECT_DIGITAL_IN, SELECT_ANALOG_IN}
+	 * @note Only available from firmware v0.24.
+	 */
 	M2K_TRIGGER_OUT_SELECT getAnalogExternalOutSelect();
 
 
+	/**
+	 * @private
+	 */
 	bool hasExternalTriggerIn() const;
+
+
+	/**
+	 * @private
+	 */
 	bool hasExternalTriggerOut() const;
+
+
+	/**
+	 * @private
+	 */
 	bool hasCrossInstrumentTrigger() const;
 
+
+	/**
+	 * @brief Select which interface triggers the DigitalIn.
+	 * @param external_src: of type M2K_TRIGGER_SOURCE_DIGITAL:
+	 *	SRC_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalIn interface;
+	 *	SRC_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalIn interface;
+	 *	SRC_NONE - trigger events on the DigitalIn are conditioned by the internal digital trigger structure;
+	 * @note Only available from firmware v0.24.
+	 */
 	void setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src);
+
+
+	/**
+	 * @brief Check which is the source of the DigitalIn interface trigger event.
+	 * @return M2K_TRIGGER_SOURCE_DIGITAL : {SRC_TRIGGER_IN, SRC_ANALOG_IN, SRC_NONE}
+	 * @note Only available from firmware v0.24.
+	 */
 	M2K_TRIGGER_SOURCE_DIGITAL getDigitalSource() const;
 
 private:
