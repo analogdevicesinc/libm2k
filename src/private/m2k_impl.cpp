@@ -137,6 +137,7 @@ public:
 		for (auto dmm : m_instancesDMM) {
 			dmm->init();
 		}
+		m_trigger->init();
 
 	}
 

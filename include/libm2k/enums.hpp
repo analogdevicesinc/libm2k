@@ -92,7 +92,7 @@ namespace libm2k {
 
 	/**
 	* @enum M2K_TRIGGER_ANALOG_SOURCE
-	* @brief The source of triggering
+	* @brief The source of triggering.
 	*
 	*/
 	enum M2K_TRIGGER_SOURCE_ANALOG {
@@ -116,7 +116,6 @@ namespace libm2k {
 
 	/**
 	 * @enum M2K_TRIGGER_OUT_SELECT
-	 * @brief select
 	 */
 	enum M2K_TRIGGER_OUT_SELECT {
 		SELECT_NONE = 0,

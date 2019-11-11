@@ -166,6 +166,23 @@ public:
 		m_digital_channels.clear();
 	}
 
+	virtual void init()
+	{
+		setAnalogSource(CHANNEL_1);
+		setAnalogDelay(0);
+		for (int i = 0; i < m_analog_channels.size(); i++) {
+			setAnalogMode(i, ALWAYS);
+			setAnalogLevel(i, 0.0);
+			setAnalogHysteresis(i, 0.0);
+		}
+
+		for (int i = 0; i < m_digital_channels.size(); i++) {
+			setDigitalCondition(i, NO_TRIGGER_DIGITAL);
+		}
+		setDigitalDelay(0);
+		setDigitalExternalCondition(NO_TRIGGER_DIGITAL);
+	}
+
 	virtual bool hasExternalTriggerOut()
 	{
 		return m_logic_channels.at(1)->hasAttribute("out_select");
@@ -196,7 +213,6 @@ public:
 	}
 
 
-	// at init this should be set to ext_trigger_in???
 	virtual void setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)
 	{
 		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
