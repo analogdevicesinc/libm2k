@@ -65,44 +65,41 @@ public:
 	*/
 	void init();
 
-	/* chn can be 0 or 1, it actually refers to dac-a or dac-b) */
+
 	/**
 	* @brief Retrieve the global oversampling ratio
-	*
-	* @return The value of the global ratio
+	* @return The value of the global oversampling ratio
 	*/
-	std::vector<double> getOversamplingRatio();
+	std::vector<int> getOversamplingRatio();
 
 
 	/**
 	* @brief Retrieve the oversampling ratio for the given channel
 	*
 	* @param chn The index corresponding to the channel
-	* @return The ratio value
+	* @return The oversampling ratio value
 	*/
-	double getOversamplingRatio(unsigned int chn);
+	int getOversamplingRatio(unsigned int chn);
 
 	/**
 	* @brief Set the value of the oversampling ratio for each channel
 	*
-	* @param oversampling_ratio A list containing the ratios for each channel
-	* @return A list containing the ratio value for each channel
+	* @param oversampling_ratio A list containing the ratios for each channel (as integers)
+	* @return A list containing the oversampling ratio value for each channel
 	*/
-	std::vector<double> setOversamplingRatio(std::vector<double> oversampling_ratio);
+	std::vector<int> setOversamplingRatio(std::vector<int> oversampling_ratio);
 
 
 	/**
 	* @brief Set the oversampling ratio for the given channel
-	*
 	* @param chn The index corresponding to the channel
-	* @param oversampling_ratio A double value to set the oversampling ratio to
-	* @return The current ratio value
+	* @param oversampling_ratio Integer value to set the oversampling ratio to
+	* @return The current oversampling ratio value
 	*/
-	double setOversamplingRatio(unsigned int chn, double oversampling_ratio);
+	int setOversamplingRatio(unsigned int chn, int oversampling_ratio);
 
 	/**
 	* @brief Retrieve the sample rate of both DACs
-	*
 	* @return A list containing the sample rates
 	*/
 	std::vector<double> getSampleRate();

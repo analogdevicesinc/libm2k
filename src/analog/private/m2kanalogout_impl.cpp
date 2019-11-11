@@ -109,35 +109,35 @@ public:
 		return getCalibscale(index);
 	}
 
-	std::vector<double> getOversamplingRatio()
+	std::vector<int> getOversamplingRatio()
 	{
-		std::vector<double> values = {};
+		std::vector<int> values = {};
 		for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
-			double val = m_dac_devices.at(i)->getDoubleValue("oversampling_ratio");
+			int val = m_dac_devices.at(i)->getLongValue("oversampling_ratio");
 			values.push_back(val);
 		}
 		return values;
 	}
 
-	double getOversamplingRatio(unsigned int chn_idx)
+	int getOversamplingRatio(unsigned int chn_idx)
 	{
-		return getDacDevice(chn_idx)->getDoubleValue("oversampling_ratio");
+		return getDacDevice(chn_idx)->getLongValue("oversampling_ratio");
 	}
 
-	std::vector<double> setOversamplingRatio(std::vector<double> oversampling_ratio)
+	std::vector<int> setOversamplingRatio(std::vector<int> oversampling_ratio)
 	{
-		std::vector<double> values = {};
+		std::vector<int> values = {};
 		for (unsigned int i = 0; i < oversampling_ratio.size(); i++) {
-			double val = m_dac_devices.at(i)->setDoubleValue(oversampling_ratio.at(i),
+			int val = m_dac_devices.at(i)->setLongValue(oversampling_ratio.at(i),
 									 "oversampling_ratio");
 			values.push_back(val);
 		}
 		return values;
 	}
 
-	double setOversamplingRatio(unsigned int chn_idx, double oversampling_ratio)
+	int setOversamplingRatio(unsigned int chn_idx, int oversampling_ratio)
 	{
-		return getDacDevice(chn_idx)->setDoubleValue(oversampling_ratio,
+		return getDacDevice(chn_idx)->setLongValue(oversampling_ratio,
 								 "oversampling_ratio");
 	}
 
