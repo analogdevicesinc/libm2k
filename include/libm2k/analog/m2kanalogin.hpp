@@ -256,12 +256,13 @@ public:
 	*/
 	std::vector<std::pair<std::string, std::pair<double, double>>> getAvailableRanges();
 
+
 	/**
 	* @brief Retrieve the global oversampling ratio
 	*
 	* @return The value of the global ratio
 	*/
-	double getOversamplingRatio();
+	int getOversamplingRatio();
 
 
 	/**
@@ -270,26 +271,26 @@ public:
 	* @param chn_idx The index corresponding to the channel
 	* @return The ratio value
 	*/
-	double getOversamplingRatio(unsigned int chn_idx);
+	int getOversamplingRatio(unsigned int chn_idx);
 
 
 	/**
 	* @brief Set the global oversampling ratio
 	*
-	* @param oversampling A double value to set the oversampling ratio to
+	* @param oversampling Integer value to set the oversampling ratio to
 	* @return The current value of the global ratio
 	*/
-	double setOversamplingRatio(double oversampling);
+	int setOversamplingRatio(int oversampling);
 
 
 	/**
 	* @brief Set the oversampling ratio for the given channel
 	*
 	* @param chn_idx The index corresponding to the channel
-	* @param oversampling A double value to set the oversampling ratio to
+	* @param oversampling Integer value to set the oversampling ratio to
 	* @return The current ratio value
 	*/
-	double setOversamplingRatio(unsigned int chn_idx, double oversampling);
+	int setOversamplingRatio(unsigned int chn_idx, int oversampling);
 
 
 	/**
