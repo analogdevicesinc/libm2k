@@ -446,24 +446,24 @@ public:
 		return vert_offset;
 	}
 
-	double getOversamplingRatio()
+	int getOversamplingRatio()
 	{
-		return getDoubleValue("oversampling_ratio");
+		return getLongValue("oversampling_ratio");
 	}
 
-	double getOversamplingRatio(unsigned int chn_idx)
+	int getOversamplingRatio(unsigned int chn_idx)
 	{
-		return getDoubleValue(chn_idx, "oversampling_ratio");
+		return getLongValue(chn_idx, "oversampling_ratio");
 	}
 
-	double setOversamplingRatio(double oversampling_ratio)
+	int setOversamplingRatio(int oversampling_ratio)
 	{
-		return setDoubleValue(oversampling_ratio, "oversampling_ratio");
+		return setLongValue(oversampling_ratio, "oversampling_ratio");
 	}
 
-	double setOversamplingRatio(unsigned int chn_idx, double oversampling_ratio)
+	int setOversamplingRatio(unsigned int chn_idx, int oversampling_ratio)
 	{
-		return setDoubleValue(chn_idx, oversampling_ratio, "oversampling_ratio");
+		return setLongValue(chn_idx, oversampling_ratio, "oversampling_ratio");
 	}
 
 

@@ -228,22 +228,22 @@ double M2kAnalogIn::getVerticalOffset(ANALOG_IN_CHANNEL channel)
 	return m_pimpl->getVerticalOffset(channel);
 }
 
-double M2kAnalogIn::getOversamplingRatio()
+int M2kAnalogIn::getOversamplingRatio()
 {
 	return m_pimpl->getOversamplingRatio();
 }
 
-double M2kAnalogIn::getOversamplingRatio(unsigned int chn_idx)
+int M2kAnalogIn::getOversamplingRatio(unsigned int chn_idx)
 {
 	return m_pimpl->getOversamplingRatio(chn_idx);
 }
 
-double M2kAnalogIn::setOversamplingRatio(double oversampling_ratio)
+int M2kAnalogIn::setOversamplingRatio(int oversampling_ratio)
 {
 	return m_pimpl->setOversamplingRatio(oversampling_ratio);
 }
 
-double M2kAnalogIn::setOversamplingRatio(unsigned int chn_idx, double oversampling_ratio)
+int M2kAnalogIn::setOversamplingRatio(unsigned int chn_idx, int oversampling_ratio)
 {
 	return m_pimpl->setOversamplingRatio(chn_idx, oversampling_ratio);
 }
