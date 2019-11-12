@@ -54,7 +54,42 @@ unsigned int getValidSampleRate(unsigned int frequency, unsigned int samplesPerC
 	return sampleRateOut;
 }
 
+bool getAverageValue(std::vector<unsigned short> &samples, unsigned int &start, unsigned int numberOfSamples,
+		     unsigned int bitIndex)
+{
+	unsigned short sum = 0;
+	for (int i = 0; i < numberOfSamples; ++i, ++start) {
+		if (getBit(samples[start], bitIndex)) {
+			sum++;
+		}
+	}
+	int i = 1;
+	unsigned short tempSum = sum;
+	bool previousSample = getBit(samples[start], bitIndex);
+	for(; i < numberOfSamples - 1; ++i) {
+		bool currentSample = getBit(samples[start + i], bitIndex);
+		if (previousSample != currentSample) {
+			break;
+		}
+		if(currentSample) {
+			tempSum++;
+		}
+		previousSample = currentSample;
+	}
+	if (i < numberOfSamples - 1) {
+		sum = tempSum;
+		start += i;
+		numberOfSamples += i;
+	}
+	return sum > numberOfSamples / 2;
+}
+
 void setBit(unsigned short &number, unsigned int index)
+{
+	number |= (1u << index);
+}
+
+void setBit(char &number, unsigned int index)
 {
 	number |= (1u << index);
 }
