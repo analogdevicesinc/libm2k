@@ -23,7 +23,12 @@ void setInputChannel(unsigned int channelIndex, libm2k::digital::M2kDigital *m2K
 
 unsigned int getValidSampleRate(unsigned int frequency, unsigned int samplesPerCycle);
 
+bool getAverageValue(std::vector<unsigned short> &samples, unsigned int &start, unsigned int numberOfSamples,
+		     unsigned int bitIndex);
+
 void setBit(unsigned short &number, unsigned int index);
+
+void setBit(char &number, unsigned int index);
 
 void setBit(unsigned char &number, unsigned int index);
 
