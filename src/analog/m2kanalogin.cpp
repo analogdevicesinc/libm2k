@@ -90,12 +90,12 @@ bool M2kAnalogIn::isChannelEnabled(unsigned int chnIdx)
 
 void M2kAnalogIn::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src)
 {
-	m_pimpl->convertChannelHostFormat(chn_idx, avg, src);
+	m_pimpl->convertChannelHostFormat(chn_idx, avg, src, false);
 }
 
 void M2kAnalogIn::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src)
 {
-	m_pimpl->convertChannelHostFormat(chn_idx, avg, src);
+	m_pimpl->convertChannelHostFormat(chn_idx, avg, src, false);
 }
 
 double M2kAnalogIn::setCalibscale(unsigned int index, double calibscale)

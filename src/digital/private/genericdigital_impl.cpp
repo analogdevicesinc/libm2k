@@ -37,9 +37,9 @@ public:
 	{
 		m_dev_name = logic_dev;
 
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
+		for (unsigned int i = 0; i < getNbChannels(false); i++) {
 			std::string name = "voltage" + std::to_string(i);
-			Channel* channel = getChannel(name);
+			Channel* channel = getChannel(name, false);
 			if (channel) {
 				m_channel_list.push_back(channel);
 			}
@@ -75,8 +75,8 @@ public:
 
 	void enableChannel(unsigned int index, bool enable)
 	{
-		if (index < getNbChannels()) {
-			enableChannel(index, enable);
+		if (index < getNbChannels(false)) {
+			DeviceGeneric::enableChannel(index, enable, false);
 		} else {
 			throw_exception(EXC_OUT_OF_RANGE, "Cannot enable digital channel.");
 		}

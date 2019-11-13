@@ -80,6 +80,21 @@ public:
 	{
 	}
 
+	void enableChannel(unsigned int chn_idx, bool enable)
+	{
+		DeviceGeneric::enableChannel(chn_idx, enable, false);
+	}
+
+	bool isChannelEnabled(unsigned int chn_idx)
+	{
+		return DeviceGeneric::isChannelEnabled(chn_idx, false);
+	}
+
+	unsigned int getNbChannels()
+	{
+		return DeviceGeneric::getNbChannels(false);
+	}
+
 	void init()
 	{
 		setOversamplingRatio(1);

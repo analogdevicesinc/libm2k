@@ -17,17 +17,18 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "libm2k/m2kexceptions.hpp"
 #include "libm2k/utils/utils.hpp"
 #include <regex>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <algorithm>
-#include "libm2k/m2kexceptions.hpp"
-
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <cctype>
+#include <sstream>
 
 using namespace std;
 using namespace libm2k::utils;
@@ -287,4 +288,36 @@ int Utils::compareVersions(std::string v1, std::string v2)
 	}
 
 	return v1.compare(v2);
+}
+
+bool Utils::compareNatural(const std::string& a, const std::string& b){
+	if (a.empty()) {
+		return true;
+	} else if (b.empty()) {
+		return false;
+	} else if (std::isdigit(a[0]) && !std::isdigit(b[0])) {
+		return true;
+	} else if (!std::isdigit(a[0]) && std::isdigit(b[0])) {
+		return false;
+	} else if (!std::isdigit(a[0]) && !std::isdigit(b[0])) {
+		if (a[0] == b[0]) {
+			return compareNatural(a.substr(1), b.substr(1));
+		}
+		return (a < b);
+	}
+
+	std::istringstream string_stream_a(a);
+	std::istringstream string_stream_b(b);
+	int int_a, int_b;
+	std::string a_new, b_new;
+
+	string_stream_a >> int_a;
+	string_stream_b >> int_b;
+	if (int_a != int_b) {
+		return (int_a < int_b);
+	}
+
+	std::getline(string_stream_a, a_new);
+	std::getline(string_stream_b, b_new);
+	return (compareNatural(a_new, b_new));
 }

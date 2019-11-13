@@ -31,8 +31,4 @@ PowerSupply::~PowerSupply()
 {
 }
 
-void PowerSupply::enableChannel(unsigned int chnidx, bool enable)
-{
-	m_pimpl->enableChannel(chnidx, enable);
-}
 

@@ -31,13 +31,14 @@ using namespace libm2k::utils;
 class DMM::DMMImpl : public DeviceIn  {
 public:
 	DMMImpl(struct iio_context *ctx, std::string dev, bool sync) :
-		DeviceIn (ctx, dev, true)
+		DeviceIn(ctx, dev)
 	{
 		m_dev_name = dev;
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
+		bool output = false;
+		for (unsigned int i = 0; i < getNbChannels(output); i++) {
 			if (isValidDmmChannel(i)) {
 				m_channel_id_list.insert(std::pair<std::string, unsigned int>
-					(getChannel(i)->getId(), i));
+					(getChannel(i, output)->getId(), i));
 			}
 		}
 	}
@@ -78,10 +79,10 @@ public:
 		DMM_READING result;
 		double value = 0;
 		std::string key = "";
-		std::string id = getChannel(m_channel_id_list.at(chn_name))->getId();
-		std::string name = getChannel(m_channel_id_list.at(chn_name))->getName();
+		std::string id = getChannel(m_channel_id_list.at(chn_name), false)->getId();
+		std::string name = getChannel(m_channel_id_list.at(chn_name), false)->getName();
 		unsigned int index = m_channel_id_list.at(chn_name);
-		auto channel = getChannel(index);
+		auto channel = getChannel(index, false);
 		if (channel->hasAttribute("raw")) {
 			value = channel->getDoubleValue("raw");
 		} else if (channel->hasAttribute("processed")) {

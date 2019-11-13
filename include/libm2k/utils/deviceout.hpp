@@ -38,7 +38,7 @@ class Buffer;
 class DeviceOut : public DeviceGeneric
 {
 public:
-	DeviceOut(struct iio_context* context, std::string dev_name = "", bool input = false);
+	DeviceOut(struct iio_context* context, std::string dev_name = "");
 	virtual ~DeviceOut();
 
 	virtual void push(std::vector<short> const &data, unsigned int channel,

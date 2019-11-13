@@ -69,7 +69,7 @@ public:
 
 	void setCyclic(bool en)
 	{
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
+		for (unsigned int i = 0; i < getNbChannels(true); i++) {
 			m_cyclic.at(i) = en;
 		}
 		DeviceGeneric::setCyclic(en);
@@ -77,7 +77,7 @@ public:
 
 	void setCyclic(unsigned int chn, bool en)
 	{
-		if (chn >= getNbChannels()) {
+		if (chn >= getNbChannels(true)) {
 			throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
 		}
 		m_cyclic.at(chn) = en;
@@ -85,7 +85,7 @@ public:
 
 	bool getCyclic(unsigned int chn)
 	{
-		if (chn >= getNbChannels()) {
+		if (chn >= getNbChannels(true)) {
 			throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
 		}
 		return m_cyclic.at(chn);

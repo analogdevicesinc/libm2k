@@ -421,12 +421,12 @@ public:
 
 	void enableChannel(unsigned int chnIdx, bool enable)
 	{
-		getDacDevice(chnIdx)->enableChannel(0, enable);
+		getDacDevice(chnIdx)->enableChannel(0, enable, true);
 	}
 
 	bool isChannelEnabled(unsigned int chnIdx)
 	{
-		return getDacDevice(chnIdx)->isChannelEnabled(0);
+		return getDacDevice(chnIdx)->isChannelEnabled(0, true);
 	}
 
 	DeviceOut* getDacDevice(unsigned int chnIdx)

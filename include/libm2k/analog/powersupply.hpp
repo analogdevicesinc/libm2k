@@ -34,8 +34,6 @@ public:
 		     std::string read_dev = "");
 	virtual ~PowerSupply();
 
-	void enableChannel(unsigned int chnidx, bool enable);
-
 private:
 	class PowerSupplyImpl;
 	std::unique_ptr<PowerSupplyImpl> m_pimpl;

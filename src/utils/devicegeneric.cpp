@@ -26,8 +26,8 @@ using namespace libm2k::contexts;
 /*
  * Represents an iio_DeviceGeneric
  */
-DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name, bool input) :
-	m_pimpl(std::unique_ptr<DeviceGenericImpl>(new DeviceGenericImpl(context, dev_name, input)))
+DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name) :
+	m_pimpl(std::unique_ptr<DeviceGenericImpl>(new DeviceGenericImpl(context, dev_name)))
 {
 }
 
@@ -40,14 +40,14 @@ DeviceGeneric::~DeviceGeneric()
 {
 }
 
-Channel* DeviceGeneric::getChannel(unsigned int chnIdx)
+Channel* DeviceGeneric::getChannel(unsigned int chnIdx, bool output)
 {
-	return m_pimpl->getChannel(chnIdx);
+	return m_pimpl->getChannel(chnIdx, output);
 }
 
-Channel* DeviceGeneric::getChannel(std::string id)
+Channel* DeviceGeneric::getChannel(std::string id, bool output)
 {
-	return m_pimpl->getChannel(id);
+	return m_pimpl->getChannel(id, output);
 }
 
 bool DeviceGeneric::isChannel(unsigned int chnIdx, bool output)
@@ -55,14 +55,14 @@ bool DeviceGeneric::isChannel(unsigned int chnIdx, bool output)
 	return m_pimpl->isChannel(chnIdx, output);
 }
 
-void DeviceGeneric::enableChannel(unsigned int chnIdx, bool enable)
+void DeviceGeneric::enableChannel(unsigned int chnIdx, bool enable, bool output)
 {
-	m_pimpl->enableChannel(chnIdx, enable);
+	m_pimpl->enableChannel(chnIdx, enable, output);
 }
 
-bool DeviceGeneric::isChannelEnabled(unsigned int chnIdx)
+bool DeviceGeneric::isChannelEnabled(unsigned int chnIdx, bool output)
 {
-	return m_pimpl->isChannelEnabled(chnIdx);
+	return m_pimpl->isChannelEnabled(chnIdx, output);
 }
 
 string DeviceGeneric::getName()
@@ -165,19 +165,19 @@ std::string DeviceGeneric::getHardwareRevision()
 	return m_pimpl->getHardwareRevision();
 }
 
-unsigned int DeviceGeneric::getNbChannels()
+unsigned int DeviceGeneric::getNbChannels(bool output)
 {
-	return m_pimpl->getNbChannels();
+	return m_pimpl->getNbChannels(output);
 }
 
-void DeviceGeneric::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src)
+void DeviceGeneric::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src, bool output)
 {
-	m_pimpl->convertChannelHostFormat(chn_idx, avg, src);
+	m_pimpl->convertChannelHostFormat(chn_idx, avg, src, output);
 }
 
-void DeviceGeneric::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src)
+void DeviceGeneric::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src, bool output)
 {
-	m_pimpl->convertChannelHostFormat(chn_idx, avg, src);
+	m_pimpl->convertChannelHostFormat(chn_idx, avg, src, output);
 }
 
 void DeviceGeneric::setKernelBuffersCount(unsigned int count)

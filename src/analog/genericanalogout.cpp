@@ -104,5 +104,5 @@ std::string GenericAnalogOut::getName()
 
 void GenericAnalogOut::enableChannel(unsigned int chnIdx, bool enable)
 {
-	m_pimpl->enableChannel(chnIdx, enable);
+	m_pimpl->enableChannel(chnIdx, enable, true);
 }

@@ -26,9 +26,9 @@ using namespace libm2k::contexts;
 /*
  * Represents an iio_device
  */
-DeviceIn::DeviceIn(struct iio_context* context, std::string dev_name, bool input) :
-	DeviceGeneric(context, dev_name, input),
-	m_pimpl(std::unique_ptr<DeviceInImpl>(new DeviceInImpl(context, dev_name, input)))
+DeviceIn::DeviceIn(struct iio_context* context, std::string dev_name) :
+	DeviceGeneric(context, dev_name),
+	m_pimpl(std::unique_ptr<DeviceInImpl>(new DeviceInImpl(context, dev_name)))
 {
 }
 

@@ -86,8 +86,8 @@ public:
 		DeviceIn (ctx, "m2k-adc-trigger")
 	{
 		std::vector<std::pair<Channel*, std::string>> channels;
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
-			Channel* ch = getChannel(i);
+		for (unsigned int i = 0; i < getNbChannels(false); i++) {
+			Channel* ch = getChannel(i, false);
 			if (ch->isOutput()) {
 				continue;
 			}
@@ -122,7 +122,7 @@ public:
 			}
 		}
 
-		m_delay_trigger = getChannel("trigger");
+		m_delay_trigger = getChannel("trigger", false);
 
 		m_num_channels = m_analog_channels.size();
 

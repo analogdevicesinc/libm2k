@@ -58,6 +58,10 @@ public:
 	std::string getStringValue(std::string attr);
 
 	void setLongValue(std::string attr, long long val);
+	long long getLongValue(std::string attr);
+
+	void setBoolValue(std::string attr, bool val);
+	bool getBoolValue(std::string attr);
 
 	void enableChannel(bool enable);
 	uintptr_t getFirst(struct iio_buffer* buffer);
