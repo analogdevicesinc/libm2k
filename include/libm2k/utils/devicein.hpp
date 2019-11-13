@@ -38,7 +38,7 @@ class Buffer;
 class DeviceIn : public DeviceGeneric
 {
 public:
-	DeviceIn(struct iio_context* context, std::string dev_name = "", bool input = false);
+	DeviceIn(struct iio_context* context, std::string dev_name = "");
 	virtual ~DeviceIn();
 
 	virtual std::vector<unsigned short> getSamples(unsigned int nb_samples);

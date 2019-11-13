@@ -265,6 +265,19 @@ public:
 		}
 	}
 
+	long long getLongValue(std::string attr)
+	{
+		if (!m_channel) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		}
+		long long value = 0;
+		int ret = iio_channel_attr_read_longlong(m_channel, attr.c_str(), &value);
+		if (ret < 0) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		}
+		return value;
+	}
+
 	void setStringValue(std::string attr, std::string val)
 	{
 		if (!m_channel) {
@@ -287,6 +300,30 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
 		}
 		return std::string(value);
+	}
+
+	void setBoolValue(std::string attr, bool val)
+	{
+		if (!m_channel) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		}
+		int ret = iio_channel_attr_write_bool(m_channel, attr.c_str(), val);
+		if (ret < 0) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		}
+	}
+
+	bool getBoolValue(std::string attr)
+	{
+		if (!m_channel) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		}
+		bool value;
+		int ret = iio_channel_attr_read_bool(m_channel, attr.c_str(), &value);
+		if (ret < 0) {
+			throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		}
+		return value;
 	}
 
 	bool isValid()

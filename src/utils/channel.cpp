@@ -135,6 +135,21 @@ void Channel::setLongValue(std::string attr, long long val)
 	m_pimpl->setLongValue(attr, val);
 }
 
+long long Channel::getLongValue(std::string attr)
+{
+	return m_pimpl->getLongValue(attr);
+}
+
+void Channel::setBoolValue(std::string attr, bool val)
+{
+	m_pimpl->setBoolValue(attr, val);
+}
+
+bool Channel::getBoolValue(std::string attr)
+{
+	return m_pimpl->getBoolValue(attr);
+}
+
 void Channel::setStringValue(std::string attr, std::string val)
 {
 	m_pimpl->setStringValue(attr, val);

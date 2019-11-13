@@ -98,7 +98,7 @@ public:
 
 	void enableChannel(unsigned int index, bool enable)
 	{
-		DeviceGeneric::enableChannel(index, enable);
+		DeviceGeneric::enableChannel(index, enable, false);
 	}
 
 	void setKernelBuffersCount(unsigned int count)

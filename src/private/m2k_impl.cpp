@@ -327,7 +327,7 @@ public:
 	void blinkLed(const double duration = 4, bool blocking = false)
 	{
 		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
-		if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
+		if (m_m2k_fabric->getChannel("voltage4", true)->hasAttribute("done_led_overwrite_powerdown")) {
 			bool currentValue = m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
 
 			const double blinkInterval = 0.05;
@@ -355,7 +355,7 @@ public:
 	void setLed(bool on)
 	{
 		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
-		if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
+		if (m_m2k_fabric->getChannel("voltage4", true)->hasAttribute("done_led_overwrite_powerdown")) {
 			m_m2k_fabric->setBoolValue(4, !on, "done_led_overwrite_powerdown", true);
 		}
 	}
@@ -364,7 +364,7 @@ public:
 	{
 		bool on = false;
 		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
-		if (m_m2k_fabric->getChannel("voltage4")->hasAttribute("done_led_overwrite_powerdown")) {
+		if (m_m2k_fabric->getChannel("voltage4", true)->hasAttribute("done_led_overwrite_powerdown")) {
 			on = !m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
 		}
 		return on;

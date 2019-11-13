@@ -41,7 +41,7 @@ public:
 	/*
 	 * Represents an iio_device
 	 */
-	DeviceInImpl(struct iio_context* context, std::string dev_name = "", bool input = false)
+	DeviceInImpl(struct iio_context* context, std::string dev_name = "")
 	{
 		m_context = context;
 		m_dev = nullptr;
@@ -61,37 +61,30 @@ public:
 				m_buffer = nullptr;
 			}
 
-			__try {
-				unsigned int nb_channels = iio_device_get_channels_count(m_dev);
-				for (unsigned int i = 0; i < nb_channels; i++) {
-					Channel *chn = nullptr;
-					if (input) {
-						chn = new Channel(m_dev, i);
-						if (chn->isOutput()) {
-							delete chn;
-							chn = nullptr;
-							continue;
-						}
-					} else {
-						std::string name = "voltage" + std::to_string(i);
+			unsigned int nb_channels = iio_device_get_channels_count(m_dev);
+			for (unsigned int i = 0; i < nb_channels; i++) {
+				Channel *chn = nullptr;
 
-						chn = new Channel(m_dev, name.c_str(), true);
-						if (!chn->isValid()) {
-							delete chn;
-							chn = nullptr;
-							chn = new Channel(m_dev, name.c_str(), false);
-						}
-					}
-					if (!chn->isValid()) {
-						delete chn;
-						chn = nullptr;
-						continue;
-					}
-					m_channel_list.push_back(chn);
+				chn = new Channel(m_dev, i);
+				if (!chn->isValid()) {
+					delete chn;
+					chn = nullptr;
+					continue;
 				}
-			} __catch (std::exception &e) {
 
+				if (!chn->isOutput()) {
+					m_channel_list.push_back(chn);
+				} else {
+					delete chn;
+					chn = nullptr;
+					continue;
+				}
 			}
+
+			std::sort(m_channel_list.begin(), m_channel_list.end(), [](Channel* lchn, Channel* rchn)
+			{
+				return Utils::compareNatural(lchn->getId(), rchn->getId());
+			});
 		}
 	}
 

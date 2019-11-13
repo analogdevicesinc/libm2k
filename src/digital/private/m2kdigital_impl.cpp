@@ -81,20 +81,20 @@ public:
 
 	void syncDevice()
 	{
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
+		for (unsigned int i = 0; i < getNbChannels(false); i++) {
 			/* Disable all the TX channels */
-			bool en = m_dev_write->isChannelEnabled(i);
+			bool en = m_dev_write->isChannelEnabled(i, true);
 			m_tx_channels_enabled.push_back(en);
 
 			/* Enable all the RX channels */
 			m_rx_channels_enabled.push_back(true);
-			m_dev_read->enableChannel(i, true);
+			m_dev_read->enableChannel(i, true, false);
 		}
 	}
 
 	void init()
 	{
-		for (unsigned int i = 0; i < getNbChannels(); i++) {
+		for (unsigned int i = 0; i < getNbChannels(false); i++) {
 			/* Disable all the TX channels */
 
 			m_tx_channels_enabled.push_back(false);
@@ -102,7 +102,7 @@ public:
 
 			/* Enable all the RX channels */
 			m_rx_channels_enabled.push_back(true);
-			m_dev_read->enableChannel(i, true);
+			m_dev_read->enableChannel(i, true, false);
 		}
 
 		setKernelBuffersCountIn(1);
@@ -118,7 +118,7 @@ public:
 		DIO_DIRECTION direction;
 		bool dir = false;
 		unsigned int index = 0;
-		while (mask != 0 || index < m_dev_write->getNbChannels()) {
+		while (mask != 0 || index < m_dev_write->getNbChannels(true)) {
 			dir = mask & 1;
 			mask >>= 1;
 			direction = static_cast<DIO_DIRECTION>(dir);
@@ -148,7 +148,7 @@ public:
 
 	void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 	{
-		if (index < getNbChannels()) {
+		if (index < getNbChannels(false)) {
 			std::string dir_str = "";
 			if (dir == 0) {
 				dir_str = "in";
@@ -164,7 +164,7 @@ public:
 
 	DIO_DIRECTION getDirection(DIO_CHANNEL index)
 	{
-		if (index >= getNbChannels()) {
+		if (index >= getNbChannels(false)) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 		}
 
@@ -177,7 +177,7 @@ public:
 
 	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 	{
-		if (index >= getNbChannels()) {
+		if (index >= getNbChannels(false)) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 		}
 		long long val = static_cast<long long>(level);
@@ -192,7 +192,7 @@ public:
 
 	DIO_LEVEL getValueRaw(DIO_CHANNEL index)
 	{
-		if (index >= getNbChannels()) {
+		if (index >= getNbChannels(false)) {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 		}
 		long long val;
@@ -272,8 +272,8 @@ public:
 
 	void enableChannel(unsigned int index, bool enable)
 	{
-		if (index < getNbChannels()) {
-			m_dev_write->enableChannel(index, enable);
+		if (index < getNbChannels(true)) {
+			m_dev_write->enableChannel(index, enable, true);
 			m_tx_channels_enabled.at(index) = enable;
 		} else {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel");
@@ -282,8 +282,8 @@ public:
 
 	void enableChannel(DIO_CHANNEL index, bool enable)
 	{
-		if (index < getNbChannels()) {
-			m_dev_write->enableChannel(index, enable);
+		if (index < getNbChannels(true)) {
+			m_dev_write->enableChannel(index, enable, true);
 			m_tx_channels_enabled.at(index) = enable;
 		} else {
 			throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel");
@@ -292,7 +292,7 @@ public:
 
 	void enableAllOut(bool enable)
 	{
-		for (unsigned int i = 0; i < m_dev_write->getNbChannels() - 2; i++) {
+		for (unsigned int i = 0; i < m_dev_write->getNbChannels(true) - 2; i++) {
 			DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(i);
 			enableChannel(idx, enable);
 		}
