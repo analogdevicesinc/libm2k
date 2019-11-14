@@ -164,6 +164,35 @@ public:
 		DeviceIn::flushBuffer();
 	}
 
+	/**
+	 * @brief Utility method to be used before and after ADC getSamples calls.
+	 * For the m2k-adc, all the channels have to be enabled before refilling
+	 */
+	void handleChannelsEnableState(bool before_refill)
+	{
+		if (before_refill) {
+			bool anyChannelEnabled = false;
+			for (unsigned int i = 0; i < getNbChannels(); i++) {
+				bool en  = isChannelEnabled(i);
+				m_channels_enabled.push_back(en);
+				anyChannelEnabled = en ? true : anyChannelEnabled;
+			}
+			if (!anyChannelEnabled) {
+				throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: No channel enabled for RX buffer");
+			}
+
+			for (unsigned int i = 0; i < getNbChannels(); i++) {
+				enableChannel(i, true);
+			}
+		} else {
+			for (unsigned int i = 0; i < getNbChannels(); i++) {
+				enableChannel(i, m_channels_enabled.at(i));
+			}
+			m_channels_enabled.clear();
+		}
+
+	}
+
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
 						bool processed = false)
 	{
@@ -171,8 +200,12 @@ public:
 			m_need_processing = true;
 		}
 		m_samplerate = getSampleRate();
+		handleChannelsEnableState(true);
+
 		auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
 		auto samps = DeviceIn::getSamples(nb_samples, fp);
+
+		handleChannelsEnableState(false);
 		if (processed) {
 			m_need_processing = false;
 		}
@@ -186,8 +219,12 @@ public:
 			m_need_processing = true;
 		}
 		m_samplerate = getSampleRate();
+		handleChannelsEnableState(true);
+
 		auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
 		auto samps = (const double *)DeviceIn::getSamplesInterleaved(nb_samples, fp);
+
+		handleChannelsEnableState(false);
 		if (processed) {
 			m_need_processing = false;
 		}
@@ -197,7 +234,10 @@ public:
 	const short *getSamplesRawInterleaved(unsigned int nb_samples)
 	{
 		m_samplerate = getSampleRate();
-		return DeviceIn::getSamplesRawInterleaved(nb_samples);
+		handleChannelsEnableState(true);
+		auto samps = DeviceIn::getSamplesRawInterleaved(nb_samples);
+		handleChannelsEnableState(false);
+		return samps;
 	}
 
 	double processSample(int16_t sample, unsigned int channel)
@@ -527,4 +567,5 @@ private:
 	std::vector<double> m_adc_hw_vert_offset_raw;
 	std::vector<double> m_adc_hw_vert_offset;
 	std::map<double, double> m_filter_compensation_table;
+	std::vector<bool> m_channels_enabled;
 };
