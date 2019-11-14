@@ -16,7 +16,7 @@ def calibrate(ctx):
     adc_calib=ctx.calibrateADC()
     #DAC
     dac_calib=ctx.calibrateDAC()
-
+    ctx.setTimeout(1000)
     return (adc_calib, dac_calib)
 
 def open_context():
@@ -27,7 +27,7 @@ def open_context():
         aout--Analog Out object
         trig--Trigger object
     """
-    ctx=libm2k.m2kOpen()
+    ctx=libm2k.m2kOpen("ip:192.168.2.1")
     if ctx is None:
         print("Connection Error: No ADALM2000 device available/connected to your PC.")
         exit(1)
