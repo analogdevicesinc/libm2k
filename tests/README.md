@@ -13,3 +13,12 @@ To build the documentation is necessary to install pdoc3 python package:
 
     pip3 install pdoc3
     pdoc --html ./
+
+In order to use the testing scripts, some packages are required:
+* unittest
+* html-testRunner
+* numpy
+* matplotlib
+* scipy
+* pandas 
+* pdoc3 
