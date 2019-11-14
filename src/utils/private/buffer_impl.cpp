@@ -366,23 +366,17 @@ public:
 	const short* getSamplesRawInterleaved(int nb_samples)
 	{
 		bool anyChannelEnabled = false;
-		std::vector<bool> channels_enabled;
 		if (Utils::getIioDeviceDirection(m_dev) != INPUT) {
 			throw_exception(EXC_INVALID_PARAMETER, "Device not found, so no buffer was created");
 		}
 
 		for (auto chn : m_channel_list) {
 			bool en  = chn->isEnabled();
-			channels_enabled.push_back(en);
 			anyChannelEnabled = en ? true : anyChannelEnabled;
 		}
 
 		if (!anyChannelEnabled) {
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: No channel enabled for RX buffer");
-		}
-
-		for (auto chn : m_channel_list) {
-			chn->enableChannel(true);
 		}
 
 		bool new_buffer = (nb_samples != m_last_nb_samples);
@@ -404,10 +398,6 @@ public:
 		}
 
 		const short* p_dat = (const short*) m_channel_list.at(0)->getFirst(m_buffer);
-
-		for (unsigned int i = 0; i < m_channel_list.size(); i++) {
-			m_channel_list.at(i)->enableChannel(channels_enabled.at(i));
-		}
 		return p_dat;
 	}
 
