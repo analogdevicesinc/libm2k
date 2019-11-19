@@ -75,6 +75,11 @@ uintptr_t Channel::getFirst(iio_buffer *buffer)
 	return m_pimpl->getFirst(buffer);
 }
 
+void *Channel::getFirstVoid(iio_buffer *buffer)
+{
+	return m_pimpl->getFirstVoid(buffer);
+}
+
 bool Channel::isValid()
 {
 	return m_pimpl->isValid();

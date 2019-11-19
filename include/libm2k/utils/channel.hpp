@@ -65,6 +65,7 @@ public:
 
 	void enableChannel(bool enable);
 	uintptr_t getFirst(struct iio_buffer* buffer);
+	void *getFirstVoid(iio_buffer *buffer);
 
 	bool isValid();
 private:

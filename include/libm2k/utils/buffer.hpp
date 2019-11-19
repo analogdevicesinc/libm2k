@@ -58,6 +58,8 @@ public:
 	const double *getSamplesInterleaved(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
 	const short *getSamplesRawInterleaved(unsigned int nb_samples);
+	void* getSamplesRawInterleavedVoid(int nb_samples);
+
 	void stop();
 	void setCyclic(bool enable);
 	void flushBuffer();

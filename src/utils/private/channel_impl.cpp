@@ -124,7 +124,13 @@ public:
 
 	uintptr_t getFirst(iio_buffer *buffer)
 	{
-		return (uintptr_t)iio_buffer_first(buffer, m_channel);
+		return reinterpret_cast<uintptr_t>(getFirstVoid(buffer));
+	}
+
+
+	void *getFirstVoid(iio_buffer *buffer)
+	{
+		return iio_buffer_first(buffer, m_channel);
 	}
 
 	void write(struct iio_buffer* buffer, std::vector<short> const &data)
