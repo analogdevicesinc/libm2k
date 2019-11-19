@@ -48,8 +48,9 @@ public:
 	virtual const double *getSamplesInterleaved(unsigned int nb_samples,
 					std::function<double (int16_t, unsigned int)> process);
 	virtual const short *getSamplesRawInterleaved(unsigned int nb_samples);
-	virtual void flushBuffer();
+	void* getSamplesRawInterleavedVoid(unsigned int nb_samples);
 
+	virtual void flushBuffer();
 private:
 	class DeviceInImpl;
 	std::unique_ptr<DeviceInImpl> m_pimpl;

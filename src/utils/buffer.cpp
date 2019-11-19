@@ -103,6 +103,11 @@ const short *Buffer::getSamplesRawInterleaved(unsigned int nb_samples)
 	return m_pimpl->getSamplesRawInterleaved(nb_samples);
 }
 
+void* Buffer::getSamplesRawInterleavedVoid(int nb_samples)
+{
+	return m_pimpl->getSamplesRawInterleavedVoid(nb_samples);
+}
+
 void Buffer::stop()
 {
 	m_pimpl->stop();

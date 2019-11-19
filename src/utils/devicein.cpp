@@ -63,6 +63,11 @@ const short *DeviceIn::getSamplesRawInterleaved(unsigned int nb_samples)
 	return m_pimpl->getSamplesRawInterleaved(nb_samples);
 }
 
+void* DeviceIn::getSamplesRawInterleavedVoid(unsigned int nb_samples)
+{
+	return m_pimpl->getSamplesRawInterleavedVoid(nb_samples);
+}
+
 void DeviceIn::flushBuffer()
 {
 	m_pimpl->flushBuffer();

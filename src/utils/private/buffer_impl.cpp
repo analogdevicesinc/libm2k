@@ -365,6 +365,11 @@ public:
 
 	const short* getSamplesRawInterleaved(int nb_samples)
 	{
+		return static_cast<const short*>(getSamplesRawInterleavedVoid(nb_samples));
+	}
+
+	void *getSamplesRawInterleavedVoid(int nb_samples)
+	{
 		bool anyChannelEnabled = false;
 		if (Utils::getIioDeviceDirection(m_dev) != INPUT) {
 			throw_exception(EXC_INVALID_PARAMETER, "Device not found, so no buffer was created");
@@ -391,14 +396,12 @@ public:
 		}
 
 		ssize_t ret = iio_buffer_refill(m_buffer);
-
 		if (ret < 0) {
 			destroy();
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		}
 
-		const short* p_dat = (const short*) m_channel_list.at(0)->getFirst(m_buffer);
-		return p_dat;
+		return m_channel_list.at(0)->getFirstVoid(m_buffer);
 	}
 
 	const double* getSamplesInterleaved(int nb_samples,
