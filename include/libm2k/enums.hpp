@@ -23,7 +23,16 @@
 #include <string>
 #include <vector>
 
+/**
+ * @file libm2k/enums.hpp
+ * @brief Generic M2K enumerations
+ */
+
 namespace libm2k {
+
+	/**
+	 * @private
+	 */
 	enum CALIBRATION_MODE {
 		ADC_REF1,
 		ADC_REF2,
@@ -32,11 +41,17 @@ namespace libm2k {
 		NONE
 	};
 
+	/**
+	 * @private
+	 */
 	enum GAIN_MODE {
 		LOW_GAIN,
 		HIGH_GAIN
 	};
 
+	/**
+	 * @private
+	 */
 	enum M2K_EXCEPTION {
 		EXC_OUT_OF_RANGE,
 		EXC_RUNTIME_ERROR,
@@ -75,7 +90,9 @@ namespace libm2k {
 
 	/**
 	* @enum M2K_TRIGGER_MODE
-	* @brief Triggering mode
+	* @brief ALWAYS - Disable analog trigger;
+	*	ANALOG - Trigger condition specified only by analog trigger (CH1 and CH2);
+	*	EXTERNAL - Trigger condition specified only by external trigger (TI);
 	*/
 	enum M2K_TRIGGER_MODE {
 		ALWAYS = 0,
@@ -91,8 +108,10 @@ namespace libm2k {
 
 
 	/**
-	* @enum M2K_TRIGGER_ANALOG_SOURCE
-	* @brief The source of triggering.
+	* @enum M2K_TRIGGER_SOURCE_ANALOG
+	* @brief The source of analog triggering.
+	*	CHANNEL_X - trigger events on analog CHANNEL_X trigger the AnalogIn interface;
+	* 	SRC_DIGITAL_IN - trigger events on the DigitalIn interface trigger the AnalogIn interface;
 	*
 	*/
 	enum M2K_TRIGGER_SOURCE_ANALOG {
@@ -107,6 +126,13 @@ namespace libm2k {
 		CHANNEL_1_OR_CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 8,
 	};
 
+
+	/**
+	 * @brief The M2K_TRIGGER_SOURCE_DIGITAL enum
+	 * 	SRC_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalIn interface;
+	 *	SRC_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalIn interface;
+	 *	SRC_NONE - trigger events on the DigitalIn are conditioned by the internal digital trigger structure;
+	 */
 	enum M2K_TRIGGER_SOURCE_DIGITAL {
 		SRC_TRIGGER_IN = 0,
 		SRC_ANALOG_IN = 1,
@@ -116,6 +142,10 @@ namespace libm2k {
 
 	/**
 	 * @enum M2K_TRIGGER_OUT_SELECT
+	 *	SELECT_TRIGGER_IN - forwards trigger events from TI pin(trigger in);
+	 *	SELECT_DIGITAL_IN - forwards trigger events from DigitalIn interface;
+	 *      SELECT_ANALOG_IN  - forwards trigger events from AnalogIn interface;
+	 *	SELECT_NONE - no trigger event is forwarded;
 	 */
 	enum M2K_TRIGGER_OUT_SELECT {
 		SELECT_NONE = 0,
