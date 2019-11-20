@@ -40,12 +40,12 @@ namespace examples
             ain.setRange((ANALOG_IN_CHANNEL)0, -10.0, 10.0); // nu are idxchannel
             ain.setRange((ANALOG_IN_CHANNEL)1, M2K_RANGE.PLUS_MINUS_25V);
             
-            // Uncomment the following block to enable triggering
-            // trig.setAnalogSource(M2K_TRIGGER_SOURCE.CHANNEL_1);
-            // trig.setAnalogCondition(0, M2K_TRIGGER_CONDITION.RISING_EDGE);
+	    // Uncomment the following block to enable triggering
             // trig.setAnalogLevel(0, 0.5);
             // trig.setAnalogDelay(0);
             // trig.setAnalogMode(0, M2K_TRIGGER_MODE.ALWAYS);
+	    // trig.setAnalogSource(M2K_TRIGGER_SOURCE_ANALOG.CHANNEL_1);
+	    // trig.setAnalogCondition(0, M2K_TRIGGER_CONDITION_ANALOG.RISING_EDGE_ANALOG);
 
             // setup analog output
             aout.setSampleRate(0, 750000);

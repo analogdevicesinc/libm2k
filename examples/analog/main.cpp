@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 #ifdef TRIGGERING
 	// setup analog trigger
 	trig->setAnalogSource(CHANNEL_1);
-	trig->setAnalogCondition(0,RISING_EDGE);
+	trig->setAnalogCondition(0,RISING_EDGE_ANALOG);
 	trig->setAnalogLevel(0, 0.5);
 	trig->setAnalogDelay(0);
 	trig->setAnalogMode(0,ANALOG);
