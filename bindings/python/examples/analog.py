@@ -31,7 +31,7 @@ ain.setRange(0,-10,10)
 
 ### uncomment the following block to enable triggering
 #trig.setAnalogSource(0) # Channel 0 as source
-#trig.setAnalogCondition(0,libm2k.RISING_EDGE)
+#trig.setAnalogCondition(0,libm2k.RISING_EDGE_ANALOG)
 #trig.setAnalogLevel(0,0.5)  # Set trigger level at 0.5
 #trig.setAnalogDelay(0) # Trigger is centered
 #trig.setAnalogMode(1, libm2k.ANALOG)
