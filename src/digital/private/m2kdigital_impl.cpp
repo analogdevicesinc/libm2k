@@ -272,7 +272,7 @@ public:
 
 	void enableChannel(unsigned int index, bool enable)
 	{
-		if (index < getNbChannels(true)) {
+		if (index < m_dev_write->getNbChannels(true)) {
 			m_dev_write->enableChannel(index, enable, true);
 			m_tx_channels_enabled.at(index) = enable;
 		} else {
@@ -282,7 +282,7 @@ public:
 
 	void enableChannel(DIO_CHANNEL index, bool enable)
 	{
-		if (index < getNbChannels(true)) {
+		if (index < m_dev_write->getNbChannels(true)) {
 			m_dev_write->enableChannel(index, enable, true);
 			m_tx_channels_enabled.at(index) = enable;
 		} else {
