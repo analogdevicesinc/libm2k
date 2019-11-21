@@ -41,6 +41,8 @@ protected:
 
 	static void getSamplesBinaryFormat(std::string &file, std::vector<double> &samples);
 
+	static void getText(std::string &file, std::vector<uint8_t > &text);
+
 };
 }
 }

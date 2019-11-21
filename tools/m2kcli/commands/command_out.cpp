@@ -132,3 +132,16 @@ void CommandOut::getSamplesBinaryFormat(std::string &file, std::vector<double> &
 		samples.push_back(sample);
 	}
 }
+
+void CommandOut::getText(std::string &file, std::vector<uint8_t> &text)
+{
+	if (!file.empty()) {
+		std::ifstream in(file);
+		text = std::vector<uint8_t>(
+			(std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+	} else {
+		text = std::vector<uint8_t>(
+			(std::istreambuf_iterator<char>(std::cin)),
+			std::istreambuf_iterator<char>());
+	}
+}
