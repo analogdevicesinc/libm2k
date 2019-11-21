@@ -62,11 +62,13 @@ libm2k::contexts::M2k *Command::getContext()
 std::vector<std::string> Command::getArguments()
 {
 	std::vector<std::string> arguments;
-	arguments.emplace_back(optarg);
-	int i = 0;
-	while (optind + i < argc && *argv[optind + i] != '-') {
-		arguments.emplace_back(argv[optind + i]);
-		i++;
+	if (optarg) {
+		arguments.emplace_back(optarg);
+		int i = 0;
+		while (optind + i < argc && *argv[optind + i] != '-') {
+			arguments.emplace_back(argv[optind + i]);
+			i++;
+		}
 	}
 	return arguments;
 }
