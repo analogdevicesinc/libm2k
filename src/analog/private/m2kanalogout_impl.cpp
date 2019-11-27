@@ -272,14 +272,10 @@ public:
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 		}
-		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
-		setSyncedDma(true, chnIdx);
 
 		std::vector<short> raw_data_buffer(data, data + nb_samples);
 
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
-
-		setSyncedDma(false, chnIdx);
 	}
 
 
@@ -297,18 +293,12 @@ public:
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 		}
-		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
-		setSyncedDma(true, chnIdx);
-
 		std::vector<short> raw_data_buffer = {};
-
 
 		for (unsigned int i = 0; i < nb_samples; i++) {
 			raw_data_buffer.push_back(processSample(data[i], chnIdx));
 		}
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
-
-		setSyncedDma(false, chnIdx);
 	}
 
 
@@ -318,8 +308,6 @@ public:
 	void pushRaw(std::vector<std::vector<short>> const &data)
 	{
 		std::vector<std::vector<short>> data_buffers;
-		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
-		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 		setSyncedDma(true);
 
 		for (unsigned int chn = 0; chn < data.size(); chn++) {
@@ -328,6 +316,9 @@ public:
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		}
 
+		if(m_dma_start_sync_available) {
+			setSyncedStartDma(true);
+		}
 		setSyncedDma(false);
 	}
 
@@ -337,8 +328,6 @@ public:
                         throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
                 }
 		std::vector<std::vector<short>> data_buffers;
-		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
-		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 		setSyncedDma(true);
 
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
@@ -349,6 +338,9 @@ public:
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		}
 
+		if(m_dma_start_sync_available) {
+			setSyncedStartDma(true);
+		}
 		setSyncedDma(false);
 	}
 
@@ -359,8 +351,6 @@ public:
 	void push(std::vector<std::vector<double>> const &data)
 	{
 		std::vector<std::vector<short>> data_buffers;
-		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
-		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 		setSyncedDma(true);
 
 		for (unsigned int chn = 0; chn < data.size(); chn++) {
@@ -373,6 +363,9 @@ public:
 			data_buffers.push_back(raw_data_buffer);
 		}
 
+		if(m_dma_start_sync_available) {
+			setSyncedStartDma(true);
+		}
 		setSyncedDma(false);
 	}
 
@@ -382,8 +375,6 @@ public:
                         throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
                 }
 		std::vector<std::vector<short>> data_buffers;
-		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
-		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 		setSyncedDma(true);
 
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
@@ -395,6 +386,9 @@ public:
 			data_buffers.push_back(raw_data_buffer);
 		}
 
+		if(m_dma_start_sync_available) {
+			setSyncedStartDma(true);
+		}
 		setSyncedDma(false);
 	}
 
@@ -416,6 +410,8 @@ public:
 	{
 		m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
 		m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
+		setSyncedDma(true, 0);
+		setSyncedDma(true, 1);
 
 		for (DeviceOut* dev : m_dac_devices) {
 			dev->stop();
@@ -425,6 +421,7 @@ public:
 	void stop(unsigned int chn)
 	{
 		m_m2k_fabric->setBoolValue(chn, true, "powerdown", true);
+		setSyncedDma(true, chn);
 		getDacDevice(chn)->stop();
 	}
 
@@ -437,6 +434,8 @@ public:
 
 	void enableChannel(unsigned int chnIdx, bool enable)
 	{
+		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
+		setSyncedDma(false, chnIdx);
 		getDacDevice(chnIdx)->enableChannel(0, enable, true);
 	}
 
