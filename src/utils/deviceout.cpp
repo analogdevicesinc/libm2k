@@ -75,3 +75,8 @@ void DeviceOut::stop()
 {
 	m_pimpl->stop();
 }
+
+void DeviceOut::setKernelBuffersCount(unsigned int count)
+{
+	m_pimpl->setKernelBuffersCount(count);
+}
