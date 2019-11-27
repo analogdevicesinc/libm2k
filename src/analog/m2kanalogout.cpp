@@ -211,3 +211,8 @@ bool M2kAnalogOut::isChannelEnabled(unsigned int chnIdx)
 {
 	return m_pimpl->isChannelEnabled(chnIdx);
 }
+
+void M2kAnalogOut::setKernelBuffersCount(unsigned int chnIdx, unsigned int count)
+{
+	return m_pimpl->setKernelBuffersCount(chnIdx, count);
+}

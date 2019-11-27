@@ -166,6 +166,15 @@ public:
 		}
 	}
 
+	void setKernelBuffersCount(unsigned int count)
+	{
+		if (m_dev) {
+			if (iio_device_set_kernel_buffers_count(m_dev, count) != 0) {
+				throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot set the number of kernel buffers");
+			}
+		}
+	}
+
 private:
 	struct iio_context *m_context;
 	struct iio_device *m_dev;

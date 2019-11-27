@@ -60,6 +60,7 @@ public:
 		for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
 			m_cyclic.push_back(true);
 			m_samplerate.push_back(75E6);
+			m_nb_kernel_buffers.push_back(4);
 		}
 
 		if (sync) {
@@ -457,6 +458,15 @@ public:
 		return getDacDevice(chnIdx)->getAvailableSampleRates();
 	}
 
+	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count)
+	{
+		if (chnIdx >= m_dac_devices.size()) {
+			throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel");
+		}
+		m_dac_devices[chnIdx]->setKernelBuffersCount(count);
+		m_nb_kernel_buffers[chnIdx] = count;
+	}
+
 private:
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;
@@ -467,4 +477,5 @@ private:
 	std::vector<DeviceOut*> m_dac_devices;
 
 	bool m_dma_start_sync_available;
+	std::vector<unsigned int> m_nb_kernel_buffers;
 };

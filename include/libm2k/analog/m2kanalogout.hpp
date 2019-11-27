@@ -388,6 +388,13 @@ public:
 	*/
 	bool isChannelEnabled(unsigned int chnIdx);
 
+
+	/**
+	 * @brief Set the kernel buffers to a specific value
+	 * @param count the number of kernel buffers
+	 */
+	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count);
+
 private:
 	class M2kAnalogOutImpl;
 	std::unique_ptr<M2kAnalogOutImpl> m_pimpl;
