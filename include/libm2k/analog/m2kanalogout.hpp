@@ -153,6 +153,15 @@ public:
 	*/
 	bool getSyncedDma(int chn = -1);
 
+	/**
+	* @private
+	*/
+	void setSyncedStartDma(bool en, int chn = -1);
+
+	/**
+	* @private
+	*/
+	bool getSyncedStartDma(int chn = -1);
 
 	/**
 	* @brief Enable or disable the cyclic mode for all digital channels

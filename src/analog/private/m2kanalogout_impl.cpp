@@ -65,6 +65,9 @@ public:
 		if (sync) {
 			syncDevice();
 		}
+
+		// dma_start_sync attribute is only available in firmware versions newer than 0.24
+		m_dma_start_sync_available = (Utils::compareVersions(Utils::getFirmwareVersion(ctx), "v0.24") > 0);
 	}
 
 	~M2kAnalogOutImpl()
@@ -194,6 +197,28 @@ public:
 	bool getSyncedDma(int chn = -1)
 	{
 		return getDacDevice(chn)->getBoolValue("dma_sync");
+	}
+
+	void setSyncedStartDma(bool en, int chn = -1)
+	{
+		if (!m_dma_start_sync_available) {
+			throw_exception(EXC_RUNTIME_ERROR, "Invalid firmware version: 0.24 or greater is required.");
+		}
+		if (chn < 0) {
+			for (auto dac : m_dac_devices) {
+				dac->setBoolValue(en, "dma_sync_start");
+			}
+		} else {
+			getDacDevice(chn)->setBoolValue(en, "dma_sync_start");
+		}
+	}
+
+	bool getSyncedStartDma(int chn = -1)
+	{
+		if (!m_dma_start_sync_available) {
+			throw_exception(EXC_RUNTIME_ERROR, "Invalid firmware version: 0.24 or greater is required.");
+		}
+		return getDacDevice(chn)->getBoolValue("dma_sync_start");
 	}
 
 	void setCyclic(bool en)
@@ -440,4 +465,6 @@ private:
 
 	std::map<double, double> m_filter_compensation_table;
 	std::vector<DeviceOut*> m_dac_devices;
+
+	bool m_dma_start_sync_available;
 };

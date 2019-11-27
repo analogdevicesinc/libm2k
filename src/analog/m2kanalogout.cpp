@@ -94,6 +94,17 @@ bool M2kAnalogOut::getSyncedDma(int chn)
 	return m_pimpl->getSyncedDma(chn);
 }
 
+void M2kAnalogOut::setSyncedStartDma(bool en, int chn)
+{
+	m_pimpl->setSyncedStartDma(en, chn);
+}
+
+bool M2kAnalogOut::getSyncedStartDma(int chn)
+{
+	return m_pimpl->getSyncedStartDma(chn);
+
+}
+
 void M2kAnalogOut::setCyclic(bool en)
 {
 	m_pimpl->setCyclic(en);
