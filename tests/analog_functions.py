@@ -32,15 +32,15 @@ def set_trig_for_signalshape_test(i,  channel, trig, delay):
         delay  -- Trigger delay\n
     """
     if i==0:
-        set_trig(trig, channel, delay, libm2k.FALLING_EDGE, 0 )
+        set_trig(trig, channel, delay, libm2k.FALLING_EDGE_ANALOG, 0 )
     elif i==1:
-        set_trig(trig, channel, delay, libm2k.FALLING_EDGE, 0)
+        set_trig(trig, channel, delay, libm2k.FALLING_EDGE_ANALOG, 0)
     elif i==2:
-        set_trig(trig, channel, 5, libm2k.RISING_EDGE,-0.97)
+        set_trig(trig, channel, 5, libm2k.RISING_EDGE_ANALOG,-1)
     elif i==3:
-        set_trig(trig, channel, 5, libm2k.RISING_EDGE,-0.97)
+        set_trig(trig, channel, 5, libm2k.RISING_EDGE_ANALOG,-1)
     elif i==4:
-        set_trig(trig, channel, delay, libm2k.FALLING_EDGE,0.97)
+        set_trig(trig, channel, delay, libm2k.FALLING_EDGE_ANALOG,1)
 
     return
 
@@ -83,8 +83,9 @@ def set_trig(trig,channel,delay, cond=None, level=None):
         level  -- Trigger level value  (default: {None})\n
     """
     trig.setAnalogMode(channel,libm2k.ANALOG)#set analog trigger
-    trig.setAnalogHysteresis(channel,10)# 63= 100mV hysteresis
+    trig.setAnalogHysteresis(channel,0)
     trig.setAnalogSource(channel)
+    trig.setAnalogSourceChannel(channel)
     trig.setAnalogDelay(-delay)
     if cond is not None:
         trig.setAnalogCondition(channel, cond)
@@ -111,7 +112,7 @@ def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig, dir_name, fi
         corr_amplitude_max -- correlation coefficient between the vector that holds the maximum amplitude values in the input signal and the vector that holds the maximum amplitude values in the reference signal
         corr_amplitude_min -- correlation coefficient between the vector that holds the minimum amplitude values in the input signal and the vector that holds the maximum amplitude values in the reference signal
     """
-    set_trig(trig,channel, 0, libm2k.FALLING_EDGE, 0)
+    set_trig(trig,channel, 0, libm2k.FALLING_EDGE_ANALOG, 0)
     ain.setRange(channel,libm2k.PLUS_MINUS_25V)
     amplitude=np.arange(0.5, 5.5, 0.5) #amplitude multiplier
     #arrays for maximum amplitude values of read data and reference data
@@ -126,7 +127,10 @@ def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig, dir_name, fi
     for i in amplitude:
         aout.push(channel, (out_data*i))#push the buffer
         #get samples for amplitude multiplied with i
-        input_data = ain.getSamples(n)
+        try:
+            input_data = ain.getSamples(n)
+        except:
+            print('Timeout occured')
         ain.flushBuffer()
 
         #generate the buffer that should be received and is compared to the actual input data
@@ -192,7 +196,7 @@ def test_shape(channel,out_data,ref_data,ain,aout,trig, ch_ratio, shapename, dir
         try:
             input_data = ain.getSamples(n)[channel]
         except:
-            input_data=0
+             print('Timeout occured')
         ain.flushBuffer()
         if channel==0:
             plot_to_file(str(shapename[i])+' signal  on channel 0',  input_data,dir_name, str(shapename[i])+'signal_ch0.png')
@@ -230,12 +234,15 @@ def phase_diff_ch0_ch1(out_data, n, aout,ain,trig, dir_name, file, csv_path):
         phase_diff_between_channels-- the phase difference between channels in degrees
     """
     file.write("\n\n The same buffer sent simultaneously o both analog channels:\n")
-    set_trig(trig, libm2k.ANALOG_IN_CHANNEL_1,0,libm2k.LOW_LEVEL, 0.0)
+    set_trig(trig, libm2k.ANALOG_IN_CHANNEL_1,0,libm2k.LOW_LEVEL_ANALOG, 0.0)
     ain.setRange(libm2k.ANALOG_IN_CHANNEL_1,libm2k.PLUS_MINUS_2_5V)
     ain.setRange(libm2k.ANALOG_IN_CHANNEL_2,libm2k.PLUS_MINUS_2_5V)
     
     aout.push(out_data)
-    input_data = ain.getSamples(n)
+    try:
+        input_data = ain.getSamples(n)
+    except:
+         print('Timeout occured')
     ain.flushBuffer()
     plot_to_file('Same signal on both analog channels',input_data[0], dir_name, 'channels_phase_diff.png', data1=input_data[1])
     plt.close()
@@ -270,8 +277,8 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
     level=0.40
     delay=0
     n=4096*4
-    condition=[libm2k.RISING_EDGE,libm2k.FALLING_EDGE,libm2k.LOW_LEVEL,libm2k.HIGH_LEVEL,libm2k.ANY_EDGE]
-    condition_name=['rising edge', 'falling edge', 'low', 'high', 'any edge']
+    condition=[libm2k.RISING_EDGE_ANALOG,libm2k.FALLING_EDGE_ANALOG,libm2k.LOW_LEVEL_ANALOG,libm2k.HIGH_LEVEL_ANALOG]
+    condition_name=['rising edge', 'falling edge', 'low', 'high']
     trig_test=[]
     set_trig(trig,channel,delay)
     #create a trapezoidal test signal
@@ -280,18 +287,21 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
     file.write("\n\nTrigger conditions on chanel "+str(channel)+":\n")
     #go through all possible trigger conditions
     for i in condition:
-        if i==libm2k.RISING_EDGE:
+        if i==libm2k.RISING_EDGE_ANALOG:
             trig.setAnalogCondition(channel,i)
             trig.setAnalogLevel(channel,level)
             #aout.push(channel, test_signal)
-            input_data=ain.getSamples(round(n/4))[channel]
+            try:
+                input_data=ain.getSamples(round(n/4))[channel]
+            except:
+                 print('Timeout occured')
             ain.flushBuffer()
             if channel==0:
-                plot_to_file('Trigger condition: Rising Edge channel 0, level='+str(level),  input_data, dir_name, 'trig_rising_edge_ch0.png')
+                plot_to_file('Trigger condition: Rising Edge channel 0, level='+str(level),  input_data, dir_name, 'trig_RISING_EDGE_ANALOG_ch0.png')
                 trig_csv_vals['Rising Edge ch0']=input_data
                 save_data_to_csv(trig_csv_vals, csv_path+'trigger.csv')
             else:
-                plot_to_file('Trigger condition: Rising Edge channel1, level='+str(level),  input_data, dir_name, 'trig_rising_edge_ch1.png')
+                plot_to_file('Trigger condition: Rising Edge channel1, level='+str(level),  input_data, dir_name, 'trig_RISING_EDGE_ANALOG_ch1.png')
                 trig_csv_vals['Rising Edge ch1']=input_data
                 save_data_to_csv(trig_csv_vals, csv_path+'trigger.csv')
             plt.close()
@@ -300,11 +310,14 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
             else:
                 trig_test=np.append(trig_test, 0)
             file.write("Rising edge condition:\n"+"level set: "+str(level)+"\nlevel read: "+ str(input_data[delay])+"\n")
-        elif i==libm2k.FALLING_EDGE:
+        elif i==libm2k.FALLING_EDGE_ANALOG:
             trig.setAnalogCondition(channel,i)
             trig.setAnalogLevel(channel,level)
             #aout.push(channel, test_signal)
-            input_data=ain.getSamples(round(n/4))[channel]
+            try:
+                input_data=ain.getSamples(round(n/4))[channel]
+            except:
+                 print('Timeout occured')
             ain.flushBuffer()
             if channel==0:
                 plot_to_file('Trigger condition: Falling Edge channel 0, level='+str(level),  input_data, dir_name, 'trig_falling_edge_ch0.png')
@@ -321,18 +334,21 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
             else:
                 trig_test=np.append(trig_test, 0)
             file.write("Falling edge condition:\n"+"level set: "+str(level)+"\nlevel read: "+ str(input_data[delay])+"\n")
-        elif i==libm2k.LOW_LEVEL:
+        elif i==libm2k.LOW_LEVEL_ANALOG:
             trig.setAnalogCondition(channel,i)
             trig.setAnalogLevel(channel,low)
             #aout.push(channel, test_signal)
-            input_data=ain.getSamples(round(n/4))[channel]
+            try:
+                input_data=ain.getSamples(round(n/4))[channel]
+            except:
+                 print('Timeout occured')
             ain.flushBuffer()
             if channel==0:
-                plot_to_file('Trigger condition: Low Level channel 0, level='+str(low),  input_data, dir_name,'trig_low_level_ch0.png')
+                plot_to_file('Trigger condition: Low Level channel 0, level='+str(low),  input_data, dir_name,'trig_LOW_LEVEL_ANALOG_ch0.png')
                 trig_csv_vals['Low level ch0']=input_data
                 save_data_to_csv(trig_csv_vals, csv_path+'trigger.csv')
             else:
-                plot_to_file('Trigger condition: Low Level channel 1, level='+str(low),  input_data, dir_name, 'trig_low_level_ch1.png')
+                plot_to_file('Trigger condition: Low Level channel 1, level='+str(low),  input_data, dir_name, 'trig_LOW_LEVEL_ANALOG_ch1.png')
                 trig_csv_vals['Low level ch1']=input_data
                 save_data_to_csv(trig_csv_vals, csv_path+'trigger.csv')
             plt.close()
@@ -341,18 +357,21 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
             else:
                 trig_test=np.append(trig_test, 0)
             file.write("Low level condition:\n"+"level set: "+str(low)+"\nlevel read: "+ str(input_data[delay])+"\n")
-        elif i==libm2k.HIGH_LEVEL:
+        elif i==libm2k.HIGH_LEVEL_ANALOG:
             trig.setAnalogCondition(channel,i)
             trig.setAnalogLevel(channel,high)
             #aout.push(channel, test_signal)
-            input_data=ain.getSamples(round(n/4))[channel]
+            try:
+                input_data=ain.getSamples(round(n/4))[channel]
+            except:
+                print('Timeout occured')
             ain.flushBuffer()
             if channel==0:
-                plot_to_file('Trigger condition: High Level channel 0, level='+str(high),  input_data, dir_name, 'trig_high_level_ch0.png')
+                plot_to_file('Trigger condition: High Level channel 0, level='+str(high),  input_data, dir_name, 'trig_HIGH_LEVEL_ANALOG_ch0.png')
                 trig_csv_vals['High level ch0']=input_data
                 save_data_to_csv(trig_csv_vals, csv_path+'trigger.csv')
             else:
-                plot_to_file('Trigger condition: High Level channel 1, level='+str(high),  input_data, dir_name, 'trig_high_level_ch1.png')
+                plot_to_file('Trigger condition: High Level channel 1, level='+str(high),  input_data, dir_name, 'trig_HIGH_LEVEL_ANALOG_ch1.png')
                 trig_csv_vals['High level ch1']=input_data
                 save_data_to_csv(trig_csv_vals, csv_path+'trigger.csv')
             plt.close()
@@ -387,12 +406,15 @@ def test_offset(out_data,n, ain, aout,trig, channel, dir_name, file, csv_path ):
     in_offset=np.array([])
     file.write("Offset values set:\n"+ str(offset)+"\n")
     for i in offset:
-        set_trig(trig,channel, 0, libm2k.FALLING_EDGE, i+0.1)
+        set_trig(trig,channel, 0, libm2k.FALLING_EDGE_ANALOG, i+0.1)
         sum=0
         o_buffer=i + out_data #add the output data to the offset value
         aout.push(channel, o_buffer)#push the buffer
         #get samples for amplitude multiplied with i
-        input_data = ain.getSamples(n)
+        try:
+            input_data = ain.getSamples(n)
+        except:
+            print('Timeout occured')
         ain.flushBuffer()
 
         for s in input_data[channel] :
@@ -429,7 +451,7 @@ def test_voltmeter_functionality(channel,ain,aout,ctx, file):
     t=0.15 # threshold
     voltmeter_=[] # voltmeter array
     nb_samples=4096*2 # number of samples to be sent
-    ctx.calibrateDAC()
+    #ctx.calibrateDAC()
     for v_sent in voltage:
         if(v_sent<2.5):
             ain.setRange(channel,libm2k.PLUS_MINUS_2_5V)
@@ -457,12 +479,12 @@ def set_trig_for_cyclicbuffer_test(trig, delay):
     """
     trig.setAnalogMode(libm2k.ANALOG_IN_CHANNEL_1,libm2k.ANALOG)
     trig.setAnalogMode(libm2k.ANALOG_IN_CHANNEL_2,1)
-    trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_1,libm2k.LOW_LEVEL)
-    trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_2,libm2k.LOW_LEVEL)
+    trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_1,libm2k.LOW_LEVEL_ANALOG)
+    trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_2,libm2k.LOW_LEVEL_ANALOG)
     trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_1, 0)
     trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_2, 0)
-    trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_1,10) #value for hysteresis is set in raw
-    trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_2,10) #63 raw corersponds to 100mV
+    trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_1,0) #value for hysteresis is set in raw
+    trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_2,0) #63 raw corersponds to 100mV
     trig.setAnalogDelay(-delay)
     return
 
@@ -489,9 +511,9 @@ def cyclic_buffer_test(aout, ain, channel, trig, dir_name, file, csv_path, ctx):
     aout.setCyclic(False)
     ain.setSampleRate(10000)
     aout.setSampleRate(channel,75000)
-    
     trig.setAnalogSource(channel)
-    delay=20
+    trig.setAnalogSourceChannel(channel)
+    delay=0
     set_trig_for_cyclicbuffer_test(trig, delay)
     out_samples=4096*4
     out_data=np.sin(np.linspace(-np.pi,np.pi,out_samples))
@@ -539,7 +561,10 @@ def get_samples_notcyclic(n_samples, ain, channel):
         data -- Data read on analog channel under test after the trigger condition was fulfilled
     """
     #get samples in the paralel thread
-    data=ain.getSamples(n_samples)[channel]
+    try:
+        data=ain.getSamples(n_samples)[channel]
+    except:
+        print('Timeout occured')
     ain.flushBuffer()
     return data
 
@@ -558,7 +583,7 @@ def compute_frequency(channel, ain, aout, trig, file):
         ifreqs-- Vector that holds the frequencies of the input buffers
     """
     file.write("\n\nFrequency test on channel "+str(channel)+"\n")
-    set_trig(trig, channel, 0, libm2k.FALLING_EDGE)
+    set_trig(trig, channel, 0, libm2k.FALLING_EDGE_ANALOG)
     #available adc samplerates
     adc_samplerates=[10000, 100000, 1000000, 10000000, 100000000]
     #available dac sampelrates
@@ -592,7 +617,10 @@ def compute_frequency(channel, ain, aout, trig, file):
                 out_freq=(dac_samplerates[i]/out_nr_samples) # compute the frequency of the signal sent bu the dac
                 ofreqs=np.append(ofreqs, out_freq)
                 aout.push(channel, out_data)
-                input_data=ain.getSamples(round(in_nr_samples))[channel]
+                try:
+                    input_data=ain.getSamples(round(in_nr_samples))[channel]
+                except:
+                    print('Timeout occured')
                 ain.flushBuffer()
                 corr, _=pearsonr(ref_data,input_data) #compare the acquired signal with the expected signal
                 if corr>0.8: # a correlation coeff>0.7 => strong correlation
@@ -659,7 +687,7 @@ def test_oversampling_ratio(channel, ain, aout,trig, file, csv_path):
         test_osr -- Must be 1 if the computed oversampling ratio is equal with the set oversampling ratio and 0 otherwise
     """
     file.write("\n\n Ain oversampling ratio test on channel: "+str(channel)+"\n")
-    set_trig(trig, channel,0, libm2k.FALLING_EDGE, 0.0)
+    set_trig(trig, channel,0, libm2k.FALLING_EDGE_ANALOG, 0.0)
     osr=[random.randint(1, 3), random.randint(3, 7), random.randint(7, 11),  random.randint(11, 15), random.randint(16, 20), random.randint(20, 23)] #some values for oversampling ratio
     verify_osr=[]
     adc_sr=1000000
@@ -673,7 +701,10 @@ def test_oversampling_ratio(channel, ain, aout,trig, file, csv_path):
     for j in osr:
         ain.setOversamplingRatio(j)
         aout.push(channel, out_data)
-        input_data=ain.getSamples(in_nr_samples)[channel]
+        try:
+            input_data=ain.getSamples(in_nr_samples)[channel]
+        except:
+            print("Timeout ocurred")
         ain.flushBuffer()
         input_data=ain.getSamples(round(in_nr_samples))[channel]
         c=0 #set the counter of rising edge zero crossings to 0

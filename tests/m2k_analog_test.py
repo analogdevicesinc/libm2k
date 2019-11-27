@@ -12,7 +12,7 @@ import logging
 
 
 
-class AnalogTests(unittest.TestCase):
+class A_AnalogTests(unittest.TestCase):
     """Class Where are defined all test methods for AnalogIn, AnalogOut, AnalogTrigger
     
     """
@@ -54,7 +54,7 @@ class AnalogTests(unittest.TestCase):
 
         #coorrelation coefficient vector for signals acquired on channel0 
         #correlation coeff >0.7 there is a strong positive linear relationship between the 2 signals
-        corr_shape_vect0, phase_diff_vect0=test_shape(0,buffer0,ref_shape_buf0,ain,aout,trig,ch0_sample_ratio, shapename, results_dir, results_file, csv_path)
+        corr_shape_vect0, phase_diff_vect0=test_shape(libm2k.ANALOG_IN_CHANNEL_1,buffer0,ref_shape_buf0,ain,aout,trig,ch0_sample_ratio, shapename, results_dir, results_file, csv_path)
 
         for i in range(len(corr_shape_vect0)):
             with self.subTest(msg='Is sent '+str(shapename[i])+' signal shape on aout ch0 and received on ain ch0'):
@@ -71,7 +71,7 @@ class AnalogTests(unittest.TestCase):
         shapename=shape_name()#names of generated signals
         buffer1=shape_gen(out1_buffer_samples)
         ref_shape_buf1=ref_shape_gen(in1_buffer_samples)
-        corr_shape_vect1, phase_diff_vect1=test_shape(1,buffer1,ref_shape_buf1,ain,aout,trig,ch1_sample_ratio,shapename,results_dir, results_file, csv_path)
+        corr_shape_vect1, phase_diff_vect1=test_shape(libm2k.ANALOG_IN_CHANNEL_2,buffer1,ref_shape_buf1,ain,aout,trig,ch1_sample_ratio,shapename,results_dir, results_file, csv_path)
         for i in range(len(corr_shape_vect1)):
             with self.subTest(msg='Is sent '+str(shapename[i])+' signal shape on aout ch1 and received on ain ch1'):
                 self.assertGreater(corr_shape_vect1[i], 0.85, shapename[i] )
