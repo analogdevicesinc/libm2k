@@ -15,7 +15,7 @@ def analog_in(ain):
     ain.setVerticalOffset(libm2k.ANALOG_IN_CHANNEL_2,0)
     ain.setRange(libm2k.ANALOG_IN_CHANNEL_1,libm2k.PLUS_MINUS_2_5V)
     ain.setRange(libm2k.ANALOG_IN_CHANNEL_2,libm2k.PLUS_MINUS_2_5V)
-    ain.setOversamplingRatio(1.0)
+    ain.setOversamplingRatio(1)
     ain.setSampleRate(100000)
     ain.setKernelBuffersCount(1)
 
@@ -32,8 +32,8 @@ def analog_out(aout):
     aout.enableChannel(libm2k.ANALOG_IN_CHANNEL_2,True)
     aout.setSampleRate(libm2k.ANALOG_IN_CHANNEL_1, 750000)
     aout.setSampleRate(libm2k.ANALOG_IN_CHANNEL_2, 750000)
-    aout.setOversamplingRatio(libm2k.ANALOG_IN_CHANNEL_1,1.0)
-    aout.setOversamplingRatio(libm2k.ANALOG_IN_CHANNEL_2,1.0)
+    aout.setOversamplingRatio(libm2k.ANALOG_IN_CHANNEL_1,1)
+    aout.setOversamplingRatio(libm2k.ANALOG_IN_CHANNEL_2,1)
     aout.setCyclic(True)
     return
 
@@ -48,11 +48,12 @@ def trigger(trig):
     trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_2,0.0)
     trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_1,0)
     trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_2,0)
-    trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_1,libm2k.RISING_EDGE)
-    trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_2,libm2k.RISING_EDGE)
+    trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_1,libm2k.RISING_EDGE_ANALOG)
+    trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_2,libm2k.RISING_EDGE_ANALOG)
     trig.setAnalogMode(libm2k.ANALOG_IN_CHANNEL_1,libm2k.ALWAYS)
     trig.setAnalogMode(libm2k.ANALOG_IN_CHANNEL_1,libm2k.ALWAYS)
-    trig.setAnalogSource(libm2k.ANALOG_IN_CHANNEL_1)
+    trig.setAnalogSource(libm2k.CHANNEL_1)
+    trig.setAnalogSourceChannel(libm2k.ANALOG_IN_CHANNEL_1)
     trig.setAnalogDelay(0)
    
     return

@@ -6,7 +6,7 @@ import logging
 import sys
 
 
-class PowerSupplyTests(unittest.TestCase):
+class C_PowerSupplyTests(unittest.TestCase):
     """Class Where are defined all test methods for Positive PowerSupply and Negative PowerSupply
     """
     @classmethod

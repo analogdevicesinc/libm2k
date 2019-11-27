@@ -16,7 +16,7 @@ def calibrate(ctx):
     adc_calib=ctx.calibrateADC()
     #DAC
     dac_calib=ctx.calibrateDAC()
-    ctx.setTimeout(1000)
+    ctx.setTimeout(5000)
     return (adc_calib, dac_calib)
 
 def open_context():
