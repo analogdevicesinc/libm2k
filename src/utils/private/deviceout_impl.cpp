@@ -101,6 +101,14 @@ public:
 		m_channel_list.clear();
 	}
 
+	void initializeBuffer(unsigned int size, bool cyclic)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+		}
+		m_buffer->initializeBuffer(size, cyclic);
+	}
+
 	void push(std::vector<short> const &data, unsigned int channel,
 		bool cyclic = true, bool multiplex = false)
 	{

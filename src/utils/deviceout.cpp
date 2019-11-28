@@ -38,6 +38,11 @@ DeviceOut::~DeviceOut()
 {
 }
 
+void DeviceOut::initializeBuffer(unsigned int size, bool cyclic)
+{
+	m_pimpl->initializeBuffer(size, cyclic);
+}
+
 void DeviceOut::push(std::vector<short> const &data, unsigned int channel,
                      bool cyclic, bool multiplex)
 {

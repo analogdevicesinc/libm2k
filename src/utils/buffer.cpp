@@ -31,6 +31,12 @@ Buffer::~Buffer()
 {
 }
 
+
+void Buffer::initializeBuffer(unsigned int size, bool cyclic)
+{
+	m_pimpl->initializeBuffer(size, cyclic);
+}
+
 /* push on multiple channels
  * should call setChannels(channels) before using the
  * push methods

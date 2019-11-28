@@ -56,6 +56,20 @@ public:
 		m_data_short.clear();
 	}
 
+	void initializeBuffer(unsigned int size, bool cyclic)
+	{
+		/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
+		* data transferring; the buffer must be destroy when its size is changed
+		*
+		* In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
+		* old buffer must be destroyed and a new one must be created*/
+		if (size != m_last_nb_samples || cyclic) {
+			destroy();
+			m_last_nb_samples = size;
+			m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
+		}
+	}
+
 	void setChannels(std::vector<Channel*> channels)
 	{
 		//if (m_buffer) //this means the output is running, should we change the channels now?
@@ -72,16 +86,7 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 		}
 
-		/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
-		 * data transferring; the buffer must be destroy when its size is changed
-		 *
-		 * In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
-		 * old buffer must be destroyed and a new one must be created*/
-		if (nb_samples != m_last_nb_samples || cyclic) {
-			destroy();
-			m_last_nb_samples = nb_samples;
-			m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
-		}
+		initializeBuffer(nb_samples, cyclic);
 
 		/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
@@ -123,16 +128,7 @@ public:
 		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 		}
 
-		/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
-		 * data transferring; the buffer must be destroy when its size is changed
-		 *
-		 * In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
-		 * old buffer must be destroyed and a new one must be created*/
-		if (data.size() != m_last_nb_samples || cyclic) {
-			destroy();
-			m_last_nb_samples = data.size();
-			m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
-		}
+		initializeBuffer(size, cyclic);
 
 		/* If the data vector is empty, then it means we want
 		* to remove what was pushed earlier to the device, so
@@ -173,16 +169,7 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 		}
 
-		/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
-		 * data transferring; the buffer must be destroy when its size is changed
-		 *
-		 * In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
-		 * old buffer must be destroyed and a new one must be created*/
-		if (data.size() != m_last_nb_samples || cyclic) {
-			destroy();
-			m_last_nb_samples = data.size();
-			m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
-		};
+		initializeBuffer(size, cyclic);
 
 		/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
@@ -222,16 +209,7 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 		}
 
-		/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
-		 * data transferring; the buffer must be destroy when its size is changed
-		 *
-		 * In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
-		 * old buffer must be destroyed and a new one must be created*/
-		if (data.size() != m_last_nb_samples || cyclic) {
-			destroy();
-			m_last_nb_samples = data.size();
-			m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
-		}
+		initializeBuffer(size, cyclic);
 
 		/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
@@ -271,16 +249,7 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 		}
 
-		/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
-		 * data transferring; the buffer must be destroy when its size is changed
-		 *
-		 * In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
-		 * old buffer must be destroyed and a new one must be created*/
-		if (nb_samples != m_last_nb_samples || cyclic) {
-			destroy();
-			m_last_nb_samples = nb_samples;
-			m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
-		}
+		initializeBuffer(nb_samples, cyclic);
 
 		/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
@@ -308,16 +277,7 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 		}
 
-		/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
-		 * data transferring; the buffer must be destroy when its size is changed
-		 *
-		 * In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
-		 * old buffer must be destroyed and a new one must be created*/
-		if (nb_samples != m_last_nb_samples || cyclic) {
-			destroy();
-			m_last_nb_samples = nb_samples;
-			m_buffer = iio_device_create_buffer(m_dev, nb_samples, cyclic);
-		}
+		initializeBuffer(nb_samples, cyclic);
 
 		/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so

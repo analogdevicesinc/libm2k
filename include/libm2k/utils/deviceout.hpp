@@ -43,6 +43,7 @@ public:
 	DeviceOut(struct iio_context* context, std::string dev_name = "");
 	virtual ~DeviceOut();
 
+	virtual void initializeBuffer(unsigned int size, bool cyclic);
 	virtual void push(std::vector<short> const &data, unsigned int channel,
 		bool cyclic = true, bool multiplex = false);
 	virtual void push(std::vector<unsigned short> const &data, unsigned int channel,
