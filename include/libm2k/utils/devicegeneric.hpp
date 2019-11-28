@@ -66,8 +66,10 @@ public:
 
 	virtual int getLongValue(std::string attr);
 	virtual int getLongValue(unsigned int, std::string attr, bool output=false);
+	virtual int getBufferLongValue(std::string attr);
 	virtual int setLongValue(int value, std::string attr);
 	virtual int setLongValue(unsigned int chn_idx, int value, std::string attr, bool output=false);
+	virtual int setBufferLongValue(int value, std::string attr);
 
 	virtual bool getBoolValue(std::string attr);
 	virtual bool getBoolValue(unsigned int, std::string attr, bool output=false);
