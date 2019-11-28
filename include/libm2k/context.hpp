@@ -84,6 +84,7 @@ public:
 
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);
+	static bool iioDevBufferHasAttribute(iio_device *dev, const std::string &attr);
 
 	unsigned int getDmmCount();
 	unsigned int getAnalogInCount();

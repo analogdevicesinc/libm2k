@@ -158,6 +158,12 @@ public:
 		return false;
 	}
 
+	static bool iioDevBufferHasAttribute(iio_device *dev, const std::string &attr)
+	{
+		const char *attribute = iio_device_find_buffer_attr(dev, attr.c_str());
+		return attribute != nullptr;
+	}
+
 	static bool iioChannelHasAttribute(iio_channel* chn, std::string const& attr)
 	{
 		unsigned int nb_attr = iio_channel_get_attrs_count(chn);
