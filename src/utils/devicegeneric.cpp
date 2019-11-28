@@ -102,6 +102,11 @@ int DeviceGeneric::getLongValue(unsigned int chn_idx, string attr, bool output)
 	return m_pimpl->getLongValue(chn_idx, attr, output);
 }
 
+int DeviceGeneric::getBufferLongValue(std::string attr)
+{
+	return m_pimpl->getBufferLongValue(attr);
+}
+
 int DeviceGeneric::setLongValue(int value, string attr)
 {
 	return m_pimpl->setLongValue(value, attr);
@@ -110,6 +115,11 @@ int DeviceGeneric::setLongValue(int value, string attr)
 int DeviceGeneric::setLongValue(unsigned int chn_idx, int value, string attr, bool output)
 {
 	return m_pimpl->setLongValue(chn_idx, value, attr, output);
+}
+
+int DeviceGeneric::setBufferLongValue(int value, std::string attr)
+{
+	return m_pimpl->setBufferLongValue(value, attr);
 }
 
 bool DeviceGeneric::getBoolValue(string attr)

@@ -319,6 +319,21 @@ public:
 		return chn->getLongValue(attr);
 	}
 
+	int getBufferLongValue(std::string attr)
+	{
+		long long value = 0;
+		std::string dev_name = getName();
+
+		if (Context::iioDevBufferHasAttribute(m_dev, attr)) {
+			iio_device_buffer_attr_read_longlong(m_dev, attr.c_str(),
+						      &value);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+							       attr + " attribute");
+		}
+		return value;
+	}
+
 	int setLongValue(int value, std::string attr)
 	{
 		std::string dev_name = iio_device_get_name(m_dev);
@@ -350,6 +365,19 @@ public:
 
 		chn->setLongValue(attr, value);
 		return chn->getLongValue(attr);
+	}
+
+	int setBufferLongValue(int value, std::string attr)
+	{
+		std::string dev_name = iio_device_get_name(m_dev);
+		if (Context::iioDevBufferHasAttribute(m_dev, attr)) {
+			iio_device_buffer_attr_write_longlong(m_dev, attr.c_str(),
+						       value);
+		} else {
+			throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " +
+							       attr + " attribute");
+		}
+		return getLongValue(attr);
 	}
 
 	bool getBoolValue(string attr)
