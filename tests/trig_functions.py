@@ -73,7 +73,7 @@ def create_test_signals():
         sine_signals-set of sinusoidal signals to be used for the test\n
         square_signals-set of square seignals to be used for the test\n
     """    
-    nr_samples=[75, 750, 7500]
+    nr_samples=[150, 1500, 15000]
     sine_signals=[]
     square_signals=[]
     for i in range(len(nr_samples)):
