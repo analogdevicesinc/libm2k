@@ -57,7 +57,7 @@ def create_dir(timestamp):
     path=os.getcwd()
 
     results_dir="results"+str(timestamp)
-    path=path+"\\"+results_dir
+    path=path+"./"+results_dir
     os.mkdir(path)
     
     return results_dir
