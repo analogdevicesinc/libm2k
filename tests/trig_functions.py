@@ -6,7 +6,8 @@ from pandas import DataFrame
 from open_context_and_files import ain, aout,trig, ctx, results_dir, results_file, csv_path
 import logging
 
-def trigger_jitter(buffers, trig, channel, signal, trig_cond, ain, aout):
+def trigger_jitter(buffers, trig, channel, signal, trig_cond, ain, aout, file, csv_path):
+    file.write("\n\nTrigger jitter test for channel "+str(channel)+"\n")
     max_dac_samplerate=75000000
     aout.setSampleRate(channel, max_dac_samplerate)
     aout.enableChannel(channel,True)
@@ -19,19 +20,36 @@ def trigger_jitter(buffers, trig, channel, signal, trig_cond, ain, aout):
     nr_samples, sine_signals, square_signals =create_test_signals()
     if signal=='square':
         test_signal=square_signals
-        
+
     elif signal=='sine':
         test_signal=sine_signals
-        
+
     for  sr in adc_sr:
         ain.flushBuffer()
         ain.setSampleRate(sr)
+        file.write('ADC sample rate:' +str(sr)+'; Test signal:'+signal+"; Trigger condition:" +str(trig_cond) +'\n')
         for l in range(len(test_signal)):
-            trigs_counted[l].append(count_trigger_events(channel,buffers, delay, level, trig_cond, ain, test_signal[l]))
-
+            file.write("Frequency: "+str(max_dac_samplerate/len(test_signal[l])) + '\n')
+            counter=count_trigger_events(channel,buffers, delay, level, trig_cond, ain, test_signal[l])
+            trigs_counted[l].append(counter)
+            file.write(str(counter)+ " Trigger events in "+str(buffers)+ " buffers \n")
     return trigs_counted, adc_sr, nr_samples, max_dac_samplerate
 
 def count_trigger_events(channel,buffers,delay, level, trig_cond, ain, test_signal):
+    """Counts how many trigger events happened in x buffers. The counter of trigger events should result equal with the number of buffers.
+    
+    Arguments:
+        channel  -- Channel under test\n
+        buffers  -- Number of buffers\n
+        delay  -- Trigger delay (position in the buffer)\n
+        level  -- Trigger level\n
+        trig_cond  -- Trigger condition\n
+        ain  -- AnalogIn object\n
+        test_signal  -- Test signal \n
+    
+    Returns:
+        counter -- Nr of trigger events in buffers\n
+    """    
     counter=0
     aout.push(channel, test_signal)
     for i in range(buffers):
@@ -48,6 +66,13 @@ def count_trigger_events(channel,buffers,delay, level, trig_cond, ain, test_sign
     return counter
 
 def create_test_signals():
+    """Create a set of sine and square signals to test the trigger jitter. Signals are created based on nr_samples
+    
+    Returns:
+        nr_samples- number of samples in the output buffer, determines signal frequency\n
+        sine_signals-set of sinusoidal signals to be used for the test\n
+        square_signals-set of square seignals to be used for the test\n
+    """    
     nr_samples=[75, 750, 7500]
     sine_signals=[]
     square_signals=[]

@@ -1,5 +1,5 @@
 import unittest
-from open_context_and_files import ain, aout, ctx, results_file, trig
+from open_context_and_files import ain, aout, ctx, results_file, trig, results_dir, csv_path
 import reset_def_values as reset
 import logging
 import sys
@@ -30,7 +30,7 @@ class B_TriggerTests(unittest.TestCase):
         trig_cond=[libm2k.RISING_EDGE_ANALOG, libm2k.FALLING_EDGE_ANALOG]
         for s in range(len(sig)):
             for c in trig_cond:
-                trigs_counted, adc_sr, nr_samples, dac_sr=trigger_jitter(buffers, trig, libm2k.ANALOG_IN_CHANNEL_2, sig[s], c, ain, aout)
+                trigs_counted, adc_sr, nr_samples, dac_sr=trigger_jitter(buffers, trig, libm2k.ANALOG_IN_CHANNEL_2, sig[s], c, ain, aout, results_file, csv_path)
                 for i in range(len(trigs_counted)):
                     for j in range(len(trigs_counted[i])):
                         with self.subTest('Triggers in '+str(buffers)+' buffers;'+sig[s]+' ;trig:'+str(c)):
@@ -42,7 +42,7 @@ class B_TriggerTests(unittest.TestCase):
         trig_cond=[libm2k.RISING_EDGE_ANALOG, libm2k.FALLING_EDGE_ANALOG]
         for s in range(len(sig)):
             for c in trig_cond:
-                trigs_counted, adc_sr, nr_samples, dac_sr=trigger_jitter(buffers, trig, libm2k.ANALOG_IN_CHANNEL_1, sig[s], c, ain, aout)
+                trigs_counted, adc_sr, nr_samples, dac_sr=trigger_jitter(buffers, trig, libm2k.ANALOG_IN_CHANNEL_1, sig[s], c, ain, aout, results_file, csv_path)
                 for i in range(len(trigs_counted)):
                     for j in range(len(trigs_counted[i])):
                         with self.subTest('Triggers in '+str(buffers)+' buffers; '+sig[s]+' ;trig:'+str(c)):
