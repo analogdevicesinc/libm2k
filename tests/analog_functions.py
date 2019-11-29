@@ -36,11 +36,11 @@ def set_trig_for_signalshape_test(i,  channel, trig, delay):
     elif i==1:
         set_trig(trig, channel, delay, libm2k.FALLING_EDGE_ANALOG, 0)
     elif i==2:
-        set_trig(trig, channel, 5, libm2k.RISING_EDGE_ANALOG,-1)
+        set_trig(trig, channel, delay, libm2k.RISING_EDGE_ANALOG,-0.98)
     elif i==3:
-        set_trig(trig, channel, 5, libm2k.RISING_EDGE_ANALOG,-1)
+        set_trig(trig, channel, delay, libm2k.RISING_EDGE_ANALOG,-0.98)
     elif i==4:
-        set_trig(trig, channel, delay, libm2k.FALLING_EDGE_ANALOG,1)
+        set_trig(trig, channel, delay, libm2k.FALLING_EDGE_ANALOG,0.98)
 
     return
 
@@ -196,7 +196,7 @@ def test_shape(channel,out_data,ref_data,ain,aout,trig, ch_ratio, shapename, dir
         try:
             input_data = ain.getSamples(n)[channel]
         except:
-             print('Timeout occured')
+            print('Timeout occured')
         ain.flushBuffer()
         if channel==0:
             plot_to_file(str(shapename[i])+' signal  on channel 0',  input_data,dir_name, str(shapename[i])+'signal_ch0.png')
@@ -769,5 +769,71 @@ def save_data_to_csv(csv_vals, csv_file):
     df.to_csv(csv_file)
     return
 
+def channels_diff_in_samples(trig, channel, aout, ain, file, csv_path):
+    """Find if there is a sample delay between channels for the same signal and trigger
+    
+    Arguments:
+        trig  -- Trigger object\n
+        channel  -- Channel source for the trigger\n
+        aout  -- Analog Out object\n
+        ain  -- Analog In object\n
+        file  -- File where are printed the results\n
+        csv_path  -- Path for csv file with resutls\n
+    
+    Returns:
+        diff_adc_sr-- 2-D array, holds the difference in samples for each ADC sample rate and Dac oversampling ratio combination\n
+        adc_sr-- sample rate set for Ain\n
+        dac_osr-- oversampling ratios set for Aout\n
+        freq -- frequency of the signals used for the test\n
 
+    """  
+    n=150#nr of samples, for max samplerate=> 1Mhz frequency for 75 samples in a buffer
+    delay=10
+    max_dac_samplerate=75000000
+    aout.setSampleRate(0, max_dac_samplerate)
+    aout.setSampleRate(1, max_dac_samplerate)
+    adc_sr=[1000000,10000000,100000000]
+    dac_osr=[1,10,100,1000,10000]
+    set_trig(trig, channel, delay, cond=libm2k.RISING_EDGE_ANALOG, level=0)
+    test_signal=np.append(np.linspace(-1,-1,int(n/2)),np.linspace(1,1,int(n/2)))
+    diff_adc_sr=[]
+    diff_in_samples0={}
+    diff_in_samples1={}
+    freq=[]
+    for i in dac_osr:
+        freq.append(max_dac_samplerate/(n*i))
+
+    file.write("\n\n Difference in samples between Analog channels, Trigger source: Ch "+str(channel)+'\n')
+    for  sr in adc_sr:
+        ain.setSampleRate(sr)
+        diff_osr=[]
+        for osr in dac_osr:
+            aout.setOversamplingRatio(0,osr)
+            aout.setOversamplingRatio(1,osr)
+            aout.push([test_signal,test_signal])
+            try:
+                input_data=ain.getSamples(delay*2)
+            except:
+                print("Timeout occurred")
+            input_data0=input_data[libm2k.ANALOG_IN_CHANNEL_1][delay-5:delay+5]
+            input_data1=input_data[libm2k.ANALOG_IN_CHANNEL_2][delay-5:delay+5]
+            
+            diff_in_samples0['ADC sr'+str(sr)+'; DAC osr:'+str(osr)]=input_data[0]
+            diff_in_samples1['ADC sr'+str(sr)+'; DAC osr:'+str(osr)]=input_data[1]
+            
+            for i in range(len(input_data0)-1):
+                if (input_data0[i]<=0 and input_data0[i+1]>0) or (input_data0[i]>=0 and input_data0[i+1]<0):
+                    p0=i #position of trigger on channel 0
+                if (input_data1[i]<=0 and input_data1[i+1]>0) or (input_data1[i]>=0 and input_data1[i+1]<0):
+                    p1=i #position of trigger on channel 1
+            diff_osr.append(p1-p0)
+        diff_adc_sr.append(diff_osr)
+        file.write('ADC sample rate: '+str(sr)+'\nDAC sample rate: '+str(max_dac_samplerate)+'\n')
+        file.write('Frequency: '+str(freq)+'\n')
+        file.write('DAC oversampling ratio'+str(dac_osr)+'\n')
+        file.write('Samples difference: '+str(diff_osr)+'\n')
+    save_data_to_csv(diff_in_samples0, csv_path+'diffSamples_ch0_trigSrc_'+str(channel)+'.csv')
+    save_data_to_csv(diff_in_samples1, csv_path+'diffSamples_ch1_trigSrc_'+str(channel)+'.csv')
+    
+    return  diff_adc_sr, adc_sr, dac_osr, freq
 
