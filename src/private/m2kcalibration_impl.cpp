@@ -242,8 +242,8 @@ public:
 		tmp = ch1_avg;
 		m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
-		voltage0 = m_m2k_adc->convertRawToVolts(ch0_avg, 1, 1);
-		voltage1 = m_m2k_adc->convertRawToVolts(ch1_avg, 1, 1);
+		voltage0 = m_m2k_adc->convRawToVolts(ch0_avg, 1, 1);
+		voltage1 = m_m2k_adc->convRawToVolts(ch1_avg, 1, 1);
 
 		m_adc_ch0_offset = (int)(2048 - ((voltage0 * 4096 * gain) / range));
 		m_adc_ch1_offset = (int)(2048 - ((voltage1 * 4096 * gain) / range));
@@ -288,8 +288,8 @@ public:
 		tmp = avg1;
 		m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &avg1, &tmp);
 
-		avg0 = m_m2k_adc->convertRawToVolts(avg0, 1, 1);
-		avg1 = m_m2k_adc->convertRawToVolts(avg1, 1, 1);
+		avg0 = m_m2k_adc->convRawToVolts(avg0, 1, 1);
+		avg1 = m_m2k_adc->convRawToVolts(avg1, 1, 1);
 
 		m_adc_ch0_gain = vref1 / avg0;
 		m_adc_ch1_gain = vref1 / avg1;
@@ -527,9 +527,9 @@ out_cleanup:
 		tmp = ch1_avg;
 		m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
-		double voltage0 = m_m2k_adc->convertRawToVolts(
+		double voltage0 = m_m2k_adc->convRawToVolts(
 					ch0_avg, m_adc_ch0_gain, 1);
-		double voltage1 = m_m2k_adc->convertRawToVolts(
+		double voltage1 = m_m2k_adc->convRawToVolts(
 					ch1_avg, m_adc_ch1_gain, 1);
 
 		m_dac_a_ch_offset = (int)(2048 - ((voltage0 * 9.06 ) / 0.002658));
@@ -609,9 +609,9 @@ out_cleanup:
 		tmp = ch1_avg;
 		m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &ch1_avg, &tmp);
 
-		double voltage0 = m_m2k_adc->convertRawToVolts(
+		double voltage0 = m_m2k_adc->convRawToVolts(
 					ch0_avg, m_adc_ch0_gain, 1);
-		double voltage1 = m_m2k_adc->convertRawToVolts(
+		double voltage1 = m_m2k_adc->convRawToVolts(
 					ch1_avg, m_adc_ch1_gain, 1);
 
 		// Taking into account the voltage divider on the loopback path

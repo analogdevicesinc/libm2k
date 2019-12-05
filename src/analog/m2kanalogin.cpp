@@ -56,17 +56,10 @@ void M2kAnalogIn::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset)
 	m_pimpl->setAdcCalibOffset(channel, calib_offset);
 }
 
-double M2kAnalogIn::convertRawToVolts(int sample, double correctionGain,
-		double hw_gain, double filterCompensation, double offset)
+double M2kAnalogIn::convRawToVolts(int sample, double correctionGain,
+		double hw_gain, double filterCompensation, double offset) const
 {
-	return m_pimpl->convertRawToVolts(sample, correctionGain,
-					  hw_gain, filterCompensation, offset);
-}
-
-int M2kAnalogIn::convertVoltsToRaw(double voltage, double correctionGain,
-		double hw_gain, double filterCompensation, double offset)
-{
-	return m_pimpl->convertVoltsToRaw(voltage, correctionGain,
+	return m_pimpl->convRawToVolts(sample, correctionGain,
 					  hw_gain, filterCompensation, offset);
 }
 
@@ -145,9 +138,14 @@ const short *M2kAnalogIn::getSamplesRawInterleaved(unsigned int nb_samples)
 	return m_pimpl->getSamplesRawInterleaved(nb_samples);
 }
 
-double M2kAnalogIn::processSample(int16_t sample, unsigned int channel)
+short M2kAnalogIn::convertVoltsToRaw(unsigned int channel, double voltage)
 {
-	return m_pimpl->processSample(sample, channel);
+	return m_pimpl->convertVoltsToRaw(channel, voltage);
+}
+
+double M2kAnalogIn::convertRawToVolts(unsigned int channel, short raw)
+{
+	return m_pimpl->convertRawToVolts(channel, raw);
 }
 
 short M2kAnalogIn::getVoltageRaw(unsigned int ch)

@@ -145,7 +145,7 @@ public:
 		getVerticalOffset(channel);
 	}
 
-	double convertRawToVolts(int sample, double correctionGain,
+	double convRawToVolts(short sample, double correctionGain,
 					      double hw_gain, double filterCompensation, double offset)
 	{
 		// TO DO: explain this formula
@@ -153,12 +153,30 @@ public:
 			correctionGain * filterCompensation) + offset;
 	}
 
-	int convertVoltsToRaw(double voltage, double correctionGain,
+	double convertRawToVolts(unsigned int channel, short sample)
+	{
+		return convRawToVolts(sample,
+					 m_adc_calib_gain.at(channel),
+					 getValueForRange(m_input_range.at(channel)),
+					 getFilterCompensation(m_samplerate),
+					 -m_adc_hw_vert_offset.at(channel));
+	}
+
+	short convVoltsToRaw(double voltage, double correctionGain,
 					   double hw_gain, double filterCompensation, double offset)
 	{
 		// TO DO: explain this formula
-		return ((voltage - offset) / (correctionGain * filterCompensation) *
-			(2048 * 1.3 * hw_gain) / 0.78);
+		return (short)(((voltage - offset) / (correctionGain * filterCompensation) *
+				(2048 * 1.3 * hw_gain) / 0.78));
+	}
+
+	short convertVoltsToRaw(unsigned int channel, double voltage)
+	{
+		return convVoltsToRaw(voltage,
+					 m_adc_calib_gain.at(channel),
+					 getValueForRange(m_input_range.at(channel)),
+					 getFilterCompensation(m_samplerate),
+					 -m_adc_hw_vert_offset.at(channel));
 	}
 
 	double getCalibscale(unsigned int index)
@@ -260,7 +278,7 @@ public:
 	double processSample(int16_t sample, unsigned int channel)
 	{
 		if (m_need_processing) {
-			return convertRawToVolts(sample,
+			return convRawToVolts(sample,
 						 m_adc_calib_gain.at(channel),
 						 getValueForRange(m_input_range.at(channel)),
 						 getFilterCompensation(m_samplerate),
