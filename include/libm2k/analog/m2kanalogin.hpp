@@ -109,15 +109,6 @@ public:
 	*/
 	const short* getSamplesRawInterleaved(unsigned int nb_samples);
 
-	/**
-	* @brief Convert the raw value of a sample into volts
-	*
-	* @param sample The raw value of a sample
-	* @param channel The index corresponding to the channel
-	* @return The value of a sample converted into volts
-	*/
-	double processSample(int16_t sample, unsigned int channel);
-
 
 	/**
 	* @brief Retrieve the average raw value of the given channel
@@ -404,19 +395,29 @@ public:
 	/**
 	 * @private
 	 */
-	double convertRawToVolts(int sample, double correctionGain = 1,
+	double convRawToVolts(int sample, double correctionGain = 1,
 		double hw_gain = 0.02,
 		double filterCompensation = 1,
-		double offset = 0);
+		double offset = 0) const;
 
 
 	/**
-	 * @private
+	 * @brief Convert the raw value of a sample into volts
+	 * @param raw: the raw value of a sample;
+	 * @param channel: The index corresponding to the channel;
+	 * @return The value of a sample converted into volts;
 	 */
-	int convertVoltsToRaw(double voltage, double correctionGain = 1,
-		double hw_gain = 0.02,
-		double filterCompensation = 1,
-		double offset = 0);
+	double convertRawToVolts(unsigned int channel, short raw);
+
+
+	/**
+	* @brief Convert the voltage value of a sample into raw
+	*
+	* @param voltage The voltage value of a sample;
+	* @param channel The index corresponding to the channel;
+	* @return The value of a sample converted into raw;
+	*/
+	short convertVoltsToRaw(unsigned int channel, double voltage);
 
 
 	/**
