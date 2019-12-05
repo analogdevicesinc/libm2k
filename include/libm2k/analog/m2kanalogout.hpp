@@ -240,7 +240,7 @@ public:
 	* @param filterCompensation The value of the filter compensation
 	* @return The raw value
 	*/
-	int convertVoltsToRaw(double voltage, double vlsb,
+	short convVoltsToRaw(double voltage, double vlsb,
 		double filterCompensation);
 
 	/**
@@ -403,6 +403,24 @@ public:
 	 * @param count the number of kernel buffers
 	 */
 	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count);
+
+
+	/**
+	 * @brief Convert the volts value of a sample into raw
+	 * @param channel The index corresponding to the channel
+	 * @param voltage The volts value of a sample
+	 * @return The value of a sample converted into raw
+	 */
+	short convertVoltsToRaw(unsigned int channel, double voltage);
+
+
+	/**
+	 * @brief Convert the raw value of a sample into volts
+	 * @param channel The index corresponding to the channel
+	 * @param raw The raw value of a sample
+	 * @return The value of a sample converted into volts
+	 */
+	double convertRawToVolts(unsigned int channel, short raw);
 
 
 	/**

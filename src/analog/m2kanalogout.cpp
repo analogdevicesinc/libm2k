@@ -131,10 +131,10 @@ double M2kAnalogOut::getCalibscale(unsigned int index)
 	return m_pimpl->getCalibscale(index);
 }
 
-int M2kAnalogOut::convertVoltsToRaw(double voltage, double vlsb,
+short M2kAnalogOut::convVoltsToRaw(double voltage, double vlsb,
 				       double filterCompensation)
 {
-	return m_pimpl->convertVoltsToRaw(voltage, vlsb, filterCompensation);
+	return m_pimpl->convVoltsToRaw(voltage, vlsb, filterCompensation);
 }
 
 
@@ -216,6 +216,16 @@ bool M2kAnalogOut::isChannelEnabled(unsigned int chnIdx)
 void M2kAnalogOut::setKernelBuffersCount(unsigned int chnIdx, unsigned int count)
 {
 	return m_pimpl->setKernelBuffersCount(chnIdx, count);
+}
+
+short M2kAnalogOut::convertVoltsToRaw(unsigned int channel, double voltage)
+{
+	return m_pimpl->convertVoltsToRaw(channel, voltage);
+}
+
+double M2kAnalogOut::convertRawToVolts(unsigned int channel, short raw)
+{
+	return m_pimpl->convertRawToVolts(channel, raw);
 }
 
 IIO_OBJECTS M2kAnalogOut::getIioObjects()
