@@ -245,13 +245,39 @@ public:
 		return m_cyclic.at(chn);
 	}
 
-	int convertVoltsToRaw(double voltage, double vlsb,
+	short convVoltsToRaw(double voltage, double vlsb,
 					    double filterCompensation)
 	{
 		// TO DO: explain this formula....
 		return voltage * ((-1 * (1 / vlsb) * 16) / filterCompensation);
 	}
 
+	short convertVoltsToRaw(unsigned int channel, double voltage)
+	{
+		if (channel >= m_dac_devices.size()) {
+			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		}
+
+		return convVoltsToRaw(voltage, m_calib_vlsb.at(channel),
+					 getFilterCompensation(
+					 m_samplerate.at(channel)));
+	}
+
+	double convRawToVolts(short raw, double vlsb, double filterCompensation)
+	{
+		return -((raw * filterCompensation * vlsb) / 16);
+	}
+
+	double convertRawToVolts(unsigned int channel, short raw)
+	{
+		if (channel >= m_dac_devices.size()) {
+			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		}
+
+		return convRawToVolts(raw, m_calib_vlsb.at(channel),
+					 getFilterCompensation(
+					 m_samplerate.at(channel)));
+	}
 
 	void setDacCalibVlsb(unsigned int chn_idx, double vlsb)
 	{
@@ -297,7 +323,7 @@ public:
 		std::vector<short> raw_data_buffer = {};
 
 		for (unsigned int i = 0; i < nb_samples; i++) {
-			raw_data_buffer.push_back(processSample(data[i], chnIdx));
+			raw_data_buffer.push_back(convertVoltsToRaw(chnIdx, data[i]));
 		}
 		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
 	}
@@ -428,7 +454,7 @@ public:
 			size_t size = data.at(chn).size();
 			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0; i < size; i++) {
-				raw_data_buffer.push_back(processSample(data[chn][i], chn));
+				raw_data_buffer.push_back(convertVoltsToRaw(chn, data[chn][i]));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 			data_buffers.push_back(raw_data_buffer);
@@ -474,7 +500,7 @@ public:
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
 			std::vector<short> raw_data_buffer = {};
 			for (unsigned int i = 0, off = 0; i < (bufferSize); i++, off += nb_channels) {
-				raw_data_buffer.push_back(processSample(data[chn + off], chn));
+				raw_data_buffer.push_back(convertVoltsToRaw(chn, data[chn + off]));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 			data_buffers.push_back(raw_data_buffer);
@@ -519,13 +545,6 @@ public:
 		m_m2k_fabric->setBoolValue(chn, true, "powerdown", true);
 		setSyncedDma(true, chn);
 		getDacDevice(chn)->stop();
-	}
-
-	short processSample(double value, unsigned int channel)
-	{
-		return convertVoltsToRaw(value, m_calib_vlsb.at(channel),
-					 getFilterCompensation(
-						 m_samplerate.at(channel)));
 	}
 
 	void enableChannel(unsigned int chnIdx, bool enable)
