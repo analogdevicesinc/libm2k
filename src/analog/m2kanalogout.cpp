@@ -21,6 +21,7 @@
 
 #include "private/m2kanalogout_impl.cpp"
 
+using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std;
@@ -215,4 +216,9 @@ bool M2kAnalogOut::isChannelEnabled(unsigned int chnIdx)
 void M2kAnalogOut::setKernelBuffersCount(unsigned int chnIdx, unsigned int count)
 {
 	return m_pimpl->setKernelBuffersCount(chnIdx, count);
+}
+
+IIO_OBJECTS M2kAnalogOut::getIioObjects()
+{
+	return m_pimpl->getIioObjects();
 }

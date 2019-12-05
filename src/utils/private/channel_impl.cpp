@@ -339,6 +339,11 @@ public:
 		return !!m_channel;
 	}
 
+	struct iio_channel *getChannel()
+	{
+		return m_channel;
+	}
+
 private:
 	struct iio_device *m_device;
 	struct iio_channel *m_channel;

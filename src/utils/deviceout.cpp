@@ -22,6 +22,7 @@
 #include "private/deviceout_impl.cpp"
 
 using namespace std;
+using namespace libm2k;
 using namespace libm2k::utils;
 using namespace libm2k::contexts;
 
@@ -84,4 +85,9 @@ void DeviceOut::stop()
 void DeviceOut::setKernelBuffersCount(unsigned int count)
 {
 	m_pimpl->setKernelBuffersCount(count);
+}
+
+IIO_OBJECTS DeviceOut::getIioObjects()
+{
+	return m_pimpl->getIioObjects();
 }

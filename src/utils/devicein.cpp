@@ -22,6 +22,7 @@
 #include "private/devicein_impl.cpp"
 
 using namespace std;
+using namespace libm2k;
 using namespace libm2k::utils;
 using namespace libm2k::contexts;
 
@@ -73,4 +74,9 @@ void* DeviceIn::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 void DeviceIn::flushBuffer()
 {
 	m_pimpl->flushBuffer();
+}
+
+IIO_OBJECTS DeviceIn::getIioObjects()
+{
+	return m_pimpl->getIioObjects();
 }

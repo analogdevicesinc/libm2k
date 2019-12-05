@@ -130,3 +130,8 @@ void Buffer::flushBuffer()
 {
 	m_pimpl->flushBuffer();
 }
+
+iio_buffer *Buffer::getBuffer()
+{
+	return m_pimpl->getBuffer();
+}

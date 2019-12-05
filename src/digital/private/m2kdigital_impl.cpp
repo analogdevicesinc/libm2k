@@ -386,6 +386,16 @@ public:
 		m_dev_write->setCyclic(cyclic);
 	}
 
+	struct IIO_OBJECTS getIioObjects()
+	{
+		auto tx_iio = m_dev_write->getIioObjects();
+		auto rx_iio = m_dev_read->getIioObjects();
+		rx_iio.buffers_tx.insert(rx_iio.buffers_tx.end(), tx_iio.buffers_tx.begin(), tx_iio.buffers_tx.end());
+		rx_iio.channels_out.insert(rx_iio.channels_out.end(), tx_iio.channels_out.begin(), tx_iio.channels_out.end());
+		rx_iio.devices.insert(rx_iio.devices.end(), tx_iio.devices.begin(), tx_iio.devices.end());
+		return rx_iio;
+	}
+
 
 private:
 	bool m_cyclic;

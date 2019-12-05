@@ -183,6 +183,19 @@ public:
 		}
 	}
 
+	struct IIO_OBJECTS getIioObjects()
+	{
+		IIO_OBJECTS iio_object = {};
+		iio_object.buffers_tx.push_back(m_buffer->getBuffer());
+
+		for (auto chn : m_channel_list) {
+			iio_object.channels_out.push_back(chn->getChannel());
+		}
+		iio_object.devices.push_back(m_dev);
+		iio_object.context = m_context;
+		return iio_object;
+	}
+
 private:
 	struct iio_context *m_context;
 	struct iio_device *m_dev;

@@ -479,6 +479,13 @@ public:
 	*/
 	libm2k::M2kHardwareTrigger* getTrigger();
 
+	/**
+	 * @brief Get access to IIO channels, buffers, devices and context.
+	 * Can be used when debugging directly with libiio.
+	 * @return IIO_OBJECTS structure.
+	 */
+	struct IIO_OBJECTS getIioObjects();
+
 private:
 	class M2kAnalogInImpl;
 	std::unique_ptr<M2kAnalogInImpl> m_pimpl;

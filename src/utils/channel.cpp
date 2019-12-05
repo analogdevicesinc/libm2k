@@ -87,6 +87,11 @@ bool Channel::isValid()
 	return m_pimpl->isValid();
 }
 
+iio_channel *Channel::getChannel()
+{
+	return m_pimpl->getChannel();
+}
+
 void Channel::write(struct iio_buffer* buffer, std::vector<short> const &data)
 {
     m_pimpl->write(buffer, data);

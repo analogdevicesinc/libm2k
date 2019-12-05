@@ -355,6 +355,14 @@ public:
 	 */
 	void setKernelBuffersCountIn(unsigned int count);
 
+
+	/**
+	 * @brief Get access to IIO channels, buffers, devices and context.
+	 * Can be used when debugging directly with libiio.
+	 * @return IIO_OBJECTS structure.
+	 */
+	struct IIO_OBJECTS getIioObjects();
+
 	/** @} */
 
 private:

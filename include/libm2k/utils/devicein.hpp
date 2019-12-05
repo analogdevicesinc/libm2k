@@ -29,6 +29,7 @@
 #include <memory>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/enums.hpp>
 
 using namespace std;
 
@@ -53,6 +54,7 @@ public:
 	void* getSamplesRawInterleavedVoid(unsigned int nb_samples);
 
 	virtual void flushBuffer();
+	virtual struct IIO_OBJECTS getIioObjects();
 private:
 	class DeviceInImpl;
 	std::unique_ptr<DeviceInImpl> m_pimpl;
