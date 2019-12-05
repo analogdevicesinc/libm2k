@@ -254,7 +254,7 @@ public:
 	* @note The given channel won't be synchronized with the other channel
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void push(unsigned int chnIdx, double *data, unsigned int nb_samples);
+	void pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples);
 
 
 	/**
@@ -268,7 +268,7 @@ public:
 	* @note The given channel won't be synchronized with the other channel
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples);
+	void pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples);
 
 
 	/**

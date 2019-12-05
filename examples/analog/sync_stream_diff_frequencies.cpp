@@ -24,7 +24,7 @@ void
 pushNTimes(M2kAnalogOut *analogOut, unsigned int channelIndex, double *samples, unsigned int nbSamples, unsigned int n)
 {
 	for (int i = 0; i < n; i++) {
-		analogOut->push(channelIndex, samples, nbSamples);
+		analogOut->pushBytes(channelIndex, samples, nbSamples);
 	}
 }
 

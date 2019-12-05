@@ -158,24 +158,24 @@ void M2kAnalogOut::pushRaw(std::vector<std::vector<short>> const &data)
 	m_pimpl->pushRaw(data);
 }
 
-void M2kAnalogOut::push(unsigned int chnIdx, double *data, unsigned int nb_samples)
+void M2kAnalogOut::pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples)
 {
-	m_pimpl->push(chnIdx, data, nb_samples);
+	m_pimpl->pushBytes(chnIdx, data, nb_samples);
 }
 
-void M2kAnalogOut::pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples)
+void M2kAnalogOut::pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples)
 {
-	m_pimpl->pushRaw(chnIdx, data, nb_samples);
+	m_pimpl->pushRawBytes(chnIdx, data, nb_samples);
 }
 
-void M2kAnalogOut::pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples_per_channel)
+void M2kAnalogOut::pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples)
 {
-	m_pimpl->push(data, nb_channels, nb_samples_per_channel);
+	m_pimpl->pushInterleaved(data, nb_channels, nb_samples);
 }
 
-void M2kAnalogOut::pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples_per_channel)
+void M2kAnalogOut::pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples)
 {
-	m_pimpl->pushRaw(data, nb_channels, nb_samples_per_channel);
+	m_pimpl->pushRawInterleaved(data, nb_channels, nb_samples);
 }
 
 void M2kAnalogOut::push(std::vector<std::vector<double>> const &data)
