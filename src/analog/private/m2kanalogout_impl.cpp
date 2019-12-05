@@ -562,6 +562,16 @@ public:
 		m_nb_kernel_buffers[chnIdx] = count;
 	}
 
+	struct IIO_OBJECTS getIioObjects()
+	{
+		auto dev_a_iio = getDacDevice(0)->getIioObjects();
+		auto dev_b_iio = getDacDevice(1)->getIioObjects();
+		dev_a_iio.buffers_tx.insert(dev_a_iio.buffers_tx.end(), dev_b_iio.buffers_tx.begin(), dev_b_iio.buffers_tx.end());
+		dev_a_iio.channels_out.insert(dev_a_iio.channels_out.end(), dev_b_iio.channels_out.begin(), dev_b_iio.channels_out.end());
+		dev_a_iio.devices.insert(dev_a_iio.devices.end(), dev_b_iio.devices.begin(), dev_b_iio.devices.end());
+		return dev_a_iio;
+	}
+
 private:
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;

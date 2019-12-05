@@ -29,6 +29,7 @@
 #include <memory>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/devicegeneric.hpp>
+#include <libm2k/enums.hpp>
 
 using namespace std;
 
@@ -55,6 +56,7 @@ public:
 	virtual void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
 	virtual void stop();
 	virtual void setKernelBuffersCount(unsigned int count);
+	virtual struct IIO_OBJECTS getIioObjects();
 
 private:
 	class DeviceOutImpl;

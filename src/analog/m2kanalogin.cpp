@@ -115,6 +115,11 @@ libm2k::M2kHardwareTrigger *M2kAnalogIn::getTrigger()
 	return m_pimpl->getTrigger();
 }
 
+libm2k::IIO_OBJECTS M2kAnalogIn::getIioObjects()
+{
+	return m_pimpl->getIioObjects();
+}
+
 void M2kAnalogIn::flushBuffer()
 {
 	m_pimpl->flushBuffer();

@@ -20,6 +20,7 @@
  */
 
 #include "private/genericanalogin_impl.cpp"
+#include "libm2k/enums.hpp"
 
 using namespace libm2k::utils;
 using namespace libm2k::analog;
@@ -82,6 +83,11 @@ std::vector<double> GenericAnalogIn::getAvailableSampleRates()
 string GenericAnalogIn::getDeviceName()
 {
 	return m_pimpl->getDeviceName();
+}
+
+libm2k::IIO_OBJECTS GenericAnalogIn::getIioObjects()
+{
+	return m_pimpl->getIioObjects();
 }
 
 void GenericAnalogIn::enableChannel(unsigned int index, bool enable)

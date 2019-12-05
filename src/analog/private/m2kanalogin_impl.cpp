@@ -570,6 +570,11 @@ public:
 		}
 	}
 
+	struct IIO_OBJECTS getIioObjects()
+	{
+		return DeviceIn::getIioObjects();
+	}
+
 private:
 	std::shared_ptr<DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;

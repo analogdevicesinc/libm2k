@@ -502,6 +502,11 @@ public:
 		m_cyclic = enable;
 	}
 
+	struct iio_buffer* getBuffer()
+	{
+		return m_buffer;
+	}
+
 private:
 	struct iio_device* m_dev;
 	struct iio_buffer* m_buffer;

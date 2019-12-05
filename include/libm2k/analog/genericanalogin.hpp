@@ -50,6 +50,8 @@ public:
 	void setKernelBuffersCount(unsigned int count);
 	std::string getDeviceName();
 
+	struct IIO_OBJECTS getIioObjects();
+
 private:
 	class GenericAnalogInImpl;
 	std::unique_ptr<GenericAnalogInImpl> m_pimpl;

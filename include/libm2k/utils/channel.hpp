@@ -70,6 +70,7 @@ public:
 	void *getFirstVoid(iio_buffer *buffer);
 
 	bool isValid();
+	struct iio_channel* getChannel();
 private:
 	class ChannelImpl;
 	std::shared_ptr<ChannelImpl> m_pimpl;

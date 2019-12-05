@@ -404,6 +404,14 @@ public:
 	 */
 	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count);
 
+
+	/**
+	 * @brief Get access to IIO channels, buffers, devices and context.
+	 * @note Can be used when debugging directly with libiio.
+	 * @return IIO_OBJECTS structure.
+	 */
+	struct IIO_OBJECTS getIioObjects();
+
 private:
 	class M2kAnalogOutImpl;
 	std::unique_ptr<M2kAnalogOutImpl> m_pimpl;

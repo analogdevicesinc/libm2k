@@ -25,6 +25,12 @@
 #include <string>
 #include <vector>
 
+extern "C" {
+	struct iio_context;
+	struct iio_device;
+	struct iio_channel;
+	struct iio_buffer;
+}
 /**
  * @file libm2k/enums.hpp
  * @brief Generic M2K enumerations
@@ -162,6 +168,19 @@ namespace libm2k {
 		std::vector<M2K_TRIGGER_MODE> mode; ///<Triggering mode
 		M2K_TRIGGER_SOURCE_ANALOG trigger_source; ///< Triggering source
 		int delay; ///< Trigger's delay
+	};
+
+
+	/**
+	 * @private
+	 */
+	struct IIO_OBJECTS {
+		std::vector<iio_channel*> channels_in;
+		std::vector<iio_channel*> channels_out;
+		std::vector<iio_device*> devices;
+		std::vector<iio_buffer*> buffers_rx;
+		std::vector<iio_buffer*> buffers_tx;
+		iio_context* context;
 	};
 }
 
