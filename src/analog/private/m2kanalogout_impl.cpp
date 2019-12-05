@@ -291,18 +291,18 @@ public:
 	void pushRaw(std::vector<short> const &data, unsigned int chnIdx)
 	{
 		short *ptr = (short*)data.data();
-		pushRaw(chnIdx, ptr, data.size());
+		pushRawBytes(chnIdx, ptr, data.size());
 	}
 
-	void pushRaw(unsigned int chnIdx, short *data, unsigned int nb_samples)
+	void pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples)
 	{
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
 		}
 
-		std::vector<short> raw_data_buffer(data, data + nb_samples);
+		m_dac_devices.at(chnIdx)->push(data, 0, nb_samples, getCyclic(chnIdx));
 
-		m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
+		setSyncedDma(false, chnIdx);
 	}
 
 
@@ -312,10 +312,10 @@ public:
 	void push(std::vector<double> const &data, unsigned int chnIdx)
 	{
 		double *ptr = (double*)data.data();
-		push(chnIdx, ptr, data.size());
+		pushBytes(chnIdx, ptr, data.size());
 	}
 
-	void push(unsigned int chnIdx, double *data, unsigned int nb_samples)
+	void pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples)
 	{
 		if (chnIdx >= m_dac_devices.size()) {
 			throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
@@ -373,7 +373,7 @@ public:
 		}
 	}
 
-	void pushRaw(short *data, unsigned int nb_channels, unsigned int nb_samples)
+	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples)
 	{
 		if ((nb_samples % nb_channels) !=0) {
                         throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
@@ -468,7 +468,7 @@ public:
 		}
 	}
 
-	void push(double *data, unsigned int nb_channels, unsigned int nb_samples)
+	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples)
 	{
 		if ((nb_samples % nb_channels) !=0) {
                         throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
