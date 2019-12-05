@@ -8,8 +8,67 @@
 %include "std_string.i"
 %include "std_vector.i"
 %include "exception.i"
+%include "typemaps.i"
+%include "stdint.i"
 %allowexception;
 %feature("autodoc", "3");
+
+%ignore pushInterleaved;
+%ignore pushRawInterleaved;
+%ignore pushBytes;
+%ignore getVoltageP;
+%ignore getVoltageRawP;
+%ignore convertChannelHostFormat;
+%ignore convRawToVolts;
+%ignore convVoltsToRaw;
+%rename(pushBytes) push(unsigned short*, unsigned int);
+
+#ifdef SWIGPYTHON
+%typemap(in) short * {
+	if (PyBytes_Check($input))
+	{
+		$1_ltype data = ($1_ltype)PyBytes_AsString($input);
+		$1 = data;
+	} else if (PyObject_CheckBuffer($input)) {
+		Py_buffer view;
+		if (PyObject_GetBuffer($input, &view, PyBUF_SIMPLE | PyBUF_C_CONTIGUOUS) == -1)
+		{
+			PyErr_SetString(PyExc_ValueError, "Failed to get buffer.");
+			return NULL;
+		}
+		$1 = ($1_ltype)view.buf;
+
+	} else {
+		PyErr_SetString(PyExc_ValueError, "Expecting bytearray\n");
+	}
+}
+/* Apply all of the integer typemaps to double* and unsigned short * */
+%apply short * { unsigned short * };
+
+
+%typemap(out) short * getSamplesRawInterleaved {
+	auto iio_obj = arg1->getIioObjects();
+	auto buf = iio_obj.buffers_rx[0];
+	if (buf) {
+		char* start = (char*)(iio_buffer_start(buf));
+		char* end = (char*)(iio_buffer_end(buf));
+		auto size = (end - start);
+
+		// This is used when returning double*
+		if (sizeof($*1_ltype) != sizeof(short)) {
+			size = size * sizeof(float);
+		}
+		auto memory_view = PyMemoryView_FromMemory(start, size, PyBUF_WRITE);
+		auto res = PyMemoryView_GetContiguous(memory_view, PyBUF_READ, 'F');
+		$result = res;
+	}
+}
+%apply short * getSamplesRawInterleaved {short * getSamplesInterleaved};
+%apply short * getSamplesRawInterleaved {double * getSamplesInterleaved};
+%apply short * getSamplesRawInterleaved {unsigned short * getSamplesP};
+
+#endif
+
 namespace std {
 	%template(VectorI) vector<int>;
 	%template(VectorS) vector<short>;
@@ -119,3 +178,9 @@ namespace std {
 %template(M2kConditionAnalog) std::vector<libm2k::M2K_TRIGGER_CONDITION_ANALOG>;
 %template(M2kConditionDigital) std::vector<libm2k::M2K_TRIGGER_CONDITION_DIGITAL>;
 %template(M2kModes) std::vector<libm2k::M2K_TRIGGER_MODE>;
+
+#ifdef SWIGPYTHON
+	%template(IioBuffers) std::vector<struct iio_buffer*>;
+	%template(IioChannels) std::vector<struct iio_channel*>;
+	%template(IioDevices) std::vector<struct iio_device*>;
+#endif
