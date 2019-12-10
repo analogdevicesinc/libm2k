@@ -66,9 +66,10 @@ public:
 		if (sync) {
 			syncDevice();
 		}
-
 		// dma_start_sync attribute is only available in firmware versions newer than 0.24
 		m_dma_start_sync_available = (Utils::compareVersions(Utils::getFirmwareVersion(ctx), "v0.24") > 0);
+		// data_available attribute exists only in firmware versions newer than 0.23
+		m_dma_data_available = (Utils::compareVersions(Utils::getFirmwareVersion(ctx), "v0.23") > 0);
 	}
 
 	~M2kAnalogOutImpl()
@@ -308,7 +309,29 @@ public:
 	void pushRaw(std::vector<std::vector<short>> const &data)
 	{
 		std::vector<std::vector<short>> data_buffers;
-		setSyncedDma(true);
+		bool streamingData = true;
+		bool isBufferEmpty = true;
+
+		for (unsigned int  chn = 0; chn < data.size(); chn++) {
+			streamingData &= !getCyclic(chn);
+		}
+		if (streamingData && m_dma_data_available) {
+			// all kernel buffers are empty when maximum buffer space is equal with the unused space
+			unsigned int unusedBufferSpace, maxBufferSpace;
+			for (unsigned int  chn = 0; chn < data.size(); chn++) {
+				size_t size = data.at(chn).size();
+				m_dac_devices.at(chn)->initializeBuffer(size, false);
+				unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
+				maxBufferSpace = 2u * size * (m_nb_kernel_buffers.at(chn) - 1);
+				isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
+			}
+			if (isBufferEmpty) {
+				// when kernel buffers are empty both channels must be synchronized
+				setSyncedDma(true);
+			}
+		} else {
+			setSyncedDma(true);
+		}
 
 		for (unsigned int chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
@@ -316,10 +339,12 @@ public:
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		}
 
-		if(m_dma_start_sync_available) {
-			setSyncedStartDma(true);
+		if ((streamingData && isBufferEmpty) || !streamingData) {
+			if (m_dma_start_sync_available) {
+				setSyncedStartDma(true);
+			}
+			setSyncedDma(false);
 		}
-		setSyncedDma(false);
 	}
 
 	void pushRaw(short *data, unsigned int nb_channels, unsigned int nb_samples)
@@ -328,20 +353,44 @@ public:
                         throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
                 }
 		std::vector<std::vector<short>> data_buffers;
-		setSyncedDma(true);
+		unsigned int bufferSize = nb_samples/nb_channels;
+		bool streamingData = true;
+		bool isBufferEmpty = true;
+
+		for (unsigned int  chn = 0; chn < nb_channels; chn++) {
+			streamingData &= !getCyclic(chn);
+		}
+		if (streamingData && m_dma_data_available) {
+			// all kernel buffers are empty when maximum buffer space is equal with the unused space
+			unsigned int unusedBufferSpace, maxBufferSpace;
+			for (unsigned int  chn = 0; chn < nb_channels; chn++) {
+				m_dac_devices.at(chn)->initializeBuffer(bufferSize, false);
+				unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
+				maxBufferSpace = 2u * bufferSize * (m_nb_kernel_buffers.at(chn) - 1);
+				isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
+			}
+			if (isBufferEmpty) {
+				// when kernel buffers are empty both channels must be synchronized
+				setSyncedDma(true);
+			}
+		} else {
+			setSyncedDma(true);
+		}
 
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
 			std::vector<short> raw_data_buffer = {};
-			for (unsigned int i = 0, off = 0; i < (nb_samples/nb_channels); i++, off += nb_channels) {
+			for (unsigned int i = 0, off = 0; i < (bufferSize); i++, off += nb_channels) {
 				raw_data_buffer.push_back(data[chn + off]);
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		}
 
-		if(m_dma_start_sync_available) {
-			setSyncedStartDma(true);
+		if ((streamingData && isBufferEmpty) || !streamingData) {
+			if (m_dma_start_sync_available) {
+				setSyncedStartDma(true);
+			}
+			setSyncedDma(false);
 		}
-		setSyncedDma(false);
 	}
 
 
@@ -351,7 +400,29 @@ public:
 	void push(std::vector<std::vector<double>> const &data)
 	{
 		std::vector<std::vector<short>> data_buffers;
-		setSyncedDma(true);
+		bool streamingData = true;
+		bool isBufferEmpty = true;
+
+		for (unsigned int  chn = 0; chn < data.size(); chn++) {
+			streamingData &= !getCyclic(chn);
+		}
+		if (streamingData && m_dma_data_available) {
+			// all kernel buffers are empty when maximum buffer space is equal with the unused space
+			unsigned int unusedBufferSpace, maxBufferSpace;
+			for (unsigned int  chn = 0; chn < data.size(); chn++) {
+				size_t size = data.at(chn).size();
+				m_dac_devices.at(chn)->initializeBuffer(size, false);
+				unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
+				maxBufferSpace = 2u * size * (m_nb_kernel_buffers.at(chn) - 1);
+				isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
+			}
+			if (isBufferEmpty) {
+				// when kernel buffers are empty both channels must be synchronized
+				setSyncedDma(true);
+			}
+		} else {
+			setSyncedDma(true);
+		}
 
 		for (unsigned int chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
@@ -363,10 +434,12 @@ public:
 			data_buffers.push_back(raw_data_buffer);
 		}
 
-		if(m_dma_start_sync_available) {
-			setSyncedStartDma(true);
+		if ((streamingData && isBufferEmpty) || !streamingData) {
+			if (m_dma_start_sync_available) {
+				setSyncedStartDma(true);
+			}
+			setSyncedDma(false);
 		}
-		setSyncedDma(false);
 	}
 
 	void push(double *data, unsigned int nb_channels, unsigned int nb_samples)
@@ -375,21 +448,44 @@ public:
                         throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
                 }
 		std::vector<std::vector<short>> data_buffers;
-		setSyncedDma(true);
+		unsigned int bufferSize = nb_samples/nb_channels;
+		bool streamingData = true;
+		bool isBufferEmpty = true;
 
+		for (unsigned int  chn = 0; chn < nb_channels; chn++) {
+			streamingData &= !getCyclic(chn);
+		}
+		if (streamingData && m_dma_data_available) {
+			// all kernel buffers are empty when maximum buffer space is equal with the unused space
+			unsigned int unusedBufferSpace, maxBufferSpace;
+			for (unsigned int  chn = 0; chn < nb_channels; chn++) {
+				m_dac_devices.at(chn)->initializeBuffer(bufferSize, false);
+				unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
+				maxBufferSpace = 2u * bufferSize * (m_nb_kernel_buffers.at(chn) - 1);
+				isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
+			}
+			if (isBufferEmpty) {
+				// when kernel buffers are empty both channels must be synchronized
+				setSyncedDma(true);
+			}
+		} else {
+			setSyncedDma(true);
+		}
 		for (unsigned int chn = 0; chn < nb_channels; chn++) {
 			std::vector<short> raw_data_buffer = {};
-			for (unsigned int i = 0, off = 0; i < (nb_samples/nb_channels); i++, off += nb_channels) {
+			for (unsigned int i = 0, off = 0; i < (bufferSize); i++, off += nb_channels) {
 				raw_data_buffer.push_back(processSample(data[chn + off], chn));
 			}
 			m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 			data_buffers.push_back(raw_data_buffer);
 		}
 
-		if(m_dma_start_sync_available) {
-			setSyncedStartDma(true);
+		if ((streamingData && isBufferEmpty) || !streamingData) {
+			if (m_dma_start_sync_available) {
+				setSyncedStartDma(true);
+			}
+			setSyncedDma(false);
 		}
-		setSyncedDma(false);
 	}
 
 	double getScalingFactor(unsigned int chn)
@@ -476,5 +572,6 @@ private:
 	std::vector<DeviceOut*> m_dac_devices;
 
 	bool m_dma_start_sync_available;
+	bool m_dma_data_available;
 	std::vector<unsigned int> m_nb_kernel_buffers;
 };

@@ -278,7 +278,7 @@ public:
 	* @param nb_channels the number of channels on which we want to push
 	* @param nb_samples the number of samples total (samples_per_channel * channels)
 	* @note Make sure the samples are interleaved
-	* @note Streaming data is not possible
+	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel will be synchronized with the other channel
 	*/
 	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples);
@@ -291,7 +291,7 @@ public:
 	* @param nb_channels the number of channels on which we want to push
 	* @param nb_samples the number of samples total (samples_per_channel * channels)
 	* @note Make sure the raw samples are interleaved
-	* @note Streaming data is not possible
+	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel will be synchronized with the other channel
 	*/
 	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples);
@@ -337,7 +337,7 @@ public:
 	* @param data A list containing lists of samples
 	*
 	* @note The index of each list of samples represents the channel's index
-	* @note Streaming data is not possible
+	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
 	*/
 	void push(std::vector<std::vector<double>> const &data);
@@ -349,7 +349,7 @@ public:
 	* @param data A list containing lists of samples
 	*
 	* @note The index of each list of samples represents the channel's index
-	* @note Streaming data is not possible
+	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
 	*/
 	void pushRaw(std::vector<std::vector<short>> const &data);
@@ -399,6 +399,7 @@ public:
 
 	/**
 	 * @brief Set the kernel buffers to a specific value
+	 * @param chnIdx The index corresponding to the channel
 	 * @param count the number of kernel buffers
 	 */
 	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count);
