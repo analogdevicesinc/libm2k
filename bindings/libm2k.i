@@ -9,7 +9,7 @@
 %include "std_vector.i"
 %include "exception.i"
 %allowexception;
-
+%feature("autodoc", "3");
 namespace std {
 	%template(VectorI) vector<int>;
 	%template(VectorS) vector<short>;
