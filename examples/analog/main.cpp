@@ -54,7 +54,6 @@ int main(int argc, char* argv[])
 	trig->setAnalogDelay(0);
 	trig->setAnalogMode(0,ANALOG);
 #endif
-
 	// setup analog output
 	aout->setSampleRate(0,750000);
 	aout->setSampleRate(1,750000);
@@ -83,12 +82,12 @@ int main(int argc, char* argv[])
 	{
 		cout<<val<<endl;
 	}
-	cout << "CHANNEL2"<<endl;
+/*	cout << "CHANNEL2"<<endl;
 	for(double val : data[1])
 	{
 		cout<<val<<endl;
 	}
-	cout <<"end";
+	cout <<"end";*/
 	aout->stop();
 	contextClose(ctx);
 }
