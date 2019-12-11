@@ -2,33 +2,22 @@ import matplotlib
 import numpy as np
 import tkinter as tk
 from tkinter import ttk
-import matplotlib.figure as  fg
 import libm2k
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib import style
-import threading
-import time
-import ctx_tab
-import aout_tab
-import libm2k_tab
 LARGE_FONT = ("Verdana",12)
 SMALL_FONT = ("Vedana",10)
 
-samples_queuech0=[]
-samples_queuech1=[]
-fig=fg.Figure(figsize=(8,6))
-fig_subplot=fig.add_subplot(111)
-
 class ain_tab_frame(tk.Frame):
+
     def __init__(self,parent,ain,*args,**kwargs):
         tk.Frame.__init__(self,parent,*args,**kwargs)
         self.ain=ain
         self.create_widgets()
 
-
     def create_widgets(self):
+
         def change_samplerate(in_samplerate,*parags):
             self.change_sample_rate()
+
         ain_ch1_label=tk.Label(self,text="Set-up channel 1",font=SMALL_FONT)
         ain_ch2_label=tk.Label(self,text="Set-up channel 2",font=SMALL_FONT)
         ain_ch1_label.grid(row=7,column=1)
@@ -107,7 +96,6 @@ class ain_tab_frame(tk.Frame):
         sclfactch0_box.grid(row=11,column=1)
         sclfactch1_box=tk.Label(self,textvariable=self.sclfact_ch1)
         sclfactch1_box.grid(row=11,column=2)
-
         self.ain_range_ch0_var= tk.IntVar()
         ain_range_ch0_check=tk.Checkbutton(self,text ="Set High Range",variable=self.ain_range_ch0_var,command=self.set_range_ch0,font=SMALL_FONT)
         ain_range_ch0_check.grid(row=12,column=1)
@@ -130,6 +118,7 @@ class ain_tab_frame(tk.Frame):
         desired_samplerate=float(self.in_samplerate.get())
         ain.setSampleRate(desired_samplerate)
         self.filter_comp.set(str(ain.getFilterCompensation(ain.getSampleRate())))
+
     def get_values(self):
         ain=self.ain
         self.calibscale_ch0.set(str(ain.getCalibscale(0)))
@@ -142,13 +131,16 @@ class ain_tab_frame(tk.Frame):
         self.hystrange_ch1.set(str(ain.getHysteresisRange(1)))
         self.sclfact_ch0.set(str(ain.getScalingFactor(0)))
         self.sclfact_ch1.set(str(ain.getScalingFactor(1)))
+
     def set_kernelbuff(self):
         ain=self.ain
         count=int(self.kernelbuff_entry.get())
         ain.setKernelBuffersCount(count)
+
     def set_oversampling(self):
         ain=self.ain
         ain.setOversamplingRatio(int(self.oversampling_ratio.get()))
+
     def set_range_ch0(self):
         ain=self.ain
         if self.ain_range_ch0_var.get()==1:
@@ -156,6 +148,7 @@ class ain_tab_frame(tk.Frame):
         else:
             ain.setRange(0,0)
         self.rangelimits_ch0.set(str(ain.getRangeLimits(ain.getRange(0))))
+
     def set_range_ch1(self):
         ain=self.ain
         if self.ain_range_ch1_var.get()==1:
@@ -163,6 +156,7 @@ class ain_tab_frame(tk.Frame):
         else:
             ain.setRange(1,0)
         self.rangelimits_ch1.set(str(ain.getRangeLimits(ain.getRange(1))))
+
     def set_values(self):
         ain=self.ain
         if self.calibscale_ch0_entry.get() is not None:
@@ -173,5 +167,3 @@ class ain_tab_frame(tk.Frame):
             ain.setVerticalOffset(0,float(self.vertoffset_ch0_entry.get()))
         if self.vertoffset_ch1_entry.get() is not None:
             ain.setVerticalOffset(1,float(self.vertoffset_ch1_entry.get()))
-        print("set")
-    

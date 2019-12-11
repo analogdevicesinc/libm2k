@@ -9,11 +9,13 @@ global ctx
 ctx=None
 
 class libm2k_tab_frame(tk.Frame):
+
     def __init__(self,parent,app,*args,**kwargs):
         tk.Frame.__init__(self,parent,*args,**kwargs)
         self.parent=parent
         self.app=app
         self.create_widgets()
+
     def create_widgets(self):
         self.options_widgets()
         self.option_var=tk.IntVar()
@@ -35,6 +37,7 @@ class libm2k_tab_frame(tk.Frame):
         self.ctx_serial=tk.StringVar()
         libm2k_serial=tk.Label(self,textvariable=self.ctx_serial,justify="left",font=SMALL_FONT)
         libm2k_serial.grid(row=9,column=1,columnspan=2)
+
     def selection(self):
         if self.option_var.get()==1:
             print("option1")
@@ -57,8 +60,6 @@ class libm2k_tab_frame(tk.Frame):
             self.opt2_dropdown.config(state="disabled")
             self.ctx_message.set("")
 
-      
-
     def options_widgets(self):
         self.opt1_label=tk.Label(self,text="URI for remote device:",justify="left",font=SMALL_FONT)
         self.opt1_label.grid(row=1,column=1)
@@ -74,6 +75,7 @@ class libm2k_tab_frame(tk.Frame):
         self.open_button.grid(row=2,column=2)
         self.close_button=tk.Button(self,text="Close Context",command=self.close_context,justify="left",font=SMALL_FONT)
         self.close_button.grid(row=4,column=2) 
+
     def open_context(self):
         global ctx
         if self.option_var.get()==2:
@@ -95,8 +97,6 @@ class libm2k_tab_frame(tk.Frame):
             else:
                 self.ctx_message.set("M2K already connected")
                 return
-
-                   
         if ctx is None:
             self.ctx_message.set("No module connected!")
         else:
@@ -118,6 +118,7 @@ class libm2k_tab_frame(tk.Frame):
             ps=ctx.getPowerSupply()
             if ps is not None:
                 self.app.open_ps_tab(ps)
+
     def close_context(self):
         global ctx
         self.ctx_message.set(" ")
@@ -131,4 +132,3 @@ class libm2k_tab_frame(tk.Frame):
         self.app.remove_plot_tab()
         libm2k.contextClose(ctx)
         ctx=None
-

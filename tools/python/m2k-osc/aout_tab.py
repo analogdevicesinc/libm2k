@@ -1,18 +1,16 @@
-import matplotlib
 import numpy as np
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 import matplotlib.figure as  fg
 import libm2k
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib import style
 import ctx_tab
 import libm2k_tab
 import csv
 
 LARGE_FONT = ("Verdana",12)
 SMALL_FONT = ("Vedana",10)
+
 def gen_sine(sample_rate,num_of_samples,a_min,a_max):
     A = (a_max-a_min)/2
     C = (a_min+a_max)/2
@@ -34,8 +32,6 @@ def gen_triangle(num_of_samples,a_min,a_max):
     x=np.abs(np.linspace(a_min,a_max,num_of_samples))
     return x
 
-
-
 class aout_tab_frame(tk.Frame):
     def __init__(self,parent,aout,*args,**kwargs):
         tk.Frame.__init__(self,parent,*args,**kwargs)
@@ -43,17 +39,24 @@ class aout_tab_frame(tk.Frame):
         self.outstream_ch0=False
         self.outstream_ch1=False
         self.create_widgets()
+
     def __del__(self):
         print("DESTROYED");
+
     def create_widgets(self):
+
         def change_samplerate_ch0(out_samplerate_ch0,*parags):
             self.change_sampleratech0()
+
         def change_samplerate_ch1(out_samplerate_ch1,*parags):
             self.change_sampleratech1()
+
         def change_waveform_ch0(func_ch0,*parags):
             self.outputch0_function()
+
         def change_waveform_ch1(func_ch1,*parags):
             self.outputch1_function()
+
         aout_label=tk.Label(self,text="Push data to analog output channels.",font=SMALL_FONT)
         aout_label.grid(row=0,column=1,columnspan=2)
         aout_ch_label=tk.Label(self,text="Enable output channels:",anchor='w',width='20',font=SMALL_FONT)
@@ -189,68 +192,76 @@ class aout_tab_frame(tk.Frame):
         ch1_stop=tk.Button(self,text="Stop Ch2",command=self.stop_ch1,font=SMALL_FONT)
         ch1_stop.grid(row=20,column=2)
 
-
     def change_ampl(self):
         self.amax_ch0.set(self.max_ampl_entry_ch0.get())
         self.amax_ch1.set(self.max_ampl_entry_ch1.get())
         self.amin_ch0.set(self.min_ampl_entry_ch0.get())
         self.amin_ch1.set(self.min_ampl_entry_ch1.get())
+
     def change_sampleratech0(self):
         aout=self.aout
         desired_samplerate=float(self.out_samplerate_ch0.get())
         aout.setSampleRate(0,desired_samplerate)
         self.filtercomp_ch0.set(str(aout.getFilterCompensation(aout.getSampleRate(0))))
+
     def change_sampleratech1(self):
         aout=self.aout
         desired_samplerate=float(self.out_samplerate_ch1.get())
         aout.setSampleRate(1,desired_samplerate)
         self.filtercomp_ch1.set(str(aout.getFilterCompensation(aout.getSampleRate(1))))
+
     def enable_ch0(self):
         aout=self.aout
-        if self.aout_ch0_var.get() ==1:
+        if self.aout_ch0_var.get()==1:
             aout.enableChannel(0,True)
         else:
             aout.enableChannel(0,False)
+
     def enable_ch1(self):
         aout=self.aout
-        if self.aout_ch1_var.get() ==1:
+        if self.aout_ch1_var.get()==1:
             aout.enableChannel(1,True)
         else:
             aout.enableChannel(1,False)
+
     def outputch0_function(self):
         aout=self.aout
         #define displayed waveform
-        if self.func_ch0.get() == 'Sine Wave':
-            def_buffer = gen_sine(float(aout.getSampleRate(0)),int(self.num_of_samples_ch0.get()),float(self.amin_ch0.get()),float(self.amax_ch0.get()))
-        elif self.func_ch0.get() == 'Square Wave':
-            def_buffer = gen_square(int(self.num_of_samples_ch0.get()),float(self.amin_ch0.get()),float(self.amax_ch0.get()))
+        if self.func_ch0.get()=='Sine Wave':
+            def_buffer=gen_sine(float(aout.getSampleRate(0)),int(self.num_of_samples_ch0.get()),float(self.amin_ch0.get()),float(self.amax_ch0.get()))
+        elif self.func_ch0.get()=='Square Wave':
+            def_buffer=gen_square(int(self.num_of_samples_ch0.get()),float(self.amin_ch0.get()),float(self.amax_ch0.get()))
         elif self.func_ch0.get()=='Triangular Wave':
-            def_buffer = gen_triangle(int(self.num_of_samples_ch0.get()),float(self.amin_ch0.get()),float(self.amax_ch0.get()))
+            def_buffer=gen_triangle(int(self.num_of_samples_ch0.get()),float(self.amin_ch0.get()),float(self.amax_ch0.get()))
         else:
-            def_buffer = self.read_csv(0)
+            def_buffer=self.read_csv(0)
         if self.outstream_ch0 is True:
             #when the analog output is enabled, data buffer is pushed
             aout.push(0,def_buffer)
+
     def outputch1_function(self):
         aout=self.aout
         #define displayed waveform
-        if self.func_ch1.get() == 'Sine Wave':
-            def_buffer = gen_sine(float(aout.getSampleRate(1)),int(self.num_of_samples_ch1.get()),float(self.amin_ch1.get()),float(self.amax_ch1.get()))
-        elif self.func_ch1.get() == 'Square Wave':
-            def_buffer = gen_square(int(self.num_of_samples_ch1.get()),float(self.amin_ch1.get()),float(self.amax_ch1.get()))
+        if self.func_ch1.get()=='Sine Wave':
+            def_buffer=gen_sine(float(aout.getSampleRate(1)),int(self.num_of_samples_ch1.get()),float(self.amin_ch1.get()),float(self.amax_ch1.get()))
+        elif self.func_ch1.get()=='Square Wave':
+            def_buffer=gen_square(int(self.num_of_samples_ch1.get()),float(self.amin_ch1.get()),float(self.amax_ch1.get()))
         elif self.func_ch1.get()=='Triangular Wave':
-            def_buffer = gen_triangle(int(self.num_of_samples_ch1.get()),float(self.amin_ch1.get()),float(self.amax_ch1.get()))
+            def_buffer=gen_triangle(int(self.num_of_samples_ch1.get()),float(self.amin_ch1.get()),float(self.amax_ch1.get()))
         else:
-            def_buffer = self.read_csv(0)
+            def_buffer=self.read_csv(0)
         if self.outstream_ch1 is True:
             #when the analog output is enabled, data buffer is pushed
             aout.push(1,def_buffer)
+
     def push_ch0(self):
         self.outstream_ch0=True
         self.outputch0_function()
+
     def push_ch1(self):
         self.outstream_ch1=True
         self.outputch1_function()
+
     def read_csv(self,column):
         num_data=[]
         self.filename=filedialog.askopenfilename(title="Select file")
@@ -263,9 +274,11 @@ class aout_tab_frame(tk.Frame):
             except ValueError:
                 print("Cannot convert {} to a float ... skipping".format(entry))
         return num_data
+
     def scal_fact(self):
         self.scalfact_ch0.set(str(self.aout.getScalingFactor(0)))
         self.scalfact_ch1.set(str(self.aout.getScalingFactor(1)))
+
     def set_cyclic(self):
         aout=self.aout
         if self.cyclic_ch0_var.get()==1:
@@ -276,6 +289,7 @@ class aout_tab_frame(tk.Frame):
             aout.setCyclic(1,True)
         else:
             aout.setCyclic(1,False)
+
     def set_calibscale(self):
         aout=self.aout
         if self.calibscale_ch0_entry.get() is not None:
@@ -283,7 +297,6 @@ class aout_tab_frame(tk.Frame):
         if self.calibscale_ch1_entry.get() is not None:
             aout.setCalibscale(1,float(self.calibscale_ch1_entry.get()))
 
-        
     def set_numofsamples(self):
         self.num_of_samples_ch0.set(self.num_of_samples_entrych0.get())
         self.num_of_samples_ch1.set(self.num_of_samples_entrych1.get())
@@ -292,15 +305,11 @@ class aout_tab_frame(tk.Frame):
         aout=self.aout
         aout.setOversamplingRatio(0,float(self.oversampling_ch0.get()))
         aout.setOversamplingRatio(1,float(self.oversampling_ch1.get()))
+
     def stop_ch0(self):
         self.outstream_ch0=False
         self.aout.stop(0)
+
     def stop_ch1(self):
         self.outstream_ch1=False
         self.aout.stop(1)
-
-
- 
-
-
-

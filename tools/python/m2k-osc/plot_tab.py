@@ -11,11 +11,13 @@ import time
 import ctx_tab
 import aout_tab
 import libm2k_tab
+
 LARGE_FONT = ("Verdana",12)
 SMALL_FONT = ("Vedana",10)
 
 samples_queuech0=[]
 samples_queuech1=[]
+
 fig=fg.Figure(figsize=(7,5))
 fig_subplot=fig.add_subplot(111)
 
@@ -25,6 +27,7 @@ def get_samples(ain):
         global samples_queuech0,samples_queuech1
         samples_queuech0.append(ain.getSamples(int(read_samples.get()))[0])
         samples_queuech1.append(ain.getSamples(int(read_samples.get()))[1])
+
 class plot_tab_frame(tk.Frame):
     def __init__(self,parent,ain,*args,**kwargs):
         tk.Frame.__init__(self,parent,*args,**kwargs)
@@ -32,6 +35,7 @@ class plot_tab_frame(tk.Frame):
         self.instream=False
         self.create_widgets()
         self.create_canvas()
+
     def create_widgets(self):
         ain_ch_label=tk.Label(self,text="Enable input channels",anchor='w',width=20,font=SMALL_FONT)
         ain_ch_label.grid(row=1,column=0)
@@ -62,6 +66,7 @@ class plot_tab_frame(tk.Frame):
         self.refreshtime_entry.grid(row=3,column=1)
         set_refresh=tk.Button(self,text="Set",command=self.set_refreshtime,width=5,font=SMALL_FONT)
         set_refresh.grid(row=3,column=2)
+
     def create_canvas(self):
         x=[1,2,3]
         y_ch0=[5,4,7]
@@ -71,18 +76,21 @@ class plot_tab_frame(tk.Frame):
         self.canvas=FigureCanvasTkAgg(fig,master=self)
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=11,column=0,columnspan=6)
+
     def enable_ch0(self):
         ain=self.ain
         if self.ain_ch0_var.get() ==1:
             ain.enableChannel(0,True)
         else:
             ain.enableChannel(0,False)
+
     def enable_ch1(self):
         ain=self.ain
         if self.ain_ch1_var.get() ==1:
             ain.enableChannel(1,True)
         else:
             ain.enableChannel(1,False)
+
     def plot(self):
         global samples_queuech0,samples_queuech1
         y_ch0=[]
@@ -104,6 +112,7 @@ class plot_tab_frame(tk.Frame):
             ax.set_xlabel("Previous Sample Count")
             ax.set_ylabel("Previous Gathered Data")
         self.canvas.draw()
+
     def set_refreshtime(self):
         self.refresh_time.set(self.refreshtime_entry.get())
 
@@ -111,23 +120,24 @@ class plot_tab_frame(tk.Frame):
         self.instream=True
         self.start_thread(self.ain)
         self.update_plot()
+
     def start_thread(self,ain):
         global stop_thread
         stop_thread=False
         get_samples_thread=threading.Thread(target=get_samples,args=(ain,))
         get_samples_thread.setDaemon(True)
         get_samples_thread.start()
+
     def stop_in(self):
         global stop_thread
         stop_thread=True
         self.instream=False
+
     def update_plot(self):
         self.plot()
         if self.instream is True:
             self.after(int(self.refresh_time.get()),self.update_plot)
+
     def update_readsamples(self):
         global read_samples
         read_samples.set(self.ain_samples_entry.get())
-    
-   
-

@@ -7,17 +7,18 @@ import libm2k
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib import style
 import threading
-import ctx_tab
-import aout_tab
 import libm2k_tab
+
 samples_queue=[]
 for i in range(16):
     samples_queue.append([])
 
 LARGE_FONT = ("Verdana",12)
 SMALL_FONT = ("Vedana",10)
+
 fig=fg.Figure(figsize=(6,5))
 fig_subplot=fig.add_subplot(111)
+
 def get_samples(dig):
     global read_samples, samples_queue
     data=dig.getSamples(int(read_samples.get()))
@@ -29,8 +30,6 @@ def get_samples(dig):
         for i in range(16):
             samples_queue[i].append(int(v[i]))
 
-
-
 class digplot_tab_frame(tk.Frame):
     def __init__(self,parent,dig,*args,**kwargs):
         tk.Frame.__init__(self,parent,*args,**kwargs)
@@ -39,6 +38,7 @@ class digplot_tab_frame(tk.Frame):
         self.colours=["#a8b8d6","#ffa500","#51a663","#ff6652","#513371","#c15600","#f9a8c4","#0d6785","#bada55","#babaff","#003366","#ff919c","#b4127c","#69d7ac","#ffd700","#4c4c4c"]
         self.create_widgets()
         self.create_canvas()
+
     def create_widgets(self):
         enable_label=tk.Label(self,text="Enable channels",anchor='w',width=15,font=SMALL_FONT)
         enable_label.grid(row=0,column=0)
@@ -89,10 +89,11 @@ class digplot_tab_frame(tk.Frame):
         self.canvas=FigureCanvasTkAgg(fig,master=self)
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=2,column=1,columnspan=5,rowspan=15)
+
     def update_readsamples(self):
         global read_samples
         read_samples.set(self.dig_samples_entry.get())
-   
+
     def plot(self):
         global samples_queue
         y=[]
@@ -109,23 +110,23 @@ class digplot_tab_frame(tk.Frame):
                         current_line.set_data(range(len(y[i])),y[i])
                     else:
                         current_line.set_data(range(int(read_samples.get())),np.zeros(int(read_samples.get())))
-
         ax=self.canvas.figure.axes[0]
         ax.set_xlim(0,int(read_samples.get()))
         ax.set_ylim(0,35)
         ax.set_xlabel("Sample Count")
         ax.set_ylabel("Gathered Data")
         self.canvas.draw()
+
     def start_in(self):
         self.instream=True
         self.update_plot()
+
     def stop_in(self):
         self.instream=False
         self.dig.flushBufferIn()
         self.dig.stopBufferOut()
+
     def update_plot(self):
         self.plot()
         if self.instream is True:
             self.after(int(self.refresh_time.get()),self.update_plot)
-
-

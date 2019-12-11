@@ -1,20 +1,17 @@
-import matplotlib
 import numpy as np
 import tkinter as tk
 from tkinter import ttk
-import matplotlib.figure as  fg
 import libm2k
-from matplotlib import style
-import threading
-import time
 LARGE_FONT = ("Verdana",12)
 SMALL_FONT = ("Vedana",10)
 
 class ps_tab_frame(tk.Frame): 
+
     def __init__(self,parent,ps,*args,**kwargs):
         tk.Frame.__init__(self,parent,*args,**kwargs)
         self.ps=ps
         self.create_widgets()
+
     def create_widgets(self):
         psch_label=tk.Label(self,text="Enable pwr spl channels:",font=SMALL_FONT)
         psch_label.grid(row=3,column=0)
@@ -57,23 +54,28 @@ class ps_tab_frame(tk.Frame):
             ps.enableChannel(0,True)
         else:
             ps.enableChannel(0,False)
+
     def enable_ch1(self):
         ps=self.ps
         if self.psch1_var.get() ==1:
             ps.enableChannel(1,True)
         else:
             ps.enableChannel(1,False)
+
     def push_ch0(self):
         ps=self.ps
         voltage=float(self.psvalue_ch0_entry.get())
         ps.pushChannel(0,voltage)
         self.psvalue_ch0.set(str(self.ps.readChannel(0)))
+
     def push_ch1(self):
         ps=self.ps
         voltage=float(self.psvalue_ch1_entry.get())
         ps.pushChannel(1,voltage)
         self.psvalue_ch1.set(str(self.ps.readChannel(1)))
+
     def read_ch0(self):
         self.psvalue_ch0.set(str(self.ps.readChannel(0)))
+
     def read_ch1(self):
         self.psvalue_ch1.set(str(self.ps.readChannel(1)))

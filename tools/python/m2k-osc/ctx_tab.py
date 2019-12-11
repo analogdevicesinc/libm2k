@@ -14,8 +14,7 @@ class ctx_tab_frame(tk.Frame):
         self.ain=ain
         self.aout=aout
         self.create_widgets()
-        
-    
+
     def create_widgets(self):
         ctx_location=tk.Label(self,text="Context at "+self.ctx.getUri(),anchor='w',font=SMALL_FONT)
         ctx_location.grid(row=1,column=0,columnspan=2)
@@ -33,7 +32,6 @@ class ctx_tab_frame(tk.Frame):
         ctx_init_button.grid(row=7,column=0)
         ctx_resetinit_button = tk.Button(self,text ="Deninit",width=15,command=self.reset_init,font=SMALL_FONT)
         ctx_resetinit_button.grid(row=8,column=0)
-
         self.dacA_calib_offset=tk.StringVar()
         self.dacA_calib_gain=tk.StringVar()
         self.dacB_calib_offset=tk.StringVar()
@@ -81,8 +79,8 @@ class ctx_tab_frame(tk.Frame):
         self.ch1_calib_gain.set(str(ctx.getAdcCalibrationGain(0)))
         self.ch2_calib_offset.set(str(ctx.getAdcCalibrationOffset(1)))
         self.ch2_calib_gain.set(str(ctx.getAdcCalibrationGain(1)))
-
         print("ADCs Calibrated")
+
     def calibrate_dac(self):
         ctx=self.ctx
         ctx.calibrateDAC()
@@ -96,7 +94,7 @@ class ctx_tab_frame(tk.Frame):
         ctx=self.ctx
         ctx.init()
         print("init done")
-                
+
     def reset_calib(self):
         print("calib reset")
         ctx=self.ctx
@@ -109,14 +107,17 @@ class ctx_tab_frame(tk.Frame):
         self.dacA_calib_gain.set(" ")
         self.dacB_calib_offset.set(" ")
         self.dacB_calib_gain.set(" ")
+
     def reset_init(self):
         print("deinit")
         self.ctx.deinitialize()
+
     def set_led(self):
         if self.led_var.get()==1:
             self.ctx.setLed(True)
         else:
             self.ctx.setLed(False)
+
     def set_values(self):
         ain=self.ain
         aout=self.aout
@@ -144,4 +145,3 @@ class ctx_tab_frame(tk.Frame):
             return
         else:
             aout.setDacCalibVlsb(1,float(self.dacB_calib_gain.get()))
-    
