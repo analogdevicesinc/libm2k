@@ -350,10 +350,17 @@ public:
 
 
 	/**
-	 * @brief Set the kernel buffers to a specific value
+	 * @brief Set the kernel buffers for input to a specific value
 	 * @param count the number of kernel buffers
 	 */
 	void setKernelBuffersCountIn(unsigned int count);
+
+
+	/**
+	 * @brief Set the kernel buffers for output to a specific value
+	 * @param count the number of kernel buffers
+	 */
+	void setKernelBuffersCountOut(unsigned int count);
 
 
 	/**
