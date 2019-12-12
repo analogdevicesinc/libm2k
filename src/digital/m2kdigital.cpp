@@ -157,6 +157,11 @@ void M2kDigital::setKernelBuffersCountIn(unsigned int count)
 	m_pimpl->setKernelBuffersCountIn(count);
 }
 
+void libm2k::digital::M2kDigital::setKernelBuffersCountOut(unsigned int count)
+{
+	m_pimpl->setKernelBuffersCountOut(count);
+}
+
 IIO_OBJECTS M2kDigital::getIioObjects()
 {
 	return m_pimpl->getIioObjects();

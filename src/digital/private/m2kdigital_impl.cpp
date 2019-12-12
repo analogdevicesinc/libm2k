@@ -115,6 +115,11 @@ public:
 		m_dev_read->setKernelBuffersCount(count);
 	}
 
+	void setKernelBuffersCountOut(unsigned int count)
+	{
+		m_dev_write->setKernelBuffersCount(count);
+	}
+
 	void setDirection(unsigned short mask)
 	{
 		DIO_DIRECTION direction;
