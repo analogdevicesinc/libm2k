@@ -200,31 +200,31 @@ public:
 
 	virtual void setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT out_select)
 	{
-		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
-						       "the analog external output is not configurable on "
-						       "the current board; Check the firmware version.");
+		throw std::runtime_error("M2kHardwareTrigger: "
+					 "the analog external output is not configurable on "
+					 "the current board; Check the firmware version.");
 	}
 
 	virtual M2K_TRIGGER_OUT_SELECT getAnalogExternalOutSelect()
 	{
-		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
-						       "the analog external output is not available on "
-						       "the current board; Check the firmware version.");
+		throw std::runtime_error("M2kHardwareTrigger: "
+					 "the analog external output is not available on "
+					 "the current board; Check the firmware version.");
 	}
 
 
 	virtual void setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)
 	{
-		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
-						       "the digital external source is not configurable on "
-						       "the current board; Check the firmware version.");
+		throw std::runtime_error("M2kHardwareTrigger: "
+					 "the digital external source is not configurable on "
+					 "the current board; Check the firmware version.");
 	}
 
 	virtual M2K_TRIGGER_SOURCE_DIGITAL getDigitalSource()
 	{
-		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
-						       "the digital external source is not available on "
-						       "the current board; Check the firmware version.");
+		throw std::runtime_error("M2kHardwareTrigger: "
+					 "the digital external source is not available on "
+					 "the current board; Check the firmware version.");
 	}
 
 	M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition()
