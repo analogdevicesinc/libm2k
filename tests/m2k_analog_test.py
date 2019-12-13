@@ -85,12 +85,12 @@ class A_AnalogTests(unittest.TestCase):
         reset.analog_in(ain)
         reset.analog_out(aout)
         reset.trigger(trig)
-        out0_buffer_samples, out1_buffer_samples, ch0_sample_ratio, ch1_sample_ratio, in0_buffer_samples, in1_buffer_samples=set_samplerates_for_shapetest(ain, aout)
-        buffer0=shape_gen(out0_buffer_samples)
-        buffer=[buffer0[0],buffer0[0]]
-        phase_diff_between_channels=phase_diff_ch0_ch1(buffer, out0_buffer_samples, aout,ain,trig, results_dir, results_file,csv_path)
-        with self.subTest(msg="Send and receive the same signal simultaneously on both analog channels "):
-            self.assertEqual(int(phase_diff_between_channels), 0,  'channels are  not in phase' )
+
+        phase_diff_between_channels,adc_sr=phase_diff_ch0_ch1( aout,ain,trig, results_dir, results_file,csv_path)
+        for i in range(len(adc_sr)):
+            with self.subTest('ADC SampleRate'+str(adc_sr[i]) ):
+                self.assertEqual(int(phase_diff_between_channels[i]),0,'not in phase, ADC SR:'+str(phase_diff_between_channels[i]))
+        
 
     def test_phase_difference_between_channels_in_samples(self):
         reset.analog_in(ain)
