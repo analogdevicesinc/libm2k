@@ -11,6 +11,7 @@ from pandas import DataFrame
 import pandas
 import random
 import sys
+import logging
 #dicts that will be saved to csv files
 shape_csv_vals={}
 ampl_csv_vals={}
@@ -61,15 +62,16 @@ def set_samplerates_for_shapetest(ain, aout):
     adc_sample_rate=1000000
     dac_a_sample_rate=7500000
     dac_b_sample_rate=7500000
-    out0_buffer_samples=4096*4
-    out1_buffer_samples=4096*4
+    test_frequency=10000
+    out0_buffer_samples=int(dac_a_sample_rate/test_frequency)
+    out1_buffer_samples=int(dac_b_sample_rate/test_frequency)
     ain.setSampleRate(adc_sample_rate)
     aout.setSampleRate(libm2k.ANALOG_IN_CHANNEL_1, dac_a_sample_rate)
     aout.setSampleRate(libm2k.ANALOG_IN_CHANNEL_2, dac_b_sample_rate)
     ch0_sample_ratio=dac_a_sample_rate/adc_sample_rate
     ch1_sample_ratio=dac_b_sample_rate/adc_sample_rate
-    in0_buffer_samples=round(out0_buffer_samples/ch0_sample_ratio)
-    in1_buffer_samples=round(out1_buffer_samples/ch1_sample_ratio)
+    in0_buffer_samples=int(adc_sample_rate/test_frequency)
+    in1_buffer_samples=int(adc_sample_rate/test_frequency)
     return out0_buffer_samples, out1_buffer_samples, ch0_sample_ratio, ch1_sample_ratio, in0_buffer_samples, in1_buffer_samples
 
 def set_trig(trig,channel,delay, cond=None, level=None):
@@ -219,7 +221,9 @@ def test_shape(channel,out_data,ref_data,ain,aout,trig, ch_ratio, shapename, dir
     return corr_shape_vect, phase_diff_vect
 
 
-def phase_diff_ch0_ch1(out_data, n, aout,ain,trig, dir_name, file, csv_path):
+
+
+def phase_diff_ch0_ch1( aout,ain,trig, dir_name, file, csv_path):
     """Sends the same signal on both analog channel and computes the phase difference between the signal received on ch0 and the signal received on ch1
     Arguments:
         out_data  -- Output data buffer\n
@@ -234,27 +238,42 @@ def phase_diff_ch0_ch1(out_data, n, aout,ain,trig, dir_name, file, csv_path):
         phase_diff_between_channels-- the phase difference between channels in degrees
     """
     file.write("\n\n The same buffer sent simultaneously o both analog channels:\n")
-    set_trig(trig, libm2k.ANALOG_IN_CHANNEL_1,0,libm2k.LOW_LEVEL_ANALOG, 0.0)
-    ain.setRange(libm2k.ANALOG_IN_CHANNEL_1,libm2k.PLUS_MINUS_2_5V)
-    ain.setRange(libm2k.ANALOG_IN_CHANNEL_2,libm2k.PLUS_MINUS_2_5V)
-    
+    set_trig(trig, libm2k.ANALOG_IN_CHANNEL_1,0,libm2k.RISING_EDGE_ANALOG, 0.0)
+    dac_sr=75000000
+    adc_sr=[1000000,10000000,100000000]
+    test_frequency=100000
+    out_samples=int(dac_sr/test_frequency)
+    in_samples=100000 #get a buffer long enough, the phase differences may appear in time
+    sig=np.sin(np.linspace(-np.pi,np.pi,out_samples))#test signal
+    out_data=[sig,sig]
+    aout.setSampleRate(0, dac_sr)
+    aout.setSampleRate(1, dac_sr)
+
+
     aout.push(out_data)
-    try:
-        input_data = ain.getSamples(n)
-    except:
-         print('Timeout occured')
-    ain.flushBuffer()
-    plot_to_file('Same signal on both analog channels',input_data[0], dir_name, 'channels_phase_diff.png', data1=input_data[1])
-    plt.close()
-    corr, _= pearsonr(input_data[libm2k.ANALOG_IN_CHANNEL_1], input_data[libm2k.ANALOG_IN_CHANNEL_2])#compute crrelation between the signals on the analog channels
-    phase_diff_between_channels=((math.acos(corr))*180)/np.pi #compute the phase difference
-    file.write("Phase difference between the channels:" +str(phase_diff_between_channels)+"\n")
-    aout.stop()
+
     phasediff_csv={}
-    phasediff_csv['Channel 0']=input_data[0]
-    phasediff_csv['Channel 1']=input_data[1]
+    phase_diff_between_channels=[]
+    for sr in adc_sr:
+        ain.setSampleRate(sr)
+
+        try:
+            input_data = ain.getSamples(in_samples)
+        except:
+            print("Timeout ocurred")
+        ain.flushBuffer()
+        plot_to_file('Same signal on both analog channels, ADC Sample rate:'+str(sr),input_data[libm2k.ANALOG_IN_CHANNEL_1][90000:in_samples], dir_name, 'ch_phase_diff'+str(sr)+'.png', data1=input_data[libm2k.ANALOG_IN_CHANNEL_2][90000:in_samples])
+        plt.close()
+        corr, _= pearsonr(input_data[libm2k.ANALOG_IN_CHANNEL_1], input_data[libm2k.ANALOG_IN_CHANNEL_2])#compute crrelation between the signals on the analog channels
+        phase_diff_between_channels.append(((math.acos(corr))*180)/np.pi) #compute the phase difference
+        file.write("Phase difference between the channels for ADC Sample Rate "+str(sr)+": " +str(phase_diff_between_channels[-1])+"\n")
+
+
+        phasediff_csv['Ch0, ADCsr='+str(sr)]=input_data[libm2k.ANALOG_IN_CHANNEL_1]
+        phasediff_csv['Ch1, ADCsr='+str(sr)]=input_data[libm2k.ANALOG_IN_CHANNEL_2]
     save_data_to_csv(phasediff_csv, csv_path+'ph_diff_channels.csv')
-    return phase_diff_between_channels
+    aout.stop()
+    return phase_diff_between_channels, adc_sr
 
 
 def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
@@ -690,8 +709,8 @@ def test_oversampling_ratio(channel, ain, aout,trig, file, csv_path):
     set_trig(trig, channel,0, libm2k.FALLING_EDGE_ANALOG, 0.0)
     osr=[random.randint(1, 3), random.randint(3, 7), random.randint(7, 11),  random.randint(11, 15), random.randint(16, 20), random.randint(20, 23)] #some values for oversampling ratio
     verify_osr=[]
-    adc_sr=1000000
-    dac_sr=7500000
+    adc_sr=100000000
+    dac_sr=75000000
     out_nr_samples=1000 #a smaller number of sample so the zero rising edge crossing  is easier to detect
     ain.setSampleRate(adc_sr)
     aout.setSampleRate(channel, dac_sr)
@@ -706,7 +725,7 @@ def test_oversampling_ratio(channel, ain, aout,trig, file, csv_path):
         except:
             print("Timeout ocurred")
         ain.flushBuffer()
-        input_data=ain.getSamples(round(in_nr_samples))[channel]
+       
         c=0 #set the counter of rising edge zero crossings to 0
         for i in range(1,len(input_data)):
             if  round(input_data[i-1],3)<0 and round(input_data[i],3)>0: #test if there is a zero crossing on the rising edge (middle of a sine period)
