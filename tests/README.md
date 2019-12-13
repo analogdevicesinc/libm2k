@@ -22,3 +22,8 @@ In order to use the testing scripts, some packages are required:
 * scipy
 * pandas 
 * pdoc3 
+
+To run a single test from one of the test classes open cmd in the working directory and run:
+    ```main.py TestClass.test_name```
+ Ex: ```main.py A_AnalogTests.test_1_analog_objects```
+        
