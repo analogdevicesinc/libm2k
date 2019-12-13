@@ -52,7 +52,7 @@ namespace analog {
 	* @enum ANALOG_IN_CHANNEL
 	* @brief Indexes of the channels
 	*
-	* Each channel can be accessed through its index
+	* @note Each channel can be accessed through its index
 	*
 	*/
 	enum ANALOG_IN_CHANNEL {
