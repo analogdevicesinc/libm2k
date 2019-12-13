@@ -37,7 +37,7 @@ namespace digital {
 	* @enum DIO_DIRECTION
 	* @brief Direction of a digital channel
 	*
-	* Digital channels can be used both for transmitting and receiving digital signals.
+	* @note Digital channels can be used both for transmitting and receiving digital signals
 	*
 	*/
 	enum DIO_DIRECTION {
@@ -50,7 +50,7 @@ namespace digital {
 	* @enum DIO_LEVEL
 	* @brief Logic voltage levels
 	*
-	* At any given time a digital signals can only take two possible values, namely low or high
+	* @note At any given time a digital signals can only take two possible values, namely low or high
 	*
 	*/
 	enum DIO_LEVEL {
@@ -63,7 +63,7 @@ namespace digital {
 	* @enum DIO_CHANNEL
 	* @brief Indexes of the channels
 	*
-	* Each channel can be accessed through its index
+	* @note Each channel can be accessed through its index
 	*
 	*/
 	enum DIO_CHANNEL {

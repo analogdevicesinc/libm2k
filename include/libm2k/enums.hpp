@@ -63,8 +63,8 @@ namespace libm2k {
 
 
 	/**
-	* @enum M2K_TRIGGER_CONDITION_ANALOG for the analog side.
-	* @brief Condition of triggering.
+	* @enum M2K_TRIGGER_CONDITION_ANALOG for the analog side
+	* @brief Condition of triggering
 	*
 	*/
 	enum M2K_TRIGGER_CONDITION_ANALOG {
@@ -76,8 +76,8 @@ namespace libm2k {
 
 
 	/**
-	* @enum M2K_TRIGGER_CONDITION_DIGITAL for the digital side.
-	* @brief Condition of triggering.
+	* @enum M2K_TRIGGER_CONDITION_DIGITAL for the digital side
+	* @brief Condition of triggering
 	*
 	*/
 	enum M2K_TRIGGER_CONDITION_DIGITAL {
@@ -92,14 +92,12 @@ namespace libm2k {
 
 	/**
 	* @enum M2K_TRIGGER_MODE
-	* @brief ALWAYS - Disable analog trigger;
-	*	ANALOG - Trigger condition specified only by analog trigger (CH1 and CH2);
-	*	EXTERNAL - Trigger condition specified only by external trigger (TI);
+	* @brief Select the mode for the analog trigger
 	*/
 	enum M2K_TRIGGER_MODE {
-		ALWAYS = 0,
-		ANALOG = 1,
-		EXTERNAL = 2,
+		ALWAYS = 0, ///< ALWAYS - Disable analog trigger;
+		ANALOG = 1, ///< ANALOG - Trigger condition specified only by analog trigger (CH1 and CH2)
+		EXTERNAL = 2, ///< EXTERNAL - Trigger condition specified only by external trigger (TI)
 		DIGITAL_OR_ANALOG = 3,
 		DIGITAL_AND_ANALOG = 4,
 		DIGITAL_XOR_ANALOG = 5,
@@ -111,18 +109,15 @@ namespace libm2k {
 
 	/**
 	* @enum M2K_TRIGGER_SOURCE_ANALOG
-	* @brief The source of analog triggering.
-	*	CHANNEL_X - trigger events on analog CHANNEL_X trigger the AnalogIn interface;
-	* 	SRC_DIGITAL_IN - trigger events on the DigitalIn interface trigger the AnalogIn interface;
-	*
+	* @brief Select the source for the analog trigger
 	*/
 	enum M2K_TRIGGER_SOURCE_ANALOG {
-		CHANNEL_1 = 0,
-		CHANNEL_2 = 1,
+		CHANNEL_1 = 0, ///< CHANNEL_1 - trigger events on analog CHANNEL_1 trigger the AnalogIn interface
+		CHANNEL_2 = 1, ///< CHANNEL_2 - trigger events on analog CHANNEL_2 trigger the AnalogIn interface
 		CHANNEL_1_OR_CHANNEL_2 = 2,
 		CHANNEL_1_AND_CHANNEL_2 = 3,
 		CHANNEL_1_XOR_CHANNEL_2 = 4,
-		SRC_DIGITAL_IN = 5,
+		SRC_DIGITAL_IN = 5, ///< SRC_DIGITAL_IN - trigger events on the DigitalIn interface trigger the AnalogIn interface
 		CHANNEL_1_OR_SRC_LOGIC_ANALYZER = 6,
 		CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 7,
 		CHANNEL_1_OR_CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 8,
@@ -130,31 +125,26 @@ namespace libm2k {
 
 
 	/**
-	 * @brief The M2K_TRIGGER_SOURCE_DIGITAL enum
-	 * 	SRC_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalIn interface;
-	 *	SRC_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalIn interface;
-	 *	SRC_NONE - trigger events on the DigitalIn are conditioned by the internal digital trigger structure;
+	 * @enum M2K_TRIGGER_SOURCE_DIGITAL
+	 * @brief Select the source for the digital trigger
 	 */
 	enum M2K_TRIGGER_SOURCE_DIGITAL {
-		SRC_TRIGGER_IN = 0,
-		SRC_ANALOG_IN = 1,
-		SRC_NONE = 2
+		SRC_TRIGGER_IN = 0, ///< SRC_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalIn interface
+		SRC_ANALOG_IN = 1, ///< SRC_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalIn interface
+		SRC_NONE = 2 ///< SRC_NONE - trigger events on the DigitalIn are conditioned by the internal digital trigger structure
 	};
 
 
 	/**
 	 * @enum M2K_TRIGGER_OUT_SELECT
-	 *	SELECT_TRIGGER_IN - forwards trigger events from TI pin(trigger in);
-	 *	SELECT_DIGITAL_IN - forwards trigger events from DigitalIn interface;
-	 *      SELECT_ANALOG_IN  - forwards trigger events from AnalogIn interface;
-	 *	SELECT_NONE - no trigger event is forwarded;
+	 * @brief Select which trigger event will be forwarded on TO pin (trigger out)
 	 */
 	enum M2K_TRIGGER_OUT_SELECT {
-		SELECT_NONE = 0,
+		SELECT_NONE = 0, ///< SELECT_NONE - no trigger event is forwarded
 		SELECT_TRIGGER_I_SAME_CHAN = 1,
-		SELECT_TRIGGER_IN = 2,
-		SELECT_ANALOG_IN = 3,
-		SELECT_DIGITAL_IN = 4
+		SELECT_TRIGGER_IN = 2, ///< SELECT_TRIGGER_IN - forwards trigger events from TI pin(trigger in)
+		SELECT_ANALOG_IN = 3, ///< SELECT_ANALOG_IN  - forwards trigger events from AnalogIn interface
+		SELECT_DIGITAL_IN = 4 ///< SELECT_DIGITAL_IN - forwards trigger events from DigitalIn interface
 	};
 
 
