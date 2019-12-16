@@ -20,6 +20,7 @@ using namespace libm2k::cli;
 Spi::Spi(int argc, char **argv) : Command(argc, argv)
 {
 	spiDesc = nullptr;
+	writeOnly = true;
 }
 
 Spi::~Spi()
@@ -36,7 +37,7 @@ bool Spi::parseArguments(std::vector<std::pair<std::string, std::string>> &outpu
 		return false;
 	}
 	int c, option_index = 0;
-	while ((c = getopt_long(argc, argv, "hi:w:r:",
+	while ((c = getopt_long(argc, argv, "hi:w:",
 				options, &option_index)) != -1) {
 		switch (c) {
 			case 'h':
@@ -58,11 +59,10 @@ bool Spi::parseArguments(std::vector<std::pair<std::string, std::string>> &outpu
 void Spi::handleInit()
 {
 	std::map<std::string, std::string> arguments = Validator::validate(getArguments());
-	if (!(arguments.count("clk") && arguments.count("mosi") && arguments.count("miso") &&
-	      arguments.count("frequency") && arguments.count("cs") && arguments.count("mode") &&
-	      arguments.count("bit_numbering"))) {
+	if (!(arguments.count("clk") && arguments.count("mosi") && arguments.count("frequency")
+	      && arguments.count("cs") && arguments.count("mode") && arguments.count("bit_numbering"))) {
 		throw std::runtime_error(
-			"Expecting: frequency=<value> clk=<value> mosi=<index> miso=<index> cs=<index> mode=<value> bit_numbering=<value>\n");
+			"Expecting: frequency=<value> clk=<value> mosi=<index> cs=<index> mode=<value> bit_numbering=<value>\n");
 	}
 
 	int frequency;
@@ -74,9 +74,6 @@ void Spi::handleInit()
 	int mosi;
 	Validator::validate(arguments["mosi"], "mosi", mosi);
 
-	int miso;
-	Validator::validate(arguments["miso"], "miso", miso);
-
 	int cs;
 	Validator::validate(arguments["cs"], "cs", cs);
 
@@ -85,6 +82,12 @@ void Spi::handleInit()
 
 	std::string bitNumbering;
 	Validator::validate(arguments["bit_numbering"], "bit_numbering", bitNumbering);
+
+	int miso = 0xFF;
+	if (arguments.count("miso")) {
+		writeOnly = false;
+		Validator::validate(arguments["miso"], "miso", miso);
+	}
 
 	m2k_spi_init m2KSpiInit;
 	m2KSpiInit.clock = clk;
@@ -105,9 +108,14 @@ void Spi::handleInit()
 	spiInitParam.chip_select = cs;
 	spiInitParam.extra = (void *) &m2KSpiInit;
 
-	spi_init(&spiDesc, &spiInitParam);
+	int32_t retVal;
+	if (writeOnly) {
+		retVal = spi_init_write_only(&spiDesc, &spiInitParam);
+	} else {
+		retVal = spi_init(&spiDesc, &spiInitParam);
+	}
 
-	if (spi_init(&spiDesc, &spiInitParam) == -1) {
+	if (retVal != 0) {
 		throw std::runtime_error("Could not initiate SPI\n");
 	}
 }
@@ -122,9 +130,13 @@ void Spi::handleWrite()
 	std::vector<uint8_t> data;
 	Validator::validate(arguments["data"], "data", data);
 
-	spi_write_and_read(spiDesc, data.data(), data.size());
-	for (auto &byte : data) {
-		std::cout << "0x" << std::hex << std::uppercase << (int) byte << std::endl;
+	if (writeOnly) {
+		spi_write_only(spiDesc, data.data(), data.size());
+	} else {
+		spi_write_and_read(spiDesc, data.data(), data.size());
+		for (auto &byte : data) {
+			std::cout << "0x" << std::hex << std::uppercase << (int) byte << std::endl;
+		}
 	}
 }
 
@@ -139,18 +151,18 @@ const char *const Spi::helpMessage = "Usage:\n"
 				     "m2kcli spi <uri>\n"
 				     "           [-h | --help]\n"
 				     "           [-i | --init frequency=<value> address=<value> scl=<index> sda=<index>]\n"
-				     "           [-w | --write data=<value>,... option=<value>]\n"
+				     "           [-w | --write data=<value>,...]\n"
 				     "\n"
 				     "Positional arguments:\n"
 				     "  uri                   describe the context location \n"
 				     "Optional arguments:\n"
 				     "  -h, --help            show this help message and exit\n"
-				     "  -i, --init [frequency=<value> clk=<value> mosi=<index> miso=<index> cs=<index> mode=<value> bit_numbering=<value>]\n"
+				     "  -i, --init [frequency=<value> clk=<value> mosi=<index> [miso=<index>] cs=<index> mode=<value> bit_numbering=<value>]\n"
 				     "                        initiate spi\n"
 				     "                        frequency - int\n"
 				     "                        clk - index of any digital pin\n"
 				     "                        mosi - index of any digital pin\n"
-				     "                        miso - index of any digital pin\n"
+				     "                        miso - index of any digital pin; if miso is absent -> write only\n"
 				     "                        cs - index of any digital pin\n"
 				     "                        mode - {0 | 1 | 2 | 3}\n"
 				     "                        bit_numbering - {MSB | LSB}\n"
