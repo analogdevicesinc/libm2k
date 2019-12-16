@@ -185,65 +185,29 @@ static void read(struct spi_desc *desc,
 int32_t spi_init(struct spi_desc **desc,
 		 const struct spi_init_param *param)
 {
+	uint32_t retVal;
 	try {
-		auto spiDesc = new spi_desc;
-		auto m2KSpiDesc = new m2k_spi_desc;
-		m2k_spi_init *m2KSpiInit;
+		retVal = spi_init_write_only(desc, param);
+		if (retVal != 0) {
+			return retVal;
+		}
+		auto m2KSpiDesc = (m2k_spi_desc *) (*desc)->extra;
+		auto m2KSpiInit = (m2k_spi_init *) param->extra;
 
-		// initialize the attributes
-		unsigned int sampleRate = getValidSampleRate(param->max_speed_hz, samplesPerCycle);
-		spiDesc->max_speed_hz = sampleRate / samplesPerCycle;
-		spiDesc->mode = param->mode;
-		spiDesc->chip_select = param->chip_select;
-
-		m2KSpiInit = (m2k_spi_init *) param->extra;
-
-		m2KSpiDesc->clock = m2KSpiInit->clock;
-		m2KSpiDesc->mosi = m2KSpiInit->mosi;
 		m2KSpiDesc->miso = m2KSpiInit->miso;
-		m2KSpiDesc->bit_numbering = m2KSpiInit->bit_numbering;
-		m2KSpiDesc->context = m2KSpiInit->context;
-		m2KSpiDesc->digital = m2KSpiDesc->context->getDigital();
-		m2KSpiDesc->sample_rate = sampleRate;
-
 		m2KSpiDesc->digital->flushBufferIn();
 		m2KSpiDesc->digital->setKernelBuffersCountIn(1);
-
-		//set sampling frequencies
-		m2KSpiDesc->digital->setSampleRateOut(m2KSpiDesc->sample_rate);
 		m2KSpiDesc->digital->setSampleRateIn(m2KSpiDesc->sample_rate);
-
-		//enable the channels
-		setOutputChannel(spiDesc->chip_select, m2KSpiDesc->digital);
-		setOutputChannel(m2KSpiDesc->clock, m2KSpiDesc->digital);
-		setOutputChannel(m2KSpiDesc->mosi, m2KSpiDesc->digital);
 		setInputChannel(m2KSpiDesc->miso, m2KSpiDesc->digital);
-
-		m2KSpiDesc->digital->setOutputMode(spiDesc->chip_select, libm2k::digital::DIO_PUSHPULL);
-		m2KSpiDesc->digital->setOutputMode(m2KSpiDesc->clock, libm2k::digital::DIO_PUSHPULL);
-		m2KSpiDesc->digital->setOutputMode(m2KSpiDesc->mosi, libm2k::digital::DIO_PUSHPULL);
 		m2KSpiDesc->digital->setOutputMode(m2KSpiDesc->miso, libm2k::digital::DIO_PUSHPULL);
-
-		m2KSpiDesc->digital->setCyclic(false);
 
 		libm2k::M2kHardwareTrigger *trigger = m2KSpiDesc->digital->getTrigger();
 		trigger->setDigitalCondition(m2KSpiDesc->clock, libm2k::NO_TRIGGER_DIGITAL);
 		trigger->setDigitalCondition(m2KSpiDesc->mosi, libm2k::NO_TRIGGER_DIGITAL);
 		trigger->setDigitalCondition(m2KSpiDesc->miso, libm2k::NO_TRIGGER_DIGITAL);
-		trigger->setDigitalCondition(spiDesc->chip_select, libm2k::NO_TRIGGER_DIGITAL);
+		trigger->setDigitalCondition((*desc)->chip_select, libm2k::NO_TRIGGER_DIGITAL);
 		trigger->setDigitalMode(libm2k::digital::DIO_OR);
 		trigger->setDigitalDelay(0);
-
-		//set the state of CS and CLK to idle
-		m2KSpiDesc->digital->setValueRaw(spiDesc->chip_select, libm2k::digital::HIGH);
-		if (spiDesc->mode & SPI_CPOL) {
-			m2KSpiDesc->digital->setValueRaw(m2KSpiDesc->clock, libm2k::digital::HIGH);
-		} else {
-			m2KSpiDesc->digital->setValueRaw(m2KSpiDesc->clock, libm2k::digital::LOW);
-		}
-
-		spiDesc->extra = (void *) m2KSpiDesc;
-		*desc = spiDesc;
 
 	} catch (std::exception &e) {
 		std::cout << e.what();
@@ -277,11 +241,81 @@ int32_t spi_write_and_read(struct spi_desc *desc,
 		std::thread thread_read(read, desc, data, bytes_number);
 
 		//make sure the reading thread is waiting
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		std::vector<unsigned short> buffer = createBuffer(desc, data, bytes_number);
 		m2KSpiDesc->digital->push(buffer);
 		thread_read.join();
+	} catch (std::exception &e) {
+		std::cout << e.what();
+		return -1;
+	}
+	return 0;
+}
+
+int32_t spi_init_write_only(struct spi_desc **desc,
+			    const struct spi_init_param *param)
+{
+	try {
+		auto spiDesc = new spi_desc;
+		auto m2KSpiDesc = new m2k_spi_desc;
+		m2k_spi_init *m2KSpiInit;
+
+		// initialize the attributes
+		unsigned int sampleRate = getValidSampleRate(param->max_speed_hz, samplesPerCycle);
+		spiDesc->max_speed_hz = sampleRate / samplesPerCycle;
+		spiDesc->mode = param->mode;
+		spiDesc->chip_select = param->chip_select;
+
+		m2KSpiInit = (m2k_spi_init *) param->extra;
+
+		m2KSpiDesc->clock = m2KSpiInit->clock;
+		m2KSpiDesc->mosi = m2KSpiInit->mosi;
+		m2KSpiDesc->bit_numbering = m2KSpiInit->bit_numbering;
+		m2KSpiDesc->context = m2KSpiInit->context;
+		m2KSpiDesc->digital = m2KSpiDesc->context->getDigital();
+		m2KSpiDesc->sample_rate = sampleRate;
+
+		//set sampling frequencies
+		m2KSpiDesc->digital->setSampleRateOut(m2KSpiDesc->sample_rate);
+
+		//enable the channels
+		setOutputChannel(spiDesc->chip_select, m2KSpiDesc->digital);
+		setOutputChannel(m2KSpiDesc->clock, m2KSpiDesc->digital);
+		setOutputChannel(m2KSpiDesc->mosi, m2KSpiDesc->digital);
+
+		m2KSpiDesc->digital->setOutputMode(spiDesc->chip_select, libm2k::digital::DIO_PUSHPULL);
+		m2KSpiDesc->digital->setOutputMode(m2KSpiDesc->clock, libm2k::digital::DIO_PUSHPULL);
+		m2KSpiDesc->digital->setOutputMode(m2KSpiDesc->mosi, libm2k::digital::DIO_PUSHPULL);
+
+		m2KSpiDesc->digital->setCyclic(false);
+
+		//set the state of CS and CLK to idle
+		m2KSpiDesc->digital->setValueRaw(spiDesc->chip_select, libm2k::digital::HIGH);
+		if (spiDesc->mode & SPI_CPOL) {
+			m2KSpiDesc->digital->setValueRaw(m2KSpiDesc->clock, libm2k::digital::HIGH);
+		} else {
+			m2KSpiDesc->digital->setValueRaw(m2KSpiDesc->clock, libm2k::digital::LOW);
+		}
+
+		spiDesc->extra = (void *) m2KSpiDesc;
+		*desc = spiDesc;
+
+	} catch (std::exception &e) {
+		std::cout << e.what();
+		return -1;
+	}
+	return 0;
+}
+
+int32_t spi_write_only(struct spi_desc *desc,
+		       uint8_t *data,
+		       uint8_t bytes_number)
+{
+	try {
+		auto *m2KSpiDesc = (m2k_spi_desc *) desc->extra;
+		std::vector<unsigned short> buffer = createBuffer(desc, data, bytes_number);
+		m2KSpiDesc->digital->push(buffer);
 	} catch (std::exception &e) {
 		std::cout << e.what();
 		return -1;
