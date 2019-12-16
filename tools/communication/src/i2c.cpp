@@ -179,7 +179,7 @@ static std::vector<unsigned short> createBuffer(struct i2c_desc *desc,
 		//write acknowledge
 		writeBit(desc, bufferOut, acknowledge);
 	}
-	if (option & i2c_repeated_start) {
+	if (!(option & i2c_repeated_start)) {
 		writeStopCondition(desc, bufferOut);
 	}
 	return bufferOut;
@@ -244,52 +244,25 @@ static void processSamples(struct i2c_desc *desc,
 int32_t i2c_init(struct i2c_desc **desc,
 		 const struct i2c_init_param *param)
 {
+	uint32_t retVal;
 	try {
-		auto *i2cDesc = new i2c_desc;
-		auto *m2KI2CDesc = new m2k_i2c_desc;
-		m2k_i2c_init *m2KI2CInit;
+		retVal = i2c_init_write_only(desc, param);
+		if (retVal != 0) {
+			return retVal;
+		}
 
-		// initialize the attributes
-		unsigned int sampleRate = getValidSampleRate(param->max_speed_hz, samplesPerCycle);
-		i2cDesc->max_speed_hz = sampleRate / samplesPerCycle;
-		i2cDesc->slave_address = param->slave_address;
-
-		m2KI2CInit = (m2k_i2c_init *) param->extra;
-
-		m2KI2CDesc->scl = m2KI2CInit->scl;
-		m2KI2CDesc->sda = m2KI2CInit->sda;
-		m2KI2CDesc->context = m2KI2CInit->context;
-		m2KI2CDesc->digital = m2KI2CDesc->context->getDigital();
-		m2KI2CDesc->sample_rate = sampleRate;
+		auto m2KI2CDesc = (m2k_i2c_desc *) (*desc)->extra;
 
 		m2KI2CDesc->digital->flushBufferIn();
 		m2KI2CDesc->digital->setKernelBuffersCountIn(1);
 
-		//set sampling frequencies
-		m2KI2CDesc->digital->setSampleRateOut(m2KI2CDesc->sample_rate);
 		m2KI2CDesc->digital->setSampleRateIn(m2KI2CDesc->sample_rate);
-
-		//enable the channels
-		setOutputChannel(m2KI2CDesc->scl, m2KI2CDesc->digital);
-		setOutputChannel(m2KI2CDesc->sda, m2KI2CDesc->digital);
-		m2KI2CDesc->digital->setOutputMode(m2KI2CDesc->sda, libm2k::digital::DIO_OPENDRAIN);
-		m2KI2CDesc->digital->setOutputMode(m2KI2CDesc->scl, libm2k::digital::DIO_OPENDRAIN);
-
-		m2KI2CDesc->digital->setCyclic(false);
 
 		libm2k::M2kHardwareTrigger *trigger = m2KI2CDesc->digital->getTrigger();
 		trigger->setDigitalCondition(m2KI2CDesc->scl, libm2k::NO_TRIGGER_DIGITAL);
 		trigger->setDigitalCondition(m2KI2CDesc->sda, libm2k::NO_TRIGGER_DIGITAL);
 		trigger->setDigitalMode(libm2k::digital::DIO_OR);
 		trigger->setDigitalDelay(0);
-
-		//set the state of SCL and SDA to idle
-		m2KI2CDesc->digital->setValueRaw(m2KI2CDesc->scl, libm2k::digital::HIGH);
-		m2KI2CDesc->digital->setValueRaw(m2KI2CDesc->sda, libm2k::digital::HIGH);
-
-		i2cDesc->extra = (void *) m2KI2CDesc;
-		*desc = i2cDesc;
-
 	} catch (std::exception &e) {
 		std::cout << e.what();
 		return -1;
@@ -393,6 +366,68 @@ int32_t i2c_read(struct i2c_desc *desc,
 		for (int i = numberAddressBytes; i < totalNumberOfBytes; ++i) {
 			data[i - numberAddressBytes] = (*i2c_data_vector)[i].data;
 		}
+	} catch (std::exception &e) {
+		std::cout << e.what();
+		return -1;
+	}
+	return 0;
+}
+
+int32_t i2c_init_write_only(struct i2c_desc **desc,
+			    const struct i2c_init_param *param)
+{
+	try {
+		auto *i2cDesc = new i2c_desc;
+		auto *m2KI2CDesc = new m2k_i2c_desc;
+		m2k_i2c_init *m2KI2CInit;
+
+		// initialize the attributes
+		unsigned int sampleRate = getValidSampleRate(param->max_speed_hz, samplesPerCycle);
+		i2cDesc->max_speed_hz = sampleRate / samplesPerCycle;
+		i2cDesc->slave_address = param->slave_address;
+
+		m2KI2CInit = (m2k_i2c_init *) param->extra;
+
+		m2KI2CDesc->scl = m2KI2CInit->scl;
+		m2KI2CDesc->sda = m2KI2CInit->sda;
+		m2KI2CDesc->context = m2KI2CInit->context;
+		m2KI2CDesc->digital = m2KI2CDesc->context->getDigital();
+		m2KI2CDesc->sample_rate = sampleRate;
+
+		//set sampling frequencies
+		m2KI2CDesc->digital->setSampleRateOut(m2KI2CDesc->sample_rate);
+
+		//enable the channels
+		setOutputChannel(m2KI2CDesc->scl, m2KI2CDesc->digital);
+		setOutputChannel(m2KI2CDesc->sda, m2KI2CDesc->digital);
+		m2KI2CDesc->digital->setOutputMode(m2KI2CDesc->sda, libm2k::digital::DIO_OPENDRAIN);
+		m2KI2CDesc->digital->setOutputMode(m2KI2CDesc->scl, libm2k::digital::DIO_OPENDRAIN);
+
+		m2KI2CDesc->digital->setCyclic(false);
+
+		//set the state of SCL and SDA to idle
+		m2KI2CDesc->digital->setValueRaw(m2KI2CDesc->scl, libm2k::digital::HIGH);
+		m2KI2CDesc->digital->setValueRaw(m2KI2CDesc->sda, libm2k::digital::HIGH);
+
+		i2cDesc->extra = (void *) m2KI2CDesc;
+		*desc = i2cDesc;
+
+	} catch (std::exception &e) {
+		std::cout << e.what();
+		return -1;
+	}
+	return 0;
+}
+
+int32_t i2c_write_only(struct i2c_desc *desc,
+		       uint8_t *data,
+		       uint8_t bytes_number,
+		       uint8_t option)
+{
+	try {
+		auto *m2KI2CDesc = (m2k_i2c_desc *) desc->extra;
+		auto bufferOut = createBuffer(desc, data, bytes_number, option, false);
+		m2KI2CDesc->digital->push(bufferOut);
 	} catch (std::exception &e) {
 		std::cout << e.what();
 		return -1;
