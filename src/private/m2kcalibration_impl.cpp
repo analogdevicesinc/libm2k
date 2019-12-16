@@ -232,7 +232,7 @@ public:
 		}
 
 		int16_t ch0_avg = Utils::average(ch_data.at(0).data(), num_samples);
-		int16_t ch1_avg = Utils::average(ch_data.at(0).data(), num_samples);
+		int16_t ch1_avg = Utils::average(ch_data.at(1).data(), num_samples);
 
 		// Convert from raw format to signed raw
 		int16_t tmp;
