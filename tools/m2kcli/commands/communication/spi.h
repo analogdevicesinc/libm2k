@@ -31,6 +31,7 @@ public:
 
 private:
 	spi_desc *spiDesc;
+	bool writeOnly;
 
 	static const struct option options[];
 
