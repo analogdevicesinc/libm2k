@@ -20,6 +20,7 @@ using namespace libm2k::cli;
 I2c::I2c(int argc, char **argv) : Command(argc, argv)
 {
 	i2cDesc = nullptr;
+	writeOnly = false;
 }
 
 I2c::~I2c()
@@ -78,6 +79,10 @@ void I2c::handleInit()
 	int sda;
 	Validator::validate(arguments["sda"], "sda", sda);
 
+	if (arguments.count("write_only")) {
+		Validator::validate(arguments["write_only"], "write_only", writeOnly);
+	}
+
 	m2k_i2c_init m2KI2CInit;
 	m2KI2CInit.scl = scl;
 	m2KI2CInit.sda = sda;
@@ -88,7 +93,15 @@ void I2c::handleInit()
 	i2CInitParam.slave_address = address;
 	i2CInitParam.extra = (void *) &m2KI2CInit;
 
-	if (i2c_init(&i2cDesc, &i2CInitParam) == -1) {
+	uint32_t retVal;
+
+	if (writeOnly) {
+		retVal = i2c_init_write_only(&i2cDesc, &i2CInitParam);
+	} else {
+		retVal = i2c_init(&i2cDesc, &i2CInitParam);
+	}
+
+	if (retVal != 0) {
 		throw std::runtime_error("Could not initiate I2C\n");
 	}
 }
@@ -105,11 +118,19 @@ void I2c::handleWrite()
 
 	int option;
 	Validator::validate(arguments["option"], "option", option);
-	i2c_write(i2cDesc, data.data(), data.size(), option);
+
+	if (writeOnly) {
+		i2c_write_only(i2cDesc, data.data(), data.size(), option);
+	} else {
+		i2c_write(i2cDesc, data.data(), data.size(), option);
+	}
 }
 
 void I2c::handleRead()
 {
+	if (writeOnly) {
+		throw std::runtime_error("Write only mode is activated\n");
+	}
 	std::map<std::string, std::string> arguments = Validator::validate(getArguments());
 	if (!(arguments.count("bytes_number") && arguments.count("option"))) {
 		throw std::runtime_error("Expecting: bytes_number=<value> option=<value>\n");
@@ -140,19 +161,21 @@ const char *const I2c::helpMessage = "Usage:\n"
 				     "m2kcli i2c <uri>\n"
 				     "           [-h | --help]\n"
 				     "           [-i | --init frequency=<value> address=<value> scl=<index> sda=<index>]\n"
-				     "           [-w | --write data=<value>,... option=<value>]\n"
+				     "           [-w | --write data=<value>,... option=<value> [write_only=<value>]]\n"
 				     "           [-r | --read bytes_number=<value> option=<value>]\n"
 				     "\n"
 				     "Positional arguments:\n"
 				     "  uri                   describe the context location \n"
 				     "Optional arguments:\n"
 				     "  -h, --help            show this help message and exit\n"
-				     "  -i, --init [frequency=<value> address=<value> scl=<index> sda=<index>]\n"
+				     "  -i, --init [frequency=<value> address=<value> scl=<index> sda=<index> [write_only=<value>]]\n"
 				     "                        initiate i2c\n"
 				     "                        frequency - int\n"
 				     "                        address - 7/10 bit address\n"
 				     "                        scl - index of any digital pin\n"
 				     "                        sda - index of any digital pin\n"
+				     "                        write_only - 1 (true)\n"
+				     "                                   - 0 (false) : default\n"
 				     "  -w, --write [data=<value>,... option=<value>]\n"
 				     "                        write the given data\n"
 				     "                        data - list of bytes, comma separated values\n"
