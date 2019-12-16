@@ -25,6 +25,7 @@
 #include <libm2k/utils/deviceout.hpp>
 #include <libm2k/analog/m2kpowersupply.hpp>
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/utils/channel.hpp>
 #include <iio.h>
 
 using namespace libm2k::analog;
@@ -237,7 +238,9 @@ public:
 			}
 
 			//voltage2 and v1
-			val = m_dev_read->getDoubleValue(m_read_channel_idx.at(idx), "raw", false);
+			auto chn_name = "voltage" + to_string(m_read_channel_idx.at(idx));
+			auto chn = m_dev_read->getChannel(chn_name, false);
+			val = chn->getDoubleValue("raw");
 			value = ((val * m_read_coefficients.at(idx)) + offset) * gain;
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, e.what());
