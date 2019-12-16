@@ -31,6 +31,7 @@ public:
 
 private:
 	i2c_desc *i2cDesc;
+	bool writeOnly;
 
 	static const struct option options[];
 

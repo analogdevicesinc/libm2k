@@ -16,6 +16,7 @@
 #define I2C_EXTRA_HPP
 
 #include <libm2k/m2k.hpp>
+#include <libm2k/tools/i2c.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,6 +47,20 @@ typedef struct m2k_i2c_desc {
 	libm2k::digital::M2kDigital *digital;
 	unsigned int sample_rate;
 } m2k_i2c_desc;
+
+/**
+* @private
+*/
+LIBM2K_API int32_t i2c_init_write_only(struct i2c_desc **desc,
+				       const struct i2c_init_param *param);
+
+/**
+* @private
+*/
+LIBM2K_API int32_t i2c_write_only(struct i2c_desc *desc,
+				  uint8_t *data,
+				  uint8_t bytes_number,
+				  uint8_t option);
 
 /**
  * @}
