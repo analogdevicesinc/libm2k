@@ -124,6 +124,7 @@ void AnalogIn::handleCapture()
 
 	std::vector<int> channels;
 	Validator::validate(arguments["channel"], "channel", channels);
+	std::sort(channels.begin(), channels.end());
 
 	int bufferSize;
 	Validator::validate(arguments["buffer_size"], "buffer_size", bufferSize);
@@ -135,34 +136,50 @@ void AnalogIn::handleCapture()
 		analogIn->enableChannel(channel, true);
 	}
 
+	int nb_samples = 0;
+	if (arguments.count("nb_samples")) {
+		Validator::validate(arguments["nb_samples"], "nb_samples", nb_samples);
+	}
+
 	std::string format;
 	if (arguments.count("format")) {
 		Validator::validate(arguments["format"], "format", format);
 	}
 
+	bool keep_capturing = true;
+	unsigned int samplePerBuffer = bufferSize;
 
-	if (!format.empty() && format == "binary") {
-
-		if (raw) {
-			short *tempSamples = (short*) analogIn->getSamplesRawInterleaved(bufferSize);
-			std::vector<uint16_t> samples(tempSamples, tempSamples + bufferSize);
-			printSamplesBinaryFormat(samples);
-		} else {
-			double *tempSamples = (double*) analogIn->getSamplesInterleaved(bufferSize);
-			std::vector<double> samples(tempSamples, tempSamples + bufferSize);
-			printSamplesBinaryFormat(samples);
+	while (keep_capturing) {
+		if (nb_samples != 0) {
+			if (nb_samples <= bufferSize) {
+				samplePerBuffer = nb_samples;
+				keep_capturing = false;
+			}
 		}
+		if (!format.empty() && format == "binary") {
+			std::vector<std::vector<double>> samples;
+			if (raw) {
+				samples = analogIn->getSamplesRaw(bufferSize);
+				printRawSamplesBinaryFormat(samples, samplePerBuffer, channels);
+			} else {
+				samples = analogIn->getSamples(bufferSize);
+				printSamplesBinaryFormat(samples, samplePerBuffer, channels);
+			}
 
-	} else if (format.empty() || format == "csv") {
-		std::vector<std::vector<double>> samples;
-		if (raw) {
-			samples = analogIn->getSamplesRaw(bufferSize);
+		} else if (format.empty() || format == "csv") {
+			std::vector<std::vector<double>> samples;
+			if (raw) {
+				samples = analogIn->getSamplesRaw(bufferSize);
+			} else {
+				samples = analogIn->getSamples(bufferSize);
+			}
+			printSamplesCsvFormat(samples, samplePerBuffer, channels);
 		} else {
-			samples = analogIn->getSamples(bufferSize);
+			throw std::runtime_error("Unknown format: " + format + '\n');
 		}
-		printSamplesCsvFormat(samples);
-	} else {
-		throw std::runtime_error("Unknown format: " + format + '\n');
+		if (nb_samples != 0) {
+			nb_samples -= bufferSize;
+		}
 	}
 }
 
@@ -378,7 +395,7 @@ const char *const AnalogIn::helpMessage = "Usage:\n"
 					  "                 [-q | --quiet]\n"
 					  "                 [-C | --calibrate]\n"
 					  "                 [-v | --voltage channel=<index>... raw=<value>]\n"
-					  "                 [-c | --capture channel=<index>... buffer_size=<size> raw=<value> [format=<type>]]\n"
+					  "                 [-c | --capture channel=<index>... buffer_size=<size> raw=<value> [nb_samples=<value>] [format=<type>]]\n"
 					  "                 [-g | --get <attribute> ...]\n"
 					  "                 [-G | --get-channel channel=<index> <attribute> ...]\n"
 					  "                 [-s | --set <attribute>=<value> ...]\n"
@@ -399,8 +416,9 @@ const char *const AnalogIn::helpMessage = "Usage:\n"
 					  "                        channel - {0 | 1}\n"
 					  "                        raw - 0 (processed values)\n"
 					  "                            - 1 (raw values)\n"
-					  "  -c, --capture channel=<index>... buffer_size=<size> raw=<value> [format=<type>]\n"
+					  "  -c, --capture channel=<index>... buffer_size=<size> raw=<value> [nb_samples=<value>] [format=<type>]\n"
 					  "                        print a specific number of samples\n"
+					  "                        nb_samples - number of samples to be captured, 0 = infinite; default\n"
 					  "                        format - {csv | binary}; default csv\n"
 					  "  -g, --get [<attribute>...]\n"
 					  "                        return the value of the specified global attributes\n"

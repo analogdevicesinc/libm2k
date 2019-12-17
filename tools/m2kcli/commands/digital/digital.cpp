@@ -92,17 +92,39 @@ void Digital::handleCapture()
 	}
 
 	std::string format;
-	std::vector<uint16_t> samples = digital->getSamples(bufferSize);
+	std::vector<uint16_t> samples;
+
+	int nb_samples = 0;
+	if (arguments.count("nb_samples")) {
+		Validator::validate(arguments["nb_samples"], "nb_samples", nb_samples);
+	}
 
 	if (arguments.count("format")) {
 		Validator::validate(arguments["format"], "format", format);
 	}
-	if (!format.empty() && format == "binary") {
-		printSamplesBinaryFormat(samples);
-	} else if (format.empty() || format == "csv") {
-		printSamplesCsvFormat(samples);
-	} else {
-		throw std::runtime_error("Unknown format: " + format + '\n');
+
+	bool keep_capturing = true;
+	unsigned int samplePerBuffer = bufferSize;
+
+	while (keep_capturing) {
+		if (nb_samples != 0) {
+			if (nb_samples <= bufferSize) {
+				samplePerBuffer = nb_samples;
+				keep_capturing = false;
+			}
+		}
+		samples = digital->getSamples(bufferSize);
+
+		if (!format.empty() && format == "binary") {
+			printSamplesBinaryFormat(samples, samplePerBuffer);
+		} else if (format.empty() || format == "csv") {
+			printSamplesCsvFormat(samples, samplePerBuffer);
+		} else {
+			throw std::runtime_error("Unknown format: " + format + '\n');
+		}
+		if (nb_samples != 0) {
+			nb_samples -= bufferSize;
+		}
 	}
 }
 
@@ -320,7 +342,7 @@ const char *const Digital::helpMessage = "Usage:\n"
 					 "m2kcli digital <uri>\n"
 					 "               [-h | --help]\n"
 					 "               [-q | --quiet]\n"
-					 "               [-c | --capture buffer_size=<size> [format=<type>]]\n"
+					 "               [-c | --capture buffer_size=<size> [nb_samples] [format=<type>]]\n"
 					 "               [-9 | --generate channel=<index>,... cyclic=<value> [format=<type>] [file=<path>]]\n"
 					 "               [-g | --get <attribute> ...]\n"
 					 "               [-G | --get-channel channel=<index> <attribute> ...]\n"
@@ -337,8 +359,9 @@ const char *const Digital::helpMessage = "Usage:\n"
 					 "Optional arguments:\n"
 					 "  -h, --help            show this help message and exit\n"
 					 "  -q, --quiet           return result only\n"
-					 "  -c, --capture buffer_size=<size> [format=<type>]\n"
+					 "  -c, --capture buffer_size=<size> [nb_samples=<value>] [format=<type>]\n"
 					 "                        print a specific number of samples\n"
+					 "                        nb_samples - number of samples to be captured, 0 = infinite; default\n"
 					 "                        format - {csv | binary}; default csv\n"
 					 "  -9, --generate channel=<index>,... cyclic=<value> [format=<type>] [file=<path>]\n"
 					 "                        generate a signal\n"
