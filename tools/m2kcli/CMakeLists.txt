@@ -16,7 +16,7 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/include
 )
 
-FILE(GLOB_RECURSE SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+FILE(GLOB_RECURSE SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_SOURCE_DIR}/tools/communication/src/utils/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${GETOPT_C_FILE})
 
