@@ -29,13 +29,18 @@ namespace cli {
 
 class CommandIn : virtual public Command {
 protected:
-	static void printSamplesCsvFormat(std::vector<uint16_t> &samples);
+	static void printSamplesCsvFormat(std::vector<uint16_t> &samples, unsigned int nb_samples);
 
-	static void printSamplesCsvFormat(std::vector<std::vector<double>> &samples);
+	static void printSamplesCsvFormat(std::vector<std::vector<double>> &samples, unsigned int nb_samples,
+					  std::vector<int> &channels);
 
-	static void printSamplesBinaryFormat(std::vector<double> &samples);
+	static void printSamplesBinaryFormat(std::vector<std::vector<double>> &samples, unsigned int nb_samples,
+					     std::vector<int> &channels);
 
-	static void printSamplesBinaryFormat(std::vector<uint16_t> &samples);
+	static void printRawSamplesBinaryFormat(std::vector<std::vector<double>> &samples, unsigned int nb_samples,
+						std::vector<int> &channels);
+
+	static void printSamplesBinaryFormat(std::vector<uint16_t> &samples, unsigned int nb_samples);
 };
 }
 }
