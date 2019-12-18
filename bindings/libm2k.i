@@ -81,6 +81,8 @@
 #ifdef COMMUNICATION
 %include <pybuffer.i>
 %pybuffer_mutable_binary(uint8_t *data, uint8_t bytes_number);
+%pybuffer_mutable_binary(uint8_t *data, uint32_t bytes_number);
+%pybuffer_mutable_binary(const uint8_t *data, uint32_t bytes_number);
 #endif
 #endif
 
@@ -131,6 +133,8 @@ namespace std {
 	#include <libm2k/tools/spi_extra.hpp>
 	#include <libm2k/tools/i2c.hpp>
 	#include <libm2k/tools/i2c_extra.hpp>
+	#include <libm2k/tools/uart.hpp>
+	#include <libm2k/tools/uart_extra.hpp>
 #endif
 	typedef std::vector<libm2k::analog::DMM_READING> DMMReading;
 	typedef std::vector<libm2k::analog::DMM*> DMMs;
@@ -155,10 +159,17 @@ namespace std {
 		uint16_t 	slave_address;
 		m2k_i2c_init 	*extra;
 	} i2c_init_param;
+
+	typedef struct uart_init_param {
+		uint8_t		device_id;
+		uint32_t 	baud_rate;
+		m2k_uart_init 	*extra;
+	}uart_init_param;
 #endif
 
 %ignore spi_init(struct spi_desc**, const struct spi_init_param *);
 %ignore i2c_init(struct i2c_desc**, const struct i2c_init_param *);
+%ignore uart_init(struct uart_desc**, const struct uart_init_param *);
 
 %inline %{
 	spi_desc *spi_init(const struct spi_init_param *param)
@@ -172,6 +183,13 @@ namespace std {
 	{
 		i2c_desc *temp;
 		i2c_init(&temp, param);
+		return temp;
+	}
+
+	uart_desc *uart_init(const struct uart_init_param *param)
+	{
+		uart_desc *temp;
+		uart_init(&temp, param);
 		return temp;
 	}
 %}
@@ -234,6 +252,8 @@ namespace std {
 %include <libm2k/tools/spi_extra.hpp>
 %include <libm2k/tools/i2c.hpp>
 %include <libm2k/tools/i2c_extra.hpp>
+%include <libm2k/tools/uart.hpp>
+%include <libm2k/tools/uart_extra.hpp>
 #endif
 
 %template(DMMReading) std::vector<libm2k::analog::DMM_READING>;
