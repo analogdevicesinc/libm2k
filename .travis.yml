@@ -19,6 +19,10 @@ matrix:
       env:
         - OS_TYPE=doxygen
       addons: { apt: { packages: ["cmake", "graphviz"] } }
+    - os: linux
+      env:
+        - OS_TYPE=clangformat
+      addons: { apt: { packages: ["clang-format-6.0"], sources: ["llvm-toolchain-xenial-6.0"] } }
 
 before_install:
 
