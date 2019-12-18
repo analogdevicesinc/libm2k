@@ -28,6 +28,7 @@
 #include "commands/communication/spi.h"
 #include "commands/communication/i2c.h"
 #include "commands/communication/uart.h"
+#include "commands/communication/uart_terminal.h"
 #include <libm2k/contextbuilder.hpp>
 
 static const char *const helpMessage = "Usage:\n"
@@ -49,7 +50,8 @@ static const char *const helpMessage = "Usage:\n"
 				       "    power-supply        control the power supply\n"
 				       "    spi			control the functionality of spi\n"
 				       "    i2c			control the functionality of i2c\n"
-				       "    uart		control the functionality of uart\n";
+				       "    uart		control the functionality of uart\n"
+				       "    uart-terminal	control the functionality of uart streaming\n";
 
 int main(int argc, char **argv)
 {
@@ -88,6 +90,9 @@ int main(int argc, char **argv)
 		} else if (std::string(argv[1]) == "uart") {
 			libm2k::cli::Uart uart(argc, argv);
 			command = &uart;
+		} else if (std::string(argv[1]) == "uart-terminal") {
+			libm2k::cli::UartTerminal uartTerminal(argc, argv);
+			command = &uartTerminal;
 		} else {
 			throw std::runtime_error("m2kcli: '" + std::string(argv[1]) +
 						 "' is not a m2kcli command. See 'm2kcli --help'.\n");
