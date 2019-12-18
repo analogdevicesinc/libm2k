@@ -56,7 +56,9 @@ build_script:
         ..
     - cmake --build . --config Release
     
+    - python.exe -m pip install --user --upgrade setuptools wheel
     - python.exe setup.py bdist_wininst
+    - python.exe setup.py sdist bdist_wheel --plat-name win32
     - ps: Get-ChildItem dist\libm2k-*.exe | Rename-Item -NewName "libm2k-py37-win32.exe"
 
     # 64-bit build - VS
@@ -74,7 +76,9 @@ build_script:
         ..
     - cmake --build . --config Release
 
+    - python.exe -m pip install --user --upgrade setuptools wheel
     - python.exe setup.py bdist_wininst
+    - python.exe setup.py sdist bdist_wheel --plat-name win_amd64
     - ps: Get-ChildItem dist\libm2k-*.exe | Rename-Item -NewName "libm2k-py37-amd64.exe"
         
     #Create the installer
@@ -93,8 +97,10 @@ build_script:
     - copy build-win32\libm2k-sharp-cxx-wrap.dll c:\libm2k-win32\
     - copy build-win32\*.exe c:\libm2k-win32\
     - copy build-win32\dist\*.exe c:\libm2k-win32\dist\
+    - copy build-win32\dist\*.whl c:\libm2k-win32\dist\
     - copy c:\libiio-win32\*.dll c:\libm2k-win32\
     - 7z a "c:\libm2k-win32.zip" c:\libm2k-win32
+    - ps: Get-ChildItem c:\libm2k-win32\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     - appveyor PushArtifact c:\libm2k-win32.zip
 
     - mkdir c:\libm2k-win64
@@ -106,7 +112,9 @@ build_script:
     - copy build-win64\libm2k-sharp-cxx-wrap.dll c:\libm2k-win64\
     - copy build-win64\*.exe c:\libm2k-win64\
     - copy build-win64\dist\*.exe c:\libm2k-win64\dist\
+    - copy build-win64\dist\*.whl c:\libm2k-win64\dist\
     - copy c:\libiio-win64\*.dll c:\libm2k-win64\
     - 7z a "c:\libm2k-win64.zip" c:\libm2k-win64
+    - ps: Get-ChildItem c:\libm2k-win64\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     - appveyor PushArtifact c:\libm2k-win64.zip
 
