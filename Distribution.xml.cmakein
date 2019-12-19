@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<installer-gui-script minSpecVersion="2" >
+	<title>LibM2K</title>
+	<options customize="never" rootVolumeOnly="true" />
+	<allowed-os-versions>
+		<os-version min="10.6.6" />
+	</allowed-os-versions>
+	<license file="@CMAKE_CURRENT_SOURCE_DIR@/LICENSE" mime-type="text/plain" />
+	<product id="libm2k" version="@PROJECT_VERSION@" />
+	<choices-outline>
+		<line choice="default" >
+			<line choice="libm2k" />
+		</line>
+	</choices-outline>
+	<choice id="default" />
+	<choice id="libm2k" visible="false" >
+		<pkg-ref id="libm2k" />
+	</choice>
+	<pkg-ref id="libm2k" version="@PROJECT_VERSION@" onConclusion="none" >@LIBM2K_TEMP_PKG@</pkg-ref>
+</installer-gui-script>
