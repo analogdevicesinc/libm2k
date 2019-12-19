@@ -194,10 +194,42 @@ if (BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	option(OSX_PACKAGE "Create a OSX package" ON)
-	set(CMAKE_MACOSX_RPATH ON)
-	set(SKIP_INSTALL_ALL ${OSX_PACKAGE})
+# Create an installer if compiling for OSX
+if(OSX_PACKAGE)
+	set(LIBM2K_PKG ${CMAKE_CURRENT_BINARY_DIR}/libm2k-${PROJECT_VERSION}.g${LIBM2K_VERSION_GIT}.pkg)
+	set(LIBM2K_TEMP_PKG ${CMAKE_CURRENT_BINARY_DIR}/libm2k-${VERSION}-temp.pkg)
+	set(LIBM2K_DISTRIBUTION_XML ${CMAKE_CURRENT_BINARY_DIR}/Distribution.xml)
+	set(LIBM2K_FRAMEWORK_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/libm2k.framework)
+	configure_file(Distribution.xml.cmakein ${LIBM2K_DISTRIBUTION_XML} @ONLY)
+
+	find_program(PKGBUILD_EXECUTABLE
+		NAMES pkgbuild
+		DOC "OSX Package builder (pkgbuild)")
+	mark_as_advanced(PKGBUILD_EXECUTABLE)
+
+	find_program(PRODUCTBUILD_EXECUTABLE
+		NAMES productbuild
+		DOC "OSX Package builder (productbuild)")
+	mark_as_advanced(PRODUCTBUILD_EXECUTABLE)
+
+	add_custom_command(OUTPUT ${LIBM2K_PKG}
+		COMMAND ${PKGBUILD_EXECUTABLE}
+			--component ${LIBM2K_FRAMEWORK_DIR}
+			--identifier com.adi.m2k --version ${PROJECT_VERSION}
+			--install-location ${OSX_INSTALL_FRAMEWORKSDIR} ${LIBM2K_TEMP_PKG}
+		COMMAND ${PRODUCTBUILD_EXECUTABLE}
+			--distribution ${LIBM2K_DISTRIBUTION_XML} ${LIBM2K_PKG}
+		COMMAND ${CMAKE_COMMAND} -E remove ${LIBM2K_TEMP_PKG}
+		DEPENDS ${PROJECT_NAME} ${LIBM2K_DISTRIBUTION_XML}
+	)
+
+	if (PKGBUILD_EXECUTABLE AND PRODUCTBUILD_EXECUTABLE)
+		add_custom_target(libm2k-pkg ALL DEPENDS ${LIBM2K_PKG})
+
+		install(CODE "execute_process(COMMAND /usr/sbin/installer -pkg ${LIBM2K_PKG} -target /)")
+	else()
+		message(WARNING "Missing pkgbuild or productbuild: OSX installer won't be created.")
+	endif()
 endif()
 
 if (NOT OSX_PACKAGE)
@@ -206,9 +238,9 @@ if (NOT OSX_PACKAGE)
 	option(ENABLE_PACKAGING "Create .deb/.rpm or .tar.gz packages via 'make package'" OFF)
 
 	if(ENABLE_PACKAGING)
-#		if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-#			include(cmake/DarwinPackaging.cmake)
-#		endif()
+		if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+			include(cmake/DarwinPackaging.cmake)
+		endif()
 		if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 			include(cmake/LinuxPackaging.cmake)
 		endif()
