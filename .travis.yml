@@ -8,6 +8,10 @@ cache:
 services:
   - docker
 
+env:
+  global:
+    secure: "PUXsXOrIGEZMK78hPI2do7FRLr1qB/jS/cXPOgVEHT/iJYU9hzu5BkJHjRLKZ7uM6L+17FM3OVJFsWk68Rcql7pT79G1nI6l0RyqsazMdgDDed2FlxxmvRmHuRT6ONqvBEDSItkIn16Y2ld+UukG36bLSVYyuc5NaMBV/cB8kyBgq41rf+jBvrGvsBV5aN73ZWqMwCqNsRLhwGRqhJlGcPsAc0j957O3fzEeTRF9SMVczpMt8fGFD/2R2gyyX50zX2YTRAT9d7kyl/IFi9GtIYQs/afIQ1hYDzWK+bYpHozoiSYHfs8YBYdtFItj2P3h2XsZgG9t4FlLInF7phCTftRTTB+G6eT0N8mOPi+uCXR1m9lU7TF5rKhL7Yg+KTQiHFfDxHzPrzmKht06b7lCuMfY7nBgmJXEZOtDFuhPdxubu3TD4DRtn36NyW1PPMOBI/guii1ywrlWl0HeKciaRlPHbP0RB+s0eBWWzVpiJVveO1sO0MgtZ4/+v+REtqNAsD26iLGgvrahMMdw/dWTt3Niez93xrUSYVA9mnk/Dlc42y02+Okwu+Jw0GPnBCMq7snfYwZMFM2EN4waCaxbgPSNOvuLIfmLTWnpjMcVh2FtfP39jlBPymO9FYZyqlfZBc6mzFOEB9pVN1rMKPqk9cYFvcvY1sP10owVwFSWpIo="
+
 matrix:
   include:
     - os: linux
