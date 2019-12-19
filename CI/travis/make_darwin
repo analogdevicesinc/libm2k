@@ -7,6 +7,9 @@ cmake -DOSX_PACKAGE=ON ..
 make
 ls
 
+python3 setup.py sdist bdist_wheel
+ls dist
+
 cd $TRAVIS_BUILD_DIR/build_tar
 cmake -DOSX_PACKAGE=OFF -DENABLE_PACKAGING=ON ..
 make && make package
