@@ -94,6 +94,22 @@ public:
 			}
 		}
 
+		// The vertical offset register in the device has dual purpose:
+		// 1. use as ADC offset for calibration
+		// 2. use as ADC vertical offset for measurement
+		// This can cause some confusion when initializing the board
+		// because it is not clear whether the value in the register is
+		// the calibration value or the calibration+vertical offset value
+		// This workaround will always set the vertical offset to 0 on deinitialization
+		// and upon initialization the offset will be loaded from the register
+		// (when no calibration is done)
+		//
+		// The correct fix would be adding a separate caliboffset register in the firmware
+		// which will clear up the confusion
+
+		getAnalogIn()->setVerticalOffset(ANALOG_IN_CHANNEL_1,0);
+		getAnalogIn()->setVerticalOffset(ANALOG_IN_CHANNEL_2,0);
+
 		delete m_calibration;
 
 		if (m_trigger) {

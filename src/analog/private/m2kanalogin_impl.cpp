@@ -125,6 +125,9 @@ public:
 			ANALOG_IN_CHANNEL ch = static_cast<ANALOG_IN_CHANNEL>(i);
 			auto range = getRangeDevice(ch);
 			m_input_range[i] = range;
+
+			// load calib_offset from the register - assuming it was deinitialized correctly
+			m_adc_calib_offset[i] = m_ad5625_dev->getLongValue(2 + i, "raw", true);
 			getVerticalOffset(ch);
 
 			m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
