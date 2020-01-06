@@ -106,18 +106,18 @@ std::map<std::string, std::string> Validator::validate(std::vector<std::string> 
 
 void Validator::validate(std::string strNumber, double &number)
 {
-	auto i = std::istringstream(strNumber);
-	i >> number;
-	if (i.fail() && !i.eof()) {
-		throw std::runtime_error("'" + strNumber + "' is not a number. Decimal separator: '.'\n");
+	try {
+		number = std::stod(strNumber);
+	} catch (std::exception e) {
+		throw std::runtime_error("'" + strNumber + "' is not a number.\n");
 	}
 }
 
 void Validator::validate(std::string strNumber, uint16_t &number)
 {
-	if (is_number(strNumber)) {
+	try {
 		number = std::stoi(strNumber);
-	} else {
+	} catch (std::exception e) {
 		throw std::runtime_error("'" + strNumber + "' is not a number.\n");
 	}
 }
