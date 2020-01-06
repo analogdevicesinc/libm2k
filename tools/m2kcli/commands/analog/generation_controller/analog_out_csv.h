@@ -19,38 +19,23 @@
  *
  */
 
-#ifndef M2KCLI_ANALOG_OUT_H
-#define M2KCLI_ANALOG_OUT_H
+#ifndef LIBM2K_ANALOG_OUT_CSV_H
+#define LIBM2K_ANALOG_OUT_CSV_H
 
-#include "../command_out.h"
-#include <libm2k/m2k.hpp>
-#include <libm2k/analog/m2kanalogout.hpp>
+#include <vector>
+#include "analog_out_generator.h"
 
-namespace libm2k {
-namespace cli {
-
-class AnalogOut : public Command {
+class AnalogOutCSV : public AnalogOutGenerator {
 public:
-	AnalogOut(int argc, char **argv);
+	AnalogOutCSV(libm2k::analog::M2kAnalogOut *analogOut, int bufferSize, std::vector<int> &channels, bool cyclic);
 
-	bool parseArguments(std::vector<std::pair<std::string, std::string>> &output) override;
+	void generate(bool &keepReading) override;
 
 private:
-	libm2k::analog::M2kAnalogOut *analogOut;
+	std::vector<std::vector<double>> samples;
 
-	static const struct option options[];
-
-	void handleCalibration();
-
-	void handleGenerate();
-
-	void handleGetChannel(std::vector<std::pair<std::string, std::string>> &output);
-
-	void handleSetChannel();
-
-	static const char *const helpMessage;
+	void getSamples(bool &keepReading) override;
 };
-}
-}
 
-#endif //M2KCLI_ANALOG_OUT_H
+
+#endif //LIBM2K_ANALOG_OUT_CSV_H
