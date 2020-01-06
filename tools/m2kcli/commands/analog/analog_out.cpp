@@ -20,7 +20,14 @@
  */
 
 #include <sstream>
+#include <thread>
+#include <chrono>
 #include "analog_out.h"
+#include <tools/m2kcli/utils/command_out_generator.h>
+#include <tools/m2kcli/commands/analog/generation_controller/analog_out_binary_raw.h>
+#include <tools/m2kcli/commands/analog/generation_controller/analog_out_binary.h>
+#include "tools/m2kcli/commands/analog/generation_controller/analog_out_csv.h"
+#include "tools/m2kcli/commands/analog/generation_controller/analog_out_csv_raw.h"
 
 using namespace libm2k::cli;
 
@@ -82,8 +89,10 @@ void AnalogOut::handleCalibration()
 void AnalogOut::handleGenerate()
 {
 	std::map<std::string, std::string> arguments = Validator::validate(getArguments());
-	if (!(arguments.count("channel") && arguments.count("cyclic") && arguments.count("raw"))) {
-		throw std::runtime_error("Expecting: channel=<index>... cyclic=<value> raw=<value>\n");
+	if (!(arguments.count("channel") && arguments.count("buffer_size") && arguments.count("cyclic") &&
+	      arguments.count("raw"))) {
+		throw std::runtime_error(
+			"Expecting: channel=<index>... buffer_size=<size> cyclic=<value> raw=<value>\n");
 	}
 
 	std::vector<int> channels;
@@ -91,6 +100,11 @@ void AnalogOut::handleGenerate()
 
 	bool cyclic;
 	Validator::validate(arguments["cyclic"], "cyclic", cyclic);
+
+	int buffer_size = 256;
+	if (arguments.count("buffer_size")) {
+		Validator::validate(arguments["buffer_size"], "buffer_size", buffer_size);
+	}
 
 	bool raw;
 	Validator::validate(arguments["raw"], "raw", raw);
@@ -101,66 +115,41 @@ void AnalogOut::handleGenerate()
 	analogOut->setCyclic(cyclic);
 
 	std::string format;
-	std::string file;
 	if (arguments.count("format")) {
 		Validator::validate(arguments["format"], "format", format);
 	}
-	if (arguments.count("file")) {
-		Validator::validate(arguments["file"], "file", file);
-	}
+
+	bool keepReading = true;
+	std::unique_ptr<CommandOutGenerator> generator;
 
 	if (!format.empty() && format == "binary") {
 		if (raw) {
-			std::vector<uint16_t> samples;
-			getSamplesBinaryFormat(file, samples);
-			if (channels.size() < 2) {
-				std::vector<short> samplesChannel;
-				for (auto it = samples.begin(); it != samples.end(); it += 2) {
-					samplesChannel.push_back(*it);
-				}
-				analogOut->pushRaw(channels[0], samplesChannel);
-			} else {
-				analogOut->pushRawInterleaved(reinterpret_cast<short *>(samples.data()),
-							      channels.size(), samples.size());
-			}
+			generator = std::unique_ptr<AnalogOutBinaryRaw>(
+				new AnalogOutBinaryRaw(analogOut, buffer_size, channels, cyclic));
 		} else {
-			std::vector<double> samples;
-			getSamplesBinaryFormat(file, samples);
-			if (channels.size() < 2) {
-				std::vector<double> samplesChannel;
-				analogOut->push(channels[0], samplesChannel);
-			} else {
-				analogOut->pushInterleaved(reinterpret_cast<double *>(samples.data()), channels.size(),
-							   samples.size());
-			}
+			generator = std::unique_ptr<AnalogOutBinary>(
+				new AnalogOutBinary(analogOut, buffer_size, channels, cyclic));
 		}
-
 	} else if (format.empty() || format == "csv") {
 		if (raw) {
-			std::vector<std::vector<short>> samples(2, std::vector<short>());
-			getSamplesCsvFormat(file, samples);
-			if (channels.size() < 2) {
-				analogOut->pushRaw(channels[0], samples[0]);
-			} else {
-				analogOut->pushRaw(samples);
-			}
+			generator = std::unique_ptr<AnalogOutCSVRaw>(
+				new AnalogOutCSVRaw(analogOut, buffer_size, channels, cyclic));
 		} else {
-			std::vector<std::vector<double>> samples(2, std::vector<double>());
-			getSamplesCsvFormat(file, samples);
-			if (channels.size() < 2) {
-				analogOut->push(channels[0], samples[0]);
-			} else {
-				analogOut->push(samples);
-			}
+			generator = std::unique_ptr<AnalogOutCSV>(
+				new AnalogOutCSV(analogOut, buffer_size, channels, cyclic));
 		}
 	} else {
 		throw std::runtime_error("Unknown format: " + format + '\n');
 
 	}
 
-	std::cout << "Press ENTER to stop the generation... ";
-	std::cin.clear();
-	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	while (keepReading) {
+		generator->generate(keepReading);
+	}
+
+	while (cyclic) {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
 	analogOut->stop();
 }
 
@@ -245,7 +234,7 @@ const char *const AnalogOut::helpMessage = "Usage:\n"
 					   "                  [-h | --help]\n"
 					   "                  [-q | --quiet]\n"
 					   "                  [-C | --calibrate]\n"
-					   "                  [-9 | --generate channel=<index>,... cyclic=<value> raw=<value> [format=<type>] [file=<path>]]\n"
+					   "                  [-9 | --generate channel=<index>,... cyclic=<value> raw=<value> [buffer_size=<size>] [format=<type>]]\n"
 					   "                  [-G | --get-channel channel=<index> <attribute> ...]\n"
 					   "                  [-S | --set-channel channel=<index> <attribute>=<value> ...]\n"
 					   "\n"
@@ -259,19 +248,18 @@ const char *const AnalogOut::helpMessage = "Usage:\n"
 					   "  -h, --help            show this help message and exit\n"
 					   "  -q, --quiet           return result only\n"
 					   "  -C, --calibrate       calibrate the DAC\n"
-					   "  -9, --generate channel=<index>,... cyclic=<value> raw=<value>[format=<type>] [file=<path>]\n"
+					   "  -9, --generate channel=<index>,... cyclic=<value> raw=<value> [buffer_size=<size>] [format=<type>]\n"
 					   "                        generate a signal\n"
-					   "                        by default the samples are read from stdin\n"
-					   "                        after writing all samples press CTRL+D(Unix) or CTRL+Z(Windows)\n"
+					   "                        the samples are read from stdin\n"
 					   "                        one channel: channel=<index>\n"
 					   "                        many channels: channel=<index>,<index>,<index>...\n"
 					   "                        channel - {0 | 1}\n"
+					   "                        buffer_size - size of the output buffer; default is 256\n"
 					   "                        cyclic - 0 (disable)\n"
 					   "                               - 1 (enable)\n"
 					   "                        raw - 0 (processed values)\n"
 					   "                            - 1 (raw values)\n"
-					   "                        format - {csv | binary}; default csv\n"
-					   "                        file - the path of the file containing the samples\n"
+					   "                        format - {csv | binary}; default is csv\n"
 					   "  -G, --get-channel channel=<index> [<attribute> ...]\n"
 					   "                        return the value of the attributes corresponding to the given channel\n"
 					   "                        attributes:\n"

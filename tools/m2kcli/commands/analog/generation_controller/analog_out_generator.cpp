@@ -19,38 +19,13 @@
  *
  */
 
-#ifndef M2KCLI_ANALOG_OUT_H
-#define M2KCLI_ANALOG_OUT_H
+#include "analog_out_generator.h"
 
-#include "../command_out.h"
-#include <libm2k/m2k.hpp>
-#include <libm2k/analog/m2kanalogout.hpp>
-
-namespace libm2k {
-namespace cli {
-
-class AnalogOut : public Command {
-public:
-	AnalogOut(int argc, char **argv);
-
-	bool parseArguments(std::vector<std::pair<std::string, std::string>> &output) override;
-
-private:
-	libm2k::analog::M2kAnalogOut *analogOut;
-
-	static const struct option options[];
-
-	void handleCalibration();
-
-	void handleGenerate();
-
-	void handleGetChannel(std::vector<std::pair<std::string, std::string>> &output);
-
-	void handleSetChannel();
-
-	static const char *const helpMessage;
-};
+AnalogOutGenerator::AnalogOutGenerator(libm2k::analog::M2kAnalogOut *analogOut, int bufferSize,
+				       std::vector<int> &channels, bool cyclic)
+{
+	this->analogOut = analogOut;
+	this->bufferSize = bufferSize;
+	this->channels = channels;
+	this->cyclic = cyclic;
 }
-}
-
-#endif //M2KCLI_ANALOG_OUT_H
