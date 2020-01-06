@@ -20,12 +20,16 @@
  */
 
 #include <iostream>
-#include <limits>
 #include <sstream>
 #include <algorithm>
 #include <stdexcept>
 #include <iterator>
 #include <utility>
+#include <thread>
+#include <chrono>
+#include <tools/m2kcli/utils/command_out_generator.h>
+#include <tools/m2kcli/commands/digital/generation_controller/digital_out_binary.h>
+#include <tools/m2kcli/commands/digital/generation_controller/digital_out_csv.h>
 #include "digital.h"
 
 using namespace libm2k::cli;
@@ -145,32 +149,37 @@ void Digital::handleGenerate()
 		digital->setDirection(channel, true);
 		digital->enableChannel(channel, true);
 	}
+
+	int buffer_size = 256;
+	if (arguments.count("buffer_size")) {
+		Validator::validate(arguments["buffer_size"], "buffer_size", buffer_size);
+	}
+
 	digital->setCyclic(cyclic);
 
 	std::string format;
-	std::string file;
 	if (arguments.count("format")) {
 		Validator::validate(arguments["format"], "format", format);
 	}
-	if (arguments.count("file")) {
-		Validator::validate(arguments["file"], "file", file);
-	}
 
-	std::vector<uint16_t> samples;
+	bool keepReading = true;
+	std::unique_ptr<CommandOutGenerator> generator;
+
 	if (!format.empty() && format == "binary") {
-		getSamplesBinaryFormat(file, samples);
-		digital->push(samples);
-
+		generator = std::unique_ptr<DigitalOutBinary>(new DigitalOutBinary(digital, buffer_size, channels, cyclic));
 	} else if (format.empty() || format == "csv") {
-		getSamplesCsvFormat(file, samples);
-		digital->push(samples);
+		generator = std::unique_ptr<DigitalOutCSV>(new DigitalOutCSV(digital, buffer_size, channels, cyclic));
 	} else {
 		throw std::runtime_error("Unknown format: " + format + '\n');
 	}
 
-	std::cout << "Press ENTER to stop the generation... ";
-	std::cin.clear();
-	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	while (keepReading) {
+		generator->generate(keepReading);
+	}
+
+	while(cyclic) {
+		std::this_thread::sleep_for (std::chrono::seconds(1));
+	}
 	digital->stopBufferOut();
 }
 
@@ -342,8 +351,8 @@ const char *const Digital::helpMessage = "Usage:\n"
 					 "m2kcli digital <uri>\n"
 					 "               [-h | --help]\n"
 					 "               [-q | --quiet]\n"
-					 "               [-c | --capture buffer_size=<size> [nb_samples] [format=<type>]]\n"
-					 "               [-9 | --generate channel=<index>,... cyclic=<value> [format=<type>] [file=<path>]]\n"
+					 "               [-c | --capture buffer_size=<size> [nb_samples=<value>] [format=<type>]]\n"
+					 "               [-9 | --generate channel=<index>,... cyclic=<value> [format=<type>]]\n"
 					 "               [-g | --get <attribute> ...]\n"
 					 "               [-G | --get-channel channel=<index> <attribute> ...]\n"
 					 "               [-s | --set <attribute>=<value> ...]\n"
@@ -363,17 +372,14 @@ const char *const Digital::helpMessage = "Usage:\n"
 					 "                        print a specific number of samples\n"
 					 "                        nb_samples - number of samples to be captured, 0 = infinite; default\n"
 					 "                        format - {csv | binary}; default csv\n"
-					 "  -9, --generate channel=<index>,... cyclic=<value> [format=<type>] [file=<path>]\n"
+					 "  -9, --generate channel=<index>,... cyclic=<value> [format=<type>]\n"
 					 "                        generate a signal\n"
-					 "                        by default the samples are read from stdin\n"
-					 "                        after writing all samples press CTRL+D(Unix) or CTRL+Z(Windows)\n"
 					 "                        one channel: channel=<index>\n"
 					 "                        many channels: channel=<index>,<index>,<index>...\n"
 					 "                        channel - {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15}\n"
 					 "                        cyclic - 0 (disable)\n"
 					 "                               - 1 (enable)\n"
 					 "                        format - {csv | binary}; default csv\n"
-					 "                        file - the path of the file containing the samples\n"
 					 "  -g, --get [<attribute>...]\n"
 					 "                        return the value of the specified global attributes\n"
 					 "                        attribute:\n"
