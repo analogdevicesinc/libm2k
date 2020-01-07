@@ -15,7 +15,7 @@
 #ifndef LIBM2K_UART_TERMINAL_H
 #define LIBM2K_UART_TERMINAL_H
 
-#include "../command.h"
+#include "tools/m2kcli/commands/command.h"
 #include <libm2k/tools/uart.hpp>
 #include "utils/safe_queue.h"
 
