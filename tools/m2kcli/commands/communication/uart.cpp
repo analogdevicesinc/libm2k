@@ -16,6 +16,7 @@
 #include <libm2k/tools/uart_extra.hpp>
 #include <libm2k/m2khardwaretrigger.hpp>
 #include <libm2k/digital/m2kdigital.hpp>
+#include <fstream>
 
 
 using namespace libm2k::cli;
@@ -194,3 +195,16 @@ const char *const Uart::helpMessage = "Usage:\n"
 				      "                        read a given number of bytes\n"
 				      "                        bytes_number - int\n"
 				      "                        format - {text | number}; default text\n";
+
+void Uart::getText(std::string &file, std::vector<uint8_t> &text)
+{
+	if (!file.empty()) {
+		std::ifstream in(file);
+		text = std::vector<uint8_t>(
+			(std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+	} else {
+		text = std::vector<uint8_t>(
+			(std::istreambuf_iterator<char>(std::cin)),
+			std::istreambuf_iterator<char>());
+	}
+}

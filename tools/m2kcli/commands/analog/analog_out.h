@@ -22,9 +22,9 @@
 #ifndef M2KCLI_ANALOG_OUT_H
 #define M2KCLI_ANALOG_OUT_H
 
-#include "../command_out.h"
 #include <libm2k/m2k.hpp>
 #include <libm2k/analog/m2kanalogout.hpp>
+#include <tools/m2kcli/commands/command.h>
 
 namespace libm2k {
 namespace cli {

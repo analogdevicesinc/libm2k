@@ -15,13 +15,13 @@
 #ifndef LIBM2K_UART_H
 #define LIBM2K_UART_H
 
-#include "../command_out.h"
 #include <libm2k/tools/uart.hpp>
+#include <tools/m2kcli/commands/command.h>
 
 namespace libm2k {
 namespace cli {
 
-class Uart : public CommandOut {
+class Uart : public Command {
 public:
 	Uart(int argc, char **argv);
 
@@ -39,6 +39,8 @@ private:
 	void handleWrite();
 
 	void handleRead();
+
+	void getText(std::string &file, std::vector<uint8_t > &text);
 
 	static const std::vector<const char *> parity;
 
