@@ -30,6 +30,7 @@
 #include "commands/communication/uart.h"
 #include "commands/communication/uart_terminal.h"
 #include <libm2k/contextbuilder.hpp>
+#include <csignal>
 
 static const char *const helpMessage = "Usage:\n"
 				       "m2kcli [-h | --help] [-v | --version]\n"
@@ -53,11 +54,22 @@ static const char *const helpMessage = "Usage:\n"
 				       "    uart		control the functionality of uart\n"
 				       "    uart-terminal	control the functionality of uart streaming\n";
 
+libm2k::cli::Command *command;
+void destroy(int sigNumber);
+
 int main(int argc, char **argv)
 {
+	std::signal(SIGABRT, destroy);
+	std::signal(SIGINT, destroy);
+	std::signal(SIGTERM, destroy);
+	std::signal(SIGSEGV, destroy);
+#if !defined(_WIN32) && !defined(__CYGWIN__)
+	std::signal(SIGHUP, destroy);
+	std::signal(SIGPIPE, destroy);
+#endif
+
 	bool quiet;
 	std::vector<std::pair<std::string, std::string>> output;
-	libm2k::cli::Command *command;
 	try {
 		if (argc < 2 || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
 			std::cout << helpMessage;
@@ -126,7 +138,14 @@ int main(int argc, char **argv)
 		}
 	}
 	if (command->getContext() != nullptr) {
-		libm2k::contexts::contextClose(command->getContext(), true);
+		libm2k::contexts::contextClose(command->getContext(), false);
 	}
 	return 0;
+}
+
+void destroy(int sigNumber)
+{
+	libm2k::contexts::contextClose(command->getContext(), false);
+	std::cout << std::endl;
+	exit(sigNumber);
 }
