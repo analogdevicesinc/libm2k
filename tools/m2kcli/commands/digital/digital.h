@@ -22,14 +22,13 @@
 #ifndef M2KCLI_DIGITAL_H
 #define M2KCLI_DIGITAL_H
 
-#include "../command_out.h"
 #include "../command_in.h"
 #include <libm2k/digital/m2kdigital.hpp>
 
 namespace libm2k {
 namespace cli {
 
-class Digital : public CommandOut, public CommandIn {
+class Digital : public CommandIn {
 public:
 	Digital(int argc, char **argv);
 
