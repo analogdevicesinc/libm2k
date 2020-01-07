@@ -22,7 +22,7 @@
 #ifndef M2KCLI_POWER_SUPPLY_H
 #define M2KCLI_POWER_SUPPLY_H
 
-#include "../command.h"
+#include "tools/m2kcli/commands/command.h"
 #include <libm2k/analog/m2kpowersupply.hpp>
 
 
