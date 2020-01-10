@@ -15,9 +15,11 @@ env:
 matrix:
   include:
     - os: linux
+      dist: bionic
+      python: 3.6
       env:
-        - OS_TYPE=ubuntu_docker
-        - OS_VERSION=bionic
+        - PYTHON=python PIP=pip
+        - OS_TYPE=ubuntu
     - os: linux
       dist: xenial
       env:
@@ -52,4 +54,30 @@ before_install:
 script:
   - if [[ -z "$ARCH" && "$TRAVIS_OS_NAME" == "linux" ]]; then ${TRAVIS_BUILD_DIR}/CI/travis/make_linux libm2k "$OS_TYPE" "$OS_VERSION" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ${TRAVIS_BUILD_DIR}/CI/travis/make_darwin; fi
+before_deploy:
+  - ". ${TRAVIS_BUILD_DIR}/CI/travis/before_deploy"
 
+deploy:
+  - provider: releases
+    api_key:
+      secure: O6mk05weBrhXR4DJ9cYkZ0MP4DQa0NLylvOAGW5mxpwcJBciQEe7JQg1NYxugemZ2d8EcyRaNqqSDK+PBnWqQpl+G+eGQny40BcbLCxOo6nR/XX2Zodrwqd/VEWxm7y/gb1prF4zSvYKCZQ5PZJHqvdU6jtn9EuiFpEM1WV+1Sy96o/6k6jxBQKZgQx3YIdXs1kLXh+UBVWgyGX3cN+W1Hv9eeRfr0skm2t16RNODIV1CNEeRsOI2Xv7LGoC0T3kux3SefgE5oTnvaBqO3FEZFUp0Ssrv0nU4E3E+l27x4veT5v5sBVDDBkyEJlIPaUPxEMq708WScCiOEsenBI1dJqYy5bmzwTh9tC+ZlVVIdLGsnGdU1Mzf+i21Wf/G3u65dIbMYYxyZpFknrd8dRjeDh3GG/1ARi9hEr0Y2WGRT32d31ReLsMv2lQtju28vxOzLN4TuzweTxBnTxj5lItW71C30r7NQXY1/2gAT9KyIyKOZFZljypC/whNPtbaRffbtcqZB4fyge39g7kB81fse2BOvYURIAe4IYlUPaupHOnXax9TpRoOXBCPW04+suUoieVxhqruMdmYNIRtozsuM29qqJUuvnzJAJ3IwRmQqIXYxs3wc5I50Yh/2r43G2PQMZoTmYF9q3d3PSypfhW+d2ntMzJeAljxVKQ2I4D9G4=
+    file:
+      - "${RELEASE_PKG_FILE_DEB}"
+      - "${RELEASE_PY_FILE_DEB}"
+      - "${RELEASE_PKG_FILE_TGZ}"
+    skip_cleanup: true
+    on:
+      repo: analogdevicesinc/libm2k
+      tags: true
+      condition: "($TRAVIS_OS_NAME = linux)"
+  - provider: releases
+    api_key:
+      secure: O6mk05weBrhXR4DJ9cYkZ0MP4DQa0NLylvOAGW5mxpwcJBciQEe7JQg1NYxugemZ2d8EcyRaNqqSDK+PBnWqQpl+G+eGQny40BcbLCxOo6nR/XX2Zodrwqd/VEWxm7y/gb1prF4zSvYKCZQ5PZJHqvdU6jtn9EuiFpEM1WV+1Sy96o/6k6jxBQKZgQx3YIdXs1kLXh+UBVWgyGX3cN+W1Hv9eeRfr0skm2t16RNODIV1CNEeRsOI2Xv7LGoC0T3kux3SefgE5oTnvaBqO3FEZFUp0Ssrv0nU4E3E+l27x4veT5v5sBVDDBkyEJlIPaUPxEMq708WScCiOEsenBI1dJqYy5bmzwTh9tC+ZlVVIdLGsnGdU1Mzf+i21Wf/G3u65dIbMYYxyZpFknrd8dRjeDh3GG/1ARi9hEr0Y2WGRT32d31ReLsMv2lQtju28vxOzLN4TuzweTxBnTxj5lItW71C30r7NQXY1/2gAT9KyIyKOZFZljypC/whNPtbaRffbtcqZB4fyge39g7kB81fse2BOvYURIAe4IYlUPaupHOnXax9TpRoOXBCPW04+suUoieVxhqruMdmYNIRtozsuM29qqJUuvnzJAJ3IwRmQqIXYxs3wc5I50Yh/2r43G2PQMZoTmYF9q3d3PSypfhW+d2ntMzJeAljxVKQ2I4D9G4=
+    file:
+      - "${RELEASE_PKG_FILE_PKG}"
+      - "${RELEASE_PKG_FILE_TGZ}"
+    skip_cleanup: true
+    on:
+      repo: analogdevicesinc/libm2k
+      tags: true
+      condition: "$TRAVIS_OS_NAME = osx"
