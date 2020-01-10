@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.1.3)
 
+option(OSX_PACKAGE "Create OSX package" OFF)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
 if(APPLE)
@@ -56,7 +57,6 @@ target_link_libraries(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} PROPERTIES
         VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_VERSION}
-	FRAMEWORK TRUE
 )
 
 if (MSVC)
@@ -64,14 +64,15 @@ if (MSVC)
 endif()
 
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	option(OSX_PACKAGE "Create a OSX package" ON)
-
-	set(OSX_INSTALL_FRAMEWORKSDIR "/Library/Frameworks" CACHE STRING "Installation directory for frameworks")
-	get_filename_component(OSX_INSTALL_FRAMEWORKSDIR "${OSX_INSTALL_FRAMEWORKSDIR}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
-
+if (APPLE)
+	set_target_properties(${PROJECT_NAME} PROPERTIES FRAMEWORK FALSE)
 	set(CMAKE_MACOSX_RPATH ON)
-	set(SKIP_INSTALL_ALL ${OSX_PACKAGE})
+	if (OSX_PACKAGE)
+		set_target_properties(${PROJECT_NAME} PROPERTIES FRAMEWORK TRUE)
+		set(OSX_INSTALL_FRAMEWORKSDIR "/Library/Frameworks" CACHE STRING "Installation directory for frameworks")
+		get_filename_component(OSX_INSTALL_FRAMEWORKSDIR "${OSX_INSTALL_FRAMEWORKSDIR}" REALPATH BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+		set(SKIP_INSTALL_ALL ${OSX_PACKAGE})
+	endif()
 endif()
 
 install(TARGETS ${PROJECT_NAME}
