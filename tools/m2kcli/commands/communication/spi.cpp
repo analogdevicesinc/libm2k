@@ -150,7 +150,7 @@ const struct option Spi::options[] = {
 const char *const Spi::helpMessage = "Usage:\n"
 				     "m2kcli spi <uri>\n"
 				     "           [-h | --help]\n"
-				     "           [-i | --init frequency=<value> address=<value> scl=<index> sda=<index>]\n"
+				     "           [-i | --init [frequency=<value> clk=<value> mosi=<index> [miso=<index>] cs=<index> mode=<value> bit_numbering=<value>]\n"
 				     "           [-w | --write data=<value>,...]\n"
 				     "\n"
 				     "Positional arguments:\n"
