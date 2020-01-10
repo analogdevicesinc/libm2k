@@ -1,11 +1,11 @@
-#capture 16 processed samples from both channels - csv format
-m2kcli analog-in auto --capture channel=0,1 buffer_size=16 raw=0
+#capture 2048 processed samples from both channels - csv format
+m2kcli analog-in auto --capture channel=0,1 buffer_size=1024 nb_samples=2048 raw=0
 
 #equivalent to the command above
-m2kcli analog-in auto -c buffer_size=16 channel=0,1 raw=0 format=csv
+m2kcli analog-in auto -c buffer_size=1024 nb_samples=2048 channel=0,1 raw=0 format=csv
 
 #capture 100 unprocessed samples from both channels and save them into a binary file
-m2kcli analog-in auto --capture channel=0,1 buffer_size=100 raw=1 format=binary >file.bin
+m2kcli analog-in auto --capture channel=0,1 buffer_size=100 nb_samples=100 raw=1 format=binary > file.bin
 
 #get the voltage, unprocessed, for the first channel
 m2kcli analog-in auto --voltage channel=0 raw=0
