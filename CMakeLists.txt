@@ -215,7 +215,7 @@ if(OSX_PACKAGE)
 	add_custom_command(OUTPUT ${LIBM2K_PKG}
 		COMMAND ${PKGBUILD_EXECUTABLE}
 			--component ${LIBM2K_FRAMEWORK_DIR}
-			--identifier com.adi.m2k --version ${PROJECT_VERSION}
+			--identifier libm2k --version ${PROJECT_VERSION}
 			--install-location ${OSX_INSTALL_FRAMEWORKSDIR} ${LIBM2K_TEMP_PKG}
 		COMMAND ${PRODUCTBUILD_EXECUTABLE}
 			--distribution ${LIBM2K_DISTRIBUTION_XML} ${LIBM2K_PKG}
