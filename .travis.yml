@@ -19,7 +19,6 @@ matrix:
       python: 3.6
       env:
         - PYTHON=python PIP=pip
-        - OS_TYPE=ubuntu
     - os: linux
       dist: xenial
       env:
