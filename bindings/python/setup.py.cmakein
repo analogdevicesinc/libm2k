@@ -2,8 +2,10 @@ from setuptools import setup, os, Extension
 
 setup (name = '${PROJECT_NAME}',
        version = '${PROJECT_VERSION}',
-       author = "Analog Devices, Inc",
+       maintainer = "Analog Devices, Inc",
+       maintainer_email = "Alexandra.Trifan@analog.com",
        description = """Install Python bindings from original C/C++ libm2k""",
+       url='https://github.com/analogdevicesinc/libm2k',
        py_modules = ["${PROJECT_NAME}"],
        packages=[''],
        package_data={'': ['_${PROJECT_NAME}.so', '_${PROJECT_NAME}.pyd']},
