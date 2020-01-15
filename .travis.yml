@@ -21,6 +21,11 @@ matrix:
         - PYTHON=python PIP=pip
     - os: linux
       dist: xenial
+      python: 3.6
+      env:
+        - PYTHON=python PIP=pip
+    - os: linux
+      dist: xenial
       env:
         - OS_TYPE=doxygen
       addons: { apt: { packages: ["cmake", "graphviz"] } }
