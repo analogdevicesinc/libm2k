@@ -95,7 +95,6 @@ def set_trig(trig,channel,delay, cond=None, level=None):
         trig.setAnalogLevel(channel, level)
     return
 
-
 def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig, dir_name, file, csv_path):
     """Sends signals with different amplitudes and verify if the received data is as expected. The amplitude multiplier is defined locally.
         For each value of the amplitude multiplier is computed the maximum and the minimum value of the input signal.
@@ -164,6 +163,7 @@ def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig, dir_name, fi
     corr_amplitude_max, _= pearsonr(max_in, max_ref)
     corr_amplitude_min, _= pearsonr(min_in, min_ref)
     aout.stop(channel)
+    aout.enableChannel(channel, True)
     return  corr_amplitude_max, corr_amplitude_min
 
 
@@ -191,6 +191,7 @@ def test_shape(channel,out_data,ref_data,ain,aout,trig, ch_ratio, shapename, dir
     #set the trigger delay
     delay=0
     file.write("\n\nTest of analog input and output with different signal shapes:\n")
+
     for i in range(len(out_data)):
         set_trig_for_signalshape_test( i, channel, trig, delay)
         n=round(len(out_data[i])/ch_ratio)
@@ -218,6 +219,7 @@ def test_shape(channel,out_data,ref_data,ain,aout,trig, ch_ratio, shapename, dir
         file.write("Phase difference between "+ shapename[i] +"signal and its reference:" +str(phase_diff)+"\n")
     plt.close()
     aout.stop(channel)
+    aout.enableChannel(channel, True)
     return corr_shape_vect, phase_diff_vect
 
 
@@ -273,6 +275,8 @@ def phase_diff_ch0_ch1( aout,ain,trig, dir_name, file, csv_path):
         phasediff_csv['Ch1, ADCsr='+str(sr)]=input_data[libm2k.ANALOG_IN_CHANNEL_2]
     save_data_to_csv(phasediff_csv, csv_path+'ph_diff_channels.csv')
     aout.stop()
+    aout.enableChannel(0, True)
+    aout.enableChannel(1, True)
     return phase_diff_between_channels, adc_sr
 
 
@@ -400,6 +404,7 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
                 trig_test=np.append(trig_test, 0)
             file.write("High level condition:\n"+"level set: "+str(high)+"\nlevel read: "+ str(input_data[delay])+"\n")
     aout.stop(channel)
+    aout.enableChannel(channel, True)
     return trig_test, condition_name
 
 
@@ -451,6 +456,7 @@ def test_offset(out_data,n, ain, aout,trig, channel, dir_name, file, csv_path ):
     file.write("Offset values computed: \n"+str(in_offset)+"\n")
     corr_offset, _= pearsonr(offset, in_offset)  #compare the original offset vector with the average values obtained
     aout.stop(channel)
+    aout.enableChannel(channel, True)
     return corr_offset
 
 
@@ -487,6 +493,7 @@ def test_voltmeter_functionality(channel,ain,aout,ctx, file):
         else:
             voltmeter_=np.append(voltmeter_, 0)#the voltage is out of range
     aout.stop(channel)
+    aout.enableChannel(channel, True)
  
     return voltmeter_
 
@@ -565,6 +572,7 @@ def cyclic_buffer_test(aout, ain, channel, trig, dir_name, file, csv_path, ctx):
         save_data_to_csv(cyclic_csv_vals, csv_path+'cyclic_buffer.csv')
     plt.close()
     aout.stop(channel)
+    aout.enableChannel(channel, True)
     aout.setCyclic(True)
     ctx.setTimeout(1000)
     return cyclic_false
@@ -650,6 +658,7 @@ def compute_frequency(channel, ain, aout, trig, file):
                 file.write("\nOut signal frequency:"+ str(out_freq))
                 file.write("\nIn singal frequency:"+ str(in_freq))
     aout.stop(channel)
+    aout.enableChannel(channel, True)
     return ofreqs, ifreqs
 
 def compare_in_out_frequency(channel, ain, aout, trig, file):
@@ -690,6 +699,7 @@ def compare_in_out_frequency(channel, ain, aout, trig, file):
                 else:
                     freq_test=np.append(freq_test,0)
     aout.stop(channel)
+    aout.enableChannel(channel, True)
     return freq_test
 
 def test_oversampling_ratio(channel, ain, aout,trig, file, csv_path):
@@ -748,6 +758,7 @@ def test_oversampling_ratio(channel, ain, aout,trig, file, csv_path):
         if osr[i]!=verify_osr[i]:
             test_osr=0
     aout.stop(channel)
+    aout.enableChannel(channel, True)
     return test_osr
 
 def plot_to_file(title,data, dir_name,  filename, xlabel=None, ylabel=None, data1=None ):
