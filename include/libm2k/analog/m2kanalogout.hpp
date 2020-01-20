@@ -23,6 +23,7 @@
 #define M2KANALOGOUT_HPP
 
 #include <libm2k/m2kglobal.hpp>
+#include <libm2k/enums.hpp>
 #include <vector>
 #include <memory>
 #include <map>
