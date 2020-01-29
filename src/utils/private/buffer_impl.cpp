@@ -325,14 +325,9 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		}
 
-
-		for (int j = 0; j < nb_samples; j++) {
-			m_data_short.push_back(0);
-		}
-
 		unsigned short* data = (unsigned short*)iio_buffer_start(m_buffer);
 		for (int i = 0; i < nb_samples; i++) {
-			m_data_short[i] = data[i];
+			m_data_short.push_back(data[i]);
 		}
 
 		return m_data_short;
