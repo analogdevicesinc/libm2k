@@ -18,6 +18,11 @@
 #endif
 #endif
 
+#ifdef SWIGCSHARP
+%apply void *VOID_UINT_PTR { unsigned short * getSamplesP}
+#endif
+
+
 %allowexception;
 %feature("autodoc", "3");
 
@@ -77,6 +82,7 @@
 
 #endif
 
+
 #ifdef SWIGPYTHON
 #ifdef COMMUNICATION
 %include <pybuffer.i>
@@ -94,6 +100,7 @@ namespace std {
 	%template(VectorStr) vector<string>;
 	%template(VectorVectorD) vector< vector<double> >;
 	%template(VectorVectorS) vector< vector<int> >;
+	%template(VectorVectorUS) vector< vector<unsigned short> >;
 	%template(PairDD) std::pair<double, double>;
 	%template(VectorPairDD) std::vector<std::pair<std::string, std::pair <double, double>>>;
 }
