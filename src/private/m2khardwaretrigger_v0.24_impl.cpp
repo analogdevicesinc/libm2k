@@ -91,6 +91,7 @@ class M2kHardwareTrigger::M2kHardwareTriggerV024Impl : public M2kHardwareTrigger
 		"a_OR_trigger_in",
 		"b_OR_trigger_in",
 		"a_OR_b_OR_trigger_in",
+		"window_trigger",
 	};
 
 	std::vector<std::string> m_trigger_ext_digital_source = {
@@ -103,12 +104,47 @@ class M2kHardwareTrigger::M2kHardwareTriggerV024Impl : public M2kHardwareTrigger
 		"and",
 	};
 
+	std::vector<std::string> m_trigger_logic_window_source = {
+		"channel_0",
+		"channel_1",
+	};
+
+	std::vector<std::string> m_trigger_logic_window_mode = {
+		"wider-than",
+		"shorter-than",
+		"in-range",
+		"out-of-range",
+	};
+
 	typedef std::pair<Channel *, std::string> channel_pair;
 
 public:
 	M2kHardwareTriggerV024Impl(struct iio_context *ctx, bool init = true) :
 		M2kHardwareTriggerImpl(ctx, "m2k-adc-trigger")
 	{
+		std::vector<std::pair<Channel*, std::string>> channels;
+		for (unsigned int i = 0; i < getNbChannels(false); i++) {
+			Channel* ch = getChannel(i, false);
+			if (ch->isOutput()) {
+				continue;
+			}
+
+			std::string name = ch->getId();
+			std::pair<Channel*, std::string> chn_pair(ch, name);
+			channels.push_back(chn_pair);
+		}
+
+		std::sort(channels.begin(), channels.end(),
+			  [](channel_pair a, channel_pair b)
+		{ return a.second < b.second; });
+
+		for (unsigned int i = 0; i < channels.size(); i++) {
+			Channel* chn = channels[i].first;
+			bool attr = chn->hasAttribute("cnt_function");
+			if (attr) {
+				m_window_trigger_channel = chn;
+			}
+		}
 	}
 
 	~M2kHardwareTriggerV024Impl()
@@ -244,6 +280,279 @@ public:
 			setAnalogDelay(settings->delay);
 		}
 	}
+
+	int getWindowCntValue()
+	{
+		double val = m_window_trigger_channel->getDoubleValue("cnt_value");
+		return static_cast<int>(val);
+	}
+
+	virtual int getCntFunction()
+	{
+		std::string buf = m_window_trigger_channel->getStringValue("cnt_function");
+
+		auto it = std::find(m_trigger_logic_window_mode.begin(),
+				    m_trigger_logic_window_mode.end(), buf.c_str());
+		if  (it == m_trigger_logic_window_mode.end()) {
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source");
+		}
+
+		M2K_CNT_FUNCTION val = static_cast<M2K_CNT_FUNCTION>(it - m_trigger_logic_window_mode.begin());
+		int ret;
+		// make a corelation between enum and index
+		for (unsigned int i = 0; i < sizeof(M2K_CNT_FUNCTION); i++ ) {
+			if (M2K_CNT_FUNCTION(i) == val) {
+				ret = i;
+			}
+		}
+		return ret;
+	}
+
+	void setCntFunction(M2K_CNT_FUNCTION val)
+	{
+		auto cnt_function = m_trigger_logic_window_mode[val];
+		m_window_trigger_channel->setStringValue("cnt_function", cnt_function);
+	}
+
+	virtual int getL1Function()
+	{
+		std::string buf = m_window_trigger_channel->getStringValue("l1_function");
+
+		auto it = std::find(m_trigger_analog_cond.begin(),
+				    m_trigger_analog_cond.end(), buf.c_str());
+		if  (it == m_trigger_analog_cond.end()) {
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source");
+		}
+
+		M2K_TRIGGER_CONDITION_ANALOG val = static_cast<M2K_TRIGGER_CONDITION_ANALOG>(it - m_trigger_analog_cond.begin());
+		int ret;
+		// make a corelation between enum and index
+		for (unsigned int i = 0; i < sizeof(M2K_TRIGGER_CONDITION_ANALOG); i++ ) {
+			if (M2K_TRIGGER_CONDITION_ANALOG(i) == val) {
+				ret = i;
+			}
+		}
+		return ret;
+	}
+
+	void setL1Function(M2K_TRIGGER_SOURCE_ANALOG val)
+	{
+		auto l1_function = m_trigger_analog_cond[val];
+		m_window_trigger_channel->setStringValue("l1_function", l1_function);
+	}
+
+	virtual int getL2Function()
+	{
+		std::string buf = m_window_trigger_channel->getStringValue("l2_function");
+
+		auto it = std::find(m_trigger_analog_cond.begin(),
+				    m_trigger_analog_cond.end(), buf.c_str());
+		if  (it == m_trigger_analog_cond.end()) {
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source");
+		}
+
+		M2K_TRIGGER_CONDITION_ANALOG val = static_cast<M2K_TRIGGER_CONDITION_ANALOG>(it - m_trigger_analog_cond.begin());
+		int ret;
+		// make a corelation between enum and index
+		for (unsigned int i = 0; i < sizeof(M2K_TRIGGER_CONDITION_ANALOG); i++ ) {
+			if (M2K_TRIGGER_CONDITION_ANALOG(i) == val) {
+				ret = i;
+			}
+		}
+		return ret;
+	}
+
+	void setL2Function(M2K_TRIGGER_SOURCE_ANALOG val)
+	{
+		auto l2_function = m_trigger_analog_cond[val];
+		m_window_trigger_channel->setStringValue("l2_function", l2_function);
+	}
+
+	int getL1AnalogLevelRaw()
+	{
+		double val = m_window_trigger_channel->getDoubleValue("l1_limit");
+		return static_cast<int>(val);
+	}
+
+	void setL1AnalogLevelRaw(int level)
+	{
+		m_window_trigger_channel->setLongValue("l1_limit", static_cast<long long>(level));
+	}
+
+	double getL1AnalogLevel()
+	{
+		int raw = getL1AnalogLevelRaw();
+		// fix-me offset for second channel
+		double volts = raw * m_scaling.at(0) + m_offset.at(0);
+		return volts;
+	}
+
+	void setL1AnalogLevel(double v_level)
+	{
+		int raw = (v_level - m_offset.at(0)) / m_scaling.at(0);
+		setL1AnalogLevelRaw(raw);
+	}
+
+	double getL1AnalogHysteresis()
+	{
+		double hysteresis_raw = m_window_trigger_channel->getDoubleValue("l1_hysteresis");
+		return (hysteresis_raw * m_scaling.at(0));
+	}
+
+	void setL1AnalogHysteresis(double hysteresis)
+	{
+		int hysteresis_raw = hysteresis / m_scaling.at(0);
+		m_window_trigger_channel->setLongValue("l1_hysteresis", static_cast<long long>(hysteresis_raw));
+	}
+
+	virtual int getL1Source()
+	{
+		std::string buf = m_window_trigger_channel->getStringValue("l1_source");
+
+		auto it = std::find(m_trigger_logic_window_source.begin(),
+				    m_trigger_logic_window_source.end(), buf.c_str());
+		if  (it == m_trigger_logic_window_source.end()) {
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source");
+		}
+
+		M2K_WINDOW_L_SOURCE val = static_cast<M2K_WINDOW_L_SOURCE>(it - m_trigger_logic_window_source.begin());
+		int ret;
+		// make a corelation between enum and index
+		for (unsigned int i = 0; i < sizeof(M2K_WINDOW_L_SOURCE); i++ ) {
+			if (M2K_WINDOW_L_SOURCE(i) == val) {
+				ret = i;
+			}
+		}
+		return ret;
+	}
+
+	void setL1Source(M2K_WINDOW_L_SOURCE val)
+	{
+		auto l1_source = m_trigger_logic_window_source[val];
+		m_window_trigger_channel->setStringValue("l1_source", l1_source);
+	}
+
+	int getL2AnalogLevelRaw()
+	{
+		double val = m_window_trigger_channel->getDoubleValue("l2_limit");
+		return static_cast<int>(val);
+	}
+
+	void setL2AnalogLevelRaw(int level)
+	{
+		m_window_trigger_channel->setLongValue("l2_limit", static_cast<long long>(level));
+	}
+
+	double getL2AnalogLevel()
+	{
+		int raw = getL2AnalogLevelRaw();
+		double volts = raw * m_scaling.at(1) + m_offset.at(1);
+		return volts;
+	}
+
+	void setL2AnalogLevel(double v_level)
+	{
+		int raw = (v_level - m_offset.at(1)) / m_scaling.at(1);
+		setL2AnalogLevelRaw(raw);
+	}
+
+	double getL2AnalogHysteresis()
+	{
+		double hysteresis_raw = m_window_trigger_channel->getDoubleValue("l2_hysteresis");
+		return (hysteresis_raw * m_scaling.at(1));
+	}
+
+	void setL2AnalogHysteresis(double hysteresis)
+	{
+		int hysteresis_raw = hysteresis / m_scaling.at(1);
+		m_window_trigger_channel->setLongValue("l2_hysteresis", static_cast<long long>(hysteresis_raw));
+	}
+
+	virtual int getL2Source()
+	{
+		std::string buf = m_window_trigger_channel->getStringValue("l2_source");
+
+		auto it = std::find(m_trigger_logic_window_source.begin(),
+				    m_trigger_logic_window_source.end(), buf.c_str());
+		if  (it == m_trigger_logic_window_source.end()) {
+			throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: logic_mode / source");
+		}
+
+		M2K_WINDOW_L_SOURCE val = static_cast<M2K_WINDOW_L_SOURCE>(it - m_trigger_logic_window_source.begin());
+		int ret;
+		// make a corelation between enum and index
+		for (unsigned int i = 0; i < sizeof(M2K_WINDOW_L_SOURCE); i++ ) {
+			if (M2K_WINDOW_L_SOURCE(i) == val) {
+				ret = i;
+			}
+		}
+		return ret;
+	}
+
+	void setL2Source(M2K_WINDOW_L_SOURCE val)
+	{
+		auto l2_source = m_trigger_logic_window_source[val];
+		m_window_trigger_channel->setStringValue("l2_source", l2_source);
+	}
+
+	int getWindowStartCnt()
+	{
+		double val = m_window_trigger_channel->getDoubleValue("start_cnt");
+		return static_cast<int>(val);
+	}
+
+	void setWindowStartCnt(int val)
+	{
+		m_window_trigger_channel->setLongValue("start_cnt", static_cast<long long>(val));
+	}
+
+	int getWindowStopCnt()
+	{
+		double val = m_window_trigger_channel->getDoubleValue("stop_cnt");
+		return static_cast<int>(val);
+	}
+
+	void setWindowStopCnt(int val)
+	{
+		m_window_trigger_channel->setLongValue("stop_cnt", static_cast<long long>(val));
+	}
+
+	int getWindowCntLimit1()
+	{
+		double val = m_window_trigger_channel->getDoubleValue("limit_1");
+		return static_cast<int>(val);
+	}
+
+	void setWindowCntLimit1(int val)
+	{
+		m_window_trigger_channel->setLongValue("limit_1", static_cast<long long>(val));
+	}
+
+	int getWindowCntLimit2()
+	{
+		double val = m_window_trigger_channel->getDoubleValue("limit_2");
+		return static_cast<int>(val);
+	}
+
+	void setWindowCntLimit2(int val)
+	{
+		m_window_trigger_channel->setLongValue("limit_2", static_cast<long long>(val));
+	}
+
+	void setResetCntAtNewStart(bool val)
+	{
+		m_window_trigger_channel->setBoolValue("rst_at_new_start", val);
+	}
+
+	bool getResetCntAtNewStart()
+	{
+		bool rst_val = m_window_trigger_channel->getBoolValue("rst_at_new_start");
+		return rst_val;
+	}
+
+private:
+	Channel *m_window_trigger_channel;
+
 };
 
 #endif

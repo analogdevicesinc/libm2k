@@ -52,6 +52,40 @@ public:
 	virtual ~M2kHardwareTrigger();
 
 
+	int getWindowCntValue();
+	void setCntFunction(M2K_CNT_FUNCTION val);
+	int getCntFunction();
+	void setL1Function(M2K_TRIGGER_SOURCE_ANALOG val);
+	int getL1Function();
+	void setL2Function(M2K_TRIGGER_SOURCE_ANALOG val);
+	int getL2Function();
+	int getL1AnalogLevelRaw();
+	void setL1AnalogLevelRaw(int level);
+	double getL1AnalogLevel();
+	double getL1AnalogHysteresis();
+	void setL1AnalogLevel(double v_level);
+	void setL1AnalogHysteresis(double hysteresis);
+	void setL1Source(M2K_WINDOW_L_SOURCE val);
+	int getL1Source();
+	int getL2AnalogLevelRaw();
+	void setL2AnalogLevelRaw(int level);
+	double getL2AnalogLevel();
+	double getL2AnalogHysteresis();
+	void setL2AnalogLevel(double v_level);
+	void setL2AnalogHysteresis(double hysteresis);
+	void setL2Source(M2K_WINDOW_L_SOURCE val);
+	int getL2Source();
+	void setWindowStartCnt(int val);
+	int getWindowStartCnt();
+	int getWindowStopCnt();
+	void setWindowStopCnt(int val);
+	int getWindowCntLimit1();
+	void setWindowCntLimit1(int val);
+	int getWindowCntLimit2();
+	void setWindowCntLimit2(int val);
+	void setResetCntAtNewStart(bool val);
+	bool getResetCntAtNewStart();
+
 	/**
 	 * @private
 	 */

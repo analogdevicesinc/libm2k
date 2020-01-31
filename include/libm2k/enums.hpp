@@ -127,6 +127,7 @@ namespace libm2k {
 		CHANNEL_1_OR_SRC_LOGIC_ANALYZER = 6,
 		CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 7,
 		CHANNEL_1_OR_CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 8,
+		WINDOW_TRIGGER = 9
 	};
 
 
@@ -181,6 +182,29 @@ namespace libm2k {
 		std::vector<iio_buffer*> buffers_rx;
 		std::vector<iio_buffer*> buffers_tx;
 		iio_context* context;
+	};
+
+	/**
+	* @enum M2K_CNT_FUNCTION for the analog side.
+	* @brief Condition of window triggering.
+	*
+	*/
+	enum M2K_CNT_FUNCTION {
+		WIDER_THAN = 0,
+		SHORTER_THAN = 1,
+		IN_RANGE = 2,
+		OUT_OF_RANGE = 2,
+	};
+
+
+	/**
+	* @enum M2K_lx_source for the analog side.
+	* @brief window trigger ln soruce.
+	*
+	*/
+	enum M2K_WINDOW_L_SOURCE {
+		SOURCE_tCHANNEL_1 = 0,
+		SOURCE_CHANNEL_2 = 1,
 	};
 }
 

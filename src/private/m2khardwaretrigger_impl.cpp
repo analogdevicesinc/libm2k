@@ -168,17 +168,18 @@ public:
 		m_digital_channels.clear();
 	}
 
+
 	virtual void init()
 	{
 		setAnalogSource(CHANNEL_1);
 		setAnalogDelay(0);
-		for (int i = 0; i < m_analog_channels.size(); i++) {
+		for (unsigned int i = 0; i < m_analog_channels.size(); i++) {
 			setAnalogMode(i, ALWAYS);
 			setAnalogLevel(i, 0.0);
 			setAnalogHysteresis(i, 0.0);
 		}
 
-		for (int i = 0; i < m_digital_channels.size(); i++) {
+		for (unsigned int i = 0; i < m_digital_channels.size(); i++) {
 			setDigitalCondition(i, NO_TRIGGER_DIGITAL);
 		}
 		setDigitalDelay(0);
@@ -547,6 +548,254 @@ public:
 	bool getAnalogStreamingFlag()
 	{
 		return m_streaming_flag_analog;
+	}
+
+	virtual int getWindowCntValue()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog cnt_value is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual int getCntFunction()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog cnt_function is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setCntFunction(M2K_CNT_FUNCTION val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog cnt_function is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual int getL1Function()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_function is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setL1Function(M2K_TRIGGER_SOURCE_ANALOG val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_function is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual int getL2Function()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_function is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setL2Function(M2K_TRIGGER_SOURCE_ANALOG val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_function is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual int getL1AnalogLevelRaw()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_limit is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setL1AnalogLevelRaw(int level)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_limit is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual double getL1AnalogLevel()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_limit is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setL1AnalogLevel(double v_level)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_limit is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual double getL1AnalogHysteresis()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_hysteresis is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setL1AnalogHysteresis(double hysteresis)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_hysteresis is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual void setL1Source(M2K_WINDOW_L_SOURCE val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_source is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual int getL1Source()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l1_source is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual int getL2AnalogLevelRaw()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_limit is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setL2AnalogLevelRaw(int level)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_limit is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual double getL2AnalogLevel()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_limit is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setL2AnalogLevel(double v_level)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_limit is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual double getL2AnalogHysteresis()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_hysteresis is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setL2AnalogHysteresis(double hysteresis)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_hysteresis is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual void setL2Source(M2K_WINDOW_L_SOURCE val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_source is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual int getL2Source()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog l2_source is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual int getWindowStartCnt()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog start_cnt is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setWindowStartCnt(int val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog start_cnt is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual int getWindowStopCnt()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog stop_cnt is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setWindowStopCnt(int val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog stop_cnt is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual int getWindowCntLimit1()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog limit_1 is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setWindowCntLimit1(int val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog limit_1 is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual int getWindowCntLimit2()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog limit_2 is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setWindowCntLimit2(int val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog limit_2 is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+	virtual bool getResetCntAtNewStart()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog rst_at_new_start is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setResetCntAtNewStart(bool val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog rst_at_new_start is not configurable on "
+						       "the current board; Check the firmware version.");
 	}
 
 	static std::vector<string> getAvailableDigitalConditions()

@@ -45,6 +45,172 @@ void M2kHardwareTrigger::init()
 	m_pimpl->init();
 }
 
+int M2kHardwareTrigger::getWindowCntValue()
+{
+	return m_pimpl->getWindowCntValue();
+}
+
+void M2kHardwareTrigger::setCntFunction(M2K_CNT_FUNCTION val)
+{
+	m_pimpl->setCntFunction(val);
+}
+
+int M2kHardwareTrigger::getCntFunction()
+{
+	return m_pimpl->getCntFunction();
+}
+
+void M2kHardwareTrigger::setL1Function(M2K_TRIGGER_SOURCE_ANALOG val)
+{
+	m_pimpl->setL1Function(val);
+}
+
+int M2kHardwareTrigger::getL1Function()
+{
+	return m_pimpl->getL1Function();
+}
+
+void M2kHardwareTrigger::setL2Function(M2K_TRIGGER_SOURCE_ANALOG val)
+{
+	m_pimpl->setL2Function(val);
+}
+
+int M2kHardwareTrigger::getL2Function()
+{
+	return m_pimpl->getL2Function();
+}
+
+int M2kHardwareTrigger::getL1AnalogLevelRaw()
+{
+	return m_pimpl->getL1AnalogLevelRaw();
+}
+
+void M2kHardwareTrigger::setL1AnalogLevelRaw(int level)
+{
+	m_pimpl->setL1AnalogLevelRaw(level);
+}
+
+double M2kHardwareTrigger::getL1AnalogLevel()
+{
+	return m_pimpl->getL1AnalogLevel();
+}
+
+void M2kHardwareTrigger::setL1AnalogLevel(double v_level)
+{
+	m_pimpl->setL1AnalogLevel(v_level);
+}
+
+double M2kHardwareTrigger::getL1AnalogHysteresis()
+{
+	return m_pimpl->getL1AnalogHysteresis();
+}
+
+void M2kHardwareTrigger::setL1AnalogHysteresis(double hysteresis)
+{
+	m_pimpl->setL1AnalogHysteresis(hysteresis);
+}
+
+int M2kHardwareTrigger::getL1Source()
+{
+	return m_pimpl->getL1Source();
+}
+
+void M2kHardwareTrigger::setL1Source(M2K_WINDOW_L_SOURCE val)
+{
+	m_pimpl->setL1Source(val);
+}
+
+int M2kHardwareTrigger::getL2AnalogLevelRaw()
+{
+	return m_pimpl->getL2AnalogLevelRaw();
+}
+
+void M2kHardwareTrigger::setL2AnalogLevelRaw(int level)
+{
+	m_pimpl->setL2AnalogLevelRaw(level);
+}
+
+double M2kHardwareTrigger::getL2AnalogLevel()
+{
+	return m_pimpl->getL2AnalogLevel();
+}
+
+void M2kHardwareTrigger::setL2AnalogLevel(double v_level)
+{
+	m_pimpl->setL2AnalogLevel(v_level);
+}
+
+double M2kHardwareTrigger::getL2AnalogHysteresis()
+{
+	return m_pimpl->getL2AnalogHysteresis();
+}
+
+void M2kHardwareTrigger::setL2AnalogHysteresis(double hysteresis)
+{
+	m_pimpl->setL2AnalogHysteresis(hysteresis);
+}
+
+int M2kHardwareTrigger::getL2Source()
+{
+	return m_pimpl->getL2Source();
+}
+
+void M2kHardwareTrigger::setL2Source(M2K_WINDOW_L_SOURCE val)
+{
+	m_pimpl->setL2Source(val);
+}
+
+int M2kHardwareTrigger::getWindowStartCnt()
+{
+	return m_pimpl->getWindowStartCnt();
+}
+
+void M2kHardwareTrigger::setWindowStartCnt(int val)
+{
+	m_pimpl->setWindowStartCnt(val);
+}
+
+int M2kHardwareTrigger::getWindowStopCnt()
+{
+	return m_pimpl->getWindowStopCnt();
+}
+
+void M2kHardwareTrigger::setWindowStopCnt(int val)
+{
+	m_pimpl->setWindowStopCnt(val);
+}
+
+int M2kHardwareTrigger::getWindowCntLimit1()
+{
+	return m_pimpl->getWindowCntLimit1();
+}
+
+void M2kHardwareTrigger::setWindowCntLimit1(int val)
+{
+	m_pimpl->setWindowCntLimit1(val);
+}
+
+int M2kHardwareTrigger::getWindowCntLimit2()
+{
+	return m_pimpl->getWindowCntLimit2();
+}
+
+void M2kHardwareTrigger::setWindowCntLimit2(int val)
+{
+	m_pimpl->setWindowCntLimit2(val);
+}
+
+void M2kHardwareTrigger::setResetCntAtNewStart(bool val)
+{
+	m_pimpl->setResetCntAtNewStart(val);
+}
+
+bool M2kHardwareTrigger::getResetCntAtNewStart()
+{
+	return m_pimpl->getResetCntAtNewStart();
+}
+
+
 M2K_TRIGGER_CONDITION_ANALOG M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
 {
 	return m_pimpl->getAnalogCondition(chnIdx);
