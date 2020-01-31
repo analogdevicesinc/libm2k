@@ -33,115 +33,174 @@
 #include <libm2k/digital/m2kdigital.hpp>
 #include <bitset>
 
+#include <thread>
+#include <mutex>
+#include <iostream>
+#include <condition_variable>
+
 using namespace std;
 using namespace libm2k;
 using namespace libm2k::digital;
 using namespace libm2k::contexts;
 
-#define N_BITS (6)
-#define IN_NO_SAMPLES 1000
+#define N_BITS (8)
+#define IN_NO_SAMPLES 16384
 #define KERNEL_BUFFERS_COUNT 4
 #define MAX_SAMPLE_RATE 100000000
-
-#define SAMPLE_RATE_IN 2000000
-#define SAMPLE_RATE_OUT 250000
-
 #define NUMBER_OF_BUFFERS 100
-//#define SR_DIVIDER 67
-//#define SAMPLE_RATE_IN (int)(MAX_SAMPLE_RATE/SR_DIVIDER)
-//#define SAMPLE_RATE_OUT  (int)(MAX_SAMPLE_RATE/(SR_DIVIDER*4))
+#define SR_DIVIDER_STEP 1
+
+
+static bool running = true;
+static std::mutex data_mtx, process_mtx;
+static std::condition_variable cv_process, cv_process_done;
+static const unsigned short* tmp_buffer_p = nullptr;
+static std::vector<unsigned short> tmp_buffer;
+static std::vector<uint16_t> values;
+
+void refill_thread(M2kDigital *dig) {
+	for (int refills = 0; refills < NUMBER_OF_BUFFERS; refills++) {
+		unique_lock<mutex> lock(data_mtx);
+
+//		cv_process.wait(lock, ([](){return (tmp_buffer.empty()); }));
+//		tmp_buffer = dig->getSamples(IN_NO_SAMPLES);
+
+		cv_process.wait(lock, ([](){return (tmp_buffer_p == nullptr); }));
+		tmp_buffer_p = dig->getSamplesP(IN_NO_SAMPLES);
+
+		lock.unlock();
+		cv_process.notify_one();
+	}
+}
+
+void process_thread(){
+	for (int refills = 0; refills < NUMBER_OF_BUFFERS; refills++) {
+		unique_lock<mutex> lock(data_mtx);
+
+//		cv_process.wait(lock, ([](){return (!tmp_buffer.empty()); }));
+//		for (int i = 0; i < IN_NO_SAMPLES; i++) {
+//			values.push_back(tmp_buffer[i]);
+//		}
+//		tmp_buffer.clear();
+
+
+		cv_process.wait(lock, ([](){return (tmp_buffer_p != nullptr); }));
+		for (int i = 0; i < IN_NO_SAMPLES; i++) {
+			values.push_back(tmp_buffer_p[i]);
+		}
+		tmp_buffer_p = nullptr;
+
+		lock.unlock();
+		cv_process.notify_one();
+	}
+	running = false;
+	cv_process_done.notify_one();
+}
 
 
 int main()
-
 {
+	int sr_divider = 50;
+	int sample_rate_in, sample_rate_out = MAX_SAMPLE_RATE;
+
 	M2k *ctx = m2kOpen();
-	std::vector<std::vector<uint16_t>> buffers;
 	if (!ctx) {
 		std::cout << "Connection Error: No ADALM2000 device available/connected to your PC." << std::endl;
 		return 1;
 	}
 
 	M2kDigital *dig = ctx->getDigital();
+	M2kHardwareTrigger *trig = dig->getTrigger();
 
-	// set sample rates for in/out interface
-	dig->setSampleRateIn(SAMPLE_RATE_IN);
-	dig->setSampleRateOut(SAMPLE_RATE_OUT);
-	// set number of kernel buffers for the digital input interface
-	dig->setKernelBuffersCountIn(KERNEL_BUFFERS_COUNT);
+	while(sr_divider > 1) {
+		sample_rate_in = MAX_SAMPLE_RATE / sr_divider;
+		sample_rate_out = MAX_SAMPLE_RATE / (sr_divider*4);
 
-	for(int i=0;i<N_BITS;i++)
-	{
-		dig->setDirection(i, DIO_OUTPUT);
-		dig->enableChannel(i, true);
-	}
+		// set sample rates for in/out interface
+		dig->setSampleRateIn(sample_rate_in + 1);
+		dig->setSampleRateOut(sample_rate_out + 1);
+		// set number of kernel buffers for the digital input interface
+		dig->setKernelBuffersCountIn(KERNEL_BUFFERS_COUNT);
+		trig->setDigitalStreamingFlag(true);
 
-	vector<unsigned short> bufferOut;
-	vector<unsigned short> bufferIn;
+		for(int i=0;i<N_BITS;i++)
+		{
+			dig->setDirection(i, DIO_OUTPUT);
+			dig->enableChannel(i, true);
+		}
 
-	for(int i=0;i< (1<<N_BITS); i++)
-	{
-		bufferOut.push_back(i);
-	}
-	dig->setCyclic(true);
-	dig->push(bufferOut);
+		vector<unsigned short> bufferOut;
+
+		for(int i=0;i< (1<<N_BITS); i++)
+		{
+			bufferOut.push_back(i);
+		}
+		dig->setCyclic(true);
+		dig->push(bufferOut);
 
 
-	for(int i=0;i<NUMBER_OF_BUFFERS;i++) {
-		// always get same number of samples so buffer configuration does not reset
-		/*auto val = dig->getSamplesP(IN_NO_SAMPLES);
-		buffers.push_back(std::vector<uint16_t>(val,val+IN_NO_SAMPLES));*/
-		buffers.push_back(dig->getSamples(IN_NO_SAMPLES));
-	}
+		// Startup refill threads
+		std::thread producer = std::thread([](M2kDigital *dig){ refill_thread(dig); }, dig);
+		std::thread consumer = std::thread([](){ process_thread(); });
+
+		std::unique_lock<std::mutex> lk(process_mtx);
+		cv_process_done.wait(lk, []{return !running;});
+
+		producer.join();
+		consumer.join();
 
 #ifdef SHOW_BUFFERS
-	for(auto buf : buffers)
-	{
-		for( auto val : buf)
-			cout<<bitset<16>(val)<<endl;
-		cout << "-------- BUFFER " << i << "--------"<< endl;
-		i++;
-	}
-#else
-	bool stable = true;
-	std::vector<uint16_t> values;
-	uint16_t same_val;
-	uint32_t same_val_cnt=0;
-	int i;
-
-	for(auto buf : buffers)
-		for( auto val : buf)
-			values.push_back(val);
-	for(i=1;i<values.size();i++) {
-		// find first transition
-		if(values[i]!=values[i-1])
+		for(auto buf : buffers)
 		{
-			same_val = values[i];
-			break;
+			for( auto val : buf)
+				cout<<bitset<16>(val)<<endl;
+			cout << "-------- BUFFER " << i << "--------"<< endl;
+			i++;
 		}
-	}
-	for(i;i<values.size();i++)
-	{
-		if(values[i]==same_val)
-			same_val_cnt++;
-		else
-		{
-			if(same_val_cnt==(int)(SAMPLE_RATE_IN/SAMPLE_RATE_OUT)) {
-				{
-					same_val = values[i];
-					same_val_cnt=1;
-				}
+#else
+		bool stable = true;
+		uint16_t same_val;
+		uint32_t same_val_cnt=0;
+		int i;
 
-			} else {
-				stable=false;
+		for(i=1;i<values.size();i++) {
+			// find first transition
+			if(values[i]!=values[i-1])
+			{
+				same_val = values[i];
 				break;
 			}
 		}
+		for(i;i<values.size();i++)
+		{
+			if(values[i]==same_val)
+				same_val_cnt++;
+			else
+			{
+				int divider = (int)(sample_rate_in/sample_rate_out);
+				if(same_val_cnt == divider) {// || same_val_cnt == divider - 1 || same_val_cnt==divider+1) {
+					{
+						same_val = values[i];
+						same_val_cnt=1;
+					}
+
+				} else {
+					stable=false;
+					break;
+				}
+			}
+		}
+
+		std::cout << "SR_DIVIDER: " << sr_divider << " SR_IN: " << sample_rate_in <<
+			     " SR_OUT: " << sample_rate_out << ", " << ((stable) ? "STABLE" : "UNSTABLE") << std::endl;
+		sr_divider -= SR_DIVIDER_STEP;
+
+		dig->flushBufferIn();
+		dig->stopBufferOut();
+		values.clear();
 	}
-	printf("%s\n", (stable) ? "STABLE" : "UNSTABLE");
 
 #endif
-	dig->stopBufferOut();
 	contextClose(ctx);
 
 	return 0;
