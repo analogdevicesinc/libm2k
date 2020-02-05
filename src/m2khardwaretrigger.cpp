@@ -200,16 +200,25 @@ void M2kHardwareTrigger::setWindowCntLimit2(int val)
 	m_pimpl->setWindowCntLimit2(val);
 }
 
-void M2kHardwareTrigger::setResetCntAtNewStart(bool val)
-{
-	m_pimpl->setResetCntAtNewStart(val);
-}
-
 bool M2kHardwareTrigger::getResetCntAtNewStart()
 {
 	return m_pimpl->getResetCntAtNewStart();
 }
 
+void M2kHardwareTrigger::setResetCntAtNewStart(bool val)
+{
+	m_pimpl->setResetCntAtNewStart(val);
+}
+
+void M2kHardwareTrigger::setOneShotWindow(bool val)
+{
+	m_pimpl->setOneShotWindow(val);
+}
+
+bool M2kHardwareTrigger::getOneShotWindow()
+{
+	return m_pimpl->getOneShotWindow();
+}
 
 M2K_TRIGGER_CONDITION_ANALOG M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)
 {

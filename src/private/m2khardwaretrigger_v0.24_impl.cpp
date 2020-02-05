@@ -652,15 +652,6 @@ public:
 		m_window_trigger_channel->setLongValue("limit_2", static_cast<long long>(val));
 	}
 
-	void setResetCntAtNewStart(bool val)
-	{
-		if (!m_window_trigger_channel) {
-			M2kHardwareTriggerImpl::setResetCntAtNewStart(val);
-		}
-
-		m_window_trigger_channel->setBoolValue("rst_at_new_start", val);
-	}
-
 	bool getResetCntAtNewStart()
 	{
 		if (!m_window_trigger_channel) {
@@ -670,6 +661,35 @@ public:
 		bool rst_val = m_window_trigger_channel->getBoolValue("rst_at_new_start");
 		return rst_val;
 	}
+
+	void setResetCntAtNewStart(bool val)
+	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setResetCntAtNewStart(val);
+		}
+
+		m_window_trigger_channel->setBoolValue("rst_at_new_start", val);
+	}
+
+	bool getOneShotWindow()
+	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getOneShotWindow();
+		}
+
+		bool rst_val = m_window_trigger_channel->getBoolValue("one_shot");
+		return rst_val;
+	}
+
+	void setOneShotWindow(bool val)
+	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setOneShotWindow(val);
+		}
+
+		m_window_trigger_channel->setBoolValue("one_shot", val);
+	}
+
 
 private:
 	Channel *m_window_trigger_channel;

@@ -209,12 +209,22 @@ public:
 	/**
 	 * @private
 	 */
+	bool getResetCntAtNewStart();
+
+	/**
+	 * @private
+	 */
 	void setResetCntAtNewStart(bool val);
 
 	/**
 	 * @private
 	 */
-	bool getResetCntAtNewStart();
+	bool getOneShotWindow();
+
+	/**
+	 * @private
+	 */
+	void setOneShotWindow(bool val);
 
 	/**
 	 * @private

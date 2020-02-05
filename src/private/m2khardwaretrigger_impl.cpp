@@ -798,6 +798,22 @@ public:
 						       "the current board; Check the firmware version.");
 	}
 
+	virtual bool getOneShotWindow()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog rst_at_new_start is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setOneShotWindow(bool val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog rst_at_new_start is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
+
 	static std::vector<string> getAvailableDigitalConditions()
 	{
 		return {"edge-rising",
