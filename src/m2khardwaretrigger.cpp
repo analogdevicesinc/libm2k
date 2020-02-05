@@ -29,7 +29,7 @@ typedef std::pair<Channel *, std::string> channel_pair;
 M2kHardwareTrigger::M2kHardwareTrigger(struct iio_context *ctx, const std::string& fw_version)
 {
 	int diff = Utils::compareVersions(fw_version, "v0.24");
-	if (diff > 0) {	//fw_ver < 0.24
+	if (diff < 0) {	//fw_version < 0.24
 		m_pimpl = std::unique_ptr<M2kHardwareTriggerImpl>(new M2kHardwareTriggerImpl(ctx));
 	} else {
 		m_pimpl = std::unique_ptr<M2kHardwareTriggerV024Impl>(new M2kHardwareTriggerV024Impl(ctx));
