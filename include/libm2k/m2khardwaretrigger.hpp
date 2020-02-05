@@ -51,39 +51,169 @@ public:
 	 */
 	virtual ~M2kHardwareTrigger();
 
-
+	/**
+	 * @private
+	 */
 	int getWindowCntValue();
+
+	/**
+	 * @private
+	 */
 	void setCntFunction(M2K_CNT_FUNCTION val);
+
+	/**
+	 * @private
+	 */
 	int getCntFunction();
+
+	/**
+	 * @private
+	 */
 	void setL1Function(M2K_TRIGGER_SOURCE_ANALOG val);
+
+	/**
+	 * @private
+	 */
 	int getL1Function();
+
+	/**
+	 * @private
+	 */
 	void setL2Function(M2K_TRIGGER_SOURCE_ANALOG val);
+
+	/**
+	 * @private
+	 */
 	int getL2Function();
+
+	/**
+	 * @private
+	 */
 	int getL1AnalogLevelRaw();
+
+	/**
+	 * @private
+	 */
 	void setL1AnalogLevelRaw(int level);
+
+	/**
+	 * @private
+	 */
 	double getL1AnalogLevel();
+
+	/**
+	 * @private
+	 */
 	double getL1AnalogHysteresis();
+
+	/**
+	 * @private
+	 */
 	void setL1AnalogLevel(double v_level);
+
+	/**
+	 * @private
+	 */
 	void setL1AnalogHysteresis(double hysteresis);
+
+	/**
+	 * @private
+	 */
 	void setL1Source(M2K_WINDOW_L_SOURCE val);
+
+	/**
+	 * @private
+	 */
 	int getL1Source();
+
+	/**
+	 * @private
+	 */
 	int getL2AnalogLevelRaw();
+
+	/**
+	 * @private
+	 */
 	void setL2AnalogLevelRaw(int level);
+
+	/**
+	 * @private
+	 */
 	double getL2AnalogLevel();
+
+	/**
+	 * @private
+	 */
 	double getL2AnalogHysteresis();
+
+	/**
+	 * @private
+	 */
 	void setL2AnalogLevel(double v_level);
+
+	/**
+	 * @private
+	 */
 	void setL2AnalogHysteresis(double hysteresis);
+
+	/**
+	 * @private
+	 */
 	void setL2Source(M2K_WINDOW_L_SOURCE val);
+
+	/**
+	 * @private
+	 */
 	int getL2Source();
+
+	/**
+	 * @private
+	 */
 	void setWindowStartCnt(int val);
+
+	/**
+	 * @private
+	 */
 	int getWindowStartCnt();
+
+	/**
+	 * @private
+	 */
 	int getWindowStopCnt();
+
+	/**
+	 * @private
+	 */
 	void setWindowStopCnt(int val);
+
+	/**
+	 * @private
+	 */
 	int getWindowCntLimit1();
+
+	/**
+	 * @private
+	 */
 	void setWindowCntLimit1(int val);
+
+	/**
+	 * @private
+	 */
 	int getWindowCntLimit2();
+
+	/**
+	 * @private
+	 */
 	void setWindowCntLimit2(int val);
+
+	/**
+	 * @private
+	 */
 	void setResetCntAtNewStart(bool val);
+
+	/**
+	 * @private
+	 */
 	bool getResetCntAtNewStart();
 
 	/**

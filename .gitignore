@@ -6,3 +6,4 @@ latex/
 html/
 *__pycache__*
 *.egg-info
+include/libm2k/config.hpp

@@ -138,6 +138,7 @@ public:
 			  [](channel_pair a, channel_pair b)
 		{ return a.second < b.second; });
 
+		m_window_trigger_channel = nullptr;
 		for (unsigned int i = 0; i < channels.size(); i++) {
 			Channel* chn = channels[i].first;
 			bool attr = chn->hasAttribute("cnt_function");
@@ -289,6 +290,10 @@ public:
 
 	virtual int getCntFunction()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getCntFunction();
+		}
+
 		std::string buf = m_window_trigger_channel->getStringValue("cnt_function");
 
 		auto it = std::find(m_trigger_logic_window_mode.begin(),
@@ -310,12 +315,20 @@ public:
 
 	void setCntFunction(M2K_CNT_FUNCTION val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setCntFunction(val);
+		}
+
 		auto cnt_function = m_trigger_logic_window_mode[val];
 		m_window_trigger_channel->setStringValue("cnt_function", cnt_function);
 	}
 
 	virtual int getL1Function()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL1Function();
+		}
+
 		std::string buf = m_window_trigger_channel->getStringValue("l1_function");
 
 		auto it = std::find(m_trigger_analog_cond.begin(),
@@ -337,12 +350,20 @@ public:
 
 	void setL1Function(M2K_TRIGGER_SOURCE_ANALOG val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL1Function(val);
+		}
+
 		auto l1_function = m_trigger_analog_cond[val];
 		m_window_trigger_channel->setStringValue("l1_function", l1_function);
 	}
 
 	virtual int getL2Function()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL2Function();
+		}
+
 		std::string buf = m_window_trigger_channel->getStringValue("l2_function");
 
 		auto it = std::find(m_trigger_analog_cond.begin(),
@@ -364,23 +385,39 @@ public:
 
 	void setL2Function(M2K_TRIGGER_SOURCE_ANALOG val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL2Function(val);
+		}
+
 		auto l2_function = m_trigger_analog_cond[val];
 		m_window_trigger_channel->setStringValue("l2_function", l2_function);
 	}
 
 	int getL1AnalogLevelRaw()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL1AnalogLevelRaw();
+		}
+
 		double val = m_window_trigger_channel->getDoubleValue("l1_limit");
 		return static_cast<int>(val);
 	}
 
 	void setL1AnalogLevelRaw(int level)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL1AnalogLevelRaw(level);
+		}
+
 		m_window_trigger_channel->setLongValue("l1_limit", static_cast<long long>(level));
 	}
 
 	double getL1AnalogLevel()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL1AnalogLevel();
+		}
+
 		int raw = getL1AnalogLevelRaw();
 		// fix-me offset for second channel
 		double volts = raw * m_scaling.at(0) + m_offset.at(0);
@@ -389,24 +426,40 @@ public:
 
 	void setL1AnalogLevel(double v_level)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL1AnalogLevel(v_level);
+		}
+
 		int raw = (v_level - m_offset.at(0)) / m_scaling.at(0);
 		setL1AnalogLevelRaw(raw);
 	}
 
 	double getL1AnalogHysteresis()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL1AnalogHysteresis();
+		}
+
 		double hysteresis_raw = m_window_trigger_channel->getDoubleValue("l1_hysteresis");
 		return (hysteresis_raw * m_scaling.at(0));
 	}
 
 	void setL1AnalogHysteresis(double hysteresis)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL1AnalogHysteresis(hysteresis);
+		}
+
 		int hysteresis_raw = hysteresis / m_scaling.at(0);
 		m_window_trigger_channel->setLongValue("l1_hysteresis", static_cast<long long>(hysteresis_raw));
 	}
 
 	virtual int getL1Source()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL1Source();
+		}
+
 		std::string buf = m_window_trigger_channel->getStringValue("l1_source");
 
 		auto it = std::find(m_trigger_logic_window_source.begin(),
@@ -428,18 +481,30 @@ public:
 
 	void setL1Source(M2K_WINDOW_L_SOURCE val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL1Source(val);
+		}
+
 		auto l1_source = m_trigger_logic_window_source[val];
 		m_window_trigger_channel->setStringValue("l1_source", l1_source);
 	}
 
 	int getL2AnalogLevelRaw()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL2AnalogLevelRaw();
+		}
+
 		double val = m_window_trigger_channel->getDoubleValue("l2_limit");
 		return static_cast<int>(val);
 	}
 
 	void setL2AnalogLevelRaw(int level)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL2AnalogLevelRaw(level);
+		}
+
 		m_window_trigger_channel->setLongValue("l2_limit", static_cast<long long>(level));
 	}
 
@@ -458,18 +523,30 @@ public:
 
 	double getL2AnalogHysteresis()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL2AnalogHysteresis();
+		}
+
 		double hysteresis_raw = m_window_trigger_channel->getDoubleValue("l2_hysteresis");
 		return (hysteresis_raw * m_scaling.at(1));
 	}
 
 	void setL2AnalogHysteresis(double hysteresis)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL2AnalogHysteresis(hysteresis);
+		}
+
 		int hysteresis_raw = hysteresis / m_scaling.at(1);
 		m_window_trigger_channel->setLongValue("l2_hysteresis", static_cast<long long>(hysteresis_raw));
 	}
 
 	virtual int getL2Source()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getL2Source();
+		}
+
 		std::string buf = m_window_trigger_channel->getStringValue("l2_source");
 
 		auto it = std::find(m_trigger_logic_window_source.begin(),
@@ -491,61 +568,105 @@ public:
 
 	void setL2Source(M2K_WINDOW_L_SOURCE val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setL2Source(val);
+		}
+
 		auto l2_source = m_trigger_logic_window_source[val];
 		m_window_trigger_channel->setStringValue("l2_source", l2_source);
 	}
 
 	int getWindowStartCnt()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getWindowStartCnt();
+		}
+
 		double val = m_window_trigger_channel->getDoubleValue("start_cnt");
 		return static_cast<int>(val);
 	}
 
 	void setWindowStartCnt(int val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setWindowStartCnt(val);
+		}
+
 		m_window_trigger_channel->setLongValue("start_cnt", static_cast<long long>(val));
 	}
 
 	int getWindowStopCnt()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getWindowStartCnt();
+		}
+
 		double val = m_window_trigger_channel->getDoubleValue("stop_cnt");
 		return static_cast<int>(val);
 	}
 
 	void setWindowStopCnt(int val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setWindowStartCnt(val);
+		}
+
 		m_window_trigger_channel->setLongValue("stop_cnt", static_cast<long long>(val));
 	}
 
 	int getWindowCntLimit1()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getWindowCntLimit1();
+		}
+
 		double val = m_window_trigger_channel->getDoubleValue("limit_1");
 		return static_cast<int>(val);
 	}
 
 	void setWindowCntLimit1(int val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setWindowCntLimit1(val);
+		}
+
 		m_window_trigger_channel->setLongValue("limit_1", static_cast<long long>(val));
 	}
 
 	int getWindowCntLimit2()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getWindowCntLimit2();
+		}
+
 		double val = m_window_trigger_channel->getDoubleValue("limit_2");
 		return static_cast<int>(val);
 	}
 
 	void setWindowCntLimit2(int val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setWindowCntLimit2(val);
+		}
+
 		m_window_trigger_channel->setLongValue("limit_2", static_cast<long long>(val));
 	}
 
 	void setResetCntAtNewStart(bool val)
 	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setResetCntAtNewStart(val);
+		}
+
 		m_window_trigger_channel->setBoolValue("rst_at_new_start", val);
 	}
 
 	bool getResetCntAtNewStart()
 	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getResetCntAtNewStart();
+		}
+
 		bool rst_val = m_window_trigger_channel->getBoolValue("rst_at_new_start");
 		return rst_val;
 	}
