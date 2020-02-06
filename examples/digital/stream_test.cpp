@@ -35,7 +35,7 @@
 
 #include <thread>
 #include <mutex>
-#include <iostream>
+#include <iomanip>
 #include <condition_variable>
 
 using namespace std;
@@ -43,12 +43,13 @@ using namespace libm2k;
 using namespace libm2k::digital;
 using namespace libm2k::contexts;
 
-#define N_BITS (8)
-#define IN_NO_SAMPLES 16384
-#define KERNEL_BUFFERS_COUNT 4
+#define N_BITS (16)
+#define IN_NO_SAMPLES (1<<16)
+#define KERNEL_BUFFERS_COUNT 8
 #define MAX_SAMPLE_RATE 100000000
 #define NUMBER_OF_BUFFERS 100
 #define SR_DIVIDER_STEP 1
+#define SR_DIVIDER_START 30
 
 
 static bool running = true;
@@ -100,8 +101,10 @@ void process_thread(){
 
 int main()
 {
-	int sr_divider = 50;
+	int sr_divider = SR_DIVIDER_START;
 	int sample_rate_in, sample_rate_out = MAX_SAMPLE_RATE;
+
+	printf("Digital stream speed test parameters\nBuffersize: %d\nKernel Buffers: %d\nTotal Buffers: %d\n", IN_NO_SAMPLES, KERNEL_BUFFERS_COUNT, NUMBER_OF_BUFFERS);
 
 	M2k *ctx = m2kOpen();
 	if (!ctx) {
@@ -161,6 +164,7 @@ int main()
 		bool stable = true;
 		uint16_t same_val;
 		uint32_t same_val_cnt=0;
+		int dropped = 0;
 		int i;
 
 		for(i=1;i<values.size();i++) {
@@ -185,14 +189,21 @@ int main()
 					}
 
 				} else {
+					dropped = abs(values[i]-same_val)*divider+(same_val_cnt-divider);
 					stable=false;
 					break;
 				}
 			}
 		}
 
-		std::cout << "SR_DIVIDER: " << sr_divider << " SR_IN: " << sample_rate_in <<
-			     " SR_OUT: " << sample_rate_out << ", " << ((stable) ? "STABLE" : "UNSTABLE") << std::endl;
+		std::cout << "SR_DIVIDER: " << std::setw(2) << sr_divider << " SR_IN: " << std::setw(9) << sample_rate_in <<
+			     " SR_OUT: " << std::setw(9) << sample_rate_out << ", " << ((stable) ? "  STABLE" : "UNSTABLE") <<
+			     " dropped: " << std::setw(6) << dropped << " samples";
+		if(!stable)
+			std::cout <<  " @ buffer " << std::setw(3) << i/IN_NO_SAMPLES << /* "["<<i<<"] " <<*/
+				" prev val: " << bitset<16>(same_val) << " next val:  "<< bitset<16>(values[i]);
+		std::cout << std::endl;
+
 		sr_divider -= SR_DIVIDER_STEP;
 
 		dig->flushBufferIn();
