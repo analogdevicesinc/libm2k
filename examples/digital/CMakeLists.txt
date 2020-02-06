@@ -7,7 +7,12 @@ include_directories(
 	${IIO_INCLUDE_DIR}
 	${CMAKE_SOURCE_DIR}/include
 )
+
+if (NOT WIN32)
+	find_library(PTHREAD_LIBRARIES pthread)
+endif()
+
 add_executable(${PROJECT_NAME} "main.cpp")
-add_executable(${PROJECT_NAME}_stream "main_stream.cpp")
+add_executable(${PROJECT_NAME}_stream_test "stream_test.cpp")
 target_link_libraries(${PROJECT_NAME} libm2k)
-target_link_libraries(${PROJECT_NAME}_stream libm2k)
+target_link_libraries(${PROJECT_NAME}_stream_test libm2k ${PTHREAD_LIBRARIES})
