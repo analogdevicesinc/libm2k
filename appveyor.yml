@@ -1,6 +1,9 @@
 image:
   - Visual Studio 2017
-  
+
+#init:
+#  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 version: '{branch}.{build}'
 clone_depth: 1
 
@@ -82,6 +85,8 @@ build_script:
     - ps: Get-ChildItem dist\libm2k-*.exe | Rename-Item -NewName "libm2k-py37-amd64.exe"
         
     #Create the installer
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT\msvcp140.dll" c:\projects\libm2k\build-win32
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\msvcp140.dll" c:\projects\libm2k\build-win64
     - ISCC c:\projects\libm2k\build-win64\libm2k.iss
     - appveyor PushArtifact C:\libm2k-system-setup.exe
 
@@ -99,6 +104,8 @@ build_script:
     - copy build-win32\dist\*.exe c:\libm2k-win32\dist\
     - copy build-win32\dist\*.whl c:\libm2k-win32\dist\
     - copy c:\libiio-win32\*.dll c:\libm2k-win32\
+    #- $Fullname = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\*\x86" -Filter msvcp140.dll -Recurse |  %{echo $_.FullName}
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT\msvcp140.dll" c:\libm2k-win32\
     - 7z a "c:\libm2k-win32.zip" c:\libm2k-win32
     - ps: Get-ChildItem c:\libm2k-win32\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     - appveyor PushArtifact c:\libm2k-win32.zip
@@ -114,7 +121,11 @@ build_script:
     - copy build-win64\dist\*.exe c:\libm2k-win64\dist\
     - copy build-win64\dist\*.whl c:\libm2k-win64\dist\
     - copy c:\libiio-win64\*.dll c:\libm2k-win64\
+    #- $Fullname = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\*\x64" -Filter msvcp140.dll -Recurse |  %{echo $_.FullName}
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\msvcp140.dll" c:\libm2k-win64\
     - 7z a "c:\libm2k-win64.zip" c:\libm2k-win64
     - ps: Get-ChildItem c:\libm2k-win64\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     - appveyor PushArtifact c:\libm2k-win64.zip
 
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
