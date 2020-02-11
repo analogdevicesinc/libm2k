@@ -69,8 +69,8 @@ Source: "C:\projects\libm2k\build-win32\dist\libm2k-py37-win32.exe"; DestDir: "{
 Source: "C:\projects\libm2k\build-win32\libm2k.dll"; DestDir: "{sys}"; Flags: 32bit
 Source: "C:\projects\libm2k\build-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode
 
-Source: "C:\projects\libm2k\build-win32\msvcp140.dll"; DestDir: "{sys}"; Flags: 32bit
-Source: "C:\projects\libm2k\build-win64\msvcp140.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode
+Source: "C:\projects\libm2k\build-win32\msvcp140.dll"; DestDir: "{sys}"; Flags: 32bit onlyifdoesntexist
+Source: "C:\projects\libm2k\build-win64\msvcp140.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist; Check: Is64BitInstallMode
 
 ;Source: "C:\projects\libm2k\build-win32\*.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode
 ;Source: "C:\projects\libm2k\build-win64\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode
