@@ -55,6 +55,7 @@ public:
 	virtual void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
 	virtual void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
 	virtual void stop();
+	virtual void cancelBuffer();
 	virtual void setKernelBuffersCount(unsigned int count);
 	virtual struct IIO_OBJECTS getIioObjects();
 

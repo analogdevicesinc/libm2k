@@ -174,6 +174,14 @@ public:
 		}
 	}
 
+	void cancelBuffer()
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device: not buffer capable");
+		}
+		m_buffer->cancelBuffer();
+	}
+
 	void setKernelBuffersCount(unsigned int count)
 	{
 		if (m_dev) {
