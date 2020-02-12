@@ -53,6 +53,7 @@ public:
 	virtual const short *getSamplesRawInterleaved(unsigned int nb_samples);
 	void* getSamplesRawInterleavedVoid(unsigned int nb_samples);
 
+	virtual void cancelBuffer();
 	virtual void flushBuffer();
 	virtual struct IIO_OBJECTS getIioObjects();
 private:
