@@ -466,6 +466,13 @@ public:
 	*/
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
 
+
+	/**
+	* @brief Cancel all buffer operations
+	*/
+	void cancelBuffer();
+
+
 	/**
 	 * @brief Set the kernel buffers to a specific value
 	 * @param count the number of kernel buffers

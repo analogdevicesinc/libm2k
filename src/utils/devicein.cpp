@@ -71,6 +71,11 @@ void* DeviceIn::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 	return m_pimpl->getSamplesRawInterleavedVoid(nb_samples);
 }
 
+void DeviceIn::cancelBuffer()
+{
+	m_pimpl->cancelBuffer();
+}
+
 void DeviceIn::flushBuffer()
 {
 	m_pimpl->flushBuffer();

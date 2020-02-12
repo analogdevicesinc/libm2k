@@ -160,6 +160,14 @@ public:
 		return m_buffer->getSamplesRawInterleaved(nb_samples);
 	}
 
+	void cancelBuffer()
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device: not buffer capable");
+		}
+		m_buffer->cancelBuffer();
+	}
+
 	void flushBuffer()
 	{
 		if (!m_buffer) {

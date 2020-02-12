@@ -197,6 +197,11 @@ public:
 		return m_trigger;
 	}
 
+	void cancelBuffer()
+	{
+		DeviceIn::cancelBuffer();
+	}
+
 	void flushBuffer()
 	{
 		DeviceIn::flushBuffer();
