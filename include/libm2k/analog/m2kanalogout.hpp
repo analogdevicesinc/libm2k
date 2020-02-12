@@ -377,6 +377,19 @@ public:
 
 
 	/**
+	* @brief Cancel all buffer operations of enabled channels
+	*/
+	void cancelBuffer();
+
+
+	/**
+	* @brief Cancel all buffer operations of the given channel
+	* @param chn The index corresponding to the channel
+	*/
+	void cancelBuffer(unsigned int chn);
+
+
+	/**
 	* @brief Enable or disable the given digital channel
 	*
 	* @param chnIdx The index corresponding to the channel

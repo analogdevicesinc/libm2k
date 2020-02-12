@@ -203,6 +203,16 @@ void M2kAnalogOut::stop(unsigned int chn)
 	m_pimpl->stop(chn);
 }
 
+void M2kAnalogOut::cancelBuffer()
+{
+	m_pimpl->cancelBuffer();
+}
+
+void M2kAnalogOut::cancelBuffer(unsigned int chn)
+{
+	m_pimpl->cancelBuffer(chn);
+}
+
 void M2kAnalogOut::enableChannel(unsigned int chnIdx, bool enable)
 {
 	m_pimpl->enableChannel(chnIdx, enable);

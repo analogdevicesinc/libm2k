@@ -547,6 +547,18 @@ public:
 		getDacDevice(chn)->stop();
 	}
 
+	void cancelBuffer()
+	{
+		for (DeviceOut *dev : m_dac_devices) {
+			dev->cancelBuffer();
+		}
+	}
+
+	void cancelBuffer(unsigned int chn)
+	{
+		getDacDevice(chn)->cancelBuffer();
+	}
+
 	void enableChannel(unsigned int chnIdx, bool enable)
 	{
 		m_m2k_fabric->setBoolValue(chnIdx, false, "powerdown", true);
