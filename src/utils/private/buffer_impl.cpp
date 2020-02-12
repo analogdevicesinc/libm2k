@@ -486,6 +486,13 @@ public:
 		}
 	}
 
+	void cancelBuffer()
+	{
+		if (m_buffer) {
+			iio_buffer_cancel(m_buffer);
+		}
+	}
+
 	void flushBuffer()
 	{
 		destroy();
