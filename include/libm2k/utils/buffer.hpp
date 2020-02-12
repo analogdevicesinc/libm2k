@@ -65,6 +65,7 @@ public:
 
 	void stop();
 	void setCyclic(bool enable);
+	void cancelBuffer();
 	void flushBuffer();
 
 	struct iio_buffer* getBuffer();
