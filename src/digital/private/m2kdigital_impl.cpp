@@ -239,6 +239,16 @@ public:
 		m_dev_read->flushBuffer();
 	}
 
+	void cancelBufferIn()
+	{
+		m_dev_read->cancelBuffer();
+	}
+
+	void cancelBufferOut()
+	{
+		m_dev_write->cancelBuffer();
+	}
+
 	std::vector<unsigned short> getSamples(int nb_samples)
 	{
 		__try {

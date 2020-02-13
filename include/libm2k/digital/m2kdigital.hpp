@@ -198,6 +198,17 @@ public:
 
 
 	/**
+	* @brief Cancel all rx-buffer operations
+	*/
+	void cancelBufferIn();
+
+	/**
+	* @brief Cancel all tx-buffer operations
+	*/
+	void cancelBufferOut();
+
+
+	/**
 	* @brief Retrieve a specific number of samples
 	*
 	* @param nb_samples The number of samples that will be retrieved

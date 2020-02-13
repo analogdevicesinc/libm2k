@@ -117,6 +117,16 @@ void M2kDigital::flushBufferIn()
 	m_pimpl->flushBufferIn();
 }
 
+void M2kDigital::cancelBufferIn()
+{
+	m_pimpl->cancelBufferIn();
+}
+
+void M2kDigital::cancelBufferOut()
+{
+	m_pimpl->cancelBufferOut();
+}
+
 std::vector<unsigned short> M2kDigital::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples);
