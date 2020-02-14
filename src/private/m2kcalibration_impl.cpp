@@ -21,7 +21,7 @@
 
 #include <libm2k/m2khardwaretrigger.hpp>
 #include <libm2k/m2kcalibration.hpp>
-#include <libm2k/utils/devicegeneric.hpp>
+#include "utils/devicegeneric.hpp"
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/m2kexceptions.hpp>

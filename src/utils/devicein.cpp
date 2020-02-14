@@ -19,80 +19,135 @@
  *
  */
 
-#include "private/devicein_impl.cpp"
+#include "devicein.hpp"
+#include <libm2k/utils/buffer.hpp>
+#include <libm2k/utils/channel.hpp>
+#include <libm2k/utils/utils.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/context.hpp>
+#include <algorithm>
+#include <string>
 
 using namespace std;
-using namespace libm2k;
 using namespace libm2k::utils;
 using namespace libm2k::contexts;
 
-/*
- * Represents an iio_device
- */
+
+/** Represents an iio_device **/
 DeviceIn::DeviceIn(struct iio_context* context, std::string dev_name) :
-	DeviceGeneric(context, dev_name),
-	m_pimpl(std::unique_ptr<DeviceInImpl>(new DeviceInImpl(context, dev_name)))
+	DeviceGeneric(context, dev_name)
 {
-}
-
-DeviceIn::~DeviceIn()
-{
-}
-
-std::vector<unsigned short> DeviceIn::getSamples(unsigned int nb_samples)
-{
-	return m_pimpl->getSamples(nb_samples);
-}
-
-const unsigned short *DeviceIn::getSamplesP(unsigned int nb_samples)
-{
-	return m_pimpl->getSamplesP(nb_samples);
-}
-
-std::vector<std::vector<double> > DeviceIn::getSamples(unsigned int nb_samples,
-				std::function<double(int16_t, unsigned int)> process)
-{
-	return m_pimpl->getSamples(nb_samples, process);
-}
-
-const double *DeviceIn::getSamplesInterleaved(unsigned int nb_samples,
-				std::function<double(int16_t, unsigned int)> process)
-{
-	return m_pimpl->getSamplesInterleaved(nb_samples, process);
-}
-
-const short *DeviceIn::getSamplesRawInterleaved(unsigned int nb_samples)
-{
-	return m_pimpl->getSamplesRawInterleaved(nb_samples);
-}
-
-void* DeviceIn::getSamplesRawInterleavedVoid(unsigned int nb_samples)
-{
-	return m_pimpl->getSamplesRawInterleavedVoid(nb_samples);
-}
-
-void DeviceIn::getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples,
-			  std::function<double(int16_t, unsigned int)> process)
-{
-	m_pimpl->getSamples(data, nb_samples, process);
-}
-
-void DeviceIn::getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
-{
-	m_pimpl->getSamples(data, nb_samples);
+	m_channel_list = m_channel_list_in;
 }
 
 void DeviceIn::cancelBuffer()
 {
-	m_pimpl->cancelBuffer();
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: not buffer capable");
+	}
+	m_buffer->cancelBuffer();
+}
+
+
+DeviceIn::~DeviceIn()
+{
+	m_channel_list.clear();
+}
+
+std::vector<unsigned short> DeviceIn::getSamplesShort(unsigned int nb_samples)
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	return m_buffer->getSamples(nb_samples);
+
+}
+
+const unsigned short* DeviceIn::getSamplesP(unsigned int nb_samples)
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	return m_buffer->getSamplesP(nb_samples);
+
+}
+
+std::vector<std::vector<double> > DeviceIn::getSamples(unsigned int nb_samples,
+						       const std::function<double(int16_t, unsigned int)> &process)
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	return m_buffer->getSamples(nb_samples, process);
+}
+
+void* DeviceIn::getSamplesRawInterleavedVoid(unsigned int nb_samples)
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	return m_buffer->getSamplesRawInterleavedVoid(nb_samples);
+}
+
+const double *DeviceIn::getSamplesInterleaved(unsigned int nb_samples,
+					      const std::function<double(int16_t, unsigned int)> &process)
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	return m_buffer->getSamplesInterleaved(nb_samples, process);
+}
+
+void DeviceIn::getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples,
+			  const std::function<double(int16_t, unsigned int)> &process)
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->getSamples(data, nb_samples, process);
+}
+
+void DeviceIn::getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->getSamples(data, nb_samples);
+}
+
+const short *DeviceIn::getSamplesRawInterleaved(unsigned int nb_samples)
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	return m_buffer->getSamplesRawInterleaved(nb_samples);
 }
 
 void DeviceIn::flushBuffer()
 {
-	m_pimpl->flushBuffer();
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+	}
+	m_buffer->flushBuffer();
 }
 
-IIO_OBJECTS DeviceIn::getIioObjects()
+struct libm2k::IIO_OBJECTS DeviceIn::getIioObjects()
 {
-	return m_pimpl->getIioObjects();
+	IIO_OBJECTS iio_object = {};
+	iio_object.buffers_rx.push_back(m_buffer->getBuffer());
+
+	for (auto chn : m_channel_list) {
+		iio_object.channels_in.push_back(chn->getChannel());
+	}
+	iio_object.devices.push_back(m_dev);
+	iio_object.context = m_context;
+	return iio_object;
 }

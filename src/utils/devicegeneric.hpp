@@ -82,7 +82,7 @@ public:
 	virtual	std::string getStringValue(std::string attr);
 	virtual std::string getStringValue(unsigned int chn, std::string attr, bool output=false);
 
-	virtual std::vector<double> getAvailableSampleRates();
+	std::vector<double> getAvailableSampleRates();
 
 	virtual void writeRegister(uint32_t address, uint32_t value);
 
@@ -99,13 +99,15 @@ public:
 
 	virtual void setCyclic(bool en);
 
-private:
-	class DeviceGenericImpl;
-	std::unique_ptr<DeviceGenericImpl> m_pimpl;
-	DeviceGeneric(DeviceGenericImpl*);
+protected:
+	struct iio_context *m_context;
+	struct iio_device *m_dev;
+	std::vector<Channel*> m_channel_list_in;
+	std::vector<Channel*> m_channel_list_out;
+	Buffer* m_buffer;
 };
 }
 }
 
 
-#endif //DEVICE_HPP
+#endif //DEVICEGENERIC_HPP

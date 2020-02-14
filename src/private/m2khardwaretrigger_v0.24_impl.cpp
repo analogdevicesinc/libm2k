@@ -22,8 +22,7 @@
 #ifndef M2KHARDWARETRIGGER_IMPL_v024_HPP
 #define M2KHARDWARETRIGGER_IMPL_v024_HPP
 
-#include <libm2k/utils/devicegeneric.hpp>
-#include <libm2k/utils/devicein.hpp>
+#include "utils/devicein.hpp"
 #include <libm2k/utils/channel.hpp>
 #include <libm2k/digital/enums.hpp>
 #include <libm2k/m2kexceptions.hpp>

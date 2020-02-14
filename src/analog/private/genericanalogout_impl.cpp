@@ -19,8 +19,7 @@
  *
  */
 
-#include <libm2k/utils/devicegeneric.hpp>
-#include <libm2k/utils/deviceout.hpp>
+#include "utils/deviceout.hpp"
 #include <libm2k/analog/genericanalogout.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>

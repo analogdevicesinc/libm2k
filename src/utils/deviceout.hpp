@@ -21,14 +21,14 @@
 
 #ifndef DEVICEOUT_HPP
 #define DEVICEOUT_HPP
-#include <iio.h>
+
 #include <string>
 #include <iostream>
 #include <vector>
 #include <functional>
 #include <memory>
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/utils/devicegeneric.hpp>
+#include "devicegeneric.hpp"
 #include <libm2k/enums.hpp>
 
 using namespace std;
@@ -42,29 +42,28 @@ class DeviceOut : public DeviceGeneric
 {
 public:
 	DeviceOut(struct iio_context* context, std::string dev_name = "");
-	virtual ~DeviceOut();
+	~DeviceOut();
 
-	virtual void initializeBuffer(unsigned int size, bool cyclic);
-	virtual void push(std::vector<short> const &data, unsigned int channel,
+	void initializeBuffer(unsigned int size, bool cyclic);
+	void push(std::vector<short> const &data, unsigned int channel,
 		bool cyclic = true, bool multiplex = false);
-	virtual void push(std::vector<unsigned short> const &data, unsigned int channel,
+	void push(std::vector<unsigned short> const &data, unsigned int channel,
 		bool cyclic = true, bool multiplex = false);
-	virtual void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
+	void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
 		  bool cyclic = true, bool multiplex = false);
-	virtual void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true);
-	virtual void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
-	virtual void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
-	virtual void stop();
-	virtual void cancelBuffer();
-	virtual void setKernelBuffersCount(unsigned int count);
-	virtual struct IIO_OBJECTS getIioObjects();
+	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true);
+	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
+	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
+	void stop();
+	void cancelBuffer();
+	void setKernelBuffersCount(unsigned int count);
+	struct IIO_OBJECTS getIioObjects();
 
 private:
-	class DeviceOutImpl;
-	std::unique_ptr<DeviceOutImpl> m_pimpl;
+	std::vector<Channel*> m_channel_list;
 };
 }
 }
 
 
-#endif //DEVICE_HPP
+#endif //DEVICE_OUT_HPP
