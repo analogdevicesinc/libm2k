@@ -19,8 +19,8 @@
  *
  */
 
-#include <libm2k/utils/devicein.hpp>
-#include <libm2k/utils/deviceout.hpp>
+#include "utils/deviceout.hpp"
+#include "utils/devicein.hpp"
 #include <libm2k/digital/m2kdigital.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -28,6 +28,7 @@
 #include <iostream>
 #include <algorithm>
 
+using namespace libm2k;
 using namespace libm2k::utils;
 using namespace libm2k::digital;
 using namespace libm2k::analog;
@@ -261,7 +262,7 @@ public:
 			 * be a multiple of 8 bytes (4x 16-bit samples). Round up to the
 			 * nearest multiple.*/
 			nb_samples = ((nb_samples + 3) / 4) * 4;
-			return m_dev_read->getSamples(nb_samples);
+			return m_dev_read->getSamplesShort(nb_samples);
 
 		} __catch (exception_type &e) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));

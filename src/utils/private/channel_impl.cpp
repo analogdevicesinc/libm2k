@@ -23,6 +23,7 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
 
+using namespace libm2k;
 using namespace libm2k::utils;
 
 class Channel::ChannelImpl {

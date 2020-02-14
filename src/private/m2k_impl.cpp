@@ -29,7 +29,7 @@
 #include <libm2k/analog/m2kpowersupply.hpp>
 #include <libm2k/digital/m2kdigital.hpp>
 #include <libm2k/utils/utils.hpp>
-#include <libm2k/utils/devicegeneric.hpp>
+#include "utils/devicegeneric.hpp"
 #include <libm2k/logger.hpp>
 #include <iio.h>
 #include <iostream>

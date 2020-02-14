@@ -2,8 +2,7 @@
 #include <vector>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/utils/channel.hpp>
-#include <libm2k/utils/devicegeneric.hpp>
-#include <libm2k/utils/devicein.hpp>
+#include "utils/devicein.hpp"
 #include <libm2k/lidar.hpp>
 #include <iio.h>
 #include <iostream>

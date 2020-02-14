@@ -19,10 +19,9 @@
  *
  */
 
-#include <libm2k/utils/devicegeneric.hpp>
+#include "utils/devicegeneric.hpp"
 #include <libm2k/digital/genericdigital.hpp>
 #include <libm2k/m2kexceptions.hpp>
-
 #include <libm2k/utils/utils.hpp>
 #include <iio.h>
 #include <iostream>

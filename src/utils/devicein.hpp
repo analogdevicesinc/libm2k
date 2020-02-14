@@ -21,6 +21,7 @@
 
 #ifndef DEVICEIN_HPP
 #define DEVICEIN_HPP
+
 #include <iio.h>
 #include <string>
 #include <iostream>
@@ -28,7 +29,7 @@
 #include <functional>
 #include <memory>
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/utils/devicegeneric.hpp>
+#include "devicegeneric.hpp"
 #include <libm2k/enums.hpp>
 
 using namespace std;
@@ -42,27 +43,26 @@ class DeviceIn : public DeviceGeneric
 {
 public:
 	DeviceIn(struct iio_context* context, std::string dev_name = "");
-	virtual ~DeviceIn();
+	~DeviceIn();
 
-	virtual std::vector<unsigned short> getSamples(unsigned int nb_samples);
-	virtual const unsigned short* getSamplesP(unsigned int nb_samples);
-	virtual std::vector<std::vector<double> > getSamples(unsigned int nb_samples,
-					std::function<double (int16_t, unsigned int)> process);
-	virtual const double *getSamplesInterleaved(unsigned int nb_samples,
-					std::function<double (int16_t, unsigned int)> process);
-	virtual const short *getSamplesRawInterleaved(unsigned int nb_samples);
+	std::vector<unsigned short> getSamplesShort(unsigned int nb_samples);
+	const unsigned short* getSamplesP(unsigned int nb_samples);
+	std::vector<std::vector<double> > getSamples(unsigned int nb_samples,
+					const std::function<double (int16_t, unsigned int)> &process);
+	const double *getSamplesInterleaved(unsigned int nb_samples,
+					const std::function<double (int16_t, unsigned int)> &process);
+	const short *getSamplesRawInterleaved(unsigned int nb_samples);
 	void* getSamplesRawInterleavedVoid(unsigned int nb_samples);
 
 	void getSamples(std::vector<std::vector<double>> &data, unsigned int nb_samples,
-			std::function<double (int16_t, unsigned int)> process);
+			const std::function<double (int16_t, unsigned int)> &process);
 	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples);
 
-	virtual void cancelBuffer();
-	virtual void flushBuffer();
-	virtual struct IIO_OBJECTS getIioObjects();
+	void cancelBuffer();
+	void flushBuffer();
+	struct IIO_OBJECTS getIioObjects();
 private:
-	class DeviceInImpl;
-	std::unique_ptr<DeviceInImpl> m_pimpl;
+	std::vector<Channel*> m_channel_list;
 };
 }
 }

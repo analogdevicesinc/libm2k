@@ -19,80 +19,134 @@
  *
  */
 
-#include "private/deviceout_impl.cpp"
+#include "deviceout.hpp"
+#include <libm2k/utils/buffer.hpp>
+#include <libm2k/utils/channel.hpp>
+#include <libm2k/utils/utils.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/context.hpp>
+#include <algorithm>
+#include <cstring>
 
 using namespace std;
 using namespace libm2k;
 using namespace libm2k::utils;
 using namespace libm2k::contexts;
 
-/*
- * Represents an iio_device
- */
+
+/** Represents an iio_device **/
 DeviceOut::DeviceOut(struct iio_context* context, std::string dev_name) :
-	DeviceGeneric(context, dev_name),
-	m_pimpl(std::unique_ptr<DeviceOutImpl>(new DeviceOutImpl(context, dev_name)))
+	DeviceGeneric(context, dev_name)
 {
+	m_channel_list = m_channel_list_out;
 }
 
 DeviceOut::~DeviceOut()
 {
+	m_channel_list.clear();
 }
 
 void DeviceOut::initializeBuffer(unsigned int size, bool cyclic)
 {
-	m_pimpl->initializeBuffer(size, cyclic);
+	if (!m_buffer) {
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+	}
+	m_buffer->initializeBuffer(size, cyclic);
 }
 
 void DeviceOut::push(std::vector<short> const &data, unsigned int channel,
-                     bool cyclic, bool multiplex)
+		     bool cyclic, bool multiplex)
 {
-    m_pimpl->push(data, channel, cyclic, multiplex);
+	if (!m_buffer) {
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->push(data, channel, cyclic, multiplex);
 }
+
+
+void DeviceOut::cancelBuffer()
+{
+	if (!m_buffer) {
+		throw_exception(EXC_INVALID_PARAMETER, "Device: not buffer capable");
+	}
+	m_buffer->cancelBuffer();
+}
+
 
 void DeviceOut::push(std::vector<unsigned short> const &data, unsigned int channel,
-		  bool cyclic, bool multiplex)
+		     bool cyclic, bool multiplex)
 {
-	m_pimpl->push(data, channel, cyclic, multiplex);
+	if (!m_buffer) {
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->push(data, channel, cyclic, multiplex);
 }
 
+
 void DeviceOut::push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
-		  bool cyclic, bool multiplex)
+		     bool cyclic, bool multiplex)
 {
-	m_pimpl->push(data, channel, nb_samples, cyclic, multiplex);
+	if (!m_buffer) {
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->push(data, channel, nb_samples, cyclic, multiplex);
 }
 
 void DeviceOut::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
 {
-	m_pimpl->push(data, channel, cyclic);
+	if (!m_buffer) {
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->push(data, channel, cyclic);
 }
 
 void DeviceOut::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 {
-	m_pimpl->push(data, channel, nb_samples, cyclic);
+	if (!m_buffer) {
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->push(data, channel, nb_samples, cyclic);
 }
 
 void DeviceOut::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 {
-	m_pimpl->push(data, channel, nb_samples, cyclic);
+	if (!m_buffer) {
+		throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+	}
+	m_buffer->setChannels(m_channel_list);
+	m_buffer->push(data, channel, nb_samples, cyclic);
 }
 
 void DeviceOut::stop()
 {
-	m_pimpl->stop();
-}
-
-void DeviceOut::cancelBuffer()
-{
-	m_pimpl->cancelBuffer();
+	if (m_buffer) {
+		m_buffer->stop();
+	}
 }
 
 void DeviceOut::setKernelBuffersCount(unsigned int count)
 {
-	m_pimpl->setKernelBuffersCount(count);
+	if (m_dev) {
+		if (iio_device_set_kernel_buffers_count(m_dev, count) != 0) {
+			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot set the number of kernel buffers");
+		}
+	}
 }
 
-IIO_OBJECTS DeviceOut::getIioObjects()
+struct libm2k::IIO_OBJECTS DeviceOut::getIioObjects()
 {
-	return m_pimpl->getIioObjects();
+	IIO_OBJECTS iio_object = {};
+	iio_object.buffers_tx.push_back(m_buffer->getBuffer());
+
+	for (auto chn : m_channel_list) {
+		iio_object.channels_out.push_back(chn->getChannel());
+	}
+	iio_object.devices.push_back(m_dev);
+	iio_object.context = m_context;
+	return iio_object;
 }
