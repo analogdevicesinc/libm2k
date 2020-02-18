@@ -21,7 +21,7 @@
 
 #include "context_impl.cpp"
 #include <libm2k/m2k.hpp>
-#include <libm2k/utils/channel.hpp>
+#include "utils/channel.hpp"
 #include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/m2kexceptions.hpp>

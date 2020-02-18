@@ -25,7 +25,7 @@
 #include "utils/devicegeneric.hpp"
 #include <libm2k/analog/m2kpowersupply.hpp>
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/utils/channel.hpp>
+#include "utils/channel.hpp"
 #include <iio.h>
 
 using namespace libm2k::analog;
