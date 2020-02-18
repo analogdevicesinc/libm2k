@@ -19,155 +19,326 @@
  *
  */
 
-#include "private/channel_impl.cpp"
+#include "channel.hpp"
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/utils/utils.hpp>
 
+using namespace libm2k;
 using namespace libm2k::utils;
 
-Channel::Channel(iio_device *device, unsigned int channel) :
-	m_pimpl(std::shared_ptr<ChannelImpl>(new ChannelImpl(device, channel)))
-{
+Channel::Channel(iio_device *device, unsigned int channel) {
+	m_device = device;
+	if (m_device) {
+		m_channel = iio_device_get_channel(m_device, channel);
+	}
+
+	if (!m_channel) {
+		m_channel = nullptr;
+	}
 }
 
-Channel::Channel(iio_device *device, std::string channel_name, bool output) :
-	m_pimpl(std::shared_ptr<ChannelImpl>(new ChannelImpl(device, channel_name, output)))
+Channel::Channel(iio_device *device, std::string channel_name, bool output)
 {
+	m_device = device;
+	if (m_device) {
+		m_channel = iio_device_find_channel(device, channel_name.c_str(), output);
+	}
+
+	if (!m_channel) {
+		m_channel = nullptr;
+
+	}
+
 }
 
-Channel::~Channel()
-{
+Channel::~Channel() {
 }
 
 std::string Channel::getName()
 {
-	return m_pimpl->getName();
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	std::string name = "";
+	auto n = iio_channel_get_name(m_channel);
+	if (n) {
+		name = std::string(n);
+	}
+	return name;
 }
 
 std::string Channel::getId()
 {
-	return m_pimpl->getId();
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	return iio_channel_get_id(m_channel);
 }
 
 unsigned int Channel::getIndex()
 {
-	return m_pimpl->getIndex();
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	return iio_channel_get_index(m_channel);
 }
 
 bool Channel::isOutput()
 {
-	return m_pimpl->isOutput();
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	return iio_channel_is_output(m_channel);
 }
 
 bool Channel::isEnabled()
 {
-	return m_pimpl->isEnabled();
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	return iio_channel_is_enabled(m_channel);
 }
 
 bool Channel::hasAttribute(std::string attr)
 {
-	return m_pimpl->hasAttribute(attr);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	if (iio_channel_find_attr(m_channel, attr.c_str()) != NULL) {
+		return true;
+	}
+	return false;
 }
 
 void Channel::enableChannel(bool enable)
 {
-	m_pimpl->enableChannel(enable);
+	if (!m_channel) {
+		throw_exception(EXC_OUT_OF_RANGE, "Channel: Cannot find associated channel");
+	}
+
+	if (enable) {
+		iio_channel_enable(m_channel);
+	} else {
+		iio_channel_disable(m_channel);
+	}
 }
 
 uintptr_t Channel::getFirst(iio_buffer *buffer)
 {
-	return m_pimpl->getFirst(buffer);
+	return reinterpret_cast<uintptr_t>(getFirstVoid(buffer));
 }
 
-void *Channel::getFirstVoid(iio_buffer *buffer)
-{
-	return m_pimpl->getFirstVoid(buffer);
-}
 
-bool Channel::isValid()
+void* Channel::getFirstVoid(iio_buffer *buffer)
 {
-	return m_pimpl->isValid();
-}
-
-iio_channel *Channel::getChannel()
-{
-	return m_pimpl->getChannel();
+	return iio_buffer_first(buffer, m_channel);
 }
 
 void Channel::write(struct iio_buffer* buffer, std::vector<short> const &data)
 {
-    m_pimpl->write(buffer, data);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+
+	size_t size = data.size();
+	size_t ret = iio_channel_write(m_channel, buffer, data.data(),
+				       size * sizeof(short));
+
+	if (ret == 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write; result is 0 bytes");
+	}
 }
 
 void Channel::write(struct iio_buffer* buffer, std::vector<unsigned short> const &data)
 {
-	m_pimpl->write(buffer, data);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+
+	size_t size = data.size();
+	size_t ret = iio_channel_write(m_channel, buffer, data.data(),
+				       size * sizeof(unsigned short));
+
+	if (ret == 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write; result is 0 bytes");
+	}
 }
 
 void Channel::write(struct iio_buffer* buffer, std::vector<double> const &data)
 {
-	m_pimpl->write(buffer, data);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+
+	size_t size = data.size();
+	size_t ret = iio_channel_write(m_channel, buffer, data.data(),
+				       size * sizeof(double));
+
+	if (ret == 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write; result is 0 bytes");
+	}
 }
 
 void Channel::write(struct iio_buffer* buffer, double *data, unsigned int nb_samples)
 {
-	m_pimpl->write(buffer, data, nb_samples);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+	}
+
+	size_t ret = iio_channel_write(m_channel, buffer, data,
+				       nb_samples * sizeof(double));
+
+	if (ret == 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+	}
 }
 
 void Channel::write(struct iio_buffer* buffer, short *data, unsigned int nb_samples)
 {
-	m_pimpl->write(buffer, data, nb_samples);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+	}
+
+	size_t ret = iio_channel_write(m_channel, buffer, data,
+				       nb_samples * sizeof(short));
+
+	if (ret == 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+	}
 }
 
 void Channel::write(struct iio_buffer* buffer, unsigned short *data, unsigned int nb_samples)
 {
-	m_pimpl->write(buffer, data, nb_samples);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+	}
+
+	size_t ret = iio_channel_write(m_channel, buffer, data,
+				       nb_samples * sizeof(unsigned short));
+
+	if (ret == 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+	}
 }
 
 void Channel::convert(int16_t *avg, int16_t *src)
 {
-	m_pimpl->convert(avg, src);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
 }
 
 void Channel::convert(double *avg, int16_t *src)
 {
-	m_pimpl->convert(avg, src);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
 }
 
 double Channel::getDoubleValue(std::string attr)
 {
-	return m_pimpl->getDoubleValue(attr);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	double value = 0.0;
+	int ret = iio_channel_attr_read_double(m_channel, attr.c_str(), &value);
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot read " + attr);
+	}
+	return value;
 }
 
 void Channel::setDoubleValue(std::string attr, double val)
 {
-	m_pimpl->setDoubleValue(attr, val);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	int ret = iio_channel_attr_write_double(m_channel, attr.c_str(), val);
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
 }
 
 void Channel::setLongValue(std::string attr, long long val)
 {
-	m_pimpl->setLongValue(attr, val);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	int ret = iio_channel_attr_write_longlong(m_channel, attr.c_str(), val);
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
 }
 
 long long Channel::getLongValue(std::string attr)
 {
-	return m_pimpl->getLongValue(attr);
-}
-
-void Channel::setBoolValue(std::string attr, bool val)
-{
-	m_pimpl->setBoolValue(attr, val);
-}
-
-bool Channel::getBoolValue(std::string attr)
-{
-	return m_pimpl->getBoolValue(attr);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	long long value = 0;
+	int ret = iio_channel_attr_read_longlong(m_channel, attr.c_str(), &value);
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
+	return value;
 }
 
 void Channel::setStringValue(std::string attr, std::string val)
 {
-	m_pimpl->setStringValue(attr, val);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	int ret = iio_channel_attr_write(m_channel, attr.c_str(), val.c_str());
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
 }
 
 std::string Channel::getStringValue(std::string attr)
 {
-	return m_pimpl->getStringValue(attr);
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	char value[1024];
+	int ret = iio_channel_attr_read(m_channel, attr.c_str(), value, sizeof(value));
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
+	return std::string(value);
+}
+
+void Channel::setBoolValue(std::string attr, bool val)
+{
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	int ret = iio_channel_attr_write_bool(m_channel, attr.c_str(), val);
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
+}
+
+bool Channel::getBoolValue(std::string attr)
+{
+	if (!m_channel) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+	}
+	bool value;
+	int ret = iio_channel_attr_read_bool(m_channel, attr.c_str(), &value);
+	if (ret < 0) {
+		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+	}
+	return value;
+}
+
+bool Channel::isValid()
+{
+	return !!m_channel;
+}
+
+struct iio_channel* Channel::getChannel()
+{
+	return m_channel;
 }

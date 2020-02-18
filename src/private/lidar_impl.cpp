@@ -1,7 +1,7 @@
 #include "context_impl.cpp"
 #include <vector>
 #include <libm2k/utils/utils.hpp>
-#include <libm2k/utils/channel.hpp>
+#include "utils/channel.hpp"
 #include "utils/devicein.hpp"
 #include <libm2k/lidar.hpp>
 #include <iio.h>

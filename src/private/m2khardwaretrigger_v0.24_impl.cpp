@@ -23,7 +23,7 @@
 #define M2KHARDWARETRIGGER_IMPL_v024_HPP
 
 #include "utils/devicein.hpp"
-#include <libm2k/utils/channel.hpp>
+#include "utils/channel.hpp"
 #include <libm2k/digital/enums.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include "m2khardwaretrigger_impl.cpp"

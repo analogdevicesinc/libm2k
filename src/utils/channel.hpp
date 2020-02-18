@@ -72,8 +72,8 @@ public:
 	bool isValid();
 	struct iio_channel* getChannel();
 private:
-	class ChannelImpl;
-	std::shared_ptr<ChannelImpl> m_pimpl;
+	struct iio_device *m_device;
+	struct iio_channel *m_channel;
 
 
 };

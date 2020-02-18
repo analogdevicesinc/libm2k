@@ -57,14 +57,14 @@ public:
 	const unsigned short* getSamplesP(unsigned int nb_samples);
 
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples,
-					std::function<double(int16_t, unsigned int)> process);
+					const std::function<double(int16_t, unsigned int)> &process);
 	const double *getSamplesInterleaved(unsigned int nb_samples,
-					std::function<double(int16_t, unsigned int)> process);
+					const std::function<double(int16_t, unsigned int)> &process);
 	const short *getSamplesRawInterleaved(unsigned int nb_samples);
 	void* getSamplesRawInterleavedVoid(int nb_samples);
 
 	void getSamples(std::vector<std::vector<double>> &data, int nb_samples,
-					std::function<double(int16_t, unsigned int)> process);
+					const std::function<double(int16_t, unsigned int)> &process);
 	void getSamples(std::vector<unsigned short> &data, int nb_samples);
 
 	void stop();
@@ -74,9 +74,15 @@ public:
 
 	struct iio_buffer* getBuffer();
 private:
+	struct iio_device* m_dev;
+	struct iio_buffer* m_buffer;
+	int m_last_nb_samples;
+	bool m_cyclic;
+	std::vector<Channel*> m_channel_list;
+	std::vector<std::vector<double>> m_data;
+	std::vector<unsigned short> m_data_short;
 
-	class BufferImpl;
-	std::shared_ptr<BufferImpl> m_pimpl;
+	void destroy();
 };
 }
 }
