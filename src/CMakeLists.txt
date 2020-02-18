@@ -18,7 +18,7 @@ include_directories(
 	${LOG4CPP_INCLUDE_DIR}
 )
 
-FILE(GLOB_RECURSE SRC_LIST  *.cpp)
+FILE(GLOB_RECURSE SRC_LIST  *.cpp *_impl.hpp)
 
 FILE(GLOB_RECURSE HEADERS_LIST ${CMAKE_SOURCE_DIR}/include/libm2k/*.hpp)
 
