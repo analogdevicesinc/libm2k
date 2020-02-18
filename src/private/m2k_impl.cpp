@@ -22,6 +22,8 @@
 #include "context_impl.cpp"
 #include <libm2k/m2k.hpp>
 #include "utils/channel.hpp"
+#include "m2khardwaretrigger_impl.hpp"
+#include "m2khardwaretrigger_v0.24_impl.hpp"
 #include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/m2kexceptions.hpp>
@@ -36,6 +38,7 @@
 #include <thread>
 
 using namespace std;
+using namespace libm2k;
 using namespace libm2k::contexts;
 using namespace libm2k::analog;
 using namespace libm2k::digital;
@@ -65,7 +68,13 @@ public:
 		m_instancesPowerSupply.clear();
 
 		m_firmware_version = getFirmwareVersion();
-		m_trigger = new M2kHardwareTrigger(ctx, m_firmware_version);
+
+		int diff = Utils::compareVersions(m_firmware_version, "v0.24");
+		if (diff < 0) {	//m_firmware_version < 0.24
+			m_trigger = new M2kHardwareTriggerImpl(ctx);
+		} else {
+			m_trigger = new M2kHardwareTriggerV024Impl(ctx);
+		}
 
 		if (!m_trigger) {
 			throw_exception(EXC_INVALID_PARAMETER, "Can't instantiate M2K board; M2K trigger is invalid.");
