@@ -23,7 +23,7 @@
 #include <libm2k/context.hpp>
 #include <libm2k/analog/genericanalogin.hpp>
 #include <libm2k/analog/genericanalogout.hpp>
-#include <libm2k/analog/dmm.hpp>
+#include "analog/dmm_impl.hpp"
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2k.hpp>
 #include <libm2k/lidar.hpp>
@@ -324,7 +324,7 @@ public:
 		for (auto dev : dev_list) {
 			if (getIioDeviceDirection(dev.first) != OUTPUT) {
 				if (!getDMM(dev.first)) {
-					m_instancesDMM.push_back(new DMM(m_context, dev.first, m_sync));
+					m_instancesDMM.push_back(new DMMImpl(m_context, dev.first, m_sync));
 				}
 			}
 		}

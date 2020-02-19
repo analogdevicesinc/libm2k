@@ -47,19 +47,13 @@ public:
 	/**
 	* @private
 	*/
-	DMM(struct iio_context *ctx, std::string dev, bool sync);
+	virtual ~DMM() {}
 
 
 	/**
 	* @private
 	*/
-	virtual ~DMM();
-
-
-	/**
-	* @private
-	*/
-	void init();
+	virtual void init() = 0;
 
 
 	/**
@@ -67,7 +61,7 @@ public:
 	*
 	* @return A list containing the name of all channels
 	*/
-	std::vector<std::string> getAllChannels();
+	virtual std::vector<std::string> getAllChannels() = 0;
 
 
 	/**
@@ -76,7 +70,7 @@ public:
 	* @param index The index corresponding to the channel
 	* @return A structure containing additional information
 	*/
-	libm2k::analog::DMM_READING readChannel(unsigned int index);
+	virtual libm2k::analog::DMM_READING readChannel(unsigned int index) = 0;
 
 
 	/**
@@ -85,7 +79,7 @@ public:
 	* @param chn_name The name corresponding to the channel
 	* @return A structure containing additional information
 	*/
-	libm2k::analog::DMM_READING readChannel(std::string chn_name);
+	virtual libm2k::analog::DMM_READING readChannel(std::string chn_name) = 0;
 
 
 	/**
@@ -93,7 +87,7 @@ public:
 	*
 	* @return A list containing structures for each channel
 	*/
-	std::vector<libm2k::analog::DMM_READING> readAll();
+	virtual std::vector<libm2k::analog::DMM_READING> readAll() = 0;
 
 
 	/**
@@ -101,11 +95,8 @@ public:
 	*
 	* @return The name of the device
 	*/
-	std::string getName();
+	virtual std::string getName() = 0;
 
-private:
-	class DMMImpl;
-	std::unique_ptr<DMMImpl> m_pimpl;
 };
 }
 }
