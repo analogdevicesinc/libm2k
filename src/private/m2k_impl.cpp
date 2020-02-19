@@ -24,7 +24,7 @@
 #include "utils/channel.hpp"
 #include "m2khardwaretrigger_impl.hpp"
 #include "m2khardwaretrigger_v0.24_impl.hpp"
-#include <libm2k/analog/m2kanalogin.hpp>
+#include "analog/m2kanalogin_impl.hpp"
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/m2kcalibration.hpp>
@@ -175,7 +175,7 @@ public:
 
 	void scanAllAnalogIn()
 	{
-		M2kAnalogIn* aIn = new libm2k::analog::M2kAnalogIn(m_context, "m2k-adc", m_sync, m_trigger);
+		M2kAnalogIn* aIn = new libm2k::analog::M2kAnalogInImpl(m_context, "m2k-adc", m_sync, m_trigger);
 		m_instancesAnalogIn.push_back(aIn);
 	}
 

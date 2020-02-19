@@ -23,7 +23,7 @@
 #include <libm2k/m2kcalibration.hpp>
 #include "utils/devicegeneric.hpp"
 #include <libm2k/analog/m2kanalogout.hpp>
-#include <libm2k/analog/m2kanalogin.hpp>
+#include "analog/m2kanalogin_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/enums.hpp>
@@ -45,7 +45,7 @@ public:
 				       M2kAnalogOut* analogOut):
 		m_cancel(false),
 		m_ctx(ctx),
-		m_m2k_adc(analogIn),
+		m_m2k_adc(dynamic_cast<M2kAnalogInImpl*>(analogIn)),
 		m_m2k_dac(analogOut),
 		m_m2k_trigger(analogIn->getTrigger()),
 		m_adc_calibrated(false),
@@ -795,7 +795,7 @@ private:
 	bool m_cancel;
 
 	struct iio_context *m_ctx;
-	M2kAnalogIn* m_m2k_adc;
+	M2kAnalogInImpl* m_m2k_adc;
 	M2kAnalogOut* m_m2k_dac;
 	M2kHardwareTrigger* m_m2k_trigger;
 

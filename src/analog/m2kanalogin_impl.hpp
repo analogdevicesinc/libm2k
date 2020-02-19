@@ -1,0 +1,155 @@
+/*
+ * Copyright (c) 2019 Analog Devices Inc.
+ *
+ * This file is part of libm2k
+ * (see http://www.github.com/analogdevicesinc/libm2k).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#ifndef M2KANALOGIN_IMPL_HPP
+#define M2KANALOGIN_IMPL_HPP
+
+#include <libm2k/analog/m2kanalogin.hpp>
+#include "utils/devicegeneric.hpp"
+#include "utils/devicein.hpp"
+#include <libm2k/analog/enums.hpp>
+#include <libm2k/m2khardwaretrigger.hpp>
+#include <vector>
+#include <map>
+#include <memory>
+
+namespace libm2k {
+namespace analog {
+class M2kAnalogInImpl : public M2kAnalogIn, public libm2k::utils::DeviceIn
+{
+public:
+	M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
+	virtual ~M2kAnalogInImpl();
+
+	void init();
+	void flushBuffer();
+
+	std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
+	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
+
+	const double* getSamplesInterleaved(unsigned int nb_samples);
+	const short* getSamplesRawInterleaved(unsigned int nb_samples);
+
+	short getVoltageRaw(unsigned int ch);
+	double getVoltage(unsigned int ch);
+	short getVoltageRaw(libm2k::analog::ANALOG_IN_CHANNEL ch);
+	double getVoltage(libm2k::analog::ANALOG_IN_CHANNEL ch);
+	std::vector<short> getVoltageRaw();
+	std::vector<double> getVoltage();
+	const short *getVoltageRawP();
+	const double *getVoltageP();
+
+	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
+	double getVerticalOffset(ANALOG_IN_CHANNEL channel);
+
+	double getScalingFactor(libm2k::analog::ANALOG_IN_CHANNEL ch);
+
+	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range);
+	void setRange(ANALOG_IN_CHANNEL channel, double min, double max);
+	libm2k::analog::M2K_RANGE getRange(libm2k::analog::ANALOG_IN_CHANNEL channel);
+	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE range);
+	std::vector<std::pair<std::string, std::pair<double, double>>> getAvailableRanges();
+
+	int getOversamplingRatio();
+	int getOversamplingRatio(unsigned int chn_idx);
+	int setOversamplingRatio(int oversampling);
+	int setOversamplingRatio(unsigned int chn_idx, int oversampling);
+
+	double getSampleRate();
+	double getSampleRate(unsigned int chn_idx);
+	std::vector<double> getAvailableSampleRates();
+	double setSampleRate(double samplerate);
+	double setSampleRate(unsigned int chn_idx, double samplerate);
+
+	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn);
+
+	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset);
+
+	double setCalibscale(unsigned int index, double calibscale);
+	double getCalibscale(unsigned int index);
+
+	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
+
+	double getFilterCompensation(double samplerate);
+
+	double getValueForRange(M2K_RANGE range);
+
+	double convRawToVolts(int sample, double correctionGain = 1,
+		double hw_gain = 0.02,
+		double filterCompensation = 1,
+		double offset = 0) const;
+
+	double convertRawToVolts(unsigned int channel, short raw);
+	short convertVoltsToRaw(unsigned int channel, double voltage);
+
+	unsigned int getNbChannels();
+	std::string getName();
+
+	void enableChannel(unsigned int chnIdx, bool enable);
+	bool isChannelEnabled(unsigned int chnIdx);
+
+	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
+	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
+
+	void setKernelBuffersCount(unsigned int count);
+
+	libm2k::M2kHardwareTrigger* getTrigger();
+	struct IIO_OBJECTS getIioObjects();
+
+	void cancelBuffer();
+
+	void getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples);
+private:
+	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
+	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
+	bool m_need_processing;
+
+	double m_samplerate;
+	libm2k::M2kHardwareTrigger *m_trigger;
+	std::vector<M2K_RANGE> m_input_range;
+
+	std::vector<double> m_adc_calib_gain;
+	std::vector<double> m_adc_calib_offset;
+	std::vector<double> m_adc_hw_vert_offset_raw;
+	std::vector<double> m_adc_hw_vert_offset;
+	std::map<double, double> m_filter_compensation_table;
+	std::vector<bool> m_channels_enabled;
+
+	void syncDevice();
+
+	M2K_RANGE getRangeDevice(ANALOG_IN_CHANNEL channel);
+
+	short convVoltsToRaw(double voltage, double correctionGain, double hw_gain, double filterCompensation, double offset);
+
+	double getScalingFactor(unsigned int ch);
+
+	std::vector<std::vector<double>> getSamples(unsigned int nb_samples, bool processed);
+
+	void handleChannelsEnableState(bool before_refill);
+
+	const double *getSamplesInterleaved(unsigned int nb_samples, bool processed = false);
+
+	double processSample(int16_t sample, unsigned int channel);
+};
+}
+}
+
+#endif //M2KANALOGIN_IMPL_HPP
