@@ -53,27 +53,22 @@ class LIBM2K_API M2kAnalogOut
 public:
 	/**
 	 * @private
-	 */
-	M2kAnalogOut(struct iio_context*, std::vector<std::string> dac_devs, bool sync);
-
-
-	/**
-	 * @private
 	*/
-	virtual ~M2kAnalogOut();
+	virtual ~M2kAnalogOut() {}
 
 
 	/**
 	* @private
 	*/
-	void init();
+	virtual void init() = 0;
+
 
 
 	/**
 	* @brief Retrieve the global oversampling ratio
 	* @return The value of the global oversampling ratio
 	*/
-	std::vector<int> getOversamplingRatio();
+	virtual std::vector<int> getOversamplingRatio() = 0;
 
 
 	/**
@@ -82,7 +77,7 @@ public:
 	* @param chn The index corresponding to the channel
 	* @return The oversampling ratio value
 	*/
-	int getOversamplingRatio(unsigned int chn);
+	virtual int getOversamplingRatio(unsigned int chn) = 0;
 
 	/**
 	* @brief Set the value of the oversampling ratio for each channel
@@ -90,7 +85,7 @@ public:
 	* @param oversampling_ratio A list containing the ratios for each channel (as integers)
 	* @return A list containing the oversampling ratio value for each channel
 	*/
-	std::vector<int> setOversamplingRatio(std::vector<int> oversampling_ratio);
+	virtual std::vector<int> setOversamplingRatio(std::vector<int> oversampling_ratio) = 0;
 
 
 	/**
@@ -99,13 +94,13 @@ public:
 	* @param oversampling_ratio Integer value to set the oversampling ratio to
 	* @return The current oversampling ratio value
 	*/
-	int setOversamplingRatio(unsigned int chn, int oversampling_ratio);
+	virtual int setOversamplingRatio(unsigned int chn, int oversampling_ratio) = 0;
 
 	/**
 	* @brief Retrieve the sample rate of both DACs
 	* @return A list containing the sample rates
 	*/
-	std::vector<double> getSampleRate();
+	virtual std::vector<double> getSampleRate() = 0;
 
 
 	/**
@@ -114,7 +109,7 @@ public:
 	* @param chn The index corresponding to the channel
 	* @return The value of the sample rate
 	*/
-	double getSampleRate(unsigned int chn);
+	virtual double getSampleRate(unsigned int chn) = 0;
 
 
 	/**
@@ -122,7 +117,7 @@ public:
 	 * @param chn The index corresponding to the required channel
 	 * @return The list of available samplerates for this device
 	 */
-	std::vector<double> getAvailableSampleRates(unsigned int chn);
+	virtual std::vector<double> getAvailableSampleRates(unsigned int chn) = 0;
 
 
 	/**
@@ -131,7 +126,7 @@ public:
 	* @param samplerates A list containing the sample rates of each channel
 	* @return A list containing the previously setted sample rates
 	*/
-	std::vector<double> setSampleRate(std::vector<double> samplerates);
+	virtual std::vector<double> setSampleRate(std::vector<double> samplerates) = 0;
 
 
 	/**
@@ -141,28 +136,28 @@ public:
 	* @param samplerate A double value to set the sample rate to
 	* @return The value of the sample rate
 	*/
-	double setSampleRate(unsigned int chn, double samplerate);
+	virtual double setSampleRate(unsigned int chn, double samplerate) = 0;
 
 
 	/**
 	* @private
 	*/
-	void setSyncedDma(bool en, int chn = -1);
+	virtual void setSyncedDma(bool en, int chn = -1) = 0;
 
 	/**
 	* @private
 	*/
-	bool getSyncedDma(int chn = -1);
+	virtual bool getSyncedDma(int chn = -1) = 0;
 
 	/**
 	* @private
 	*/
-	void setSyncedStartDma(bool en, int chn = -1);
+	virtual void setSyncedStartDma(bool en, int chn = -1) = 0;
 
 	/**
 	* @private
 	*/
-	bool getSyncedStartDma(int chn = -1);
+	virtual bool getSyncedStartDma(int chn = -1) = 0;
 
 	/**
 	* @brief Enable or disable the cyclic mode for all digital channels
@@ -171,7 +166,7 @@ public:
 	*
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void setCyclic(bool en);
+	virtual void setCyclic(bool en) = 0;
 
 
 	/**
@@ -182,7 +177,7 @@ public:
 	*
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void setCyclic(unsigned int chn, bool en);
+	virtual void setCyclic(unsigned int chn, bool en) = 0;
 
 
 	/**
@@ -191,7 +186,7 @@ public:
 	* @param chn The index corresponding to the channel
 	* @return A boolean value corresponding to the state of the cyclic mode
 	*/
-	bool getCyclic(unsigned int chn);
+	virtual bool getCyclic(unsigned int chn) = 0;
 
 
 	/**
@@ -201,7 +196,7 @@ public:
 	* @param calibscale A double value to set the calibration scale to
 	* @return The current value of the calibration scale
 	*/
-	double setCalibscale(unsigned int index, double calibscale);
+	virtual double setCalibscale(unsigned int index, double calibscale) = 0;
 
 
 	/**
@@ -210,7 +205,7 @@ public:
 	* @param index The index corresponding to the channel
 	* @return The value of the calibration scale
 	*/
-	double getCalibscale(unsigned int index);
+	virtual double getCalibscale(unsigned int index) = 0;
 
 
 	/**
@@ -221,7 +216,7 @@ public:
 	*
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	double getScalingFactor(unsigned int chn);
+	virtual double getScalingFactor(unsigned int chn) = 0;
 
 
 	/**
@@ -230,7 +225,7 @@ public:
 	* @param samplerate A double value representing the sample rate
 	* @return The value of the filter compensation
 	*/
-	double getFilterCompensation(double samplerate);
+	virtual double getFilterCompensation(double samplerate) = 0;
 
 
 	/**
@@ -241,8 +236,8 @@ public:
 	* @param filterCompensation The value of the filter compensation
 	* @return The raw value
 	*/
-	short convVoltsToRaw(double voltage, double vlsb,
-		double filterCompensation);
+	virtual short convVoltsToRaw(double voltage, double vlsb,
+		double filterCompensation) = 0;
 
 	/**
 	* @brief Send the samples to the given channel
@@ -255,7 +250,7 @@ public:
 	* @note The given channel won't be synchronized with the other channel
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples);
+	virtual void pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples) = 0;
 
 
 	/**
@@ -269,7 +264,7 @@ public:
 	* @note The given channel won't be synchronized with the other channel
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples);
+	virtual void pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples) = 0;
 
 
 	/**
@@ -282,7 +277,7 @@ public:
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel will be synchronized with the other channel
 	*/
-	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples);
+	virtual void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples) = 0;
 
 
 	/**
@@ -295,7 +290,7 @@ public:
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel will be synchronized with the other channel
 	*/
-	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples);
+	virtual void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples) = 0;
 
 	/**
 	* @brief Set the calibration gain for the given channel
@@ -303,7 +298,7 @@ public:
 	* @param chn The index corresponding to the channel
 	* @param vlsb A double value to set the calibration gain to
 	*/
-	void setDacCalibVlsb(unsigned int chn, double vlsb);
+	virtual void setDacCalibVlsb(unsigned int chn, double vlsb) = 0;
 
 
 	/**
@@ -316,7 +311,7 @@ public:
 	* @note The given channel won't be synchronized with the other channel
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void push(unsigned int chnIdx, std::vector<double> const &data);
+	virtual void push(unsigned int chnIdx, std::vector<double> const &data) = 0;
 
 
 	/**
@@ -329,7 +324,7 @@ public:
 	* @note The given channel won't be synchronized with the other channel
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void pushRaw(unsigned int chnIdx, std::vector<short> const &data);
+	virtual void pushRaw(unsigned int chnIdx, std::vector<short> const &data) = 0;
 
 
 	/**
@@ -341,7 +336,7 @@ public:
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
 	*/
-	void push(std::vector<std::vector<double>> const &data);
+	virtual void push(std::vector<std::vector<double>> const &data) = 0;
 
 
 	/**
@@ -353,7 +348,7 @@ public:
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
 	*/
-	void pushRaw(std::vector<std::vector<short>> const &data);
+	virtual void pushRaw(std::vector<std::vector<short>> const &data) = 0;
 
 
 	/**
@@ -362,7 +357,7 @@ public:
 	* @note Both DACs will be powered down
 	*
 	*/
-	void stop();
+	virtual void stop() = 0;
 
 
 	/**
@@ -373,21 +368,20 @@ public:
 	* @note The corresponding DAC will be powered down
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void stop(unsigned int chn);
+	virtual void stop(unsigned int chn) = 0;
 
 
 	/**
-	* @brief Cancel all buffer operations of enabled channels
-	*/
-	void cancelBuffer();
+	 * @brief Cancel all buffer operations of enabled channels
+	 */
+	virtual void cancelBuffer() = 0;
 
 
 	/**
-	* @brief Cancel all buffer operations of the given channel
-	* @param chn The index corresponding to the channel
-	*/
-	void cancelBuffer(unsigned int chn);
-
+	 * @brief Cancel all buffer operations of the given channel
+	 * @param chn The index corresponding to the channel
+	 */
+	virtual void cancelBuffer(unsigned int chn) = 0;
 
 	/**
 	* @brief Enable or disable the given digital channel
@@ -397,7 +391,7 @@ public:
 	*
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	void enableChannel(unsigned int chnIdx, bool enable);
+	virtual void enableChannel(unsigned int chnIdx, bool enable) = 0;
 
 
 	/**
@@ -408,7 +402,7 @@ public:
 	*
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
-	bool isChannelEnabled(unsigned int chnIdx);
+	virtual bool isChannelEnabled(unsigned int chnIdx) = 0;
 
 
 	/**
@@ -416,7 +410,7 @@ public:
 	 * @param chnIdx The index corresponding to the channel
 	 * @param count the number of kernel buffers
 	 */
-	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count);
+	virtual void setKernelBuffersCount(unsigned int chnIdx, unsigned int count) = 0;
 
 
 	/**
@@ -425,7 +419,7 @@ public:
 	 * @param voltage The volts value of a sample
 	 * @return The value of a sample converted into raw
 	 */
-	short convertVoltsToRaw(unsigned int channel, double voltage);
+	virtual short convertVoltsToRaw(unsigned int channel, double voltage) = 0;
 
 
 	/**
@@ -434,7 +428,7 @@ public:
 	 * @param raw The raw value of a sample
 	 * @return The value of a sample converted into volts
 	 */
-	double convertRawToVolts(unsigned int channel, short raw);
+	virtual double convertRawToVolts(unsigned int channel, short raw) = 0;
 
 
 	/**
@@ -442,19 +436,14 @@ public:
 	 * @note Can be used when debugging directly with libiio.
 	 * @return IIO_OBJECTS structure.
 	 */
-	struct IIO_OBJECTS getIioObjects();
+	virtual struct IIO_OBJECTS getIioObjects() = 0;
 
 
 	/**
 	* @brief Retrieve the number of analogical channels
-	*
 	* @return The number of channels
 	*/
-	unsigned int getNbChannels();
-
-private:
-	class M2kAnalogOutImpl;
-	std::unique_ptr<M2kAnalogOutImpl> m_pimpl;
+	virtual unsigned int getNbChannels() = 0;
 };
 }
 }

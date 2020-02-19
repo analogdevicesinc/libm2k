@@ -25,7 +25,7 @@
 #include "m2khardwaretrigger_impl.hpp"
 #include "m2khardwaretrigger_v0.24_impl.hpp"
 #include "analog/m2kanalogin_impl.hpp"
-#include <libm2k/analog/m2kanalogout.hpp>
+#include "analog/m2kanalogout_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/m2kcalibration.hpp>
 #include "analog/m2kpowersupply_impl.hpp"
@@ -182,7 +182,7 @@ public:
 	void scanAllAnalogOut()
 	{
 		std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
-		M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOut(m_context, devs, m_sync);
+		M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOutImpl(m_context, devs, m_sync);
 		m_instancesAnalogOut.push_back(aOut);
 	}
 
