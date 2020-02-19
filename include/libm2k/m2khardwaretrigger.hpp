@@ -293,6 +293,11 @@ public:
 	/**
 	 * @brief Set the streaming flag for the digital part
 	 * @param enable the streaming
+	 *
+	 * @note The digital condition needs to be set before setting the
+	 * digital streaming flag to true, otherwise after setting the streaming
+	 * flag to true, a trigger might occur on the old condition.
+	 *
 	 */
 	void setDigitalStreamingFlag(bool enable);
 
