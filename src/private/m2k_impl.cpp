@@ -28,7 +28,7 @@
 #include <libm2k/analog/m2kanalogout.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/m2kcalibration.hpp>
-#include <libm2k/analog/m2kpowersupply.hpp>
+#include "analog/m2kpowersupply_impl.hpp"
 #include <libm2k/digital/m2kdigital.hpp>
 #include <libm2k/utils/utils.hpp>
 #include "utils/devicegeneric.hpp"
@@ -188,7 +188,7 @@ public:
 
 	void scanAllPowerSupply()
 	{
-		libm2k::analog::M2kPowerSupply* pSupply = new libm2k::analog::M2kPowerSupply(m_context, "ad5627", "ad9963", m_sync);
+		libm2k::analog::M2kPowerSupply* pSupply = new libm2k::analog::M2kPowerSupplyImpl(m_context, "ad5627", "ad9963", m_sync);
 		m_instancesPowerSupply.push_back(pSupply);
 	}
 
