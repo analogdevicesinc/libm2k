@@ -19,10 +19,12 @@
  *
  */
 
-#ifndef M2KPOWERSUPPLY_HPP
-#define M2KPOWERSUPPLY_HPP
+#ifndef M2KPOWERSUPPLY_IMPL_HPP
+#define M2KPOWERSUPPLY_IMPL_HPP
 
-#include <libm2k/m2kglobal.hpp>
+#include <libm2k/analog/m2kpowersupply.hpp>
+#include "utils/devicein.hpp"
+#include "utils/deviceout.hpp"
 #include <vector>
 #include <memory>
 
@@ -39,18 +41,25 @@ namespace analog {
  * @class M2kPowerSupply
  * @brief Controls the power supply
  */
-class LIBM2K_API M2kPowerSupply {
+class M2kPowerSupplyImpl : public M2kPowerSupply, public libm2k::utils::DeviceGeneric {
 public:
 	/**
 	* @private
 	*/
-	virtual ~M2kPowerSupply() {}
+	M2kPowerSupplyImpl(struct iio_context* ctx, std::string write_dev,
+		std::string read_dev, bool sync);
 
 
 	/**
 	* @private
 	*/
-	virtual void init() = 0;
+	virtual ~M2kPowerSupplyImpl();
+
+
+	/**
+	* @private
+	*/
+	void init();
 
 
 	/**
@@ -59,7 +68,7 @@ public:
 	* @param chn The index corresponding to the channel
 	* @param en A boolean value corresponding to the state of the channel
 	*/
-	virtual void enableChannel(unsigned int chn, bool en) = 0;
+	void enableChannel(unsigned int chn, bool en);
 
 
 	/**
@@ -67,7 +76,7 @@ public:
 	*
 	* @param en A boolean value corresponding to the state of the channels
 	*/
-	virtual void enableAll(bool en) = 0;
+	void enableAll(bool en);
 
 
 	/**
@@ -76,7 +85,7 @@ public:
 	* @param chn The index corresponding to the channel
 	* @return double The voltage transmitted by the given channel
 	*/
-	virtual double readChannel(unsigned int chn) = 0;
+	double readChannel(unsigned int chn);
 
 
 	/**
@@ -85,13 +94,13 @@ public:
 	* @param chn The index corresponding to the channel
 	* @param value The voltage (up to 5V)
 	*/
-	virtual void pushChannel(unsigned int chn, double value) = 0;
+	void pushChannel(unsigned int chn, double value);
 
 
 	/**
 	* @private
 	*/
-	virtual void powerDownDacs(bool powerdown) = 0;
+	void powerDownDacs(bool powerdown);
 
 
 	/**
@@ -100,11 +109,31 @@ public:
 	* @return On succes, true
 	* @return Otherwise, false
 	*/
-	virtual bool anyChannelEnabled() = 0;
+	bool anyChannelEnabled();
+
+
+private:
+	std::shared_ptr<libm2k::utils::DeviceOut> m_dev_write;
+	std::shared_ptr<libm2k::utils::DeviceIn> m_dev_read;
+	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
+
+	std::vector<std::pair<std::string, double>> m_calib_coefficients;
+	std::vector<double> m_write_coefficients;
+	std::vector<double> m_read_coefficients;
+	unsigned int m_pos_powerdown_idx;
+	unsigned int m_neg_powerdown_idx;
+	bool m_individual_powerdown;
+	std::vector<bool> m_channels_enabled;
+	std::vector<unsigned int> m_write_channel_idx;
+	std::vector<unsigned int> m_read_channel_idx;
+
+	void loadCalibrationCoefficients();
+	double getCalibrationCoefficient(std::string key);
+	void syncDevice();
 };
 }
 }
 
 
 
-#endif //M2KPOWERSUPPLY_HPP
+#endif //M2KPOWERSUPPLY_IMPL_HPP

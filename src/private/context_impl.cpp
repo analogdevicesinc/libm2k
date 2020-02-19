@@ -23,7 +23,6 @@
 #include <libm2k/context.hpp>
 #include <libm2k/analog/genericanalogin.hpp>
 #include <libm2k/analog/genericanalogout.hpp>
-#include <libm2k/analog/powersupply.hpp>
 #include <libm2k/analog/dmm.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2k.hpp>
@@ -59,10 +58,6 @@ public:
 
 		/* Initialize the DMM list */
 		scanAllDMM();
-
-
-		/* Initialize the power supply list */
-		scanAllPowerSupply();
 
 		initializeContextAttributes();
 	}
