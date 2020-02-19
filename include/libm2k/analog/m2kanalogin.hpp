@@ -47,27 +47,20 @@ class LIBM2K_API M2kAnalogIn
 {
 public:
 	/**
-	 * @private
-	 */
-	M2kAnalogIn(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
-
+	* @private
+	*/
+	virtual ~M2kAnalogIn() {}
 
 	/**
 	* @private
 	*/
-	virtual ~M2kAnalogIn();
-
-
-	/**
-	* @private
-	*/
-	void init();
+	virtual void init() = 0;
 
 
 	/**
 	 * @brief Destroy the buffer
 	 */
-	void flushBuffer();
+	virtual void flushBuffer() = 0;
 
 
 	/**
@@ -78,7 +71,7 @@ public:
 	*
 	* @note The index of the list corresponds to the index of the channel
 	*/
-	std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
+	virtual std::vector<std::vector<double>> getSamples(unsigned int nb_samples) = 0;
 
 
 	/**
@@ -89,7 +82,7 @@ public:
 	*
 	* @note The index of the list corresponds to the index of the channel
 	*/
-	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
+	virtual std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples) = 0;
 
 
 	/**
@@ -98,7 +91,7 @@ public:
 	* @param nb_samples The number of samples that will be retrieved
 	* @return A pointer to the interleaved samples
 	*/
-	const double* getSamplesInterleaved(unsigned int nb_samples);
+	virtual const double* getSamplesInterleaved(unsigned int nb_samples) = 0;
 
 
 	/**
@@ -107,7 +100,7 @@ public:
 	* @param nb_samples The number of samples that will be retrieved
 	* @return A pointer to the interleaved raw samples
 	*/
-	const short* getSamplesRawInterleaved(unsigned int nb_samples);
+	virtual const short* getSamplesRawInterleaved(unsigned int nb_samples) = 0;
 
 
 	/**
@@ -116,7 +109,7 @@ public:
 	* @param ch The index corresponding to the channel
 	* @return The average raw value
 	*/
-	short getVoltageRaw(unsigned int ch);
+	virtual short getVoltageRaw(unsigned int ch) = 0;
 
 
 	/**
@@ -125,7 +118,7 @@ public:
 	* @param ch The index corresponding to the channel
 	* @return The average voltage
 	*/
-	double getVoltage(unsigned int ch);
+	virtual double getVoltage(unsigned int ch) = 0;
 
 
 	/**
@@ -134,7 +127,7 @@ public:
 	* @param ch  An enumerator corresponding to the channel's index
 	* @return The average raw value
 	*/
-	short getVoltageRaw(libm2k::analog::ANALOG_IN_CHANNEL ch);
+	virtual short getVoltageRaw(libm2k::analog::ANALOG_IN_CHANNEL ch) = 0;
 
 
 	/**
@@ -143,7 +136,7 @@ public:
 	* @param ch An enumerator corresponding to the channel's index
 	* @return The average voltage
 	*/
-	double getVoltage(libm2k::analog::ANALOG_IN_CHANNEL ch);
+	virtual double getVoltage(libm2k::analog::ANALOG_IN_CHANNEL ch) = 0;
 
 
 	/**
@@ -153,7 +146,7 @@ public:
 	*
 	* @note The index of the value corresponds to the channel's index
 	*/
-	std::vector<short> getVoltageRaw();
+	virtual std::vector<short> getVoltageRaw() = 0;
 
 
 	/**
@@ -163,7 +156,7 @@ public:
 	*
 	* @note The index of the voltage corresponds to the channel's index
 	*/
-	std::vector<double> getVoltage();
+	virtual std::vector<double> getVoltage() = 0;
 
 
 	/**
@@ -171,7 +164,7 @@ public:
 	*
 	* @return A pointer to the average raw value of both channels
 	*/
-	const short *getVoltageRawP();
+	virtual const short *getVoltageRawP() = 0;
 
 
 	/**
@@ -179,21 +172,21 @@ public:
 	*
 	* @return A pointer to the average voltage of both channels
 	*/
-	const double *getVoltageP();
+	virtual const double *getVoltageP() = 0;
 
 	/**
 	 * @brief Set the vertical offset, in Volts, of a specific channel
 	 * @param channel the index of the channel
 	 * @param vertOffset the value of the offset in Volts
 	 */
-	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
+	virtual void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset) = 0;
 
 	/**
 	 * @brief getVerticalOffset
 	 * @param channel the index of the channel
 	 * @return the value of the offset in Volts
 	 */
-	double getVerticalOffset(ANALOG_IN_CHANNEL channel);
+	virtual double getVerticalOffset(ANALOG_IN_CHANNEL channel) = 0;
 
 
 	/**
@@ -202,7 +195,7 @@ public:
 	* @param ch An enumerator corresponding to the channel's index
 	* @return The value of the scaling factor
 	*/
-	double getScalingFactor(libm2k::analog::ANALOG_IN_CHANNEL ch);
+	virtual double getScalingFactor(libm2k::analog::ANALOG_IN_CHANNEL ch) = 0;
 
 
 	/**
@@ -211,7 +204,7 @@ public:
 	* @param channel An enumerator corresponding to the channel's index
 	* @param range  An enumerator corresponding to a range
 	*/
-	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range);
+	virtual void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range) = 0;
 
 
 	/**
@@ -221,7 +214,7 @@ public:
 	* @param min Upper bound
 	* @param max Lower bound
 	*/
-	void setRange(ANALOG_IN_CHANNEL channel, double min, double max);
+	virtual void setRange(ANALOG_IN_CHANNEL channel, double min, double max) = 0;
 
 
 	/**
@@ -230,7 +223,7 @@ public:
 	* @param channel An enumerator corresponding to the channel's index
 	* @return An enumerator corresponding to the range
 	*/
-	libm2k::analog::M2K_RANGE getRange(libm2k::analog::ANALOG_IN_CHANNEL channel);
+	virtual libm2k::analog::M2K_RANGE getRange(libm2k::analog::ANALOG_IN_CHANNEL channel) = 0;
 
 
 	/**
@@ -239,7 +232,7 @@ public:
 	* @param range An enumerator corresponding to the range
 	* @return A pair containing the lower and upper bound
 	*/
-	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE range);
+	virtual std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE range) = 0;
 
 
 	/**
@@ -247,7 +240,7 @@ public:
 	*
 	* @return A list of pairs containing all available ranges and their name
 	*/
-	std::vector<std::pair<std::string, std::pair<double, double>>> getAvailableRanges();
+	virtual std::vector<std::pair<std::string, std::pair<double, double>>> getAvailableRanges() = 0;
 
 
 	/**
@@ -255,7 +248,7 @@ public:
 	*
 	* @return The value of the global ratio
 	*/
-	int getOversamplingRatio();
+	virtual int getOversamplingRatio() = 0;
 
 
 	/**
@@ -264,7 +257,7 @@ public:
 	* @param chn_idx The index corresponding to the channel
 	* @return The ratio value
 	*/
-	int getOversamplingRatio(unsigned int chn_idx);
+	virtual int getOversamplingRatio(unsigned int chn_idx) = 0;
 
 
 	/**
@@ -273,7 +266,7 @@ public:
 	* @param oversampling Integer value to set the oversampling ratio to
 	* @return The current value of the global ratio
 	*/
-	int setOversamplingRatio(int oversampling);
+	virtual int setOversamplingRatio(int oversampling) = 0;
 
 
 	/**
@@ -283,7 +276,7 @@ public:
 	* @param oversampling Integer value to set the oversampling ratio to
 	* @return The current ratio value
 	*/
-	int setOversamplingRatio(unsigned int chn_idx, int oversampling);
+	virtual int setOversamplingRatio(unsigned int chn_idx, int oversampling) = 0;
 
 
 	/**
@@ -291,7 +284,7 @@ public:
 	*
 	* @return The value of the sample rate
 	*/
-	double getSampleRate();
+	virtual double getSampleRate() = 0;
 
 
 	/**
@@ -300,14 +293,14 @@ public:
 	* @param chn_idx The index corresponding to the channel
 	* @return The value of the sample rate
 	*/
-	double getSampleRate(unsigned int chn_idx);
+	virtual double getSampleRate(unsigned int chn_idx) = 0;
 
 
 	/**
 	 * @brief getAvailableSampleRates
 	 * @return The list of available samplerates for this device
 	 */
-	std::vector<double> getAvailableSampleRates();
+	virtual std::vector<double> getAvailableSampleRates() = 0;
 
 	/**
 	* @brief Set the global sample rate
@@ -315,7 +308,7 @@ public:
 	* @param samplerate A double value to set the sample rate to
 	* @return The value of the global sample rate
 	*/
-	double setSampleRate(double samplerate);
+	virtual double setSampleRate(double samplerate) = 0;
 
 
 	/**
@@ -325,7 +318,7 @@ public:
 	* @param samplerate A double value to set the sample rate to
 	* @return The value of the global sample rate
 	*/
-	double setSampleRate(unsigned int chn_idx, double samplerate);
+	virtual double setSampleRate(unsigned int chn_idx, double samplerate) = 0;
 
 
 	/**
@@ -334,7 +327,7 @@ public:
 	* @param chn An enumerator corresponding to the channel's index
 	* @return A pair containing the lower and upper bound
 	*/
-	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn);
+	virtual std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn) = 0;
 
 
 	/**
@@ -343,7 +336,7 @@ public:
 	* @param channel An enumerator corresponding to the channel's index
 	* @param calib_offset Int value to set the calibration offset to
 	*/
-	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset);
+	virtual void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset) = 0;
 
 
 	/**
@@ -353,7 +346,7 @@ public:
 	* @param calibscale A double value to set the calibration scale to
 	* @return The current value of the calibration scale
 	*/
-	double setCalibscale(unsigned int index, double calibscale);
+	virtual double setCalibscale(unsigned int index, double calibscale) = 0;
 
 
 	/**
@@ -362,7 +355,7 @@ public:
 	* @param index The index corresponding to the channel
 	* @return The value of the calibration scale
 	*/
-	double getCalibscale(unsigned int index);
+	virtual double getCalibscale(unsigned int index) = 0;
 
 
 	/**
@@ -371,7 +364,7 @@ public:
 	* @param channel An enumerator corresponding to the channel's index
 	* @param gain A double value to set the calibration gain to
 	*/
-	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
+	virtual void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain) = 0;
 
 
 	/**
@@ -380,7 +373,7 @@ public:
 	* @param samplerate A double value representing the sample rate
 	* @return The value of the filter compensation
 	*/
-	double getFilterCompensation(double samplerate);
+	virtual double getFilterCompensation(double samplerate) = 0;
 
 
 	/**
@@ -389,16 +382,16 @@ public:
 	* @param range
 	* @return double
 	*/
-	double getValueForRange(M2K_RANGE range);
+	virtual double getValueForRange(M2K_RANGE range) = 0;
 
 
 	/**
 	 * @private
 	 */
-	double convRawToVolts(int sample, double correctionGain = 1,
+	virtual double convRawToVolts(int sample, double correctionGain = 1,
 		double hw_gain = 0.02,
 		double filterCompensation = 1,
-		double offset = 0) const;
+		double offset = 0) const = 0;
 
 
 	/**
@@ -407,7 +400,7 @@ public:
 	 * @param channel: The index corresponding to the channel;
 	 * @return The value of a sample converted into volts;
 	 */
-	double convertRawToVolts(unsigned int channel, short raw);
+	virtual double convertRawToVolts(unsigned int channel, short raw) = 0;
 
 
 	/**
@@ -417,7 +410,7 @@ public:
 	* @param channel The index corresponding to the channel;
 	* @return The value of a sample converted into raw;
 	*/
-	short convertVoltsToRaw(unsigned int channel, double voltage);
+	virtual short convertVoltsToRaw(unsigned int channel, double voltage) = 0;
 
 
 	/**
@@ -425,7 +418,7 @@ public:
 	*
 	* @return The number of channels
 	*/
-	unsigned int getNbChannels();
+	virtual unsigned int getNbChannels() = 0;
 
 
 	/**
@@ -433,7 +426,7 @@ public:
 	*
 	* @return The name of the device
 	*/
-	std::string getName();
+	virtual std::string getName() = 0;
 
 
 	/**
@@ -442,7 +435,7 @@ public:
 	* @param chnIdx The index corresponding to the channel
 	* @param enable A boolean value corresponding to the channel's state
 	*/
-	void enableChannel(unsigned int chnIdx, bool enable);
+	virtual void enableChannel(unsigned int chnIdx, bool enable) = 0;
 
 
 	/**
@@ -452,32 +445,32 @@ public:
 	* @return True if the channel is enabled
 	* @return False if the channel is disabled
 	*/
-	bool isChannelEnabled(unsigned int chnIdx);
+	virtual bool isChannelEnabled(unsigned int chnIdx) = 0;
 
 
-	/**
-	 * @private
-	 */
-	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
+//	/**
+//	 * @private
+//	 */
+//	virtual void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src) = 0;
 
 
-	/**
-	* @private
-	*/
-	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
+//	/**
+//	* @private
+//	*/
+//	virtual void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src) = 0;
 
 
 	/**
 	* @brief Cancel all buffer operations
 	*/
-	void cancelBuffer();
+	virtual void cancelBuffer() = 0;
 
 
 	/**
 	 * @brief Set the kernel buffers to a specific value
 	 * @param count the number of kernel buffers
 	 */
-	void setKernelBuffersCount(unsigned int count);
+	virtual void setKernelBuffersCount(unsigned int count) = 0;
 
 
 	/**
@@ -485,14 +478,14 @@ public:
 	*
 	* @return A pointer to the hardware trigger trigger
 	*/
-	libm2k::M2kHardwareTrigger* getTrigger();
+	virtual libm2k::M2kHardwareTrigger* getTrigger() = 0;
 
 	/**
 	 * @brief Get access to IIO channels, buffers, devices and context.
 	 * Can be used when debugging directly with libiio.
 	 * @return IIO_OBJECTS structure.
 	 */
-	struct IIO_OBJECTS getIioObjects();
+	virtual struct IIO_OBJECTS getIioObjects() = 0;
 
 
 	/**
@@ -504,11 +497,8 @@ public:
 	*
 	* @note The index of the list corresponds to the index of the channel
 	*/
-	void getSamples(std::vector<std::vector<double>> &data, unsigned int nb_samples);
+	virtual void getSamples(std::vector<std::vector<double>> &data, unsigned int nb_samples) = 0;
 
-private:
-	class M2kAnalogInImpl;
-	std::unique_ptr<M2kAnalogInImpl> m_pimpl;
 };
 }
 }
