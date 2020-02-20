@@ -27,7 +27,7 @@
 #include "analog/m2kanalogin_impl.hpp"
 #include "analog/m2kanalogout_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/m2kcalibration.hpp>
+#include "m2kcalibration_impl.hpp"
 #include "analog/m2kpowersupply_impl.hpp"
 #include "digital/m2kdigital_impl.hpp"
 #include <libm2k/utils/utils.hpp>
@@ -84,7 +84,7 @@ public:
 		scanAllAnalogOut();
 		scanAllPowerSupply();
 		scanAllDigital();
-		m_calibration = new M2kCalibration(ctx, getAnalogIn(), getAnalogOut());
+		m_calibration = new M2kCalibrationImpl(ctx, getAnalogIn(), getAnalogOut());
 	}
 
 	~M2kImpl()
