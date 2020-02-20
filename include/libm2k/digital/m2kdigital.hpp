@@ -44,22 +44,13 @@ namespace digital {
 class LIBM2K_API M2kDigital
 {
 public:
-	/**
-	* @private
-	*/
-	M2kDigital(struct iio_context* ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger);
-
-
-	/**
-	 * @private
-	 */
-	virtual ~M2kDigital();
+	virtual ~M2kDigital() {}
 
 
 	/**
 	* @private
 	*/
-	void init();
+	virtual void init() = 0;
 
 
 	/**
@@ -69,7 +60,7 @@ public:
 	*
 	* @note Each bit of the mask corresponds to the channel with the same index. The value of the bit represents the channel's direction. O - input, 1 - output
 	*/
-	void setDirection(unsigned short mask);
+	virtual void setDirection(unsigned short mask) = 0;
 
 
 	/**
@@ -78,7 +69,7 @@ public:
 	* @param index The index corresponding to the channel
 	* @param dir An enumerator that indicates the direction of a channel
 	*/
-	void setDirection(unsigned int index, DIO_DIRECTION dir);
+	virtual void setDirection(unsigned int index, DIO_DIRECTION dir) = 0;
 
 
 	/**
@@ -89,7 +80,7 @@ public:
 	*
 	* @note The boolean value for input direction is false and for output direction is true
 	*/
-	void setDirection(unsigned int index, bool dir);
+	virtual void setDirection(unsigned int index, bool dir) = 0;
 
 
 	/**
@@ -99,7 +90,7 @@ public:
 	* @param dir A boolean value that corresponds to one direction
 	* @note The boolean value for input direction is false and for output direction is true
 	*/
-	void setDirection(DIO_CHANNEL index, bool dir);
+	virtual void setDirection(DIO_CHANNEL index, bool dir) = 0;
 
 
 	/**
@@ -108,7 +99,7 @@ public:
 	* @param index An enumerator corresponding to the channel's index
 	* @param dir An enumerator that indicates the direction of a channel
 	*/
-	void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir);
+	virtual void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir) = 0;
 
 
 	/**
@@ -117,7 +108,7 @@ public:
 	* @param index An enumerator corresponding to the channel's index
 	* @return DIO_DIRECTION An enumerator that indicates the direction of a channel
 	*/
-	DIO_DIRECTION getDirection(DIO_CHANNEL index);
+	virtual DIO_DIRECTION getDirection(DIO_CHANNEL index) = 0;
 
 
 	/**
@@ -127,7 +118,7 @@ public:
 	* @param level An enumerator corresponding to the raw value
 	*
 	*/
-	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL level);
+	virtual void setValueRaw(DIO_CHANNEL index, DIO_LEVEL level) = 0;
 
 
 	/**
@@ -135,7 +126,7 @@ public:
 	*
 	* @param data The std vector that contains the samples
 	*/
-	void push(std::vector<unsigned short> const &data);
+	virtual void push(std::vector<unsigned short> const &data) = 0;
 
 
 	/**
@@ -144,7 +135,7 @@ public:
 	* @param data a pointer to the samples
 	* @param nb_samples the number of samples
 	*/
-	void push(unsigned short *data, unsigned int nb_samples);
+	virtual void push(unsigned short *data, unsigned int nb_samples) = 0;
 
 
 	/**
@@ -154,7 +145,7 @@ public:
 	* @param level An enumerator corresponding to the raw value
 	*
 	*/
-	void setValueRaw(unsigned int index, DIO_LEVEL level);
+	virtual void setValueRaw(unsigned int index, DIO_LEVEL level) = 0;
 
 
 	/**
@@ -164,7 +155,7 @@ public:
 	* @param level A boolean value corresponding to the raw value
 	*
 	*/
-	void setValueRaw(DIO_CHANNEL index, bool level);
+	virtual void setValueRaw(DIO_CHANNEL index, bool level) = 0;
 
 
 	/**
@@ -173,7 +164,7 @@ public:
 	* @param index An enumerator corresponding to the channel's index
 	* @return DIO_LEVEL An enumerator corresponding to the raw value
 	*/
-	DIO_LEVEL getValueRaw(DIO_CHANNEL index);
+	virtual DIO_LEVEL getValueRaw(DIO_CHANNEL index) = 0;
 
 
 	/**
@@ -182,30 +173,30 @@ public:
 	* @param index The index corresponding to the channel
 	* @return DIO_LEVEL An enumerator corresponding to the raw value
 	*/
-	DIO_LEVEL getValueRaw(unsigned int index);
+	virtual DIO_LEVEL getValueRaw(unsigned int index) = 0;
 
 
 	/**
 	* @brief Stop all digital channels from sending the signals
 	*/
-	void stopBufferOut();
+	virtual void stopBufferOut() = 0;
 
 
 	/**
 	 * @brief Destroy the buffer
 	 */
-	void flushBufferIn();
+	virtual void flushBufferIn() = 0;
 
 
 	/**
 	* @brief Cancel all rx-buffer operations
 	*/
-	void cancelBufferIn();
+	virtual void cancelBufferIn() = 0;
 
 	/**
 	* @brief Cancel all tx-buffer operations
 	*/
-	void cancelBufferOut();
+	virtual void cancelBufferOut() = 0;
 
 
 	/**
@@ -214,14 +205,14 @@ public:
 	* @param nb_samples The number of samples that will be retrieved
 	* @return A list that contains the samples
 	*/
-	std::vector<unsigned short> getSamples(unsigned int nb_samples);
+	virtual std::vector<unsigned short> getSamples(unsigned int nb_samples) = 0;
 
 	/**
 	 * @brief Retrieve a specific number of samples
 	 * @param nb_samples The number of samples that will be retrieved
 	 * @return A pointer to the data
 	 */
-	const unsigned short *getSamplesP(unsigned int nb_samples);
+	virtual const unsigned short *getSamplesP(unsigned int nb_samples) = 0;
 
 	/* Enable/disable TX channels only*/
 
@@ -234,7 +225,7 @@ public:
 	*
 	* @note This function affects only the TX channels
 	*/
-	void enableChannel(unsigned int index, bool enable);
+	virtual void enableChannel(unsigned int index, bool enable) = 0;
 
 
 	/**
@@ -245,7 +236,7 @@ public:
 	*
 	* @note This function affects only the TX channels
 	*/
-	void enableChannel(DIO_CHANNEL index, bool enable);
+	virtual void enableChannel(DIO_CHANNEL index, bool enable) = 0;
 
 
 	/**
@@ -255,7 +246,7 @@ public:
 	*
 	* @note This function affects only the TX channels
 	*/
-	void enableAllOut(bool enable);
+	virtual void enableAllOut(bool enable) = 0;
 
 
 	/**
@@ -265,7 +256,7 @@ public:
 	* @return On succces, true
 	* @return Otherwise, false
 	*/
-	bool anyChannelEnabled(DIO_DIRECTION dir);
+	virtual bool anyChannelEnabled(DIO_DIRECTION dir) = 0;
 
 
 	/**
@@ -274,7 +265,7 @@ public:
 	* @param chn An enumerator corresponding to the channel's index
 	* @param mode An enumerator corresponding to the output mode
 	*/
-	void setOutputMode(DIO_CHANNEL chn, DIO_MODE mode);
+	virtual void setOutputMode(DIO_CHANNEL chn, DIO_MODE mode) = 0;
 
 
 	/**
@@ -283,7 +274,7 @@ public:
 	* @param chn The index corresponding to the channel
 	* @param mode An enumerator corresponding to the output mode
 	*/
-	void setOutputMode(unsigned int chn, DIO_MODE mode);
+	virtual void setOutputMode(unsigned int chn, DIO_MODE mode) = 0;
 
 
 	/**
@@ -292,7 +283,7 @@ public:
 	* @param chn An enumerator corresponding to the channel's index
 	* @return An enumerator corresponding to the output mode
 	*/
-	DIO_MODE getOutputMode(DIO_CHANNEL chn);
+	virtual DIO_MODE getOutputMode(DIO_CHANNEL chn) = 0;
 
 
 	/**
@@ -301,7 +292,7 @@ public:
 	* @param chn The index corresponding to the channel
 	* @return An enumerator corresponding to the output mode
 	*/
-	DIO_MODE getOutputMode(unsigned int chn);
+	virtual DIO_MODE getOutputMode(unsigned int chn) = 0;
 
 
 	/**
@@ -310,7 +301,7 @@ public:
 	* @param samplerate A double value to set the sample rate to
 	* @return The current sample rate for all digital input channels
 	*/
-	double setSampleRateIn(double samplerate);
+	virtual double setSampleRateIn(double samplerate) = 0;
 
 
 	/**
@@ -319,14 +310,14 @@ public:
 	* @param samplerate A double value to set the sample rate to
 	* @return The current sample rate for all digital output channels
 	*/
-	double setSampleRateOut(double samplerate);
+	virtual double setSampleRateOut(double samplerate) = 0;
 
 
 	/**
 	* @brief Retrieve the sample rate of all digital input channels
 	* @return The value of the sample rate
 	*/
-	double getSampleRateIn();
+	virtual double getSampleRateIn() = 0;
 
 
 	/**
@@ -334,7 +325,7 @@ public:
 
 	* @return The value of the sample rate
 	*/
-	double getSampleRateOut();
+	virtual double getSampleRateOut() = 0;
 
 
 	/**
@@ -342,7 +333,7 @@ public:
 	*
 	* @return A boolean value corresponding to the state of the cyclic mode
 	*/
-	bool getCyclic();
+	virtual bool getCyclic() = 0;
 
 
 	/**
@@ -350,28 +341,28 @@ public:
 	*
 	* @param cyclic If true, enable cyclic mode
 	*/
-	void setCyclic(bool cyclic);
+	virtual void setCyclic(bool cyclic) = 0;
 
 
 	/**
 	* @brief Get the hardware trigger handler
 	* @return the trigger object
 	*/
-	libm2k::M2kHardwareTrigger* getTrigger();
+	virtual libm2k::M2kHardwareTrigger* getTrigger() = 0;
 
 
 	/**
 	 * @brief Set the kernel buffers for input to a specific value
 	 * @param count the number of kernel buffers
 	 */
-	void setKernelBuffersCountIn(unsigned int count);
+	virtual void setKernelBuffersCountIn(unsigned int count) = 0;
 
 
 	/**
 	 * @brief Set the kernel buffers for output to a specific value
 	 * @param count the number of kernel buffers
 	 */
-	void setKernelBuffersCountOut(unsigned int count);
+	virtual void setKernelBuffersCountOut(unsigned int count) = 0;
 
 
 	/**
@@ -379,7 +370,7 @@ public:
 	 * Can be used when debugging directly with libiio.
 	 * @return IIO_OBJECTS structure.
 	 */
-	struct IIO_OBJECTS getIioObjects();
+	virtual struct IIO_OBJECTS getIioObjects() = 0;
 
 
 	/**
@@ -387,7 +378,7 @@ public:
 	*
 	* @return an unsigned int representing the number of digital IN channels
 	*/
-	unsigned int getNbChannelsIn();
+	virtual unsigned int getNbChannelsIn() = 0;
 
 
 	/**
@@ -395,7 +386,7 @@ public:
 	*
 	* @return an unsigned int representing the number of digital OUT channels
 	*/
-	unsigned int getNbChannelsOut();
+	virtual unsigned int getNbChannelsOut() = 0;
 
 
 	/**
@@ -404,14 +395,11 @@ public:
 	 * the vector will be cleaned and then filled with samples;
 	 * @param nb_samples The number of samples that will be retrieved
 	 */
-	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples);
+	virtual void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples) = 0;
 
 
 	/** @} */
 
-private:
-	class M2kDigitalImpl;
-	std::unique_ptr<M2kDigitalImpl> m_pimpl;
 };
 }
 }

@@ -29,7 +29,7 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/m2kcalibration.hpp>
 #include "analog/m2kpowersupply_impl.hpp"
-#include <libm2k/digital/m2kdigital.hpp>
+#include "digital/m2kdigital_impl.hpp"
 #include <libm2k/utils/utils.hpp>
 #include "utils/devicegeneric.hpp"
 #include <libm2k/logger.hpp>
@@ -194,7 +194,7 @@ public:
 
 	void scanAllDigital()
 	{
-		libm2k::digital::M2kDigital* logic = new libm2k::digital::M2kDigital(m_context, "m2k-logic-analyzer", m_sync, m_trigger);
+		libm2k::digital::M2kDigital* logic = new libm2k::digital::M2kDigitalImpl(m_context, "m2k-logic-analyzer", m_sync, m_trigger);
 		m_instancesDigital.push_back(logic);
 	}
 
