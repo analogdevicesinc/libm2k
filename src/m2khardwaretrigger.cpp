@@ -210,14 +210,24 @@ void M2kHardwareTrigger::setResetCntAtNewStart(bool val)
 	m_pimpl->setResetCntAtNewStart(val);
 }
 
-void M2kHardwareTrigger::setOneShotWindow(bool val)
+bool M2kHardwareTrigger::getWindowSoftReset()
 {
-	m_pimpl->setOneShotWindow(val);
+	return m_pimpl->getWindowSoftReset();
+}
+
+void M2kHardwareTrigger::setWindowSoftReset(bool val)
+{
+	m_pimpl->setWindowSoftReset(val);
 }
 
 bool M2kHardwareTrigger::getOneShotWindow()
 {
 	return m_pimpl->getOneShotWindow();
+}
+
+void M2kHardwareTrigger::setOneShotWindow(bool val)
+{
+	m_pimpl->setOneShotWindow(val);
 }
 
 M2K_TRIGGER_CONDITION_ANALOG M2kHardwareTrigger::getAnalogCondition(unsigned int chnIdx)

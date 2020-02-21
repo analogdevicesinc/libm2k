@@ -798,6 +798,21 @@ public:
 						       "the current board; Check the firmware version.");
 	}
 
+	virtual bool getWindowSoftReset()
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog soft_reset is not configurable on "
+						       "the current board; Check the firmware version.");
+		return -1;
+	}
+
+	virtual void setWindowSoftReset(bool val)
+	{
+		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "
+						       "the analog soft_reset is not configurable on "
+						       "the current board; Check the firmware version.");
+	}
+
 	virtual bool getOneShotWindow()
 	{
 		throw_exception(EXC_INVALID_PARAMETER, "M2kHardwareTrigger: "

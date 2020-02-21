@@ -671,6 +671,25 @@ public:
 		m_window_trigger_channel->setBoolValue("rst_at_new_start", val);
 	}
 
+	bool getWindowSoftReset()
+	{
+		if (!m_window_trigger_channel) {
+			return M2kHardwareTriggerImpl::getWindowSoftReset();
+		}
+
+		bool rst_val = m_window_trigger_channel->getBoolValue("one_shot");
+		return rst_val;
+	}
+
+	void setWindowSoftReset(bool val)
+	{
+		if (!m_window_trigger_channel) {
+			M2kHardwareTriggerImpl::setWindowSoftReset(val);
+		}
+
+		m_window_trigger_channel->setBoolValue("one_shot", val);
+	}
+
 	bool getOneShotWindow()
 	{
 		if (!m_window_trigger_channel) {

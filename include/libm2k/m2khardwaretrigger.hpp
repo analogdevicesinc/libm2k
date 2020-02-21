@@ -219,6 +219,16 @@ public:
 	/**
 	 * @private
 	 */
+	bool getWindowSoftReset();
+
+	/**
+	 * @private
+	 */
+	void setWindowSoftReset(bool val);
+
+	/**
+	 * @private
+	 */
 	bool getOneShotWindow();
 
 	/**
