@@ -31,30 +31,22 @@ namespace libm2k {
 namespace analog {
 class LIBM2K_API GenericAnalogIn {
 public:
-	GenericAnalogIn(struct iio_context* ctx, std::string adc_dev);
-	virtual ~GenericAnalogIn();
+	virtual ~GenericAnalogIn() {}
 
-	virtual std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
-	virtual std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
+	virtual const double* getSamplesInterleaved(unsigned int nb_samples) = 0;
+	virtual const short* getSamplesRawInterleaved(unsigned int nb_samples) = 0;
 
-	const double* getSamplesInterleaved(unsigned int nb_samples);
-	const short* getSamplesRawInterleaved(unsigned int nb_samples);
+	virtual double getSampleRate() = 0;
+	virtual double getSampleRate(unsigned int) = 0;
+	virtual double setSampleRate(double sampleRate) = 0;
+	virtual double setSampleRate(unsigned int chn_idx, double sampleRate) = 0;
+	virtual std::vector<double> getAvailableSampleRates() = 0;
 
-	double getSampleRate();
-	double getSampleRate(unsigned int);
-	double setSampleRate(double sampleRate);
-	double setSampleRate(unsigned int chn_idx, double sampleRate);
-	std::vector<double> getAvailableSampleRates();
+	virtual void enableChannel(unsigned int index, bool enable) = 0;
+	virtual void setKernelBuffersCount(unsigned int count) = 0;
+	virtual std::string getDeviceName() = 0;
 
-	void enableChannel(unsigned int index, bool enable);
-	void setKernelBuffersCount(unsigned int count);
-	std::string getDeviceName();
-
-	struct IIO_OBJECTS getIioObjects();
-
-private:
-	class GenericAnalogInImpl;
-	std::unique_ptr<GenericAnalogInImpl> m_pimpl;
+	virtual struct IIO_OBJECTS getIioObjects() = 0;
 };
 }
 }
