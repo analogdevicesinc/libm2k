@@ -21,7 +21,7 @@
 
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/context.hpp>
-#include <libm2k/analog/genericanalogin.hpp>
+#include "analog/generic/genericanalogin_impl.hpp"
 #include <libm2k/analog/genericanalogout.hpp>
 #include "analog/dmm_impl.hpp"
 #include <libm2k/utils/utils.hpp>
@@ -47,7 +47,7 @@ public:
 		/* Initialize the AnalogIn list */
 		auto aIn_lst = scanAllAnalogIn();
 		for (auto aIn : aIn_lst) {
-			m_instancesAnalogIn.push_back(new GenericAnalogIn(ctx, aIn));
+			m_instancesAnalogIn.push_back(new GenericAnalogInImpl(ctx, aIn));
 		}
 
 		/* Initialize the AnalogIn list */
