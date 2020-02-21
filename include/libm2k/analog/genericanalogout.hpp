@@ -35,33 +35,28 @@ namespace libm2k {
 namespace analog {
 class LIBM2K_API GenericAnalogOut {
 public:
-	GenericAnalogOut(struct iio_context* ctx, std::string dac_dev);
-	virtual ~GenericAnalogOut();
+	virtual ~GenericAnalogOut() {}
 
-	double getSampleRate();
-	double getSampleRate(unsigned int);
-	double setSampleRate(double sampleRate);
-	double setSampleRate(unsigned int chn_idx, double sampleRate);
-	std::vector<double> getAvailableSampleRates();
+	virtual double getSampleRate() = 0;
+	virtual double getSampleRate(unsigned int) = 0;
+	virtual double setSampleRate(double sampleRate) = 0;
+	virtual double setSampleRate(unsigned int chn_idx, double sampleRate) = 0;
+	virtual std::vector<double> getAvailableSampleRates() = 0;
 
-	void setCyclic(bool en);
-	void setCyclic(unsigned int chn, bool en);
-	bool getCyclic(unsigned int chn);
+	virtual void setCyclic(bool en) = 0;
+	virtual void setCyclic(unsigned int chn, bool en) = 0;
+	virtual bool getCyclic(unsigned int chn) = 0;
 
-	void push(unsigned int chn_idx, std::vector<double> const &data);
-	void pushRaw(unsigned int chn_idx, std::vector<short> const &data);
+	virtual void push(unsigned int chn_idx, std::vector<double> const &data) = 0;
+	virtual void pushRaw(unsigned int chn_idx, std::vector<short> const &data) = 0;
 
-	void push(unsigned int chn_idx, double *data, unsigned int nb_samples);
-	void pushRaw(unsigned int chn_idx, short *data, unsigned int nb_samples);
+	virtual void push(unsigned int chn_idx, double *data, unsigned int nb_samples) = 0;
+	virtual void pushRaw(unsigned int chn_idx, short *data, unsigned int nb_samples) = 0;
 
-	void stop();
+	virtual void stop() = 0;
 
-	std::string getName();
-	void enableChannel(unsigned int chnIdx, bool enable);
-
-private:
-	class GenericAnalogOutImpl;
-	std::unique_ptr<GenericAnalogOutImpl> m_pimpl;
+	virtual std::string getName() = 0;
+	virtual void enableChannel(unsigned int chnIdx, bool enable) = 0;
 };
 }
 }

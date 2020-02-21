@@ -22,7 +22,7 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/context.hpp>
 #include "analog/generic/genericanalogin_impl.hpp"
-#include <libm2k/analog/genericanalogout.hpp>
+#include "analog/generic/genericanalogout_impl.hpp"
 #include "analog/dmm_impl.hpp"
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2k.hpp>
@@ -53,7 +53,7 @@ public:
 		/* Initialize the AnalogIn list */
 		auto aOut_lst = scanAllAnalogOut();
 		for (auto aOut : aOut_lst) {
-			m_instancesAnalogOut.push_back(new GenericAnalogOut(ctx, aOut));
+			m_instancesAnalogOut.push_back(new GenericAnalogOutImpl(ctx, aOut));
 		}
 
 		/* Initialize the DMM list */
