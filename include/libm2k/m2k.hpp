@@ -25,6 +25,7 @@
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/context.hpp>
 #include <iostream>
+#include <vector>
 
 namespace libm2k {
 namespace analog {
@@ -52,19 +53,13 @@ namespace contexts {
 * @class M2k
 * @brief Controls the ADALM2000
 */
-class LIBM2K_API M2k : public Context
+class LIBM2K_API M2k : public virtual Context
 {
 public:
 	/**
 	* @private
 	*/
-	M2k(std::string uri, iio_context* ctx, std::string name, bool sync);
-
-
-	/**
-	* @private
-	*/
-	virtual ~M2k();
+	virtual ~M2k() {}
 
 
 	/**
@@ -76,43 +71,18 @@ public:
 	 *	- reset calibration coefficients - a calibration is needed afterwards
 	 *	- disable all TX digital channels and enable all RX digital channels
 	 */
-	void init();
+	virtual void init() = 0;
 
 
 	/**
 	* @private
 	*/
-	void deinitialize();
-
-
-	/**
-	* @private
-	*/
-	void scanAllAnalogIn();
-
+	virtual void deinitialize() = 0;
 
 	/**
 	* @private
 	*/
-	void scanAllAnalogOut();
-
-
-	/**
-	* @private
-	*/
-	void scanAllPowerSupply();
-
-
-	/**
-	* @private
-	*/
-	void scanAllDigital();
-
-
-	/**
-	* @private
-	*/
-	void calibrate();
+	virtual void calibrate() = 0;
 
 
 	/**
@@ -121,7 +91,7 @@ public:
 	* @return On succces, true
 	* @return Otherwise, false
 	*/
-	bool calibrateADC();
+	virtual bool calibrateADC() = 0;
 
 
 	/**
@@ -130,13 +100,13 @@ public:
 	* @return On succces, true
 	* @return Otherwise, false
 	*/
-	bool calibrateDAC();
+	virtual bool calibrateDAC() = 0;
 
 
 	/**
 	* @private
 	*/
-	bool resetCalibration();
+	virtual bool resetCalibration() = 0;
 
 
 	/**
@@ -145,7 +115,7 @@ public:
 	* @return On success, a pointer to a Digital object
 	* @throw EXC_INVALID_PARAMETER No M2K digital device found
 	*/
-	libm2k::digital::M2kDigital* getDigital();
+	virtual libm2k::digital::M2kDigital* getDigital() = 0;
 
 
 	/**
@@ -154,7 +124,7 @@ public:
 	* @return On success, a pointer to a PowerSupply object
 	* @throw EXC_INVALID_PARAMETER No M2K power supply
 	*/
-	libm2k::analog::M2kPowerSupply* getPowerSupply();
+	virtual libm2k::analog::M2kPowerSupply* getPowerSupply() = 0;
 
 
 	/**
@@ -163,7 +133,7 @@ public:
 	* @return On success, a pointer to an AnalogIn object
 	* @return On error, null is returned
 	*/
-	libm2k::analog::M2kAnalogIn* getAnalogIn();
+	virtual libm2k::analog::M2kAnalogIn* getAnalogIn() = 0;
 
 
 	/**
@@ -173,7 +143,7 @@ public:
 	* @return On success, a pointer to an AnalogIn object
 	* @return If the name does not correspond to any device, null is returned
 	*/
-	libm2k::analog::M2kAnalogIn* getAnalogIn(std::string dev_name);
+	virtual libm2k::analog::M2kAnalogIn* getAnalogIn(std::string dev_name) = 0;
 
 
 
@@ -183,17 +153,17 @@ public:
 	* @return On success, a pointer to an AnalogOut object
 	* @return On error, null is returned
 	*/
-	libm2k::analog::M2kAnalogOut* getAnalogOut();
+	virtual libm2k::analog::M2kAnalogOut* getAnalogOut() = 0;
 
 
 	/**
 	* @private
 	*/
-	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
+	virtual std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn() = 0;
 	/**
 	* @private
 	*/
-	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
+	virtual std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut() = 0;
 
 
 	/**
@@ -201,7 +171,7 @@ public:
 	*
 	* @return The value of the calibration offset
 	*/
-	int getDacBCalibrationOffset();
+	virtual int getDacBCalibrationOffset() = 0;
 
 
 	/**
@@ -209,7 +179,7 @@ public:
 	*
 	* @return The value of the calibration offset
 	*/
-	int getDacACalibrationOffset();
+	virtual int getDacACalibrationOffset() = 0;
 
 
 	/**
@@ -217,7 +187,7 @@ public:
 	*
 	* @return The value of the calibration gain
 	*/
-	double getDacBCalibrationGain();
+	virtual double getDacBCalibrationGain() = 0;
 
 
 	/**
@@ -225,7 +195,7 @@ public:
 	*
 	* @return The value of the calibration gain
 	*/
-	double getDacACalibrationGain();
+	virtual double getDacACalibrationGain() = 0;
 
 
 	/**
@@ -234,7 +204,7 @@ public:
 	* @param chn The index corresponding to a channel
 	* @return The value of the calibration offset
 	*/
-	int getAdcCalibrationOffset(unsigned int chn);
+	virtual int getAdcCalibrationOffset(unsigned int chn) = 0;
 
 
 	/**
@@ -243,14 +213,14 @@ public:
 	* @param chn The index corresponding to a channel
 	* @return The value of the calibration gain
 	*/
-	double getAdcCalibrationGain(unsigned int chn);
+	virtual double getAdcCalibrationGain(unsigned int chn) = 0;
 
 	/**
 	* @brief Set a timeout for I/O operations
 	*
 	* @param timeout A positive integer representing the time in milliseconds after which a timeout occurs. A value of 0 is used to specify that no timeout should occur.
 	*/
-	void setTimeout(unsigned int timeout);
+	virtual void setTimeout(unsigned int timeout) = 0;
 
 
 	/**
@@ -260,7 +230,7 @@ public:
 	*
 	* @note For turning on the led, set the parameter true.
 	*/
-	void setLed(bool on);
+	virtual void setLed(bool on) = 0;
 
 
 	/**
@@ -269,10 +239,7 @@ public:
 	* @return If the led is turned on, true
 	* @return Otherwise, false
 	*/
-	bool getLed();
-private:
-	class M2kImpl;
-	std::shared_ptr<M2kImpl> m_pimpl;
+	virtual bool getLed() = 0;
 };
 }
 }

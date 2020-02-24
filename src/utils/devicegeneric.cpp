@@ -24,7 +24,7 @@
 #include "utils/channel.hpp"
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/context.hpp>
+#include "context_impl.hpp"
 #include <algorithm>
 #include <cstring>
 
@@ -160,7 +160,7 @@ double DeviceGeneric::getDoubleValue(std::string attr)
 	double value = 0;
 	std::string dev_name = getName();
 
-	if (Context::iioDevHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_read_double(m_dev, attr.c_str(),
 					    &value);
 	} else {
@@ -191,7 +191,7 @@ double DeviceGeneric::getDoubleValue(unsigned int chn_idx, std::string attr, boo
 double DeviceGeneric::setDoubleValue(double value, std::string attr)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
-	if (Context::iioDevHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write_double(m_dev, attr.c_str(),
 					     value);
 	} else {
@@ -226,7 +226,7 @@ int DeviceGeneric::getLongValue(std::string attr)
 	long long value = 0;
 	std::string dev_name = getName();
 
-	if (Context::iioDevHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_read_longlong(m_dev, attr.c_str(),
 					      &value);
 	} else {
@@ -259,7 +259,7 @@ int DeviceGeneric::getBufferLongValue(std::string attr)
 	long long value = 0;
 	std::string dev_name = getName();
 
-	if (Context::iioDevBufferHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevBufferHasAttribute(m_dev, attr)) {
 		iio_device_buffer_attr_read_longlong(m_dev, attr.c_str(),
 						     &value);
 	} else {
@@ -272,7 +272,7 @@ int DeviceGeneric::getBufferLongValue(std::string attr)
 int DeviceGeneric::setLongValue(int value, std::string attr)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
-	if (Context::iioDevHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write_longlong(m_dev, attr.c_str(),
 					       value);
 	} else {
@@ -305,7 +305,7 @@ int DeviceGeneric::setLongValue(unsigned int chn_idx, int value, std::string att
 int DeviceGeneric::setBufferLongValue(int value, std::string attr)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
-	if (Context::iioDevBufferHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevBufferHasAttribute(m_dev, attr)) {
 		iio_device_buffer_attr_write_longlong(m_dev, attr.c_str(),
 						      value);
 	} else {
@@ -320,7 +320,7 @@ bool DeviceGeneric::getBoolValue(string attr)
 	bool value = 0;
 	std::string dev_name = getName();
 
-	if (Context::iioDevHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_read_bool(m_dev, attr.c_str(),
 					  &value);
 	} else {
@@ -353,7 +353,7 @@ bool DeviceGeneric::getBoolValue(unsigned int chn_idx, string attr, bool output)
 bool DeviceGeneric::setBoolValue(bool value, string attr)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
-	if (Context::iioDevHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write_bool(m_dev, attr.c_str(), value);
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, dev_name +
@@ -386,7 +386,7 @@ bool DeviceGeneric::setBoolValue(unsigned int chn_idx, bool value, string attr, 
 string DeviceGeneric::setStringValue(string attr, string value)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
-	if (Context::iioDevHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write(m_dev, attr.c_str(), value.c_str());
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, dev_name +
@@ -420,7 +420,7 @@ string DeviceGeneric::getStringValue(string attr)
 	char value[100];
 	std::string dev_name = getName();
 
-	if (Context::iioDevHasAttribute(m_dev, attr)) {
+	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_read(m_dev, attr.c_str(),
 				     value, sizeof(value));
 	} else {
