@@ -35,14 +35,7 @@ extern "C" {
 
 namespace libm2k {
 namespace analog {
-	class GenericAnalogIn;
-	class GenericAnalogOut;
 	class DMM;
-	class PowerSupply;
-}
-
-namespace digital {
-	class GenericDigital;
 }
 
 namespace contexts {
@@ -51,49 +44,28 @@ class M2k;
 
 class LIBM2K_API Context {
 public:
-	Context(std::string uri, struct iio_context*, std::string name, bool sync);
-	virtual ~Context();
+	virtual ~Context() {}
 
-	virtual void init();
-	virtual void deinitialize();
+	virtual void init() = 0;
+	virtual void deinitialize() = 0;
 
-	std::vector<std::string> scanAllAnalogIn();
-	std::vector<std::string> scanAllAnalogOut();
-	virtual void scanAllPowerSupply();
-	virtual void scanAllDigital();
-	virtual void scanAllDMM();
-
-	std::string getUri();
-
-	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
-	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
-	libm2k::analog::GenericAnalogOut* getAnalogOut(unsigned int);
-	libm2k::analog::GenericAnalogOut* getAnalogOut(std::string);
-	libm2k::analog::DMM* getDMM(unsigned int);
-	libm2k::analog::DMM* getDMM(std::string);
-	std::vector<libm2k::analog::DMM*> getAllDmm();
+	virtual std::string getUri() = 0;
+	virtual libm2k::analog::DMM* getDMM(unsigned int) = 0;
+	virtual libm2k::analog::DMM* getDMM(std::string) = 0;
+	virtual std::vector<libm2k::analog::DMM*> getAllDmm() = 0;
 
 
-	std::vector<std::string> getAvailableContextAttributes();
-	std::string getContextAttributeValue(std::string attr);
-	std::string getContextDescription();
-	std::string getSerialNumber();
-	std::unordered_set<std::string> getAllDevices();
+	virtual std::vector<std::string> getAvailableContextAttributes() = 0;
+	virtual std::string getContextAttributeValue(std::string attr) = 0;
+	virtual std::string getContextDescription() = 0;
+	virtual std::string getSerialNumber() = 0;
+	virtual std::unordered_set<std::string> getAllDevices() = 0;
 
-	libm2k::contexts::M2k* toM2k();
+	virtual M2k* toM2k() = 0;
 
-	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
-	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);
-	static bool iioDevBufferHasAttribute(iio_device *dev, const std::string &attr);
+	virtual unsigned int getDmmCount() = 0;
+	virtual std::string getFirmwareVersion() = 0;
 
-	unsigned int getDmmCount();
-	unsigned int getAnalogInCount();
-	unsigned int getAnalogOutCount();
-	std::string getFirmwareVersion();
-protected:
-	class ContextImpl;
-	std::shared_ptr<ContextImpl> m_pimpl;
-	Context(ContextImpl*);
 };
 }
 }

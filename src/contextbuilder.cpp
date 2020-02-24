@@ -19,8 +19,8 @@
  *
  */
 
-#include <libm2k/m2k.hpp>
-#include <libm2k/lidar.hpp>
+#include "m2k_impl.hpp"
+#include "lidar_impl.hpp"
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -96,11 +96,11 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 {
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
-		case CtxM2K: return new M2k(uri, ctx, name, sync);
-		case CtxLIDAR: return new Lidar(uri, ctx, name, sync);
+		case CtxM2K: return new M2kImpl(uri, ctx, name, sync);
+		case CtxLIDAR: return new LidarImpl(uri, ctx, name, sync);
 		case Other:
 		default:
-		return new Context(uri, ctx, name, sync);
+		return new ContextImpl(uri, ctx, name, sync);
 	}
 }
 
