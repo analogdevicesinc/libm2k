@@ -41,6 +41,7 @@ static const char *const helpMessage = "Usage:\n"
 				       "Optional arguments:\n"
 				       "  -h, --help            show this help message and exit\n"
 				       "  -v, --version         show the libm2k version and exit\n"
+				       "  -s, --scan            retrieve all available USB URIs\n"
 				       "\n"
 				       "Commands:\n"
 				       "  These commands represent the components of the ADALM2000\n"
@@ -78,6 +79,14 @@ int main(int argc, char **argv)
 
 		if (argc < 2 || std::string(argv[1]) == "--version" || std::string(argv[1]) == "-v") {
 			std::cout << libm2k::contexts::getVersion() << std::endl;
+			return 0;
+		}
+
+		if (argc < 2 || std::string(argv[1]) == "--scan" || std::string(argv[1]) == "-s") {
+			auto contexts = libm2k::contexts::getAllContexts();
+			for (auto ctx : contexts) {
+				std::cout << ctx << std::endl;
+			}
 			return 0;
 		}
 
