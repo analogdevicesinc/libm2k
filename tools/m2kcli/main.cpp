@@ -31,6 +31,7 @@
 #include "commands/communication/uart_terminal.h"
 #include <libm2k/contextbuilder.hpp>
 #include <csignal>
+#include <thread>
 
 static const char *const helpMessage = "Usage:\n"
 				       "m2kcli [-h | --help] [-v | --version]\n"
@@ -42,6 +43,7 @@ static const char *const helpMessage = "Usage:\n"
 				       "  -h, --help            show this help message and exit\n"
 				       "  -v, --version         show the libm2k version and exit\n"
 				       "  -s, --scan            retrieve all available USB URIs\n"
+				       "  -i, --identify <uri>  identify the m2k based on its URI\n"
 				       "\n"
 				       "Commands:\n"
 				       "  These commands represent the components of the ADALM2000\n"
@@ -87,6 +89,26 @@ int main(int argc, char **argv)
 			for (auto ctx : contexts) {
 				std::cout << ctx << std::endl;
 			}
+			return 0;
+		}
+
+		if (argc < 2 || std::string(argv[1]) == "--identify" || std::string(argv[1]) == "-i") {
+			if (argc < 3) {
+				throw std::runtime_error("Please provide an URI\n");
+			}
+			libm2k::contexts::M2k *context = libm2k::contexts::m2kOpen(argv[2]);
+			if (context == nullptr) {
+				throw std::runtime_error("Could not establish a connection to m2k. Please check the URI\n");
+			}
+
+			for (unsigned int i = 0; i < 15; ++i) {
+				context->setLed(true);
+				std::this_thread::sleep_for (std::chrono::milliseconds(100));
+				context->setLed(false);
+				std::this_thread::sleep_for (std::chrono::milliseconds(100));
+			}
+			context->setLed(true);
+			libm2k::contexts::contextClose(context, false);
 			return 0;
 		}
 
