@@ -21,6 +21,7 @@
 
 #include "m2k_impl.hpp"
 #include "lidar_impl.hpp"
+#include "generic_impl.hpp"
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -100,7 +101,7 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 		case CtxLIDAR: return new LidarImpl(uri, ctx, name, sync);
 		case Other:
 		default:
-		return new ContextImpl(uri, ctx, name, sync);
+		return new GenericImpl(uri, ctx, name, sync);
 	}
 }
 
