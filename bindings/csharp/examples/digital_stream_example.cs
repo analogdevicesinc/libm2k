@@ -30,25 +30,72 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-
-//#define SR_DIVIDER 67
-//#define SAMPLE_RATE_IN (int)(MAX_SAMPLE_RATE/SR_DIVIDER)
-//#define SAMPLE_RATE_OUT  (int)(MAX_SAMPLE_RATE/(SR_DIVIDER*4))
+using System.Threading;
 
 namespace stream
 {
     class Digital
     {
-        public const int N_BITS = 6;
-        public const int IN_NO_SAMPLES = 1000;
-        public const int KERNEL_BUFFERS_COUNT = 4;
+        public const int N_BITS = 16;
+        public const uint IN_NO_SAMPLES = (1 << 16);
+        public const int KERNEL_BUFFERS_COUNT = 64;
         public const long MAX_SAMPLE_RATE = 100000000;
-        public const int SAMPLE_RATE_IN = 1000000;
-        public const int SAMPLE_RATE_OUT = SAMPLE_RATE_IN / 4;
+        public const int SR_DIVIDER_STEP = 1;
+        public const int SR_DIVIDER_START = 30;
         public const bool SHOW_BUFFERS = false;
-
-
         public const int NUMBER_OF_BUFFERS = 100;
+
+        public const bool running = true;
+
+        private static ManualResetEvent refill_reset_event = new ManualResetEvent(false);
+        private static ManualResetEvent process_done_reset_event = new ManualResetEvent(false);
+
+        private static VectorUS tmp_buffer = new VectorUS();
+        private static uint[] values = new uint[IN_NO_SAMPLES * NUMBER_OF_BUFFERS];
+        public static M2kDigital dig;
+
+
+        public static void RefillThread()
+        {
+            for (int refills = 0; refills < NUMBER_OF_BUFFERS; refills++)
+            {
+                while (tmp_buffer.Count != 0)
+                {
+                    refill_reset_event.WaitOne();
+                }
+
+                if (tmp_buffer.Count == 0)
+                {
+                    tmp_buffer = dig.getSamples(IN_NO_SAMPLES);
+                }
+                refill_reset_event.Set();
+                refill_reset_event.Reset();
+            }
+        }
+
+
+        public static void ProcessThread()
+        {
+            for (int refills = 0; refills < NUMBER_OF_BUFFERS; refills++)
+            {
+                while (tmp_buffer.Count == 0)
+                {
+                    refill_reset_event.WaitOne();
+                }
+
+                if (tmp_buffer.Count > 0)
+                {
+                    for (int i = 0; i < IN_NO_SAMPLES; i++)
+                    {
+                        values[refills * IN_NO_SAMPLES + i] = tmp_buffer[i];
+                    }
+                    tmp_buffer.Clear();
+                }
+                refill_reset_event.Set();
+                refill_reset_event.Reset();
+            }
+            process_done_reset_event.Set();
+        }
 
         static int Main()
         {
@@ -60,117 +107,131 @@ namespace stream
                 return (1);
             }
 
-            M2kDigital dig = ctx.getDigital();
+            dig = ctx.getDigital();
             M2kHardwareTrigger trig = dig.getTrigger();
 
-            // set sample rates for in/out interface
-            dig.setSampleRateIn(SAMPLE_RATE_IN);
-            dig.setSampleRateOut(SAMPLE_RATE_OUT);
-            // set number of kernel buffers for the digital input interface
-            dig.setKernelBuffersCountIn(KERNEL_BUFFERS_COUNT);
+            long sr_divider = SR_DIVIDER_START;
+            long sample_rate_in, sample_rate_out = MAX_SAMPLE_RATE;
+            int k = 1;
 
-
-            for (uint j = 0; j < N_BITS; j++)
+            while (sr_divider > 1)
             {
-                dig.setDirection(j, DIO_DIRECTION.DIO_OUTPUT);
-                dig.enableChannel(j, true);
-            }
+                sample_rate_in = MAX_SAMPLE_RATE / sr_divider;
+                sample_rate_out = MAX_SAMPLE_RATE / (sr_divider * 4);
+
+                // set sample rates for in/out interface
+                dig.setSampleRateIn(sample_rate_in + 1);
+                dig.setSampleRateOut(sample_rate_out + 1);
+
+                // set number of kernel buffers for the digital input interface
+                dig.setKernelBuffersCountIn(KERNEL_BUFFERS_COUNT);
+                trig.setDigitalStreamingFlag(true);
 
 
-            var bufferOut = new VectorUS();
-            var bufferIn = new VectorUS();
-            var buffers = new VectorVectorUS();
-
-            for (ushort j = 0; j < (1 << N_BITS); j++)
-            {
-                bufferOut.Add(j);
-            }
-            dig.setCyclic(true);
-            dig.push(bufferOut);
-
-
-            for (int j = 0; j < NUMBER_OF_BUFFERS; j++)
-            {
-                // always get same number of samples so buffer configuration does not reset
-                //IntPtr val = dig.getSamplesP(IN_NO_SAMPLES);
-                //for (int k=0; k < IN_NO_SAMPLES; k++)
-                //{
-                 //   Console.WriteLine(Marshal.ReadIntPtr(val, k * elementSize));
-                //}
-
-                
-                //buffers.Add(new VectorUS(val,val+IN_NO_SAMPLES));
-                buffers.Add(dig.getSamples(IN_NO_SAMPLES));
-            }
-
-            int i = 0;
-            if (SHOW_BUFFERS)
-            {
-                foreach (var buf in buffers)
+                for (uint j = 0; j < N_BITS; j++)
                 {
-                    foreach (var val in buf)
+                    dig.setDirection(j, DIO_DIRECTION.DIO_OUTPUT);
+                    dig.enableChannel(j, true);
+                }
+
+                var bufferOut = new VectorUS();
+                for (uint j = 0; j < (1 << N_BITS); j++)
+                {
+                    bufferOut.Add((ushort)j);
+                }
+                dig.setCyclic(true);
+                dig.push(bufferOut);
+
+
+                // Startup refill threads
+                Thread refill_thread = new Thread(new ThreadStart(RefillThread));
+                Thread process_thread = new Thread(new ThreadStart(ProcessThread));
+
+                refill_thread.Start();
+                process_thread.Start();
+
+                refill_reset_event.Set();
+
+                process_done_reset_event.WaitOne();
+
+                refill_thread.Join();
+                process_thread.Join();
+
+
+
+                if (SHOW_BUFFERS)
+                {
+                    Console.WriteLine("===================== BUFFER =================== " + k);
+                    foreach (var val in values)
                     {
                         Console.WriteLine((val));
                     }
-                    Console.WriteLine("-------- BUFFER " + i + "--------");
-                    i++;
                 }
-            }
 
-            bool stable = true;
-            var values = new VectorUS();
-            uint same_val = 0;
-            uint same_val_cnt = 0;
-            
+                bool stable = true;
+                uint same_val = 0;
+                uint same_val_cnt = 0;
+                long dropped = 0;
+                int i;
 
-            foreach (var buf in buffers) {
-                foreach (var val in buf)
+                for (i = 1; i < values.Length; i++)
                 {
-                    values.Add(val);
-                }
-            }
-
-            for (i = 1; i < values.Count; i++)
-            {
-                // find first transition
-                if (values[i] != values[i - 1])
-                {
-                    same_val = values[i];
-                    break;
-                }
-            }
-            
-            for (; i < values.Count; i++)
-            {
-                if (values[i] == same_val)
-                    same_val_cnt++;
-                else
-                {
-                    if (same_val_cnt == (int)(SAMPLE_RATE_IN / SAMPLE_RATE_OUT))
+                    // find first transition
+                    if (values[i] != values[i - 1])
                     {
-                        {
-                            same_val = values[i];
-                            same_val_cnt = 1;
-                        }
-
-                    }
-                    else
-                    {
-
-                        stable = false;
+                        same_val = values[i];
                         break;
                     }
                 }
+
+                for (; i < values.Length; i++)
+                {
+                    if (values[i] == same_val)
+                        same_val_cnt++;
+                    else
+                    {
+                        int divider = (int)(sample_rate_in / sample_rate_out);
+                        if (same_val_cnt == divider)
+                        {
+                            {
+                                same_val = values[i];
+                                same_val_cnt = 1;
+                            }
+
+                        }
+                        else
+                        {
+                            dropped = Math.Abs(values[i] - same_val) * divider + (same_val_cnt - divider);
+                            stable = false;
+                            break;
+                        }
+                    }
+                }
+                Console.Write("SR_DIVIDER: " + sr_divider +
+                                " SR_IN: " + sample_rate_in +
+                                " SR_OUT: " + sample_rate_out + " , " +
+                                ((stable) ? "STABLE " : "UNSTABLE ") +
+                                 " dropped: " + dropped + " samples");
+
+                if (!stable)
+                {
+                    Console.WriteLine(" @ buffer " + i / IN_NO_SAMPLES +
+                                    " prev val: " + (same_val) +
+                                    " next val:  " + (values[i]));
+                }
+                Console.Write("\n");
+
+                sr_divider -= SR_DIVIDER_STEP;
+
+
+                dig.stopBufferOut();
+                dig.flushBufferIn();
+                k++;
             }
-            Console.WriteLine(((stable) ? "STABLE " : "UNSTABLE ") + i);
 
-            dig.stopBufferOut();
-            dig.flushBufferIn();
             libm2k.contextClose(ctx);
-
-
             var exit = Console.ReadLine();
-            return(0);
+            return (0);
         }
     }
 }
