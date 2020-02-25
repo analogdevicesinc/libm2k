@@ -333,3 +333,8 @@ void ContextImpl::initializeContextAttributes()
 		m_context_attributes.insert(pair);
 	}
 }
+
+void ContextImpl::setTimeout(unsigned int timeout)
+{
+	iio_context_set_timeout(m_context, timeout);
+}

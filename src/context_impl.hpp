@@ -83,6 +83,7 @@ public:
 
 	unsigned int getDmmCount();
 	std::string getFirmwareVersion();
+	void setTimeout(unsigned int timeout);
 
 protected:
 	struct iio_context* m_context;

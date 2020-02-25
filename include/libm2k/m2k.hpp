@@ -215,13 +215,6 @@ public:
 	*/
 	virtual double getAdcCalibrationGain(unsigned int chn) = 0;
 
-	/**
-	* @brief Set a timeout for I/O operations
-	*
-	* @param timeout A positive integer representing the time in milliseconds after which a timeout occurs. A value of 0 is used to specify that no timeout should occur.
-	*/
-	virtual void setTimeout(unsigned int timeout) = 0;
-
 
 	/**
 	* @brief Turn on or off the board's led

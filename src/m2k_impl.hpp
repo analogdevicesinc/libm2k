@@ -64,8 +64,6 @@ public:
 	int getAdcCalibrationOffset(unsigned int chn);
 	double getAdcCalibrationGain(unsigned int chn);
 
-	void setTimeout(unsigned int timeout);
-
 	void setLed(bool on);
 	bool getLed();
 
