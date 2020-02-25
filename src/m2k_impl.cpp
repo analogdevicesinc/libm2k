@@ -165,11 +165,6 @@ void M2kImpl::init()
 
 }
 
-void M2kImpl::setTimeout(unsigned int timeout)
-{
-	iio_context_set_timeout(m_context, timeout);
-}
-
 void M2kImpl::scanAllAnalogIn()
 {
 	M2kAnalogIn* aIn = new libm2k::analog::M2kAnalogInImpl(m_context, "m2k-adc", m_sync, m_trigger);
