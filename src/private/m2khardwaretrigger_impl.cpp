@@ -529,6 +529,10 @@ public:
 
 	void setDigitalStreamingFlag(bool val)
 	{
+		/* Make sure the trigger is reset before enabling the streaming flag. */
+		if (val) {
+			m_digital_trigger_device->setBoolValue(0, "streaming");
+		}
 		m_streaming_flag_digital = val;
 		m_digital_trigger_device->setBoolValue(val, "streaming");
 	}
@@ -540,6 +544,10 @@ public:
 
 	void setAnalogStreamingFlag(bool val)
 	{
+		/* Make sure the trigger is reset before enabling the streaming flag. */
+		if (val) {
+			setBoolValue(0, "streaming");
+		}
 		m_streaming_flag_analog = val;
 		setBoolValue(val, "streaming");
 	}
