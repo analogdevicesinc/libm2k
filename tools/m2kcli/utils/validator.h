@@ -37,7 +37,7 @@ public:
 
 	static void validate(const std::string &argument, const char *argumentName, std::string &value);
 
-	static void validate(const std::string &argument, const char *argumentName, std::vector<int> &value);
+	static void validate(const std::string &argument, const char *argumentName, std::vector<unsigned int> &value);
 
 	static void validate(const std::string &argument, const char *argumentName, std::vector<uint8_t > &value);
 
