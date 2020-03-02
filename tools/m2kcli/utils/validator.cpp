@@ -56,7 +56,7 @@ void Validator::validate(const std::string &argument, const char *argumentName, 
 	value = validateName(argument, argumentName);
 }
 
-void Validator::validate(const std::string &argument, const char *argumentName, std::vector<int> &value)
+void Validator::validate(const std::string &argument, const char *argumentName, std::vector<unsigned int> &value)
 {
 	std::string strValue = validateName(argument, argumentName);
 	std::istringstream iss(strValue);
