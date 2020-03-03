@@ -20,23 +20,11 @@
  */
 
 #include "m2kanalogin_impl.hpp"
-#include "utils/devicegeneric.hpp"
-#include "utils/devicein.hpp"
-#include <libm2k/analog/m2kanalogin.hpp>
 #include <libm2k/m2kexceptions.hpp>
-#include <libm2k/utils/utils.hpp>
 
-#include <iostream>
-#include <functional>
-#include <thread>
-#include <chrono>
-#include <iio.h>
-#include <string.h>
 
-using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::utils;
-using namespace std;
 using namespace std::placeholders;
 
 #define HIGH_MAX 2.5
@@ -193,7 +181,7 @@ double M2kAnalogInImpl::setCalibscale(unsigned int index, double calibscale)
 	return m_m2k_adc->setDoubleValue(index, calibscale, "calibscale");
 }
 
-M2kHardwareTrigger *M2kAnalogInImpl::getTrigger()
+libm2k::M2kHardwareTrigger *M2kAnalogInImpl::getTrigger()
 {
 	return m_trigger;
 }
@@ -621,7 +609,7 @@ double M2kAnalogInImpl::getValueForRange(M2K_RANGE range)
 	}
 }
 
-struct IIO_OBJECTS M2kAnalogInImpl::getIioObjects()
+struct libm2k::IIO_OBJECTS M2kAnalogInImpl::getIioObjects()
 {
 	return m_m2k_adc->getIioObjects();
 }
