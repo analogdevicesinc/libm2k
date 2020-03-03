@@ -35,85 +35,85 @@ namespace analog {
 class M2kAnalogInImpl : public M2kAnalogIn
 {
 public:
-	M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
-	virtual ~M2kAnalogInImpl();
+        M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
+	~M2kAnalogInImpl() override;
 
-	void init();
-	void flushBuffer();
+	void init() override;
+	void flushBuffer() override;
 
-	std::vector<std::vector<double>> getSamples(unsigned int nb_samples);
-	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples);
+	std::vector<std::vector<double>> getSamples(unsigned int nb_samples) override;
+	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples) override;
 
-	const double* getSamplesInterleaved(unsigned int nb_samples);
-	const short* getSamplesRawInterleaved(unsigned int nb_samples);
+	const double* getSamplesInterleaved(unsigned int nb_samples) override;
+	const short* getSamplesRawInterleaved(unsigned int nb_samples) override;
 
-	short getVoltageRaw(unsigned int ch);
-	double getVoltage(unsigned int ch);
-	short getVoltageRaw(libm2k::analog::ANALOG_IN_CHANNEL ch);
-	double getVoltage(libm2k::analog::ANALOG_IN_CHANNEL ch);
-	std::vector<short> getVoltageRaw();
-	std::vector<double> getVoltage();
-	const short *getVoltageRawP();
-	const double *getVoltageP();
+	short getVoltageRaw(unsigned int ch) override;
+	double getVoltage(unsigned int ch) override;
+	short getVoltageRaw(libm2k::analog::ANALOG_IN_CHANNEL ch) override;
+	double getVoltage(libm2k::analog::ANALOG_IN_CHANNEL ch) override;
+	std::vector<short> getVoltageRaw() override;
+	std::vector<double> getVoltage() override;
+	const short *getVoltageRawP() override;
+	const double *getVoltageP() override;
 
-	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
-	double getVerticalOffset(ANALOG_IN_CHANNEL channel);
+	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset) override;
+	double getVerticalOffset(ANALOG_IN_CHANNEL channel) override;
 
-	double getScalingFactor(libm2k::analog::ANALOG_IN_CHANNEL ch);
+	double getScalingFactor(libm2k::analog::ANALOG_IN_CHANNEL ch) override;
 
-	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range);
-	void setRange(ANALOG_IN_CHANNEL channel, double min, double max);
-	libm2k::analog::M2K_RANGE getRange(libm2k::analog::ANALOG_IN_CHANNEL channel);
-	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE range);
-	std::vector<std::pair<std::string, std::pair<double, double>>> getAvailableRanges();
+	void setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range) override;
+	void setRange(ANALOG_IN_CHANNEL channel, double min, double max) override;
+	libm2k::analog::M2K_RANGE getRange(libm2k::analog::ANALOG_IN_CHANNEL channel) override;
+	std::pair<double, double> getRangeLimits(libm2k::analog::M2K_RANGE range) override;
+	std::vector<std::pair<std::string, std::pair<double, double>>> getAvailableRanges() override;
 
-	int getOversamplingRatio();
-	int getOversamplingRatio(unsigned int chn_idx);
-	int setOversamplingRatio(int oversampling);
-	int setOversamplingRatio(unsigned int chn_idx, int oversampling);
+	int getOversamplingRatio() override;
+	int getOversamplingRatio(unsigned int chn_idx) override;
+	int setOversamplingRatio(int oversampling) override;
+	int setOversamplingRatio(unsigned int chn_idx, int oversampling) override;
 
-	double getSampleRate();
-	double getSampleRate(unsigned int chn_idx);
-	std::vector<double> getAvailableSampleRates();
-	double setSampleRate(double samplerate);
-	double setSampleRate(unsigned int chn_idx, double samplerate);
+	double getSampleRate() override;
+	double getSampleRate(unsigned int chn_idx) override;
+	std::vector<double> getAvailableSampleRates() override;
+	double setSampleRate(double samplerate) override;
+	double setSampleRate(unsigned int chn_idx, double samplerate) override;
 
-	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn);
+	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn) override;
 
 	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset);
 
 	double setCalibscale(unsigned int index, double calibscale);
-	double getCalibscale(unsigned int index);
+	double getCalibscale(unsigned int index) override;
 
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
 
-	double getFilterCompensation(double samplerate);
+	double getFilterCompensation(double samplerate) override;
 
-	double getValueForRange(M2K_RANGE range);
+	double getValueForRange(M2K_RANGE range) override;
 
 	double convRawToVolts(int sample, double correctionGain = 1,
 		double hw_gain = 0.02,
 		double filterCompensation = 1,
 		double offset = 0) const;
 
-	double convertRawToVolts(unsigned int channel, short raw);
-	short convertVoltsToRaw(unsigned int channel, double voltage);
+	double convertRawToVolts(unsigned int channel, short raw) override;
+	short convertVoltsToRaw(unsigned int channel, double voltage) override;
 
-	unsigned int getNbChannels();
-	std::string getName();
+	unsigned int getNbChannels() override;
+	std::string getName() override;
 
-	void enableChannel(unsigned int chnIdx, bool enable);
-	bool isChannelEnabled(unsigned int chnIdx);
+	void enableChannel(unsigned int chnIdx, bool enable) override;
+	bool isChannelEnabled(unsigned int chnIdx) override;
 
 	void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src);
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
 
-	void setKernelBuffersCount(unsigned int count);
+	void setKernelBuffersCount(unsigned int count) override;
 
-	libm2k::M2kHardwareTrigger* getTrigger();
-	struct IIO_OBJECTS getIioObjects();
+	libm2k::M2kHardwareTrigger* getTrigger() override;
+	struct IIO_OBJECTS getIioObjects() override;
 
-	void cancelBuffer();
+	void cancelBuffer() override;
 
 	void getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples);
 private:
@@ -137,7 +137,7 @@ private:
 
 	M2K_RANGE getRangeDevice(ANALOG_IN_CHANNEL channel);
 
-	short convVoltsToRaw(double voltage, double correctionGain, double hw_gain, double filterCompensation, double offset);
+	static short convVoltsToRaw(double voltage, double correctionGain, double hw_gain, double filterCompensation, double offset);
 
 	double getScalingFactor(unsigned int ch);
 

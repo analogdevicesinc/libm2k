@@ -67,9 +67,7 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 
 }
 
-M2kAnalogInImpl::~M2kAnalogInImpl()
-{
-}
+M2kAnalogInImpl::~M2kAnalogInImpl() = default;
 
 void M2kAnalogInImpl::enableChannel(unsigned int chn_idx, bool enable)
 {
@@ -93,8 +91,8 @@ void M2kAnalogInImpl::init()
 
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		enableChannel(i, true);
+		auto ch = static_cast<ANALOG_IN_CHANNEL>(i);
 
-		ANALOG_IN_CHANNEL ch = static_cast<ANALOG_IN_CHANNEL>(i);
 		m_trigger->setAnalogMode(ch, ALWAYS);
 
 		setRange(ch, PLUS_MINUS_25V);
@@ -141,7 +139,7 @@ double M2kAnalogInImpl::convRawToVolts(int sample, double correctionGain,
 				       double hw_gain, double filterCompensation, double offset) const
 {
 	// TO DO: explain this formula
-	return ((sample * 0.78) / ((1 << 11) * 1.3 * hw_gain) *
+	return ((sample * 0.78) / ((1u << 11u) * 1.3 * hw_gain) *
 		correctionGain * filterCompensation) + offset;
 }
 
@@ -308,7 +306,7 @@ double M2kAnalogInImpl::processSample(int16_t sample, unsigned int channel)
 
 short M2kAnalogInImpl::getVoltageRaw(unsigned int ch)
 {
-	ANALOG_IN_CHANNEL chn = static_cast<ANALOG_IN_CHANNEL>(ch);
+	auto chn = static_cast<ANALOG_IN_CHANNEL>(ch);
 	return getVoltageRaw(chn);
 }
 
@@ -352,7 +350,7 @@ std::vector<short> M2kAnalogInImpl::getVoltageRaw()
 	}
 	auto samps = getSamples(num_samples, false);
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
-		short avg = (short)(Utils::average(samps.at(i).data(), num_samples));
+		auto avg = (short)(Utils::average(samps.at(i).data(), num_samples));
 		avgs.push_back(avg);
 		m_trigger->setAnalogMode(i, modes.at(i));
 		enableChannel(i, enabled.at(i));
@@ -368,7 +366,7 @@ const short *M2kAnalogInImpl::getVoltageRawP()
 
 double M2kAnalogInImpl::getVoltage(unsigned int ch)
 {
-	ANALOG_IN_CHANNEL chn = static_cast<ANALOG_IN_CHANNEL>(ch);
+	auto chn = static_cast<ANALOG_IN_CHANNEL>(ch);
 	return getVoltage(chn);
 }
 
@@ -426,7 +424,7 @@ const double *M2kAnalogInImpl::getVoltageP()
 
 double M2kAnalogInImpl::getScalingFactor(ANALOG_IN_CHANNEL ch)
 {
-	return (0.78 / ((1 << 11) * 1.3 *
+	return (0.78 / ((1u << 11u) * 1.3 *
 			getValueForRange(m_input_range.at(ch))) *
 		m_adc_calib_gain.at(ch) *
 		getFilterCompensation(getSampleRate()));
@@ -434,19 +432,19 @@ double M2kAnalogInImpl::getScalingFactor(ANALOG_IN_CHANNEL ch)
 
 double M2kAnalogInImpl::getScalingFactor(unsigned int ch)
 {
-	ANALOG_IN_CHANNEL channel = static_cast<ANALOG_IN_CHANNEL>(ch);
+	auto channel = static_cast<ANALOG_IN_CHANNEL>(ch);
 	return getScalingFactor(channel);
 }
 
 std::pair<double, double> M2kAnalogInImpl::getHysteresisRange(ANALOG_IN_CHANNEL chn)
 {
 	std::pair<double, double> m2k_range = getRangeLimits(getRange(chn));
-	return std::pair<double, double>(0, m2k_range.second / 10);
+	return (std::pair<double, double>(0, m2k_range.second / 10));
 }
 
 void M2kAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 {
-	const char *str_gain_mode = "";
+	const char *str_gain_mode;
 
 	m_input_range[channel] = range;
 	if (range == PLUS_MINUS_2_5V) {
@@ -480,19 +478,18 @@ M2K_RANGE M2kAnalogInImpl::getRangeDevice(ANALOG_IN_CHANNEL channel)
 	auto gain = m_m2k_fabric->getStringValue(channel, "gain");
 	if (gain == "high") {
 		range = PLUS_MINUS_2_5V;
-	} else {
-		range = PLUS_MINUS_25V;
 	}
 	return range;
 }
 
 std::pair<double, double> M2kAnalogInImpl::getRangeLimits(M2K_RANGE range)
 {
+	auto limits = std::pair<double, double>(HIGH_MIN, HIGH_MAX);
 	if (range == PLUS_MINUS_25V) {
-		return std::pair<double, double>(LOW_MIN, LOW_MAX);
-	} else {
-		return std::pair<double, double>(HIGH_MIN, HIGH_MAX);
+		limits.first = LOW_MIN;
+		limits.second = LOW_MAX;
 	}
+	return limits;
 }
 
 std::vector<std::pair<std::string, std::pair<double, double>>> M2kAnalogInImpl::getAvailableRanges()
