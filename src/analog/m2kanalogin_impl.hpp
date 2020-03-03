@@ -29,7 +29,6 @@
 #include <libm2k/m2khardwaretrigger.hpp>
 #include <vector>
 #include <map>
-#include <memory>
 
 namespace libm2k {
 namespace analog {
