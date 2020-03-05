@@ -381,6 +381,23 @@ public:
 	 */
 	struct IIO_OBJECTS getIioObjects();
 
+
+	/**
+	* @brief Retrieve the number of digital input channels
+	*
+	* @return an unsigned int representing the number of digital IN channels
+	*/
+	unsigned int getNbChannelsIn();
+
+
+	/**
+	* @brief Retrieve the number of digital output channels
+	*
+	* @return an unsigned int representing the number of digital OUT channels
+	*/
+	unsigned int getNbChannelsOut();
+
+
 	/** @} */
 
 private:

@@ -411,6 +411,16 @@ public:
 		return rx_iio;
 	}
 
+	unsigned int getNbChannelsIn()
+	{
+		return getNbChannels(false);
+	}
+
+	unsigned int getNbChannelsOut()
+	{
+		return m_dev_write->getNbChannels(true);
+	}
+
 
 private:
 	bool m_cyclic;

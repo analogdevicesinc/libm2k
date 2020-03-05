@@ -227,3 +227,13 @@ void M2kDigital::setCyclic(bool cyclic)
 	m_pimpl->setCyclic(cyclic);
 }
 
+unsigned int M2kDigital::getNbChannelsIn()
+{
+	return m_pimpl->getNbChannelsIn();
+}
+
+unsigned int M2kDigital::getNbChannelsOut()
+{
+	return m_pimpl->getNbChannelsOut();
+}
+
