@@ -603,6 +603,11 @@ public:
 		return dev_a_iio;
 	}
 
+	unsigned int getNbChannels()
+	{
+		return m_dac_devices.size();
+	}
+
 private:
 	std::shared_ptr<DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;

@@ -444,6 +444,14 @@ public:
 	 */
 	struct IIO_OBJECTS getIioObjects();
 
+
+	/**
+	* @brief Retrieve the number of analogical channels
+	*
+	* @return The number of channels
+	*/
+	unsigned int getNbChannels();
+
 private:
 	class M2kAnalogOutImpl;
 	std::unique_ptr<M2kAnalogOutImpl> m_pimpl;
