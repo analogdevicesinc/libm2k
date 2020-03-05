@@ -242,3 +242,8 @@ IIO_OBJECTS M2kAnalogOut::getIioObjects()
 {
 	return m_pimpl->getIioObjects();
 }
+
+unsigned int M2kAnalogOut::getNbChannels()
+{
+	return m_pimpl->getNbChannels();
+}
