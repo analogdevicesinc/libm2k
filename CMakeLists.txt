@@ -254,3 +254,7 @@ if (NOT OSX_PACKAGE)
 		endif()
 	endif()
 endif()
+
+add_custom_target(uninstall
+    "${CMAKE_COMMAND}" -P "${CMAKE_MODULE_PATH}/uninstall.cmake"
+)
