@@ -123,6 +123,11 @@ std::vector<std::vector<double>> M2kAnalogIn::getSamples(unsigned int nb_samples
 	return m_pimpl->getSamples(nb_samples, true);
 }
 
+void M2kAnalogIn::getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples)
+{
+	m_pimpl->getSamples(data, nb_samples);
+}
+
 std::vector<std::vector<double> > M2kAnalogIn::getSamplesRaw(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples, false);

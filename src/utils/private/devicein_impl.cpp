@@ -141,6 +141,16 @@ public:
 		return m_buffer->getSamplesRawInterleavedVoid(nb_samples);
 	}
 
+	void getSamples(std::vector<std::vector<double>> &data, unsigned int nb_samples,
+			std::function<double(int16_t, unsigned int)> process)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		m_buffer->getSamples(data, nb_samples, process);
+	}
+
 	const double *getSamplesInterleaved(unsigned int nb_samples,
 					std::function<double(int16_t, unsigned int)> process)
 	{

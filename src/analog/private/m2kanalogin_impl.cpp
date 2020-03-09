@@ -255,6 +255,19 @@ public:
 		return samps;
 	}
 
+	void getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples)
+	{
+		m_need_processing = true;
+		m_samplerate = getSampleRate();
+		handleChannelsEnableState(true);
+
+		auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
+		DeviceIn::getSamples(data, nb_samples, fp);
+
+		handleChannelsEnableState(false);
+		m_need_processing = false;
+	}
+
 	const double *getSamplesInterleaved(unsigned int nb_samples,
 						bool processed = false)
 	{

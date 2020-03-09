@@ -95,6 +95,12 @@ const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 	return m_pimpl->getSamplesP(nb_samples);
 }
 
+void Buffer::getSamples(std::vector<std::vector<double>> &data, int nb_samples,
+				std::function<double(int16_t, unsigned int)> process)
+{
+	m_pimpl->getSamples(data, nb_samples, process);
+}
+
 std::vector<std::vector<double>> Buffer::getSamples(unsigned int nb_samples,
 				std::function<double(int16_t, unsigned int)> process)
 {

@@ -71,6 +71,12 @@ void* DeviceIn::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 	return m_pimpl->getSamplesRawInterleavedVoid(nb_samples);
 }
 
+void DeviceIn::getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples,
+			  std::function<double(int16_t, unsigned int)> process)
+{
+	m_pimpl->getSamples(data, nb_samples, process);
+}
+
 void DeviceIn::cancelBuffer()
 {
 	m_pimpl->cancelBuffer();

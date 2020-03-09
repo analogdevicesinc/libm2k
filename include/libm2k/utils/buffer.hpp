@@ -63,6 +63,9 @@ public:
 	const short *getSamplesRawInterleaved(unsigned int nb_samples);
 	void* getSamplesRawInterleavedVoid(int nb_samples);
 
+	void getSamples(std::vector<std::vector<double>> &data, int nb_samples,
+					std::function<double(int16_t, unsigned int)> process);
+
 	void stop();
 	void setCyclic(bool enable);
 	void cancelBuffer();
