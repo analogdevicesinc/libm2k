@@ -433,22 +433,29 @@ public:
 		return (const double *)data_p_d;
 	}
 
+
 	std::vector<std::vector<double>> getSamples(int nb_samples,
+					std::function<double(int16_t, unsigned int)> process)
+	{
+		m_data.clear();
+		getSamples(m_data, nb_samples, process);
+		return m_data;
+	}
+
+
+	void getSamples(std::vector<std::vector<double>> &data, int nb_samples,
 					std::function<double(int16_t, unsigned int)> process)
 	{
 		short* data_p = (short *) getSamplesRawInterleaved(nb_samples);
 
 		std::vector<bool> channels_enabled;
-		m_data.clear();
+		data.clear();
 
 		for (auto chn : m_channel_list) {
 			bool en  = chn->isEnabled();
 			channels_enabled.push_back(en);
-			std::vector<double> data {};
-			for (int j = 0; j < nb_samples; j++) {
-				data.push_back(0);
-			}
-			m_data.push_back(data);
+			std::vector<double> ch_data {};
+			data.push_back(ch_data);
 		}
 
 		unsigned int i;
@@ -457,12 +464,10 @@ public:
 		for (i = 0; i < nb_samples; i++) {
 			for (unsigned int ch = 0; ch < nb_channels; ch++) {
 				if (channels_enabled.at(ch)) {
-					m_data[ch][i] = process(data_p[i * nb_channels + ch], ch);
+					data.at(ch).push_back(process(data_p[i * nb_channels + ch], ch));
 				}
 			}
 		}
-
-		return m_data;
 	}
 
 	void stop()
