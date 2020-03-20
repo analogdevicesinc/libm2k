@@ -102,6 +102,16 @@ public:
 		m_channel_list.clear();
 	}
 
+	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
+	{
+		if (!m_buffer) {
+			throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+		}
+		m_buffer->setChannels(m_channel_list);
+		m_buffer->getSamples(data, nb_samples);
+
+	}
+
 	std::vector<unsigned short> getSamples(unsigned int nb_samples)
 	{
 		if (!m_buffer) {

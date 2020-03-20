@@ -77,6 +77,11 @@ void DeviceIn::getSamples(std::vector<std::vector<double> > &data, unsigned int 
 	m_pimpl->getSamples(data, nb_samples, process);
 }
 
+void DeviceIn::getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
+{
+	m_pimpl->getSamples(data, nb_samples);
+}
+
 void DeviceIn::cancelBuffer()
 {
 	m_pimpl->cancelBuffer();

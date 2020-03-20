@@ -237,3 +237,8 @@ unsigned int M2kDigital::getNbChannelsOut()
 	return m_pimpl->getNbChannelsOut();
 }
 
+void M2kDigital::getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
+{
+	m_pimpl->getSamples(data, nb_samples);
+}
+

@@ -268,6 +268,26 @@ public:
 		}
 	}
 
+	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
+	{
+		__try {
+			if (!anyChannelEnabled(DIO_INPUT)) {
+				throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
+
+			}
+
+			/* There is a restriction in the HDL that the buffer size must
+			 * be a multiple of 8 bytes (4x 16-bit samples). Round up to the
+			 * nearest multiple.*/
+			nb_samples = ((nb_samples + 3) / 4) * 4;
+			m_dev_read->getSamples(data, nb_samples);
+
+		} __catch (exception_type &e) {
+			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+		}
+	}
+
+
 	const unsigned short* getSamplesP(int nb_samples)
 	{
 		__try {

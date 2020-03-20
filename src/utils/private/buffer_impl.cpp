@@ -298,13 +298,13 @@ public:
 		}
 	}
 
-	std::vector<unsigned short> getSamples(int nb_samples)
+	void getSamples(std::vector<unsigned short> &data, int nb_samples)
 	{
 		if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
 			throw_exception(EXC_RUNTIME_ERROR, "Device not input-buffer capable, so no buffer was created");
 		}
 
-		m_data_short.clear();
+		data.clear();
 
 		bool new_buffer = (nb_samples != m_last_nb_samples);
 		if (new_buffer) {
@@ -325,11 +325,16 @@ public:
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		}
 
-		unsigned short* data = (unsigned short*)iio_buffer_start(m_buffer);
+		unsigned short* d_ptr = (unsigned short*)iio_buffer_start(m_buffer);
 		for (int i = 0; i < nb_samples; i++) {
-			m_data_short.push_back(data[i]);
+			data.push_back(d_ptr[i]);
 		}
+	}
 
+	std::vector<unsigned short> getSamples(int nb_samples)
+	{
+		m_data_short.clear();
+		getSamples(m_data_short, nb_samples);
 		return m_data_short;
 	}
 

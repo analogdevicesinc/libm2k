@@ -65,6 +65,7 @@ public:
 
 	void getSamples(std::vector<std::vector<double>> &data, int nb_samples,
 					std::function<double(int16_t, unsigned int)> process);
+	void getSamples(std::vector<unsigned short> &data, int nb_samples);
 
 	void stop();
 	void setCyclic(bool enable);
