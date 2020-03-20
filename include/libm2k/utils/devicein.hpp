@@ -55,6 +55,7 @@ public:
 
 	void getSamples(std::vector<std::vector<double>> &data, unsigned int nb_samples,
 			std::function<double (int16_t, unsigned int)> process);
+	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples);
 
 	virtual void cancelBuffer();
 	virtual void flushBuffer();

@@ -85,6 +85,11 @@ void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bo
 	m_pimpl->push(data, channel, nb_samples, cyclic);
 }
 
+void Buffer::getSamples(std::vector<unsigned short> &data, int nb_samples)
+{
+	m_pimpl->getSamples(data, nb_samples);
+}
+
 std::vector<unsigned short> Buffer::getSamples(unsigned int nb_samples)
 {
 	return m_pimpl->getSamples(nb_samples);

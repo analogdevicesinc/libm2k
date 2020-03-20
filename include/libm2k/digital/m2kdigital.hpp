@@ -398,6 +398,15 @@ public:
 	unsigned int getNbChannelsOut();
 
 
+	/**
+	 * @brief Retrieve a specific number of samples
+	 * @param data - a reference to a vector owned/created by the client;
+	 * the vector will be cleaned and then filled with samples;
+	 * @param nb_samples The number of samples that will be retrieved
+	 */
+	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples);
+
+
 	/** @} */
 
 private:
