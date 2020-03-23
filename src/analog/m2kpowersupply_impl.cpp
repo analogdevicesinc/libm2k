@@ -31,11 +31,12 @@ using namespace libm2k::utils;
 
 M2kPowerSupplyImpl::M2kPowerSupplyImpl(iio_context *ctx, std::string write_dev,
 				       std::string read_dev, bool sync) :
-	DeviceGeneric(ctx, ""),
 	m_pos_powerdown_idx(2),
 	m_neg_powerdown_idx(3),
 	m_individual_powerdown(false)
 {
+	m_generic_device = make_shared<DeviceOut>(ctx, "");
+
 	if (write_dev != "") {
 		m_dev_write = make_shared<DeviceOut>(ctx, write_dev);
 		if (!m_dev_write) {
@@ -186,7 +187,7 @@ void M2kPowerSupplyImpl::loadCalibrationCoefficients()
 	for (unsigned int i = 4; i < 12; i++) {
 		std::pair<std::string, double> calib_pair;
 		__try {
-			auto pair = getContextAttr(i);
+			auto pair = m_generic_device->getContextAttr(i);
 			calib_pair.first = std::string(pair.first.c_str() + 4);
 			calib_pair.second = std::stod(pair.second);
 			m_calib_coefficients.push_back(calib_pair);

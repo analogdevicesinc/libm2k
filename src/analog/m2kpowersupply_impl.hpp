@@ -41,7 +41,8 @@ namespace analog {
  * @class M2kPowerSupply
  * @brief Controls the power supply
  */
-class M2kPowerSupplyImpl : public M2kPowerSupply, public libm2k::utils::DeviceGeneric {
+class M2kPowerSupplyImpl : public M2kPowerSupply
+{
 public:
 	/**
 	* @private
@@ -116,6 +117,7 @@ private:
 	std::shared_ptr<libm2k::utils::DeviceOut> m_dev_write;
 	std::shared_ptr<libm2k::utils::DeviceIn> m_dev_read;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
+	std::shared_ptr<libm2k::utils::DeviceGeneric> m_generic_device;
 
 	std::vector<std::pair<std::string, double>> m_calib_coefficients;
 	std::vector<double> m_write_coefficients;
