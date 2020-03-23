@@ -190,9 +190,12 @@ void M2kImpl::scanAllDigital()
 	m_instancesDigital.push_back(logic);
 }
 
-void M2kImpl::calibrate()
+bool M2kImpl::calibrate()
 {
-
+	bool ok_adc, ok_dac = false;
+	ok_adc = calibrateADC();
+	ok_dac = calibrateDAC();
+	return ok_adc && ok_dac;
 }
 
 bool M2kImpl::resetCalibration()
