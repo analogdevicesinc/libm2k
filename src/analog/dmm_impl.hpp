@@ -52,7 +52,7 @@ private:
 	std::map<std::string, unsigned int> m_channel_id_list;
 	std::string m_dev_name;
 	std::vector<libm2k::utils::DeviceIn*> m_device_in_list;
-	libm2k::utils::DeviceIn *getDevice(int index);
+	libm2k::utils::DeviceIn *getDevice(unsigned int index);
 };
 }
 }

@@ -57,7 +57,7 @@ void DMMImpl::init()
 
 }
 
-DeviceIn* DMMImpl::getDevice(int index)
+DeviceIn* DMMImpl::getDevice(unsigned int index)
 {
 	if (index >= m_device_in_list.size()) {
 		throw_exception(EXC_INVALID_PARAMETER, "No such DMM device.");

@@ -171,13 +171,13 @@ void M2kHardwareTriggerImpl::M2kHardwareTriggerImpl::init()
 {
 	setAnalogSource(CHANNEL_1);
 	setAnalogDelay(0);
-	for (int i = 0; i < m_analog_channels.size(); i++) {
+	for (unsigned int i = 0; i < m_analog_channels.size(); i++) {
 		setAnalogMode(i, ALWAYS);
 		setAnalogLevel(i, 0.0);
 		setAnalogHysteresis(i, 0.0);
 	}
 
-	for (int i = 0; i < m_digital_channels.size(); i++) {
+	for (unsigned int i = 0; i < m_digital_channels.size(); i++) {
 		setDigitalCondition(i, NO_TRIGGER_DIGITAL);
 	}
 	setDigitalDelay(0);

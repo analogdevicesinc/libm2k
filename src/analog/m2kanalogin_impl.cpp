@@ -45,8 +45,8 @@ using namespace std::placeholders;
 #define LOW_MIN -25
 
 M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger) :
-	DeviceIn(ctx, adc_dev),
 	M2kAnalogIn(),
+	DeviceIn(ctx, adc_dev),
 	m_need_processing(false),
 	m_trigger(trigger)
 {
@@ -332,6 +332,7 @@ short M2kAnalogInImpl::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 
 	if (ch >= getNbChannels()) {
 		throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: no such channel");
+		return -1;
 	}
 
 	mode = m_trigger->getAnalogMode(ch);
@@ -391,6 +392,7 @@ double M2kAnalogInImpl::getVoltage(ANALOG_IN_CHANNEL ch)
 
 	if (ch >= getNbChannels()) {
 		throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogIn: no such channel");
+		return -1;
 	}
 	mode = m_trigger->getAnalogMode(ch);
 	m_trigger->setAnalogMode(ch, ALWAYS);
