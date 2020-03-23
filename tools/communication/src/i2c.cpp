@@ -313,12 +313,12 @@ int32_t i2c_write(struct i2c_desc *desc,
 		} else {
 			numberAddressBytes = 1;
 		}
-		for (int i = 0; i < numberAddressBytes; ++i) {
+		for (unsigned int i = 0; i < numberAddressBytes; ++i) {
 			if ((*i2c_data_vector)[i].acknowledge) {
 				throw std::runtime_error("Unable to find slave device - invalid address\n");
 			}
 		}
-		for (int i = numberAddressBytes; i < bytes_number; ++i) {
+		for (unsigned int i = numberAddressBytes; i < bytes_number; ++i) {
 			if ((*i2c_data_vector)[i].acknowledge) {
 				throw std::runtime_error("Slave device is unable to receive the data\n");
 			}
@@ -358,12 +358,12 @@ int32_t i2c_read(struct i2c_desc *desc,
 		} else {
 			numberAddressBytes = 1;
 		}
-		for (int i = 0; i < numberAddressBytes; ++i) {
+		for (unsigned int i = 0; i < numberAddressBytes; ++i) {
 			if ((*i2c_data_vector)[i].acknowledge) {
 				throw std::runtime_error("Unable to find slave device - invalid address\n");
 			}
 		}
-		for (int i = numberAddressBytes; i < totalNumberOfBytes; ++i) {
+		for (unsigned int i = numberAddressBytes; i < totalNumberOfBytes; ++i) {
 			data[i - numberAddressBytes] = (*i2c_data_vector)[i].data;
 		}
 	} catch (std::exception &e) {

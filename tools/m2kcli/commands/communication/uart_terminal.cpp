@@ -219,7 +219,7 @@ void UartTerminal::waitForStart()
 		}
 		currentIndex++;
 	}
-};
+}
 
 void UartTerminal::readKeyboardInput() {
 	uint8_t c;
