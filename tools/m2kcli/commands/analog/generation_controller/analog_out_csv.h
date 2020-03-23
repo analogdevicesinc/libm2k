@@ -27,7 +27,7 @@
 
 class AnalogOutCSV : public AnalogOutGenerator {
 public:
-	AnalogOutCSV(libm2k::analog::M2kAnalogOut *analogOut, int bufferSize, std::vector<int> &channels, bool cyclic);
+	AnalogOutCSV(libm2k::analog::M2kAnalogOut *analogOut, unsigned int bufferSize, std::vector<unsigned int> &channels, bool cyclic);
 
 	void generate(bool &keepReading) override;
 

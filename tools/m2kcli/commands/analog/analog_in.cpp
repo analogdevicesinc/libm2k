@@ -97,13 +97,13 @@ void AnalogIn::handleVoltage(std::vector<std::pair<std::string, std::string>> &o
 		throw std::runtime_error("Expecting: channel=<index>... raw=<value>\n");
 	}
 
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(arguments["channel"], "channel", channels);
 
 	bool raw;
 	Validator::validate(arguments["raw"], "raw", raw);
 
-	for (int &channel : channels) {
+	for (auto &channel : channels) {
 		analogIn->enableChannel(channel, true);
 		if (raw) {
 			addOutputMessage(output, ("voltage_channel_" + std::to_string(channel)).c_str(),
@@ -122,7 +122,7 @@ void AnalogIn::handleCapture()
 		throw std::runtime_error("Expecting: channel=<index>... buffer_size=<value> raw=<value>\n");
 	}
 
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(arguments["channel"], "channel", channels);
 	std::sort(channels.begin(), channels.end());
 
@@ -132,7 +132,7 @@ void AnalogIn::handleCapture()
 	bool raw;
 	Validator::validate(arguments["raw"], "raw", raw);
 
-	for (int &channel : channels) {
+	for (auto &channel : channels) {
 		analogIn->enableChannel(channel, true);
 	}
 
@@ -216,42 +216,42 @@ void AnalogIn::handleGet(std::vector<std::pair<std::string, std::string>> &outpu
 
 void AnalogIn::handleGetChannel(std::vector<std::pair<std::string, std::string>> &output)
 {
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(std::string(optarg), "channel", channels);
 	int index = optind;
 	while (index < argc && *argv[index] != '-') {
 		std::string argument(argv[index]);
 		if (argument == "range") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("range_channel_" + std::to_string(channel)).c_str(),
 						 std::string(range[analogIn->getRange(
 							 static_cast<libm2k::analog::ANALOG_IN_CHANNEL>(channel))]));
 			}
 		} else if (argument == "trigger_level") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("trigger_level_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(analogIn->getTrigger()->getAnalogLevel(channel)));
 			}
 		} else if (argument == "trigger_condition") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("trigger_condition_channel_" +
 							  std::to_string(channel)).c_str(), std::string(
 					triggerCondition[analogIn->getTrigger()->getAnalogCondition(channel)]));
 			}
 		} else if (argument == "trigger_mode") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("trigger_mode_channel_" + std::to_string(channel)).c_str(),
 						 std::string(
 							 triggerMode[analogIn->getTrigger()->getAnalogMode(channel)]));
 			}
 		} else if (argument == "trigger_hysteresis") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output,
 						 ("trigger_hysteresis_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(analogIn->getTrigger()->getAnalogHysteresis(channel)));
 			}
 		} else if (argument == "all") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("range_channel_" + std::to_string(channel)).c_str(),
 						 std::string(range[analogIn->getRange(
 							 static_cast<libm2k::analog::ANALOG_IN_CHANNEL>(channel))]));
@@ -311,7 +311,7 @@ void AnalogIn::handleSet()
 
 void AnalogIn::handleSetChannel()
 {
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(std::string(optarg), "channel", channels);
 	int index = optind;
 	while (index < argc && *argv[index] != '-') {
@@ -329,12 +329,12 @@ void AnalogIn::handleSetChannel()
 			if (enumIndex == -1) {
 				throw std::runtime_error("Invalid range: '" + std::string(value) + "'.\n");
 			}
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				analogIn->setRange(static_cast<libm2k::analog::ANALOG_IN_CHANNEL>(channel),
 						   static_cast<libm2k::analog::M2K_RANGE>(enumIndex));
 			}
 		} else if (argument == "trigger_level") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				analogIn->getTrigger()->setAnalogLevel(channel, std::stod(value));
 			}
 		} else if (argument == "trigger_condition") {
@@ -342,7 +342,7 @@ void AnalogIn::handleSetChannel()
 			if (enumIndex == -1) {
 				throw std::runtime_error("Invalid trigger condition: '" + std::string(value) + "'.\n");
 			}
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				analogIn->getTrigger()->setAnalogCondition(channel,
 									   static_cast<libm2k::M2K_TRIGGER_CONDITION_ANALOG>(enumIndex));
 			}
@@ -351,12 +351,12 @@ void AnalogIn::handleSetChannel()
 			if (enumIndex == -1) {
 				throw std::runtime_error("Invalid trigger mode: '" + std::string(value) + "'.\n");
 			}
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				analogIn->getTrigger()->setAnalogMode(channel,
 								      static_cast<libm2k::M2K_TRIGGER_MODE>(enumIndex));
 			}
 		} else if (argument == "trigger_hysteresis") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				analogIn->getTrigger()->setAnalogHysteresis(channel, std::stod(value));
 			}
 		} else {

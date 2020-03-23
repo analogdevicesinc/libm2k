@@ -82,10 +82,10 @@ void PowerSupply::handleCapture(std::vector<std::pair<std::string, std::string>>
 		throw std::runtime_error("Expecting: channel=<index>...\n");
 	}
 
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(arguments["channel"], "channel", channels);
 
-	for (int &channel : channels) {
+	for (auto &channel : channels) {
 		powerSupply->enableChannel(channel, true);
 		addOutputMessage(output, ("voltage_channel_" + std::to_string(channel)).c_str(),
 				 std::to_string(powerSupply->readChannel(channel)));
@@ -99,13 +99,13 @@ void PowerSupply::handleGenerate()
 		throw std::runtime_error("Expecting: channel=<index>... value=<value>\n");
 	}
 
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(arguments["channel"], "channel", channels);
 
 	double value;
 	Validator::validate(arguments["value"], "value", value);
 
-	for (int &channel : channels) {
+	for (auto &channel : channels) {
 		powerSupply->enableChannel(channel, true);
 		powerSupply->pushChannel(channel, value);
 	}

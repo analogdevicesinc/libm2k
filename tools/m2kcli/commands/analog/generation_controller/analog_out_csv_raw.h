@@ -27,7 +27,7 @@
 
 class AnalogOutCSVRaw : public AnalogOutGenerator {
 public:
-	AnalogOutCSVRaw(libm2k::analog::M2kAnalogOut *analogOut, int bufferSize, std::vector<int> &channels,
+	AnalogOutCSVRaw(libm2k::analog::M2kAnalogOut *analogOut, unsigned int bufferSize, std::vector<unsigned int> &channels,
 			bool cyclic);
 
 	void generate(bool &keepReading) override;
