@@ -21,7 +21,7 @@
 
 #include "digital_out_binary.h"
 
-DigitalOutBinary::DigitalOutBinary(libm2k::digital::M2kDigital *digital, int bufferSize, std::vector<int> &channels,
+DigitalOutBinary::DigitalOutBinary(libm2k::digital::M2kDigital *digital, int bufferSize, std::vector<unsigned int> &channels,
 				   bool cyclic) : DigitalOutGenerator(digital, bufferSize, channels, cyclic) {}
 
 void DigitalOutBinary::getSamples(bool &keepReading)

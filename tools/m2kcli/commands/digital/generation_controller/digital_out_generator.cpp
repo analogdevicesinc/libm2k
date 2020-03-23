@@ -21,8 +21,8 @@
 
 #include "digital_out_generator.h"
 
-DigitalOutGenerator::DigitalOutGenerator(libm2k::digital::M2kDigital *digital, int bufferSize,
-					 std::vector<int> &channels, bool cyclic)
+DigitalOutGenerator::DigitalOutGenerator(libm2k::digital::M2kDigital *digital, unsigned int bufferSize,
+					 std::vector<unsigned int> &channels, bool cyclic)
 {
 	this->digital = digital;
 	this->bufferSize = bufferSize;

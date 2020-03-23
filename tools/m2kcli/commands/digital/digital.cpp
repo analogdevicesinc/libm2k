@@ -139,13 +139,13 @@ void Digital::handleGenerate()
 		throw std::runtime_error("Expecting: channel=<index>,<index>... cyclic=<value>\n");
 	}
 
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(arguments["channel"], "channel", channels);
 
 	bool cyclic;
 	Validator::validate(arguments["cyclic"], "cyclic", cyclic);
 
-	for (int &channel : channels) {
+	for (auto &channel : channels) {
 		digital->setDirection(channel, true);
 		digital->enableChannel(channel, true);
 	}
@@ -214,29 +214,29 @@ void Digital::handleGet(std::vector<std::pair<std::string, std::string>> &output
 
 void Digital::handleGetChannel(std::vector<std::pair<std::string, std::string>> &output)
 {
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(std::string(optarg), "channel", channels);
 	int index = optind;
 	while (index < argc && *argv[index] != '-') {
 		std::string argument(argv[index]);
 		if (argument == "value") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("value_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(digital->getValueRaw(channel)));
 			}
 		} else if (argument == "output_mode") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("output_mode_channel_" + std::to_string(channel)).c_str(),
 						 std::string(outputMode[digital->getOutputMode(channel)]));
 			}
 		} else if (argument == "trigger_condition") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("trigger_condition_channel_" +
 							  std::to_string(channel)).c_str(), std::string(
 					triggerCondition[digital->getTrigger()->getDigitalCondition(channel)]));
 			}
 		} else if (argument == "all") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output, ("value_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(digital->getValueRaw(channel)));
 				addOutputMessage(output, ("output_mode_channel_" + std::to_string(channel)).c_str(),
@@ -287,7 +287,7 @@ void Digital::handleSet()
 
 void Digital::handleSetChannel()
 {
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(std::string(optarg), "channel", channels);
 	int index = optind;
 	while (index < argc && *argv[index] != '-') {
@@ -301,7 +301,7 @@ void Digital::handleSetChannel()
 		getline(iss, value, '=');
 
 		if (argument == "value") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				digital->setValueRaw(static_cast<libm2k::digital::DIO_CHANNEL>(channel),
 						     std::stoi(value));
 			}
@@ -310,7 +310,7 @@ void Digital::handleSetChannel()
 			if (enumIndex == -1) {
 				throw std::runtime_error("Invalid output mode: '" + std::string(value) + "'.\n");
 			}
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				digital->setOutputMode(static_cast<libm2k::digital::DIO_CHANNEL>(channel),
 						       static_cast<libm2k::digital::DIO_MODE>(enumIndex));
 			}
@@ -319,7 +319,7 @@ void Digital::handleSetChannel()
 			if (enumIndex == -1) {
 				throw std::runtime_error("Invalid trigger condition: '" + std::string(value) + "'.\n");
 			}
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				digital->getTrigger()->setDigitalCondition(channel,
 									   static_cast<libm2k::M2K_TRIGGER_CONDITION_DIGITAL>(enumIndex));
 			}

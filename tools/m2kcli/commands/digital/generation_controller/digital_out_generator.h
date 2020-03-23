@@ -29,15 +29,15 @@
 
 class DigitalOutGenerator : virtual public CommandOutGenerator {
 protected:
-	DigitalOutGenerator(libm2k::digital::M2kDigital *digital, int bufferSize, std::vector<int> &channels,
+	DigitalOutGenerator(libm2k::digital::M2kDigital *digital, unsigned int bufferSize, std::vector<unsigned int> &channels,
 			    bool cyclic);
 
 	void generate(bool &keepReading) override;
 
 	libm2k::digital::M2kDigital *digital;
 	std::vector<uint16_t> samples;
-	std::vector<int> channels;
-	int bufferSize;
+	std::vector<unsigned int> channels;
+	unsigned int bufferSize;
 	bool cyclic;
 };
 

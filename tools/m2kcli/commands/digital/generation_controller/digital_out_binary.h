@@ -27,7 +27,7 @@
 
 class DigitalOutBinary : public DigitalOutGenerator{
 public:
-	DigitalOutBinary(libm2k::digital::M2kDigital *digital, int bufferSize, std::vector<int> &channels, bool cyclic);
+	DigitalOutBinary(libm2k::digital::M2kDigital *digital, int bufferSize, std::vector<unsigned int> &channels, bool cyclic);
 
 private:
 	void getSamples(bool &keepReading) override;
