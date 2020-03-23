@@ -95,11 +95,12 @@ void AnalogOut::handleGenerate()
 			"Expecting: channel=<index>... buffer_size=<size> cyclic=<value> raw=<value>\n");
 	}
 
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(arguments["channel"], "channel", channels);
 
 	bool cyclic;
 	Validator::validate(arguments["cyclic"], "cyclic", cyclic);
+
 
 	int buffer_size = 256;
 	if (arguments.count("buffer_size")) {
@@ -109,7 +110,7 @@ void AnalogOut::handleGenerate()
 	bool raw;
 	Validator::validate(arguments["raw"], "raw", raw);
 
-	for (int &channel : channels) {
+	for (auto &channel : channels) {
 		analogOut->enableChannel(channel, true);
 	}
 	analogOut->setCyclic(cyclic);
@@ -155,25 +156,25 @@ void AnalogOut::handleGenerate()
 
 void AnalogOut::handleGetChannel(std::vector<std::pair<std::string, std::string>> &output)
 {
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(std::string(optarg), "channel", channels);
 	int index = optind;
 	while (index < argc && *argv[index] != '-') {
 		std::string argument(argv[index]);
 		if (argument == "sampling_frequency") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output,
 						 ("sampling_frequency_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(analogOut->getSampleRate(channel)));
 			}
 		} else if (argument == "oversampling_ratio") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output,
 						 ("oversampling_ratio_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(analogOut->getOversamplingRatio(channel)));
 			}
 		} else if (argument == "all") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				addOutputMessage(output,
 						 ("sampling_frequency_channel_" + std::to_string(channel)).c_str(),
 						 std::to_string(analogOut->getSampleRate(channel)));
@@ -190,7 +191,7 @@ void AnalogOut::handleGetChannel(std::vector<std::pair<std::string, std::string>
 
 void AnalogOut::handleSetChannel()
 {
-	std::vector<int> channels;
+	std::vector<unsigned int> channels;
 	Validator::validate(std::string(optarg), "channel", channels);
 	int index = optind;
 	while (index < argc && *argv[index] != '-') {
@@ -204,11 +205,11 @@ void AnalogOut::handleSetChannel()
 		getline(iss, value, '=');
 
 		if (argument == "sampling_frequency") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				analogOut->setSampleRate(channel, std::stod(value));
 			}
 		} else if (argument == "oversampling_ratio") {
-			for (int &channel : channels) {
+			for (auto &channel : channels) {
 				analogOut->setOversamplingRatio(channel, std::stod(value));
 			}
 		} else {

@@ -29,12 +29,12 @@
 
 class AnalogOutGenerator : virtual public CommandOutGenerator {
 protected:
-	AnalogOutGenerator(libm2k::analog::M2kAnalogOut *analogOut, int bufferSize, std::vector<int> &channels,
+	AnalogOutGenerator(libm2k::analog::M2kAnalogOut *analogOut, unsigned int bufferSize, std::vector<unsigned int> &channels,
 			   bool cyclic);
 
 	libm2k::analog::M2kAnalogOut *analogOut;
-	std::vector<int> channels;
-	int bufferSize;
+	std::vector<unsigned int> channels;
+	unsigned int bufferSize;
 	bool cyclic;
 };
 

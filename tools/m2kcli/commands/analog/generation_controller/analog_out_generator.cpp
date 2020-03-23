@@ -21,8 +21,8 @@
 
 #include "analog_out_generator.h"
 
-AnalogOutGenerator::AnalogOutGenerator(libm2k::analog::M2kAnalogOut *analogOut, int bufferSize,
-				       std::vector<int> &channels, bool cyclic)
+AnalogOutGenerator::AnalogOutGenerator(libm2k::analog::M2kAnalogOut *analogOut, unsigned int bufferSize,
+				       std::vector<unsigned int> &channels, bool cyclic)
 {
 	this->analogOut = analogOut;
 	this->bufferSize = bufferSize;

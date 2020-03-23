@@ -23,7 +23,7 @@
 #include "analog_out_binary.h"
 #include <iostream>
 
-AnalogOutBinary::AnalogOutBinary(libm2k::analog::M2kAnalogOut *analogOut, int bufferSize, std::vector<int> &channels,
+AnalogOutBinary::AnalogOutBinary(libm2k::analog::M2kAnalogOut *analogOut, unsigned int bufferSize, std::vector<unsigned int> &channels,
 				 bool cyclic) : AnalogOutGenerator(analogOut, bufferSize, channels, cyclic)
 {
 	this->samples = std::vector<double>();

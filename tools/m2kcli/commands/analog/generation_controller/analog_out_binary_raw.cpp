@@ -22,8 +22,8 @@
 #include "analog_out_binary_raw.h"
 #include <iostream>
 
-AnalogOutBinaryRaw::AnalogOutBinaryRaw(libm2k::analog::M2kAnalogOut *analogOut, int bufferSize,
-				       std::vector<int> &channels, bool cyclic) : AnalogOutGenerator(analogOut,
+AnalogOutBinaryRaw::AnalogOutBinaryRaw(libm2k::analog::M2kAnalogOut *analogOut, unsigned int bufferSize,
+				       std::vector<unsigned int> &channels, bool cyclic) : AnalogOutGenerator(analogOut,
 												     bufferSize,
 												     channels, cyclic)
 {
