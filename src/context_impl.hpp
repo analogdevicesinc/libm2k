@@ -23,6 +23,8 @@
 #define CONTEXT_IMPL_HPP
 
 #include <libm2k/context.hpp>
+#include <libm2k/lidar.hpp>
+#include <libm2k/generic.hpp>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/enums.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -76,6 +78,8 @@ public:
 	std::unordered_set<std::string> getAllDevices();
 
 	libm2k::contexts::M2k* toM2k();
+	libm2k::contexts::Generic* toGeneric();
+	libm2k::contexts::Lidar* toLidar();
 
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);

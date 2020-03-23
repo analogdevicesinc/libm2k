@@ -41,6 +41,7 @@ namespace analog {
 namespace contexts {
 class Lidar;
 class M2k;
+class Generic;
 
 class LIBM2K_API Context {
 public:
@@ -62,6 +63,8 @@ public:
 	virtual std::unordered_set<std::string> getAllDevices() = 0;
 
 	virtual M2k* toM2k() = 0;
+	virtual Lidar* toLidar() = 0;
+	virtual Generic* toGeneric() = 0;
 
 	virtual unsigned int getDmmCount() = 0;
 	virtual std::string getFirmwareVersion() = 0;
