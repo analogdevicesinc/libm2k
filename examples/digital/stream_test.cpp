@@ -101,8 +101,8 @@ void process_thread(){
 
 int main()
 {
-	int sr_divider = SR_DIVIDER_START;
-	int sample_rate_in, sample_rate_out = MAX_SAMPLE_RATE;
+	unsigned int sr_divider = SR_DIVIDER_START;
+	unsigned int sample_rate_in, sample_rate_out = MAX_SAMPLE_RATE;
 
 	printf("Digital stream speed test parameters\nBuffersize: %d\nKernel Buffers: %d\nTotal Buffers: %d\n", IN_NO_SAMPLES, KERNEL_BUFFERS_COUNT, NUMBER_OF_BUFFERS);
 
@@ -162,10 +162,10 @@ int main()
 		}
 #else
 		bool stable = true;
-		uint16_t same_val;
+		uint16_t same_val = 0;
 		uint32_t same_val_cnt=0;
-		int dropped = 0;
-		int i;
+		unsigned int dropped = 0;
+		unsigned int i;
 
 		for(i=1;i<values.size();i++) {
 			// find first transition
@@ -175,13 +175,13 @@ int main()
 				break;
 			}
 		}
-		for(i;i<values.size();i++)
+		for(;i<values.size();i++)
 		{
 			if(values[i]==same_val)
 				same_val_cnt++;
 			else
 			{
-				int divider = (int)(sample_rate_in/sample_rate_out);
+				unsigned int divider = sample_rate_in/sample_rate_out;
 				if(same_val_cnt == divider) {// || same_val_cnt == divider - 1 || same_val_cnt==divider+1) {
 					{
 						same_val = values[i];
@@ -189,7 +189,8 @@ int main()
 					}
 
 				} else {
-					dropped = abs(values[i]-same_val)*divider+(same_val_cnt-divider);
+					unsigned int abs_val = (values[i] > same_val) ? values[i] - same_val : same_val -values[i];
+					dropped = abs_val*divider+(same_val_cnt-divider);
 					stable=false;
 					break;
 				}

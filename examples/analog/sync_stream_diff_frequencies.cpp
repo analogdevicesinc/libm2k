@@ -23,7 +23,7 @@ std::vector<unsigned int> kernelBuffers = {20, 32};
 void
 pushNTimes(M2kAnalogOut *analogOut, unsigned int channelIndex, double *samples, unsigned int nbSamples, unsigned int n)
 {
-	for (int i = 0; i < n; i++) {
+	for (unsigned int i = 0; i < n; i++) {
 		analogOut->pushBytes(channelIndex, samples, nbSamples);
 	}
 }
@@ -76,7 +76,7 @@ int main()
 		numberCycles.push_back(cycles);
 	}
 
-	for (int i = 0; i < minKernelBuffers; i++) {
+	for (unsigned int i = 0; i < minKernelBuffers; i++) {
 		//pushing faster than the samples are processed
 		analogOut->push(samples);
 	}
