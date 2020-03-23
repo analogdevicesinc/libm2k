@@ -44,7 +44,7 @@ public:
 	void scanAllPowerSupply();
 	void scanAllDigital();
 
-	void calibrate();
+	bool calibrate();
 	bool calibrateADC();
 	bool calibrateDAC();
 	bool resetCalibration();

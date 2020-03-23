@@ -82,7 +82,7 @@ public:
 	/**
 	* @private
 	*/
-	virtual void calibrate() = 0;
+	virtual bool calibrate() = 0;
 
 
 	/**
