@@ -79,12 +79,16 @@ std::vector<std::string>M2kHardwareTriggerImpl:: m_trigger_logic_mode = {
 typedef std::pair<Channel *, std::string> channel_pair;
 
 M2kHardwareTriggerImpl::M2kHardwareTriggerImpl(struct iio_context *ctx, bool init) :
-	DeviceIn (ctx, "m2k-adc-trigger"),
 	M2kHardwareTrigger()
 {
+	m_analog_trigger_device = make_shared<DeviceIn>(ctx, "m2k-adc-trigger");
+	if (!m_analog_trigger_device) {
+		throw_exception(EXC_INVALID_PARAMETER, "No analog trigger available");
+	}
+
 	std::vector<std::pair<Channel*, std::string>> channels;
-	for (unsigned int i = 0; i < getNbChannels(false); i++) {
-		Channel* ch = getChannel(i, false);
+	for (unsigned int i = 0; i < m_analog_trigger_device->getNbChannels(false); i++) {
+		Channel* ch = m_analog_trigger_device->getChannel(i, false);
 		if (ch->isOutput()) {
 			continue;
 		}
@@ -119,7 +123,7 @@ M2kHardwareTriggerImpl::M2kHardwareTriggerImpl(struct iio_context *ctx, bool ini
 		}
 	}
 
-	m_delay_trigger = getChannel("trigger", false);
+	m_delay_trigger = m_analog_trigger_device->getChannel("trigger", false);
 
 	m_num_channels = m_analog_channels.size();
 
@@ -512,10 +516,10 @@ void M2kHardwareTriggerImpl::setAnalogStreamingFlag(bool val)
 {
 	/* Make sure the trigger is reset before enabling the streaming flag. */
 	if (val) {
-		setBoolValue(0, "streaming");
+		m_analog_trigger_device->setBoolValue(0, "streaming");
 	}
 	m_streaming_flag_analog = val;
-	setBoolValue(val, "streaming");
+	m_analog_trigger_device->setBoolValue(val, "streaming");
 }
 
 bool M2kHardwareTriggerImpl::getAnalogStreamingFlag()

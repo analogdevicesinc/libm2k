@@ -37,7 +37,7 @@ using namespace libm2k::digital;
 
 
 namespace libm2k {
-class M2kHardwareTriggerImpl : public M2kHardwareTrigger, public DeviceIn
+class M2kHardwareTriggerImpl : public M2kHardwareTrigger
 {
 public:
 	M2kHardwareTriggerImpl(struct iio_context *ctx, bool init = true);
@@ -113,6 +113,7 @@ protected:
 	std::vector<Channel *> m_digital_channels;
 	std::vector<Channel *> m_logic_channels;
 	std::shared_ptr<DeviceIn> m_digital_trigger_device;
+	std::shared_ptr<DeviceIn> m_analog_trigger_device;
 
 	Channel *m_delay_trigger;
 	bool m_streaming_flag_digital;
