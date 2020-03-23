@@ -133,6 +133,8 @@ namespace std {
 	#include <libm2k/m2kcalibration.hpp>
 	#include <libm2k/m2kexceptions.hpp>
 	#include <libm2k/m2k.hpp>
+	#include <libm2k/generic.hpp>
+	#include <libm2k/lidar.hpp>
 #ifdef COMMUNICATION
 	#include <libm2k/tools/spi.hpp>
 	#include <libm2k/tools/spi_extra.hpp>
@@ -249,6 +251,8 @@ namespace std {
 %include <libm2k/m2kcalibration.hpp>
 %include <libm2k/m2kexceptions.hpp>
 %include <libm2k/m2k.hpp>
+%include <libm2k/generic.hpp>
+%include <libm2k/lidar.hpp>
 
 #ifdef COMMUNICATION
 %include <libm2k/tools/spi.hpp>
