@@ -35,7 +35,7 @@
 namespace libm2k {
 
 namespace digital {
-class M2kDigitalImpl : public M2kDigital, public libm2k::utils::DeviceGeneric
+class M2kDigitalImpl : public M2kDigital
 {
 public:
 	M2kDigitalImpl(struct iio_context* ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger);
@@ -102,6 +102,7 @@ private:
 	bool m_cyclic;
 	std::shared_ptr<libm2k::utils::DeviceIn> m_dev_read;
 	std::shared_ptr<libm2k::utils::DeviceOut> m_dev_write;
+	std::shared_ptr<libm2k::utils::DeviceGeneric> m_dev_generic;
 	std::string m_dev_name_read;
 	std::string m_dev_name_write;
 	std::vector<bool> m_tx_channels_enabled;
