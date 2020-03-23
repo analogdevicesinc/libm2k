@@ -171,9 +171,9 @@ install(FILES ${LIBM2K_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 
 # install udev rules on Linux
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND INSTALL_UDEV_RULES)
-	set(LIBSMU_UDEV_RULES "${CMAKE_CURRENT_SOURCE_DIR}/53-adi-m2k-usb.rules")
+	set(LIBM2K_UDEV_RULES "${CMAKE_CURRENT_SOURCE_DIR}/53-adi-m2k-usb.rules")
 	set(UDEV_RULES_PATH "/etc/udev/rules.d" CACHE STRING "Target directory for udev rule installation.")
-	install(FILES ${LIBSMU_UDEV_RULES} DESTINATION ${UDEV_RULES_PATH})
+	install(FILES ${LIBM2K_UDEV_RULES} DESTINATION ${UDEV_RULES_PATH})
 endif()
 
 configure_file(libm2k.iss.cmakein ${CMAKE_CURRENT_BINARY_DIR}/libm2k.iss @ONLY)
