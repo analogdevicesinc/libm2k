@@ -264,6 +264,7 @@ std::vector<unsigned short> M2kDigitalImpl::getSamples(unsigned int nb_samples)
 
 	} __catch (exception_type &e) {
 		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+		return std::vector<unsigned short>();
 	}
 }
 
@@ -272,7 +273,7 @@ const unsigned short* M2kDigitalImpl::getSamplesP(unsigned int nb_samples)
 	__try {
 		if (!anyChannelEnabled(DIO_INPUT)) {
 			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
-
+			return nullptr;
 		}
 
 		/* There is a restriction in the HDL that the buffer size must
@@ -283,6 +284,7 @@ const unsigned short* M2kDigitalImpl::getSamplesP(unsigned int nb_samples)
 
 	} __catch (exception_type &e) {
 		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+		return nullptr;
 	}
 }
 
