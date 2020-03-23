@@ -303,6 +303,26 @@ M2k* ContextImpl::toM2k()
 	}
 }
 
+Generic *ContextImpl::toGeneric()
+{
+	libm2k::contexts::Generic* dev = dynamic_cast<Generic*>(this);
+	if(dev) {
+		return dev;
+	} else {
+		return nullptr;
+	}
+}
+
+Lidar *ContextImpl::toLidar()
+{
+	libm2k::contexts::Lidar* dev = dynamic_cast<Lidar*>(this);
+	if(dev) {
+		return dev;
+	} else {
+		return nullptr;
+	}
+}
+
 std::string ContextImpl::getUri()
 {
 	return m_uri;
