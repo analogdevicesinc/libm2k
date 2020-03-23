@@ -89,7 +89,7 @@ int32_t uart_init(struct uart_desc **desc, const struct uart_init_param *param)
 
 		m2KUartInit = (m2k_uart_init *) param->extra;
 
-		if (m2KUartInit->bits_number > 8 | m2KUartInit->bits_number < 5) {
+		if (m2KUartInit->bits_number > 8 || m2KUartInit->bits_number < 5) {
 			throw std::runtime_error("Invalid number of bits\n");
 		}
 		m2KUartDesc->parity = m2KUartInit->parity;

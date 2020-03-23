@@ -58,12 +58,12 @@ bool getAverageValue(std::vector<unsigned short> &samples, unsigned int &start, 
 		     unsigned int bitIndex)
 {
 	unsigned short sum = 0;
-	for (int i = 0; i < numberOfSamples; ++i, ++start) {
+	for (unsigned int i = 0; i < numberOfSamples; ++i, ++start) {
 		if (getBit(samples[start], bitIndex)) {
 			sum++;
 		}
 	}
-	int i = 1;
+	unsigned int i = 1;
 	unsigned short tempSum = sum;
 	bool previousSample = getBit(samples[start], bitIndex);
 	for(; i < numberOfSamples - 1; ++i) {
