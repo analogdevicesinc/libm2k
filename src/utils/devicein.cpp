@@ -58,6 +58,7 @@ std::vector<unsigned short> DeviceIn::getSamplesShort(unsigned int nb_samples)
 {
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+		return std::vector<unsigned short>();
 	}
 	m_buffer->setChannels(m_channel_list);
 	return m_buffer->getSamples(nb_samples);
@@ -68,6 +69,7 @@ const unsigned short* DeviceIn::getSamplesP(unsigned int nb_samples)
 {
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		return nullptr;
 	}
 	m_buffer->setChannels(m_channel_list);
 	return m_buffer->getSamplesP(nb_samples);
@@ -79,6 +81,7 @@ std::vector<std::vector<double> > DeviceIn::getSamples(unsigned int nb_samples,
 {
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+		std::vector<std::vector<double>>();
 	}
 	m_buffer->setChannels(m_channel_list);
 	return m_buffer->getSamples(nb_samples, process);
@@ -88,6 +91,7 @@ void* DeviceIn::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 {
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		return nullptr;
 	}
 	m_buffer->setChannels(m_channel_list);
 	return m_buffer->getSamplesRawInterleavedVoid(nb_samples);
@@ -98,6 +102,7 @@ const double *DeviceIn::getSamplesInterleaved(unsigned int nb_samples,
 {
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		return nullptr;
 	}
 	m_buffer->setChannels(m_channel_list);
 	return m_buffer->getSamplesInterleaved(nb_samples, process);
@@ -126,6 +131,7 @@ const short *DeviceIn::getSamplesRawInterleaved(unsigned int nb_samples)
 {
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		return nullptr;
 	}
 	m_buffer->setChannels(m_channel_list);
 	return m_buffer->getSamplesRawInterleaved(nb_samples);

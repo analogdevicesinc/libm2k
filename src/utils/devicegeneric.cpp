@@ -111,6 +111,7 @@ Channel* DeviceGeneric::getChannel(unsigned int chnIdx, bool output)
 	}
 error:
 	throw_exception(EXC_OUT_OF_RANGE, "Device: No such channel: " + to_string(chnIdx));
+	return nullptr;
 }
 
 Channel* DeviceGeneric::getChannel(std::string id, bool output)
