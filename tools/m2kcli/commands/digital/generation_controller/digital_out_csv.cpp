@@ -22,7 +22,7 @@
 #include <tools/m2kcli/utils/validator.h>
 #include "digital_out_csv.h"
 
-DigitalOutCSV::DigitalOutCSV(libm2k::digital::M2kDigital *digital, int bufferSize, std::vector<int> &channels,
+DigitalOutCSV::DigitalOutCSV(libm2k::digital::M2kDigital *digital, unsigned int bufferSize, std::vector<unsigned int> &channels,
 			     bool cyclic) : DigitalOutGenerator(digital, bufferSize, channels, cyclic) {}
 
 void DigitalOutCSV::getSamples(bool &keepReading)
