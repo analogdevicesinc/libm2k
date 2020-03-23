@@ -40,7 +40,6 @@ using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::context;
 
-#define M_PI 3.14
 // uncomment the following definition to test triggering
 //#define TRIGGERING
 
@@ -57,7 +56,9 @@ int main(int argc, char* argv[])
 
 	M2kAnalogIn *ain = ctx->getAnalogIn();
 	M2kAnalogOut *aout = ctx->getAnalogOut();
+#ifdef TRIGGERING
 	M2kHardwareTrigger *trig = ain->getTrigger();
+#endif
 
 	// Setup analog in
 	ain->enableChannel(0, true);
