@@ -38,9 +38,15 @@ std::vector<std::string> M2kDigitalImpl::m_output_mode = {
 	"push-pull",
 };
 
-M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger):
-	DeviceGeneric(ctx, logic_dev)
+M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger)
 {
+	__try {
+		m_dev_generic = make_shared<DeviceGeneric>(ctx, logic_dev);
+	} __catch (exception_type &e) {
+		m_dev_generic = nullptr;
+		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No generic digital device was found.");
+	}
+
 	m_trigger = trigger;
 	m_dev_name_write = logic_dev + "-tx";
 	m_dev_name_read = logic_dev + "-rx";
@@ -80,7 +86,7 @@ M2kDigitalImpl::~M2kDigitalImpl()
 
 void M2kDigitalImpl::syncDevice()
 {
-	for (unsigned int i = 0; i < getNbChannels(false); i++) {
+	for (unsigned int i = 0; i < m_dev_generic->getNbChannels(false); i++) {
 		/* Disable all the TX channels */
 		bool en = m_dev_write->isChannelEnabled(i, true);
 		m_tx_channels_enabled.push_back(en);
@@ -93,7 +99,7 @@ void M2kDigitalImpl::syncDevice()
 
 void M2kDigitalImpl::init()
 {
-	for (unsigned int i = 0; i < getNbChannels(false); i++) {
+	for (unsigned int i = 0; i < m_dev_generic->getNbChannels(false); i++) {
 		/* Disable all the TX channels */
 
 		m_tx_channels_enabled.push_back(false);
@@ -152,14 +158,14 @@ void M2kDigitalImpl::setDirection(unsigned int index, DIO_DIRECTION dir)
 
 void M2kDigitalImpl::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 {
-	if (index < getNbChannels(false)) {
+	if (index < m_dev_generic->getNbChannels(false)) {
 		std::string dir_str = "";
 		if (dir == 0) {
 			dir_str = "in";
 		} else {
 			dir_str = "out";
 		}
-		setStringValue(index, "direction", dir_str);
+		m_dev_generic->setStringValue(index, "direction", dir_str);
 	} else {
 		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel.");
 	}
@@ -168,11 +174,11 @@ void M2kDigitalImpl::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 
 DIO_DIRECTION M2kDigitalImpl::getDirection(DIO_CHANNEL index)
 {
-	if (index >= getNbChannels(false)) {
+	if (index >= m_dev_generic->getNbChannels(false)) {
 		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 	}
 
-	std::string dir_str = getStringValue(index, "direction");
+	std::string dir_str = m_dev_generic->getStringValue(index, "direction");
 	if (dir_str == "in") {
 		return DIO_INPUT;
 	}
@@ -181,11 +187,11 @@ DIO_DIRECTION M2kDigitalImpl::getDirection(DIO_CHANNEL index)
 
 void M2kDigitalImpl::setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 {
-	if (index >= getNbChannels(false)) {
+	if (index >= m_dev_generic->getNbChannels(false)) {
 		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 	}
 	long long val = static_cast<long long>(level);
-	setDoubleValue(index, val, "raw");
+	m_dev_generic->setDoubleValue(index, val, "raw");
 }
 
 void M2kDigitalImpl::setValueRaw(unsigned int index, DIO_LEVEL level)
@@ -202,11 +208,11 @@ void M2kDigitalImpl::setValueRaw(DIO_CHANNEL index, bool level)
 
 DIO_LEVEL M2kDigitalImpl::getValueRaw(DIO_CHANNEL index)
 {
-	if (index >= getNbChannels(false)) {
+	if (index >= m_dev_generic->getNbChannels(false)) {
 		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
 	}
 	long long val;
-	val = getDoubleValue(index, "raw");
+	val = m_dev_generic->getDoubleValue(index, "raw");
 	return static_cast<DIO_LEVEL>(val);
 }
 
@@ -334,7 +340,7 @@ M2kHardwareTrigger* M2kDigitalImpl::getTrigger()
 void M2kDigitalImpl::setOutputMode(DIO_CHANNEL chn, DIO_MODE mode)
 {
 	std::string output_mode = m_output_mode[mode];
-	setStringValue(chn, "outputmode", output_mode);
+	m_dev_generic->setStringValue(chn, "outputmode", output_mode);
 }
 
 void M2kDigitalImpl::setOutputMode(unsigned int chn, DIO_MODE mode)
@@ -346,7 +352,7 @@ void M2kDigitalImpl::setOutputMode(unsigned int chn, DIO_MODE mode)
 DIO_MODE M2kDigitalImpl::getOutputMode(DIO_CHANNEL chn)
 {
 	std::string output_mode = "";
-	output_mode = getStringValue(chn, "outputmode");
+	output_mode = m_dev_generic->getStringValue(chn, "outputmode");
 
 	auto it = std::find(m_output_mode.begin(), m_output_mode.end(),
 			    output_mode.c_str());
