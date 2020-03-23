@@ -32,7 +32,7 @@ void CommandIn::printSamplesCsvFormat(std::vector<uint16_t> &samples, unsigned i
 }
 
 void CommandIn::printSamplesCsvFormat(std::vector<std::vector<double>> &samples, unsigned int nb_samples,
-				      std::vector<int> &channels)
+				      std::vector<unsigned int> &channels)
 {
 	unsigned int nbChannels = channels.size() - 1;
 	for (unsigned long i = 0; i < nb_samples; i++) {
@@ -44,7 +44,7 @@ void CommandIn::printSamplesCsvFormat(std::vector<std::vector<double>> &samples,
 }
 
 void CommandIn::printRawSamplesBinaryFormat(std::vector<std::vector<double>> &samples, unsigned int nb_samples,
-					    std::vector<int> &channels)
+					    std::vector<unsigned int> &channels)
 {
 	char *data;
 	if (channels.size() < 2) {
@@ -52,7 +52,7 @@ void CommandIn::printRawSamplesBinaryFormat(std::vector<std::vector<double>> &sa
 		data = reinterpret_cast<char *>(tempSamples.data());
 	} else {
 		std::vector<short> interleavedSamples;
-		for (int i = 0; i < samples[0].size(); ++i) {
+		for (unsigned int i = 0; i < samples[0].size(); ++i) {
 			interleavedSamples.push_back((short) samples[0].at(i));
 			interleavedSamples.push_back((short) samples[1].at(i));
 		}
@@ -68,14 +68,14 @@ void CommandIn::printRawSamplesBinaryFormat(std::vector<std::vector<double>> &sa
 }
 
 void CommandIn::printSamplesBinaryFormat(std::vector<std::vector<double>> &samples, unsigned int nb_samples,
-					 std::vector<int> &channels)
+					 std::vector<unsigned int> &channels)
 {
 	char *data;
 	if (channels.size() < 2) {
 		data = reinterpret_cast<char *>(samples[channels[0]].data());
 	} else {
 		std::vector<double> tempSamples;
-		for (int i = 0; i < samples[0].size(); ++i) {
+		for (unsigned int i = 0; i < samples[0].size(); ++i) {
 			tempSamples.push_back(samples[0].at(i));
 			tempSamples.push_back(samples[1].at(i));
 		}
