@@ -49,12 +49,12 @@ std::vector<ini_device_struct> Utils::parseIniFile(std::string path)
 		while (getline(configFile, line)) {
 			auto section = parseIniSection(line);
 
-			if ((deviceName == "") && (section != "")) {
+			if ((deviceName.empty()) && (!section.empty())) {
 				deviceName = section;
 				device.hw_name = deviceName;
 				continue;
 
-			} else if ((deviceName != "") && (section != "")) {
+			} else if ((!deviceName.empty()) && (!section.empty())) {
 				/* Found a new section, save the current device struct
 				 * and create another one */
 				devs.push_back(device);
@@ -63,9 +63,9 @@ std::vector<ini_device_struct> Utils::parseIniFile(std::string path)
 				device.key_val_pairs = {};
 				continue;
 
-			} else if (deviceName != "") {
+			} else if (!deviceName.empty()) {
 				auto kv_pair = parseIniPair(line);
-				if ((kv_pair.first != "") && (kv_pair.second.size() != 0)) {
+				if ((!kv_pair.first.empty()) && (!kv_pair.second.empty())) {
 					device.key_val_pairs.push_back(kv_pair);
 				}
 
@@ -73,7 +73,7 @@ std::vector<ini_device_struct> Utils::parseIniFile(std::string path)
 				throw_exception(EXC_INVALID_PARAMETER, "Invalid configuration file: " + path);
 			}
 		}
-		if (device.key_val_pairs.size() != 0) {
+		if (!device.key_val_pairs.empty()) {
 			devs.push_back(device);
 		}
 		configFile.close();
