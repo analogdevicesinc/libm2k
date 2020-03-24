@@ -26,6 +26,7 @@
 #include <libm2k/m2kcalibration.hpp>
 #include <libm2k/m2khardwaretrigger.hpp>
 #include "analog/m2kanalogin_impl.hpp"
+#include "analog/m2kanalogout_impl.hpp"
 #include <cstdint>
 #include <cstdlib>
 #include <string>
@@ -78,7 +79,7 @@ private:
 
 	struct iio_context *m_ctx;
 	libm2k::analog::M2kAnalogInImpl* m_m2k_adc;
-	libm2k::analog::M2kAnalogOut* m_m2k_dac;
+	libm2k::analog::M2kAnalogOutImpl* m_m2k_dac;
 	M2kHardwareTrigger* m_m2k_trigger;
 
 	int m_adc_ch0_offset;

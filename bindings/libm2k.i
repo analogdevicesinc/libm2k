@@ -31,9 +31,6 @@
 %ignore pushBytes;
 %ignore getVoltageP;
 %ignore getVoltageRawP;
-%ignore convertChannelHostFormat;
-%ignore convRawToVolts;
-%ignore convVoltsToRaw;
 %rename(pushBytes) push(unsigned short*, unsigned int);
 
 #ifdef SWIGPYTHON

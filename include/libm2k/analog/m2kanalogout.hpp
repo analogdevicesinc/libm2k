@@ -190,16 +190,6 @@ public:
 
 
 	/**
-	* @brief Set the calibration scale for the given channel
-	*
-	* @param index The index corresponding to the channel
-	* @param calibscale A double value to set the calibration scale to
-	* @return The current value of the calibration scale
-	*/
-	virtual double setCalibscale(unsigned int index, double calibscale) = 0;
-
-
-	/**
 	* @brief Retrieve the calibration scale for the given channel
 	*
 	* @param index The index corresponding to the channel
@@ -227,17 +217,6 @@ public:
 	*/
 	virtual double getFilterCompensation(double samplerate) = 0;
 
-
-	/**
-	* @brief Convert a value measured in volts into a raw value
-	*
-	* @param voltage The value of the voltage
-	* @param vlsb The value of the calibration gain
-	* @param filterCompensation The value of the filter compensation
-	* @return The raw value
-	*/
-	virtual short convVoltsToRaw(double voltage, double vlsb,
-		double filterCompensation) = 0;
 
 	/**
 	* @brief Send the samples to the given channel
@@ -291,14 +270,6 @@ public:
 	* @note The given channel will be synchronized with the other channel
 	*/
 	virtual void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples) = 0;
-
-	/**
-	* @brief Set the calibration gain for the given channel
-	*
-	* @param chn The index corresponding to the channel
-	* @param vlsb A double value to set the calibration gain to
-	*/
-	virtual void setDacCalibVlsb(unsigned int chn, double vlsb) = 0;
 
 
 	/**
