@@ -331,40 +331,12 @@ public:
 
 
 	/**
-	* @brief Set the value of the calibration offset for the given channel
-	*
-	* @param channel An enumerator corresponding to the channel's index
-	* @param calib_offset Int value to set the calibration offset to
-	*/
-	virtual void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset) = 0;
-
-
-	/**
-	* @brief Set the value of the calibration scale for the given channel
-	*
-	* @param index The index corresponding the the channel
-	* @param calibscale A double value to set the calibration scale to
-	* @return The current value of the calibration scale
-	*/
-	virtual double setCalibscale(unsigned int index, double calibscale) = 0;
-
-
-	/**
 	* @brief Retrieve the value of the calibration scale for the given channel
 	*
 	* @param index The index corresponding to the channel
 	* @return The value of the calibration scale
 	*/
 	virtual double getCalibscale(unsigned int index) = 0;
-
-
-	/**
-	* @brief Set the value of the calibration gain for the given channel
-	*
-	* @param channel An enumerator corresponding to the channel's index
-	* @param gain A double value to set the calibration gain to
-	*/
-	virtual void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain) = 0;
 
 
 	/**
@@ -383,15 +355,6 @@ public:
 	* @return double
 	*/
 	virtual double getValueForRange(M2K_RANGE range) = 0;
-
-
-	/**
-	 * @private
-	 */
-	virtual double convRawToVolts(int sample, double correctionGain = 1,
-		double hw_gain = 0.02,
-		double filterCompensation = 1,
-		double offset = 0) const = 0;
 
 
 	/**
@@ -446,18 +409,6 @@ public:
 	* @return False if the channel is disabled
 	*/
 	virtual bool isChannelEnabled(unsigned int chnIdx) = 0;
-
-
-//	/**
-//	 * @private
-//	 */
-//	virtual void convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src) = 0;
-
-
-//	/**
-//	* @private
-//	*/
-//	virtual void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src) = 0;
 
 
 	/**
