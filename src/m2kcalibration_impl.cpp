@@ -44,7 +44,7 @@ M2kCalibrationImpl::M2kCalibrationImpl(struct iio_context* ctx, M2kAnalogIn* ana
 	m_cancel(false),
 	m_ctx(ctx),
 	m_m2k_adc(dynamic_cast<M2kAnalogInImpl*>(analogIn)),
-	m_m2k_dac(analogOut),
+	m_m2k_dac(dynamic_cast<M2kAnalogOutImpl*>(analogOut)),
 	m_m2k_trigger(analogIn->getTrigger()),
 	m_adc_calibrated(false),
 	m_dac_calibrated(false),
