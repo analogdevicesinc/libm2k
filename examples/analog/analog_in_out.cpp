@@ -27,6 +27,7 @@
 // The application will generate a sine and triangular wave on W1 and W2. The signal is fed back into the analog input
 // and the voltage values are displayed on the screen
 
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include <math.h>
 #include <libm2k/m2k.hpp>
