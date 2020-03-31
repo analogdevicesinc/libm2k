@@ -35,7 +35,7 @@ namespace analog {
 class GenericAnalogOut;
 class GenericAnalogIn;
 }
-namespace contexts {
+namespace context {
 class LIBM2K_API Generic : public virtual Context {
 public:
 	virtual ~Generic() {}

@@ -44,7 +44,7 @@ typedef struct m2k_spi_init {
 	uint8_t mosi;
 	uint8_t miso;
 	enum bit_numbering bit_numbering;
-	libm2k::contexts::M2k *context;
+	libm2k::context::M2k *context;
 } m2k_spi_init;
 
 /**
@@ -55,7 +55,7 @@ typedef struct m2k_spi_desc {
 	uint8_t mosi;
 	uint8_t miso;
 	enum bit_numbering bit_numbering;
-	libm2k::contexts::M2k *context;
+	libm2k::context::M2k *context;
 	libm2k::digital::M2kDigital *digital;
 	unsigned int sample_rate;
 } m2k_spi_desc;

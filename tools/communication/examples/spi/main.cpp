@@ -50,7 +50,7 @@ void getRegisterData(double voltage, uint8_t *data)
 
 int main()
 {
-	libm2k::contexts::M2k *context = libm2k::contexts::m2kOpen("ip:192.168.2.1");
+	libm2k::context::M2k *context = libm2k::context::m2kOpen("ip:192.168.2.1");
 	if (!context) {
 		std::cout << "Connection Error: No ADALM2000 device available/connected to your PC.\n";
 		return -1;
@@ -120,6 +120,6 @@ int main()
 	std::cout << "Average value: " << average << " V" << std::endl;
 
 	spi_remove(desc);
-	libm2k::contexts::contextClose(context, true);
+	libm2k::context::contextClose(context, true);
 	return 0;
 }

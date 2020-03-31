@@ -30,7 +30,7 @@
 
 using namespace std;
 using namespace libm2k::utils;
-using namespace libm2k::contexts;
+using namespace libm2k::context;
 
 
 /** Represents an iio_device **/

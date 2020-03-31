@@ -33,7 +33,7 @@
 using namespace std;
 
 namespace libm2k {
-namespace contexts {
+namespace context {
 class GenericImpl : public Generic, public ContextImpl {
 public:
 	GenericImpl(std::string uri, iio_context* ctx, std::string name, bool sync);

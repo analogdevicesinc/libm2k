@@ -49,7 +49,7 @@ namespace digital {
 	class GenericDigital;
 }
 
-namespace contexts {
+namespace context {
 class Context;
 class Lidar;
 class M2k;
@@ -77,9 +77,9 @@ public:
 	std::string getSerialNumber();
 	std::unordered_set<std::string> getAllDevices();
 
-	libm2k::contexts::M2k* toM2k();
-	libm2k::contexts::Generic* toGeneric();
-	libm2k::contexts::Lidar* toLidar();
+	libm2k::context::M2k* toM2k();
+	libm2k::context::Generic* toGeneric();
+	libm2k::context::Lidar* toLidar();
 
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);

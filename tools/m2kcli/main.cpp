@@ -80,12 +80,12 @@ int main(int argc, char **argv)
 		}
 
 		if (argc < 2 || std::string(argv[1]) == "--version" || std::string(argv[1]) == "-v") {
-			std::cout << libm2k::contexts::getVersion() << std::endl;
+			std::cout << libm2k::context::getVersion() << std::endl;
 			return 0;
 		}
 
 		if (argc < 2 || std::string(argv[1]) == "--scan" || std::string(argv[1]) == "-s") {
-			auto contexts = libm2k::contexts::getAllContexts();
+			auto contexts = libm2k::context::getAllContexts();
 			for (auto ctx : contexts) {
 				std::cout << ctx << std::endl;
 			}
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 			if (argc < 3) {
 				throw std::runtime_error("Please provide an URI\n");
 			}
-			libm2k::contexts::M2k *context = libm2k::contexts::m2kOpen(argv[2]);
+			libm2k::context::M2k *context = libm2k::context::m2kOpen(argv[2]);
 			if (context == nullptr) {
 				throw std::runtime_error("Could not establish a connection to m2k. Please check the URI\n");
 			}
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 				std::this_thread::sleep_for (std::chrono::milliseconds(100));
 			}
 			context->setLed(true);
-			libm2k::contexts::contextClose(context, false);
+			libm2k::context::contextClose(context, false);
 			return 0;
 		}
 
@@ -169,14 +169,14 @@ int main(int argc, char **argv)
 		}
 	}
 	if (command->getContext() != nullptr) {
-		libm2k::contexts::contextClose(command->getContext(), false);
+		libm2k::context::contextClose(command->getContext(), false);
 	}
 	return 0;
 }
 
 void destroy(int sigNumber)
 {
-	libm2k::contexts::contextClose(command->getContext(), false);
+	libm2k::context::contextClose(command->getContext(), false);
 	std::cout << std::endl;
 	exit(sigNumber);
 }

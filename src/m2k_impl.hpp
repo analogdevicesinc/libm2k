@@ -29,7 +29,7 @@ namespace libm2k {
 class M2kHardwareTrigger;
 class M2kCalibration;
 
-namespace contexts {
+namespace context {
 class M2kImpl : public M2k, public ContextImpl
 {
 public:

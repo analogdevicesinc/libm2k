@@ -31,7 +31,7 @@
 using namespace std;
 using namespace libm2k;
 using namespace libm2k::digital;
-using namespace libm2k::contexts;
+using namespace libm2k::context;
 
 #define N_BITS (4)
 

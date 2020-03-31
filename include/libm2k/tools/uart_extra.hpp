@@ -48,7 +48,7 @@ typedef struct m2k_uart_init {
 	enum uart_parity parity;
 	uint8_t bits_number;
 	enum uart_stop_bits stop_bits;
-	libm2k::contexts::M2k *context;
+	libm2k::context::M2k *context;
 } m2k_uart_init;
 
 /**
@@ -58,7 +58,7 @@ typedef struct m2k_uart_desc {
 	enum uart_parity parity;
 	uint8_t bits_number;
 	enum uart_stop_bits stop_bits;
-	libm2k::contexts::M2k *context;
+	libm2k::context::M2k *context;
 	libm2k::digital::M2kDigital *digital;
 	unsigned int sample_rate;
 	unsigned int total_error_count;
