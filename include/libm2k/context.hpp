@@ -38,7 +38,7 @@ namespace analog {
 	class DMM;
 }
 
-namespace contexts {
+namespace context {
 class Lidar;
 class M2k;
 class Generic;

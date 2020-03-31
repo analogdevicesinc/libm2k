@@ -33,7 +33,7 @@
 #include <memory>
 
 
-using namespace libm2k::contexts;
+using namespace libm2k::context;
 using namespace libm2k::utils;
 
 std::vector<Context*> ContextBuilder::s_connectedDevices = {};
@@ -237,52 +237,52 @@ ContextTypes ContextBuilder::identifyContext(iio_context *ctx)
 	return type;
 }
 
-Context *libm2k::contexts::contextOpen()
+Context *libm2k::context::contextOpen()
 {
 	return ContextBuilder::contextOpen();
 }
 
-Context *libm2k::contexts::contextOpen(const char *uri)
+Context *libm2k::context::contextOpen(const char *uri)
 {
 	return ContextBuilder::contextOpen(uri);
 }
 
-Context *libm2k::contexts::contextOpen(struct iio_context *ctx, const char *uri)
+Context *libm2k::context::contextOpen(struct iio_context *ctx, const char *uri)
 {
 	return ContextBuilder::contextOpen(ctx, uri);
 }
 
-M2k *libm2k::contexts::m2kOpen(const char *uri)
+M2k *libm2k::context::m2kOpen(const char *uri)
 {
 	return ContextBuilder::m2kOpen(uri);
 }
 
-M2k *libm2k::contexts::m2kOpen(struct iio_context *ctx, const char *uri)
+M2k *libm2k::context::m2kOpen(struct iio_context *ctx, const char *uri)
 {
 	return ContextBuilder::m2kOpen(ctx, uri);
 }
 
-M2k *libm2k::contexts::m2kOpen()
+M2k *libm2k::context::m2kOpen()
 {
 	return ContextBuilder::m2kOpen();
 }
 
-std::vector<std::string> libm2k::contexts::getAllContexts()
+std::vector<std::string> libm2k::context::getAllContexts()
 {
 	return ContextBuilder::getAllContexts();
 }
 
-void libm2k::contexts::contextClose(Context *ctx, bool deinit)
+void libm2k::context::contextClose(Context *ctx, bool deinit)
 {
 	ContextBuilder::contextClose(ctx, deinit);
 }
 
-void libm2k::contexts::contextCloseAll()
+void libm2k::context::contextCloseAll()
 {
 	ContextBuilder::contextCloseAll();
 }
 
-std::string libm2k::contexts::getVersion()
+std::string libm2k::context::getVersion()
 {
 	return ContextBuilder::getVersion();
 }

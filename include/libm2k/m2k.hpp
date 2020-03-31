@@ -40,11 +40,11 @@ class M2kDigital;
 
 class M2kCalibration;
 
-/** @defgroup contexts Contexts
+/** @defgroup context Context
  * @brief Contains the representation of the M2K
  * @{
  */
-namespace contexts {
+namespace context {
 
 /**
 * @defgroup m2k M2k

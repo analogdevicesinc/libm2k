@@ -30,7 +30,7 @@
 
 using namespace libm2k::analog;
 using namespace libm2k::digital;
-using namespace libm2k::contexts;
+using namespace libm2k::context;
 using namespace libm2k::utils;
 
 ContextImpl::ContextImpl(std::string uri, struct iio_context *ctx, std::string name, bool sync)
@@ -295,7 +295,7 @@ std::string ContextImpl::getSerialNumber()
 
 M2k* ContextImpl::toM2k()
 {
-	libm2k::contexts::M2k* dev = dynamic_cast<M2k*>(this);
+	libm2k::context::M2k* dev = dynamic_cast<M2k*>(this);
 	if(dev) {
 		return dev;
 	} else {
@@ -305,7 +305,7 @@ M2k* ContextImpl::toM2k()
 
 Generic *ContextImpl::toGeneric()
 {
-	libm2k::contexts::Generic* dev = dynamic_cast<Generic*>(this);
+	libm2k::context::Generic* dev = dynamic_cast<Generic*>(this);
 	if(dev) {
 		return dev;
 	} else {
@@ -315,7 +315,7 @@ Generic *ContextImpl::toGeneric()
 
 Lidar *ContextImpl::toLidar()
 {
-	libm2k::contexts::Lidar* dev = dynamic_cast<Lidar*>(this);
+	libm2k::context::Lidar* dev = dynamic_cast<Lidar*>(this);
 	if(dev) {
 		return dev;
 	} else {

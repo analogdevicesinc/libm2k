@@ -31,7 +31,7 @@
 using namespace std;
 
 namespace libm2k {
-namespace contexts {
+namespace context {
 class LIBM2K_API Lidar : public virtual Context {
 public:
 	virtual ~Lidar() {}

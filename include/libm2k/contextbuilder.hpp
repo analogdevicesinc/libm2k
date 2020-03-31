@@ -39,7 +39,7 @@ enum ContextTypes {
 namespace libm2k {
 
 
-namespace contexts {
+namespace context {
 
     /**
      * @private
@@ -104,7 +104,7 @@ private:
 };
 
 /**
- * @addtogroup contexts
+ * @addtogroup context
  * @{
  * @defgroup context ContextBuilder
  * @brief Creates/destroys the context

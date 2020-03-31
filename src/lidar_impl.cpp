@@ -9,7 +9,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace libm2k::contexts;
+using namespace libm2k::context;
 using namespace libm2k::utils;
 
 LidarImpl::LidarImpl(std::string uri, iio_context* ctx, std::string name, bool sync) :

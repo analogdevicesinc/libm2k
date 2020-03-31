@@ -34,7 +34,7 @@ extern "C" {
 typedef struct m2k_i2c_init {
 	uint8_t scl;
 	uint8_t sda;
-	libm2k::contexts::M2k *context;
+	libm2k::context::M2k *context;
 } m2k_i2c_init;
 
 /**
@@ -43,7 +43,7 @@ typedef struct m2k_i2c_init {
 typedef struct m2k_i2c_desc {
 	uint8_t scl;
 	uint8_t sda;
-	libm2k::contexts::M2k *context;
+	libm2k::context::M2k *context;
 	libm2k::digital::M2kDigital *digital;
 	unsigned int sample_rate;
 } m2k_i2c_desc;

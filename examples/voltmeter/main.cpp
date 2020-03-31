@@ -30,7 +30,7 @@
 using namespace std;
 using namespace libm2k;
 using namespace libm2k::analog;
-using namespace libm2k::contexts;
+using namespace libm2k::context;
 
 int main(int argc, char* argv[])
 {

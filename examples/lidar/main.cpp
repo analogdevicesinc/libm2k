@@ -4,13 +4,13 @@
 
 using namespace std;
 using namespace libm2k;
-using namespace libm2k::contexts;
+using namespace libm2k::context;
 
 int main(int argc, char* argv[]) {
 	// Make sure your board's IP is the same as the one specified in the
 	// contextOpen
 	Context *context = ContextBuilder::contextOpen("ip:10.48.65.123");
-	libm2k::contexts::Lidar* lidar = dynamic_cast<Lidar*>(context);
+	libm2k::context::Lidar* lidar = dynamic_cast<Lidar*>(context);
 
 	// Channel4 is enabled by default for internal implementation
 	// reasons. The samples that can be received and used are available from
