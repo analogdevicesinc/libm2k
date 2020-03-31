@@ -43,6 +43,7 @@ std::shared_ptr<libm2k::utils::DeviceOut> GenericAnalogOutImpl::getDacDevice(uns
 {
 	if (index >= m_devices_out.size()) {
 		throw_exception(EXC_INVALID_PARAMETER, "No such DAC device");
+		return nullptr;
 	}
 	return m_devices_out.at(index);
 }
