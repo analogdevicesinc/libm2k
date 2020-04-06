@@ -57,7 +57,9 @@ public:
 	const double *getVoltageP() override;
 
 	void setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset) override;
+	void setRawVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset);
 	double getVerticalOffset(ANALOG_IN_CHANNEL channel) override;
+	int getRawVerticalOffset(ANALOG_IN_CHANNEL channel);
 
 	double getScalingFactor(libm2k::analog::ANALOG_IN_CHANNEL ch) override;
 
@@ -81,6 +83,7 @@ public:
 	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn) override;
 
 	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset);
+	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset, int vert_offset);
 
 	double setCalibscale(unsigned int index, double calibscale);
 	double getCalibscale(unsigned int index) override;
@@ -127,8 +130,8 @@ private:
 	std::vector<M2K_RANGE> m_input_range;
 
 	std::vector<double> m_adc_calib_gain;
-	std::vector<double> m_adc_calib_offset;
-	std::vector<double> m_adc_hw_vert_offset_raw;
+	std::vector<int> m_adc_calib_offset;
+	std::vector<int> m_adc_hw_offset_raw;
 	std::vector<double> m_adc_hw_vert_offset;
 	std::map<double, double> m_filter_compensation_table;
 	std::vector<bool> m_channels_enabled;
@@ -148,6 +151,9 @@ private:
 	const double *getSamplesInterleaved(unsigned int nb_samples, bool processed = false);
 
 	double processSample(int16_t sample, unsigned int channel);
+
+	const int convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
+	const double convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset);
 };
 }
 }
