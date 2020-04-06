@@ -84,6 +84,8 @@ private:
 
 	int m_adc_ch0_offset;
 	int m_adc_ch1_offset;
+	int m_adc_ch0_vert_offset;
+	int m_adc_ch1_vert_offset;
 	int m_dac_a_ch_offset;
 	int m_dac_b_ch_offset;
 	double m_adc_ch0_gain;

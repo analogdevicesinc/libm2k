@@ -213,8 +213,13 @@ bool M2kCalibrationImpl::calibrateADCoffset()
 	setCalibrationMode(ADC_GND);
 
 	// Set DAC channels to middle scale
-	m_ad5625_dev->setDoubleValue(2, 2048, "raw", true);
-	m_ad5625_dev->setDoubleValue(3, 2048, "raw", true);
+	m_adc_ch0_vert_offset = m_m2k_adc->getRawVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0));
+	m_adc_ch1_vert_offset = m_m2k_adc->getRawVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1));
+
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), 2048);
+	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0), 0);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), 2048);
+	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1), 0);
 
 	// Allow some time for the voltage to settle
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -334,10 +339,8 @@ void M2kCalibrationImpl::updateDacCorrections()
 
 void M2kCalibrationImpl::updateAdcCorrections()
 {
-	m_m2k_adc->setAdcCalibOffset(ANALOG_IN_CHANNEL_1, m_adc_ch0_offset);
-	m_m2k_adc->setAdcCalibOffset(ANALOG_IN_CHANNEL_2, m_adc_ch1_offset);
-	m_ad5625_dev->setDoubleValue(2, m_adc_ch0_offset, "raw", true);
-	m_ad5625_dev->setDoubleValue(3, m_adc_ch1_offset, "raw", true);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), m_adc_ch0_offset, m_adc_ch0_vert_offset);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), m_adc_ch0_offset, m_adc_ch1_vert_offset);
 
 	m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
 	m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
@@ -389,8 +392,8 @@ bool M2kCalibrationImpl::fine_tune(size_t span, int16_t centerVal0, int16_t cent
 	for (i = 0; i < span + 1; i++) {
 		candidateOffsets0[i] = offset0;
 		candidateOffsets1[i] = offset1;
-		m_ad5625_dev->setDoubleValue(2, offset0, "raw", true);
-		m_ad5625_dev->setDoubleValue(3, offset1, "raw", true);
+		m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), offset0);
+		m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), offset1);
 		offset0++;
 		offset1++;
 

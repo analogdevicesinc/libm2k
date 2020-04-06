@@ -129,6 +129,7 @@ private:
 	libm2k::M2kHardwareTrigger *m_trigger;
 	std::vector<M2K_RANGE> m_input_range;
 
+	bool m_calibbias_available;
 	std::vector<double> m_adc_calib_gain;
 	std::vector<int> m_adc_calib_offset;
 	std::vector<int> m_adc_hw_offset_raw;

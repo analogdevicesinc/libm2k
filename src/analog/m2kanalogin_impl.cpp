@@ -50,6 +50,8 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	m_filter_compensation_table[1E4] = 1.20;
 	m_filter_compensation_table[1E3] = 1.26;
 
+	// calibbias attribute is only available in firmware versions newer than 0.26
+	m_calibbias_available = (Utils::compareVersions(Utils::getFirmwareVersion(ctx), "v0.26") > 0);
 	m_samplerate = 1E8;
 
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
@@ -64,7 +66,6 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	if (sync) {
 		syncDevice();
 	}
-
 }
 
 M2kAnalogInImpl::~M2kAnalogInImpl() = default;
@@ -94,13 +95,10 @@ void M2kAnalogInImpl::init()
 		auto ch = static_cast<ANALOG_IN_CHANNEL>(i);
 
 		m_trigger->setAnalogMode(ch, ALWAYS);
-
 		setRange(ch, PLUS_MINUS_25V);
-		m_adc_calib_offset.at(i) = 2048;
-		m_adc_calib_gain.at(i) = 1;
-		m_adc_hw_vert_offset.at(i) = 0;
-                m_adc_hw_offset_raw.at(i) = 2048;
-		m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
+		setAdcCalibOffset(ch, 2048);
+		setAdcCalibGain(ch, 1);
+		setVerticalOffset(ch, 0);
 	}
 	setKernelBuffersCount(4);
 }
@@ -109,31 +107,45 @@ void M2kAnalogInImpl::syncDevice()
 {
 	m_samplerate = m_m2k_adc->getDoubleValue("sampling_frequency");
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
-		//enabled???
-		ANALOG_IN_CHANNEL ch = static_cast<ANALOG_IN_CHANNEL>(i);
-		auto range = getRangeDevice(ch);
-		m_input_range[i] = range;
+		auto range = getRangeDevice(static_cast<ANALOG_IN_CHANNEL>(i));
+		m_input_range.at(i) = range;
 
 		// load calib_offset from the register - assuming it was deinitialized correctly
-		m_adc_calib_offset[i] = m_ad5625_dev->getLongValue(2 + i, "raw", true);
-		getVerticalOffset(ch);
+		if (m_calibbias_available) {
+                        m_adc_calib_offset.at(i) = m_m2k_adc->getLongValue(i, "calibbias", false);
+		} else {
+                        m_adc_calib_offset.at(i) = 2048;
+		}
+		m_adc_calib_gain.at(i) = m_m2k_adc->getDoubleValue(i, "calibscale", false);
+		m_adc_hw_offset_raw.at(i) = m_ad5625_dev->getLongValue(2 + i, "raw", true);
+		m_adc_hw_vert_offset.at(i) = convertRawToVoltsVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(i), m_adc_hw_offset_raw.at(i) - m_adc_calib_offset.at(i));
+
+		m_samplerate = m_m2k_adc->getLongValue("sampling_frequency");
 
 		m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
-		m_samplerate = getSampleRate();
 	}
 }
 
 void M2kAnalogInImpl::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
 {
-	m_adc_calib_gain[channel] = gain;
+
+	m_adc_calib_gain.at(channel) = m_m2k_adc->setDoubleValue(channel, gain, "calibscale");
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
 }
 
 void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int raw_offset)
 {
-	m_adc_calib_offset[channel] = raw_offset;
+	const int rawVertOffset = m_adc_hw_offset_raw.at(channel) - m_adc_calib_offset.at(channel);
+	if (m_calibbias_available) {
+                m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, raw_offset, "calibbias", false);
+        } else {
+                m_adc_calib_offset.at(channel) = raw_offset;
+	}
+
+	int hw_offset_raw = rawVertOffset + m_adc_calib_offset.at(channel);
+	m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
+
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
-	getVerticalOffset(channel);
 }
 
 double M2kAnalogInImpl::convRawToVolts(int sample, double correctionGain,
@@ -511,32 +523,17 @@ std::vector<std::pair<std::string, std::pair<double, double>>> M2kAnalogInImpl::
 
 void M2kAnalogInImpl::setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset)
 {
-	double gain = 1.3;
-	double vref = 1.2;
-	int channel_number = 2 + channel;
-	double hw_range_gain = getValueForRange(m_input_range.at(channel));
-	int raw_vert_offset = static_cast<int>(vertOffset * (1 << 12) * hw_range_gain *
-				     gain / 2.693 / vref) + m_adc_calib_offset.at(channel);
 
-	m_ad5625_dev->setLongValue(channel_number, raw_vert_offset, "raw", true);
-        m_adc_hw_offset_raw.at(channel) = raw_vert_offset;
+	int raw_vert_offset = convertVoltsToRawVerticalOffset(channel, vertOffset);
 	m_adc_hw_vert_offset.at(channel) = vertOffset;
-
+	const int hw_offset_raw = raw_vert_offset + m_adc_calib_offset.at(channel);
+	m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
 }
 
 double M2kAnalogInImpl::getVerticalOffset(ANALOG_IN_CHANNEL channel)
 {
-	double gain = 1.3;
-	double vref = 1.2;
-	int channel_number = 2 + channel;
-	double hw_range_gain = getValueForRange(m_input_range.at(channel));
-        m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->getLongValue(channel_number, "raw", true);
-
-	double vert_offset = (m_adc_hw_offset_raw.at(channel) - m_adc_calib_offset.at(channel)) *
-			2.693 * vref / ((1 << 12) * hw_range_gain * gain);
-	m_adc_hw_vert_offset.at(channel) = vert_offset;
-	return vert_offset;
+	return m_adc_hw_vert_offset.at(channel);
 }
 
 int M2kAnalogInImpl::getOversamplingRatio()
@@ -667,7 +664,7 @@ void M2kAnalogInImpl::setRawVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVer
 {
 	double vertOffset = convertRawToVoltsVerticalOffset(channel, rawVertOffset);
 	m_adc_hw_vert_offset.at(channel) = vertOffset;
-	int hw_offset_raw = rawVertOffset + m_adc_calib_offset.at(channel);
+	const int hw_offset_raw = rawVertOffset + m_adc_calib_offset.at(channel);
 	m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
 }
@@ -677,9 +674,13 @@ void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_off
 	double vertOffset = convertRawToVoltsVerticalOffset(channel, vert_offset);
 	m_adc_hw_vert_offset.at(channel) = vertOffset;
 
-	m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, calib_offset, "calibbias", false);
+	if (m_calibbias_available) {
+                m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, calib_offset, "calibbias", false);
+        } else {
+                m_adc_calib_offset.at(channel) = calib_offset;
+	}
 
-	int hw_offset_raw = vert_offset + m_adc_calib_offset.at(channel);
+	const int hw_offset_raw = vert_offset + m_adc_calib_offset.at(channel);
 	m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
 
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
