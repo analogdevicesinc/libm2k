@@ -46,10 +46,10 @@ using namespace std::placeholders;
 
 M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger) :
 	M2kAnalogIn(),
-	DeviceIn(ctx, adc_dev),
 	m_need_processing(false),
 	m_trigger(trigger)
 {
+	m_m2k_adc = make_shared<DeviceIn>(ctx, adc_dev);
 	m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 	m_ad5625_dev = make_shared<DeviceGeneric>(ctx, "ad5625");
 
@@ -85,17 +85,17 @@ M2kAnalogInImpl::~M2kAnalogInImpl()
 
 void M2kAnalogInImpl::enableChannel(unsigned int chn_idx, bool enable)
 {
-	DeviceGeneric::enableChannel(chn_idx, enable, false);
+	m_m2k_adc->enableChannel(chn_idx, enable, false);
 }
 
 bool M2kAnalogInImpl::isChannelEnabled(unsigned int chn_idx)
 {
-	return DeviceGeneric::isChannelEnabled(chn_idx, false);
+	return m_m2k_adc->isChannelEnabled(chn_idx, false);
 }
 
 unsigned int M2kAnalogInImpl::getNbChannels()
 {
-	return DeviceGeneric::getNbChannels(false);
+	return m_m2k_adc->getNbChannels(false);
 }
 
 void M2kAnalogInImpl::init()
@@ -185,12 +185,12 @@ short M2kAnalogInImpl::convertVoltsToRaw(unsigned int channel, double voltage)
 
 double M2kAnalogInImpl::getCalibscale(unsigned int index)
 {
-	return getDoubleValue(index, "calibscale");
+	return m_m2k_adc->getDoubleValue(index, "calibscale");
 }
 
 double M2kAnalogInImpl::setCalibscale(unsigned int index, double calibscale)
 {
-	return setDoubleValue(index, calibscale, "calibscale");
+	return m_m2k_adc->setDoubleValue(index, calibscale, "calibscale");
 }
 
 M2kHardwareTrigger *M2kAnalogInImpl::getTrigger()
@@ -200,7 +200,7 @@ M2kHardwareTrigger *M2kAnalogInImpl::getTrigger()
 
 void M2kAnalogInImpl::flushBuffer()
 {
-	DeviceIn::flushBuffer();
+	m_m2k_adc->flushBuffer();
 }
 
 /**
@@ -234,12 +234,12 @@ void M2kAnalogInImpl::handleChannelsEnableState(bool before_refill)
 
 std::vector<std::vector<double>> M2kAnalogInImpl::getSamples(unsigned int nb_samples)
 {
-	return getSamples(nb_samples, true);
+	return this->getSamples(nb_samples, true);
 }
 
 std::vector<std::vector<double>> M2kAnalogInImpl::getSamplesRaw(unsigned int nb_samples)
 {
-	return getSamples(nb_samples, false);
+	return this->getSamples(nb_samples, false);
 }
 
 std::vector<std::vector<double>> M2kAnalogInImpl::getSamples(unsigned int nb_samples, bool processed)
@@ -250,8 +250,8 @@ std::vector<std::vector<double>> M2kAnalogInImpl::getSamples(unsigned int nb_sam
 	m_samplerate = getSampleRate();
 	handleChannelsEnableState(true);
 
-	auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
-	auto samps = DeviceIn::getSamples(nb_samples, fp);
+	auto fp = std::bind(&M2kAnalogInImpl::processSample, this, std::placeholders::_1, std::placeholders::_2);
+	auto samps = m_m2k_adc->getSamples(nb_samples, fp);
 
 	handleChannelsEnableState(false);
 	if (processed) {
@@ -267,7 +267,7 @@ void M2kAnalogInImpl::getSamples(std::vector<std::vector<double> > &data, unsign
 	handleChannelsEnableState(true);
 
 	auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
-	DeviceIn::getSamples(data, nb_samples, fp);
+	m_m2k_adc->getSamples(data, nb_samples, fp);
 
 	handleChannelsEnableState(false);
 	m_need_processing = false;
@@ -275,7 +275,7 @@ void M2kAnalogInImpl::getSamples(std::vector<std::vector<double> > &data, unsign
 
 const double* M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples)
 {
-	return getSamplesInterleaved(nb_samples, true);
+	return this->getSamplesInterleaved(nb_samples, true);
 }
 
 const double *M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples, bool processed)
@@ -286,8 +286,8 @@ const double *M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples, bo
 	m_samplerate = getSampleRate();
 	handleChannelsEnableState(true);
 
-	auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
-	auto samps = (const double *)DeviceIn::getSamplesInterleaved(nb_samples, fp);
+	auto fp = std::bind(&M2kAnalogInImpl::processSample, this, std::placeholders::_1, std::placeholders::_2);
+	auto samps = (const double *)m_m2k_adc->getSamplesInterleaved(nb_samples, fp);
 
 	handleChannelsEnableState(false);
 	if (processed) {
@@ -300,7 +300,7 @@ const short *M2kAnalogInImpl::getSamplesRawInterleaved(unsigned int nb_samples)
 {
 	m_samplerate = getSampleRate();
 	handleChannelsEnableState(true);
-	auto samps = DeviceIn::getSamplesRawInterleaved(nb_samples);
+	auto samps = m_m2k_adc->getSamplesRawInterleaved(nb_samples);
 	handleChannelsEnableState(false);
 	return samps;
 }
@@ -555,47 +555,48 @@ double M2kAnalogInImpl::getVerticalOffset(ANALOG_IN_CHANNEL channel)
 
 int M2kAnalogInImpl::getOversamplingRatio()
 {
-	return getLongValue("oversampling_ratio");
+	return m_m2k_adc->getLongValue("oversampling_ratio");
 }
 
 int M2kAnalogInImpl::getOversamplingRatio(unsigned int chn_idx)
 {
-	return getLongValue(chn_idx, "oversampling_ratio");
+	return m_m2k_adc->getLongValue(chn_idx, "oversampling_ratio");
 }
 
 int M2kAnalogInImpl::setOversamplingRatio(int oversampling_ratio)
 {
-	return setLongValue(oversampling_ratio, "oversampling_ratio");
+	return m_m2k_adc->setLongValue(oversampling_ratio, "oversampling_ratio");
 }
 
 int M2kAnalogInImpl::setOversamplingRatio(unsigned int chn_idx, int oversampling_ratio)
 {
-	return setLongValue(chn_idx, oversampling_ratio, "oversampling_ratio");
+	return m_m2k_adc->setLongValue(chn_idx, oversampling_ratio, "oversampling_ratio");
 }
 
 
 double M2kAnalogInImpl::getSampleRate()
 {
-	return getDoubleValue("sampling_frequency");
+	return m_m2k_adc->getDoubleValue("sampling_frequency");
 }
 
 double M2kAnalogInImpl::getSampleRate(unsigned int chn_idx)
 {
-	return getDoubleValue(chn_idx, "sampling_frequency");
+	return m_m2k_adc->getDoubleValue(chn_idx, "sampling_frequency");
 }
 
 double M2kAnalogInImpl::setSampleRate(double samplerate)
 {
-	return setDoubleValue(samplerate, "sampling_frequency");
+	m_samplerate = m_m2k_adc->setLongValue((int)samplerate, "sampling_frequency");
 	m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_vert_offset.at(0));
 	m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_vert_offset.at(1));
+	return m_samplerate;
 }
 
 double M2kAnalogInImpl::setSampleRate(unsigned int chn_idx, double samplerate)
 {
-	return setDoubleValue(chn_idx, samplerate, "sampling_frequency");
-	m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_vert_offset.at(0));
-	m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_vert_offset.at(1));
+	m_samplerate = m_m2k_adc->setLongValue((int)samplerate, "sampling_frequency");
+	m_trigger->setCalibParameters(chn_idx, getScalingFactor(chn_idx), m_adc_hw_vert_offset.at(chn_idx));
+	return m_samplerate;
 }
 
 double M2kAnalogInImpl::getFilterCompensation(double samplerate)
@@ -622,35 +623,35 @@ double M2kAnalogInImpl::getValueForRange(M2K_RANGE range)
 
 struct IIO_OBJECTS M2kAnalogInImpl::getIioObjects()
 {
-	return DeviceIn::getIioObjects();
+	return m_m2k_adc->getIioObjects();
 }
 
 void M2kAnalogInImpl::cancelBuffer()
 {
-	DeviceIn::cancelBuffer();
+	m_m2k_adc->cancelBuffer();
 }
 
 void M2kAnalogInImpl::setKernelBuffersCount(unsigned int count)
 {
-	DeviceGeneric::setKernelBuffersCount(count);
+	m_m2k_adc->setKernelBuffersCount(count);
 }
 
 std::vector<double> M2kAnalogInImpl::getAvailableSampleRates()
 {
-	return DeviceGeneric::getAvailableSampleRates();
+	return m_m2k_adc->getAvailableSampleRates();
 }
 
 std::string M2kAnalogInImpl::getName()
 {
-	return DeviceGeneric::getName();
+	return m_m2k_adc->getName();
 }
 
 void M2kAnalogInImpl::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg, int16_t *src)
 {
-	DeviceGeneric::convertChannelHostFormat(chn_idx, avg, src, false);
+	m_m2k_adc->convertChannelHostFormat(chn_idx, avg, src, false);
 }
 
 void M2kAnalogInImpl::convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src)
 {
-	DeviceGeneric::convertChannelHostFormat(chn_idx, avg, src, false);
+	m_m2k_adc->convertChannelHostFormat(chn_idx, avg, src, false);
 }
