@@ -33,7 +33,7 @@
 
 namespace libm2k {
 namespace analog {
-class M2kAnalogInImpl : public M2kAnalogIn, public libm2k::utils::DeviceIn
+class M2kAnalogInImpl : public M2kAnalogIn
 {
 public:
 	M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
@@ -120,6 +120,7 @@ public:
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
+	std::shared_ptr<libm2k::utils::DeviceIn> m_m2k_adc;
 	bool m_need_processing;
 
 	double m_samplerate;
