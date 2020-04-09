@@ -304,12 +304,7 @@ void Buffer::getSamples(std::vector<unsigned short> &data, unsigned int nb_sampl
 
 	data.clear();
 
-	bool new_buffer = (nb_samples != m_last_nb_samples);
-	if (new_buffer) {
-		destroy();
-		m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
-		m_last_nb_samples = nb_samples;
-	}
+	initializeBuffer(nb_samples, false);
 
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
@@ -343,12 +338,7 @@ const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 		return nullptr;
 	}
 
-	bool new_buffer = (nb_samples != m_last_nb_samples);
-	if (new_buffer) {
-		destroy();
-		m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
-		m_last_nb_samples = nb_samples;
-	}
+	initializeBuffer(nb_samples, false);
 
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
@@ -427,12 +417,7 @@ void* Buffer::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 		return nullptr;
 	}
 
-	bool new_buffer = (nb_samples != m_last_nb_samples);
-	if (new_buffer) {
-		destroy();
-		m_buffer = iio_device_create_buffer(m_dev, nb_samples, false);
-		m_last_nb_samples = nb_samples;
-	}
+	initializeBuffer(nb_samples, false);
 
 	if (!m_buffer) {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the RX buffer");
