@@ -181,6 +181,12 @@ public:
 	*/
 	virtual void stopBufferOut() = 0;
 
+	/**
+	 * @brief Create the buffer for all channels and start the acquisition
+	 * @param nb_samples size of the buffer in samples
+	 */
+	virtual void startAcquisition(unsigned int nb_samples) = 0;
+
 
 	/**
 	 * @brief Destroy the buffer

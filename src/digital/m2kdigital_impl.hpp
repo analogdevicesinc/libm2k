@@ -60,7 +60,7 @@ public:
 	DIO_LEVEL getValueRaw(unsigned int index);
 
 	void stopBufferOut();
-
+	void startAcquisition(unsigned int nb_samples) override;
 	void flushBufferIn();
 
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
