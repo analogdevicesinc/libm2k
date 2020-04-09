@@ -40,6 +40,11 @@ DeviceIn::DeviceIn(struct iio_context* context, std::string dev_name) :
 	m_channel_list = m_channel_list_in;
 }
 
+void DeviceIn::initializeBuffer(unsigned int nb_samples)
+{
+	m_buffer->initializeBuffer(nb_samples, false);
+}
+
 void DeviceIn::cancelBuffer()
 {
 	if (!m_buffer) {

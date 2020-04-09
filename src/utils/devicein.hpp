@@ -58,6 +58,7 @@ public:
 			const std::function<double (int16_t, unsigned int)> &process);
 	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples);
 
+	void initializeBuffer(unsigned int nb_samples);
 	void cancelBuffer();
 	void flushBuffer();
 	struct IIO_OBJECTS getIioObjects();
