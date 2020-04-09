@@ -39,6 +39,7 @@ public:
 	~M2kAnalogInImpl() override;
 
 	void init() override;
+	void startAcquisition(unsigned int nb_samples) override;
 	void flushBuffer() override;
 
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples) override;

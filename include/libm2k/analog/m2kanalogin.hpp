@@ -56,6 +56,12 @@ public:
 	*/
 	virtual void init() = 0;
 
+	/**
+	 * @brief Create the buffer for both channels and start the acquisition
+	 * @param nb_samples size of the buffer in samples for each channel
+	 */
+	virtual void startAcquisition(unsigned int nb_samples) = 0;
+
 
 	/**
 	 * @brief Destroy the buffer

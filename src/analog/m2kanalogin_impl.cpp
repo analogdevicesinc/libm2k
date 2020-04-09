@@ -197,6 +197,12 @@ libm2k::M2kHardwareTrigger *M2kAnalogInImpl::getTrigger()
 	return m_trigger;
 }
 
+
+void M2kAnalogInImpl::startAcquisition(unsigned int nb_samples)
+{
+	m_m2k_adc->initializeBuffer(nb_samples);
+}
+
 void M2kAnalogInImpl::flushBuffer()
 {
 	m_m2k_adc->flushBuffer();
