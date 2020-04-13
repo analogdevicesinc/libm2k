@@ -36,9 +36,44 @@ configure_file(
 )
 
 
+if(ENABLE_PYTHON)
+	find_package(Sphinx REQUIRED)
+
+	if (NOT SPHINX_EXECUTABLE)
+	    message(FATAL_ERROR "Sphinx not found!")
+	endif()
+
+	set(BINARY_SPHINX_DIR "${DOXY_WORKING_DIR}/html/sphinx")
+	# configured documentation tools and intermediate build results
+	set(BINARY_BUILD_DIR "${BINARY_SPHINX_DIR}/build")
+	# Sphinx cache with pickled ReST documents
+	set(SPHINX_CACHE_DIR "${BINARY_SPHINX_DIR}/build/doctrees")
+	# HTML output directory
+	set(SPHINX_HTML_DIR "${BINARY_SPHINX_DIR}/build/html")
+
+	configure_file(
+		"${CMAKE_CURRENT_SOURCE_DIR}/sphinx/source/conf.py.in"
+		"${BINARY_SPHINX_DIR}/build/conf.py"
+		@ONLY)
+	add_custom_target(libm2k_sphinx_doc
+		${SPHINX_EXECUTABLE}
+		-q -b html
+		-c "${BINARY_BUILD_DIR}"
+		-d "${SPHINX_CACHE_DIR}"
+		"${CMAKE_CURRENT_SOURCE_DIR}/sphinx/source"
+		"${SPHINX_HTML_DIR}"
+		COMMENT "---Building HTML documentation with Sphinx for Python Bindings")
+
+endif()
+
 add_custom_target(doc
     COMMAND ${DOXYGEN_PATH} Doxyfile.doxy
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DOXY_WORKING_DIR}/html
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img ${DOXY_WORKING_DIR}/html/img
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sphinx ${DOXY_WORKING_DIR}/html/sphinx
     WORKING_DIRECTORY ${DOXY_WORKING_DIR}
 )
+
+if(ENABLE_PYTHON)
+	add_dependencies(doc libm2k_sphinx_doc)
+endif()
