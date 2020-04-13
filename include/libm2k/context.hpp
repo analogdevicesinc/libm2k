@@ -43,31 +43,138 @@ class Lidar;
 class M2k;
 class Generic;
 
+/** @defgroup context Context
+ * @brief Contains the representation of a generic IIO context
+ * @{
+ * @class Context
+ * @brief Controls the IIO context
+ */
 class LIBM2K_API Context {
 public:
+	/**
+	 * @private
+	 */
 	virtual ~Context() {}
 
+
+	/**
+	 * @private
+	 */
 	virtual void init() = 0;
+
+
+	/**
+	 * @private
+	 */
 	virtual void deinitialize() = 0;
 
+
+	/**
+	 * @brief Get the URI of the current context
+	 * @return string containt the context URI (ex: "usb:1.2.3", "ip:192.168.2.1")
+	 */
 	virtual std::string getUri() = 0;
-	virtual libm2k::analog::DMM* getDMM(unsigned int) = 0;
-	virtual libm2k::analog::DMM* getDMM(std::string) = 0;
+
+
+	/**
+	 * @brief Retrieve the DMM object at a certain index
+	 * @param index The index corresponding to the DMM
+	 * @return On success, a pointer to a DMM object
+	 * @return On error, nullptr is returned
+	 */
+	virtual libm2k::analog::DMM* getDMM(unsigned int index) = 0;
+
+
+	/**
+	 * @brief Retrieve the DMM object which has the provided name
+	 * @param name The name corresponding to the DMM
+	 * @return On success, a pointer to a DMM object
+	 * @return On error, nullptr is returned
+	 */
+	virtual libm2k::analog::DMM* getDMM(std::string name) = 0;
+
+
+	/**
+	 * @brief Retrieve all the DMM objects
+	 * @return A list of DMM objects\n
+	 */
 	virtual std::vector<libm2k::analog::DMM*> getAllDmm() = 0;
 
 
+	/**
+	 * @brief Retrieve all the available context attributes
+	 * @return A list of strings containg all the context attributes
+	 */
 	virtual std::vector<std::string> getAvailableContextAttributes() = 0;
+
+
+	/**
+	 * @brief Retrieve the value of one context attribute
+	 * @param attr The name of the required attribute
+	 * @return On success, return a string containing the value of the attribute
+	 * @throw On error, throw an exception if the attribute is not found
+	 */
 	virtual std::string getContextAttributeValue(std::string attr) = 0;
+
+
+	/**
+	 * @brief Retrieve a detailed context description
+	 * @return string containing the current context description
+	 */
 	virtual std::string getContextDescription() = 0;
+
+
+	/**
+	 * @brief Retrieve the current context serial number
+	 * @return string containing the current context serial number
+	 */
 	virtual std::string getSerialNumber() = 0;
+
+
+	/**
+	 * @brief Retrieve all the available devices
+	 * @return a list of strings containing all the devices
+	 */
 	virtual std::unordered_set<std::string> getAllDevices() = 0;
 
+
+	/**
+	 * @brief Convert the current context to M2k context, if possible
+	 * @return On success, return the corresponding M2k object
+	 * @return On error, return a nullptr
+	 */
 	virtual M2k* toM2k() = 0;
+
+
+	/**
+	 * @brief Convert the current context to Lidar context, if possible
+	 * @return On success, return the corresponding Lidar object
+	 * @return On error, return a nullptr
+	 */
 	virtual Lidar* toLidar() = 0;
+
+
+	/**
+	 * @brief Convert the current context to Generic context, if possible
+	 * @return On success, return the corresponding Generic object
+	 * @return On error, return a nullptr
+	 */
 	virtual Generic* toGeneric() = 0;
 
+
+	/**
+	 * @brief Retrieve the number of DMM objects
+	 * @return an unsigned int representing the number of DMM objects in the context
+	 */
 	virtual unsigned int getDmmCount() = 0;
+
+
+	/**
+	 * @brief Retrieve the firmware version of the current context
+	 * @return a string containing the firmware version
+	 */
 	virtual std::string getFirmwareVersion() = 0;
+
 
 	/**
 	* @brief Set a timeout for I/O operations

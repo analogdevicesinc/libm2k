@@ -341,13 +341,14 @@ public:
 
 
 	/**
-	 * @brief Select what should be redirected on the TO (trigger out) pin.
-	 *	The options are (none, trigger in, digital in, analog in).
-	 * @param output_select : of type M2K_TRIGGER_OUT_SELECT:
-	 *	SELECT_TRIGGER_IN - forwards trigger events from TI pin(trigger in);
-	 *	SELECT_DIGITAL_IN - forwards trigger events from DigitalIn interface;
-	 *      SELECT_ANALOG_IN  - forwards trigger events from AnalogIn interface;
-	 *	SELECT_NONE - no trigger event is forwarded;
+	 * @brief Select what should be redirected on the TO (trigger out) pin.\n
+	 *	The options are (none, trigger in, digital in, analog in).\n
+	 * @param output_select : of type M2K_TRIGGER_OUT_SELECT:\n
+	 *	SELECT_TRIGGER_IN - forwards trigger events from TI pin(trigger in);\n
+	 *	SELECT_DIGITAL_IN - forwards trigger events from DigitalIn interface;\n
+	 *	SELECT_ANALOG_IN  - forwards trigger events from AnalogIn interface;\n
+	 *	SELECT_NONE - no trigger event is forwarded;\n
+	 *
 	 * @note Only available from firmware v0.24.
 	 */
 	virtual void setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT output_select);
@@ -355,8 +356,11 @@ public:
 
 	/**
 	 * @brief Check which trigger events are forwarded on the TO (trigger out) pin.
-	 * @return M2K_TRIGGER_OUT_SELECT : {SELECT_NONE, SELECT_TRIGGER_IN,
-	 *	SELECT_DIGITAL_IN, SELECT_ANALOG_IN}
+	 * @return M2K_TRIGGER_OUT_SELECT :\n
+	 *	SELECT_NONE;\n
+	 *	SELECT_TRIGGER_IN;\n
+	 *	SELECT_DIGITAL_IN;\n
+	 *	SELECT_ANALOG_IN;\n
 	 * @note Only available from firmware v0.24.
 	 */
 	virtual M2K_TRIGGER_OUT_SELECT getAnalogExternalOutSelect();
@@ -382,10 +386,10 @@ public:
 
 	/**
 	 * @brief Select which interface triggers the DigitalIn.
-	 * @param external_src: of type M2K_TRIGGER_SOURCE_DIGITAL:
-	 *	SRC_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalIn interface;
-	 *	SRC_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalIn interface;
-	 *	SRC_NONE - trigger events on the DigitalIn are conditioned by the internal digital trigger structure;
+	 * @param external_src: of type M2K_TRIGGER_SOURCE_DIGITAL:\n
+	 *	SRC_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalIn interface;\n
+	 *	SRC_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalIn interface;\n
+	 *	SRC_NONE - trigger events on the DigitalIn are conditioned by the internal digital trigger structure;\n
 	 * @note Only available from firmware v0.24.
 	 */
 	virtual void setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src);
@@ -393,7 +397,10 @@ public:
 
 	/**
 	 * @brief Check which is the source of the DigitalIn interface trigger event.
-	 * @return M2K_TRIGGER_SOURCE_DIGITAL : {SRC_TRIGGER_IN, SRC_ANALOG_IN, SRC_NONE}
+	 * @return M2K_TRIGGER_SOURCE_DIGITAL :\n
+	 *	SRC_TRIGGER_IN;\n
+	 *	SRC_ANALOG_IN;\n
+	 *	SRC_NONE;\n
 	 * @note Only available from firmware v0.24.
 	 */
 	virtual M2K_TRIGGER_SOURCE_DIGITAL getDigitalSource() const;
