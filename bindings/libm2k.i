@@ -22,9 +22,11 @@
 %apply void *VOID_UINT_PTR { unsigned short * getSamplesP}
 #endif
 
+#ifndef DOXYGEN
+%feature("autodoc", "3");
+#endif
 
 %allowexception;
-%feature("autodoc", "3");
 
 %ignore pushInterleaved;
 %ignore pushRawInterleaved;
