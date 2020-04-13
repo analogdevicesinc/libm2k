@@ -55,9 +55,7 @@ public:
 
 	/**
 	* @brief Set the direction for all digital channels
-	*
 	* @param mask A bitmask
-	*
 	* @note Each bit of the mask corresponds to the channel with the same index. The value of the bit represents the channel's direction. O - input, 1 - output
 	*/
 	virtual void setDirection(unsigned short mask) = 0;
@@ -65,7 +63,6 @@ public:
 
 	/**
 	* @brief Set the direction of the given digital channel
-	*
 	* @param index The index corresponding to the channel
 	* @param dir An enumerator that indicates the direction of a channel
 	*/
@@ -74,10 +71,8 @@ public:
 
 	/**
 	* @brief Set the direction of the given digital channel
-	*
 	* @param index The index corresponding to the channel
 	* @param dir A boolean value that corresponds to one direction
-	*
 	* @note The boolean value for input direction is false and for output direction is true
 	*/
 	virtual void setDirection(unsigned int index, bool dir) = 0;
@@ -85,7 +80,6 @@ public:
 
 	/**
 	* @brief Set the direction of the given digital channel
-	*
 	* @param index An enumerator corresponding to the channel's index
 	* @param dir A boolean value that corresponds to one direction
 	* @note The boolean value for input direction is false and for output direction is true
@@ -95,7 +89,6 @@ public:
 
 	/**
 	* @brief Set the direction of the given digital channel
-	*
 	* @param index An enumerator corresponding to the channel's index
 	* @param dir An enumerator that indicates the direction of a channel
 	*/
@@ -397,14 +390,10 @@ public:
 
 	/**
 	 * @brief Retrieve a specific number of samples
-	 * @param data - a reference to a vector owned/created by the client;
-	 * the vector will be cleaned and then filled with samples;
-	 * @param nb_samples The number of samples that will be retrieved
+	 * @param data - a reference to a vector owned/created by the client
+	 * @param nb_samples The number of samples that will be retrieved. The vector will be cleaned and then filled with samples.
 	 */
 	virtual void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples) = 0;
-
-
-	/** @} */
 
 };
 }

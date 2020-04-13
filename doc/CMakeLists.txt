@@ -11,9 +11,10 @@ set(SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/libm2k)
 set(DOXY_WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR}/doxygen_doc)
 
 
-set(PROJECT_NAME "LibM2K")
+set(PROJECT_NAME "libm2k")
 set(DOCUMENTED_FILES "${SOURCES_DIR}/m2k.hpp \\
                       ${SOURCES_DIR}/contextbuilder.hpp \\
+                      ${SOURCES_DIR}/context.hpp \\
                       ${SOURCES_DIR}/digital/m2kdigital.hpp \\
                       ${SOURCES_DIR}/digital/enums.hpp \\
                       ${SOURCES_DIR}/analog/m2kanalogin.hpp \\
@@ -21,6 +22,8 @@ set(DOCUMENTED_FILES "${SOURCES_DIR}/m2k.hpp \\
                       ${SOURCES_DIR}/analog/m2kpowersupply.hpp \\
                       ${SOURCES_DIR}/analog/dmm.hpp \\
                       ${SOURCES_DIR}/analog/enums.hpp \\
+                      ${SOURCES_DIR}/digital/enums.hpp \\
+                      ${SOURCES_DIR}/enums.hpp \\
 		       ${SOURCES_DIR}/m2khardwaretrigger.hpp \\
 		       ${SOURCES_DIR}/enums.hpp \\
                       "
