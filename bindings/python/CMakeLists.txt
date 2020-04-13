@@ -18,6 +18,17 @@ else()
 	set(CMAKE_SWIG_FLAGS "")
 endif()
 
+if(ENABLE_DOC)
+	string(COMPARE LESS ${SWIG_VERSION} "4.0.0" SWIG_VERSION_ERROR)
+	if(SWIG_VERSION_ERROR)
+		message("-- SWIG Doxygen for Python disabled. SWIG 4.0.0 required (found version " ${SWIG_VERSION} " )")
+	else()
+		message("-- SWIG Doxygen for Python enabled (found version " ${SWIG_VERSION} " )")
+		set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-doxygen")
+		set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DDOXYGEN)
+	endif()
+endif()
+
 SET_SOURCE_FILES_PROPERTIES(../${PROJECT_NAME}.i PROPERTIES CPLUSPLUS ON)
 
 set(CMAKE_SWIG_OUTDIR ${CMAKE_BINARY_DIR})
