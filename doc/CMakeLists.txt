@@ -26,6 +26,7 @@ set(DOCUMENTED_FILES "${SOURCES_DIR}/m2k.hpp \\
                       ${SOURCES_DIR}/enums.hpp \\
 		       ${SOURCES_DIR}/m2khardwaretrigger.hpp \\
 		       ${SOURCES_DIR}/enums.hpp \\
+                     ${CMAKE_CURRENT_SOURCE_DIR}/mainpage.dox
                       "
 )
 
