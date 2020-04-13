@@ -39,5 +39,6 @@ configure_file(
 add_custom_target(doc
     COMMAND ${DOXYGEN_PATH} Doxyfile.doxy
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DOXY_WORKING_DIR}/html
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img ${DOXY_WORKING_DIR}/html/img
     WORKING_DIRECTORY ${DOXY_WORKING_DIR}
 )
