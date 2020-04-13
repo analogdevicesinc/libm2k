@@ -448,10 +448,10 @@ public:
 	/**
 	* @brief Retrieve a specific number of samples from each channel
 	*
-	* @param data - a reference to a vector owned/created by the client;
-	* the vector will be cleaned and then filled with samples;
+	* @param data - a reference to a vector owned/created by the client
 	* @param nb_samples The number of samples that will be retrieved
 	*
+	* @note The vector will be cleaned and then filled with samples
 	* @note The index of the list corresponds to the index of the channel
 	*/
 	virtual void getSamples(std::vector<std::vector<double>> &data, unsigned int nb_samples) = 0;

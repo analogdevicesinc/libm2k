@@ -111,7 +111,7 @@ private:
 /**
  * @addtogroup context
  * @{
- * @defgroup context ContextBuilder
+ * @defgroup contextbuilder ContextBuilder
  * @brief Creates/destroys the context
  * @{
  */
