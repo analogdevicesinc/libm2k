@@ -120,6 +120,8 @@ public:
 	void cancelAcquisition() override;
 
 	void getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples);
+
+	std::string getChannelName(unsigned int channel);
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;

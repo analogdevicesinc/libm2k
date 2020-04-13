@@ -456,6 +456,13 @@ public:
 	*/
 	virtual void getSamples(std::vector<std::vector<double>> &data, unsigned int nb_samples) = 0;
 
+	/**
+	 * @brief Get the channel name for each ADC channel
+	 * @param channel - unsigned int representing the index of the channel
+	 * @return std::string - name of the channel
+	 */
+	virtual std::string getChannelName(unsigned int channel) = 0;
+
 };
 }
 }

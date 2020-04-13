@@ -23,6 +23,7 @@
 #include <libm2k/m2kexceptions.hpp>
 #include "utils/channel.hpp"
 
+using namespace libm2k;
 using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std::placeholders;
@@ -276,6 +277,16 @@ void M2kAnalogInImpl::getSamples(std::vector<std::vector<double> > &data, unsign
 
 	handleChannelsEnableState(false);
 	m_need_processing = false;
+}
+
+string M2kAnalogInImpl::getChannelName(unsigned int channel)
+{
+	std::string name = "";
+	auto chn = m_m2k_adc->getChannel(channel, false);
+	if (chn) {
+		name = chn->getName();
+	}
+	return name;
 }
 
 const double* M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples)
