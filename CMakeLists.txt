@@ -30,6 +30,8 @@ project(libm2k LANGUAGES CXX VERSION ${LIBM2K_VERSION})
 include(GNUInstallDirs)
 include(FindGit OPTIONAL)
 
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
+
 # build a shared library by default
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
@@ -79,8 +81,6 @@ if (GIT_FOUND)
 		)
 	endif()
 endif()
-
-list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 set(LIBM2K_VERSION_FULL v${PROJECT_VERSION} - ${LIBM2K_VERSION_GIT})
 
