@@ -253,7 +253,7 @@ int32_t i2c_init(struct i2c_desc **desc,
 
 		auto m2KI2CDesc = (m2k_i2c_desc *) (*desc)->extra;
 
-		m2KI2CDesc->digital->flushBufferIn();
+		m2KI2CDesc->digital->stopAcquisition();
 		m2KI2CDesc->digital->setKernelBuffersCountIn(1);
 
 		m2KI2CDesc->digital->setSampleRateIn(m2KI2CDesc->sample_rate);

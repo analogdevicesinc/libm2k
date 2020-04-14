@@ -100,7 +100,7 @@ int32_t uart_init(struct uart_desc **desc, const struct uart_init_param *param)
 		m2KUartDesc->sample_rate = sampleRate;
 		m2KUartDesc->total_error_count = 0;
 
-		m2KUartDesc->digital->flushBufferIn();
+		m2KUartDesc->digital->stopAcquisition();
 		m2KUartDesc->digital->setKernelBuffersCountIn(1);
 
 		//set sampling frequencies

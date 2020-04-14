@@ -61,7 +61,7 @@ public:
 
 	void stopBufferOut();
 	void startAcquisition(unsigned int nb_samples) override;
-	void flushBufferIn();
+	void stopAcquisition();
 
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
 	const unsigned short *getSamplesP(unsigned int nb_samples);

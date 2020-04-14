@@ -127,7 +127,7 @@ void UartTerminal::handleInit()
 
 	setInputChannel(rx, m2KUartDescRx->digital);
 
-	m2KUartDescRx->digital->flushBufferIn();
+	m2KUartDescRx->digital->stopAcquisition();
 	m2KUartDescRx->digital->setKernelBuffersCountIn(16);
 
 	std::thread thread_decoder(&UartTerminal::processStream, this);

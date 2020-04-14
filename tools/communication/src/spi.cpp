@@ -195,7 +195,7 @@ int32_t spi_init(struct spi_desc **desc,
 		auto m2KSpiInit = (m2k_spi_init *) param->extra;
 
 		m2KSpiDesc->miso = m2KSpiInit->miso;
-		m2KSpiDesc->digital->flushBufferIn();
+		m2KSpiDesc->digital->stopAcquisition();
 		m2KSpiDesc->digital->setKernelBuffersCountIn(1);
 		m2KSpiDesc->digital->setSampleRateIn(m2KSpiDesc->sample_rate);
 		setInputChannel(m2KSpiDesc->miso, m2KSpiDesc->digital);
