@@ -586,7 +586,7 @@ struct IIO_OBJECTS M2kAnalogOutImpl::getIioObjects()
 void M2kAnalogOutImpl::cancelBuffer()
 {
 	for (DeviceOut *dev : m_dac_devices) {
-		dev->cancelBuffer();
+		dev->stop();
 	}
 }
 
