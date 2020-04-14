@@ -43,6 +43,11 @@ handle_ubuntu_docker() {
 }
 
 handle_doxygen() {
+	mkdir -p build
+	cd build
+	cmake -DENABLE_PYTHON=ON -DENABLE_CSHARP=OFF -DENABLE_DOC=ON ..
+	make && sudo make install
+	cd ..
 	./CI/travis/doxygen.sh
 }
 
