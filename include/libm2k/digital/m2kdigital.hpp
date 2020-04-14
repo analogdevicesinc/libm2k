@@ -197,7 +197,7 @@ public:
 	/**
 	* @brief Cancel all rx-buffer operations
 	*/
-	virtual void cancelBufferIn() = 0;
+	virtual void cancelAcquisition() = 0;
 
 	/**
 	* @brief Cancel all tx-buffer operations
