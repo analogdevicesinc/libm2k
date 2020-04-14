@@ -117,7 +117,7 @@ public:
 	libm2k::M2kHardwareTrigger* getTrigger() override;
 	struct IIO_OBJECTS getIioObjects() override;
 
-	void cancelBuffer() override;
+	void cancelAcquisition() override;
 
 	void getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples);
 private:

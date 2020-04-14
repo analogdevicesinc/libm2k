@@ -615,7 +615,7 @@ struct libm2k::IIO_OBJECTS M2kAnalogInImpl::getIioObjects()
 	return m_m2k_adc->getIioObjects();
 }
 
-void M2kAnalogInImpl::cancelBuffer()
+void M2kAnalogInImpl::cancelAcquisition()
 {
 	m_m2k_adc->cancelBuffer();
 }
