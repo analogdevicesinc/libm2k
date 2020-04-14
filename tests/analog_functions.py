@@ -132,7 +132,7 @@ def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig, dir_name, fi
             input_data = ain.getSamples(n)
         except:
             print('Timeout occured')
-        ain.flushBuffer()
+        ain.stopAcquisition()
 
         #generate the buffer that should be received and is compared to the actual input data
         ref_data_ampl=i*ref_data
@@ -200,7 +200,7 @@ def test_shape(channel,out_data,ref_data,ain,aout,trig, ch_ratio, shapename, dir
             input_data = ain.getSamples(n)[channel]
         except:
             print('Timeout occured')
-        ain.flushBuffer()
+        ain.stopAcquisition()
         if channel==0:
             plot_to_file(str(shapename[i])+' signal  on channel 0',  input_data,dir_name, str(shapename[i])+'signal_ch0.png')
             shape_csv_vals[str(shapename[i])+' ch0']=input_data
@@ -263,7 +263,7 @@ def phase_diff_ch0_ch1( aout,ain,trig, dir_name, file, csv_path):
             input_data = ain.getSamples(in_samples)
         except:
             print("Timeout ocurred")
-        ain.flushBuffer()
+        ain.stopAcquisition()
         plot_to_file('Same signal on both analog channels, ADC Sample rate:'+str(sr),input_data[libm2k.ANALOG_IN_CHANNEL_1][90000:in_samples], dir_name, 'ch_phase_diff'+str(sr)+'.png', data1=input_data[libm2k.ANALOG_IN_CHANNEL_2][90000:in_samples])
         plt.close()
         corr, _= pearsonr(input_data[libm2k.ANALOG_IN_CHANNEL_1], input_data[libm2k.ANALOG_IN_CHANNEL_2])#compute crrelation between the signals on the analog channels
@@ -318,7 +318,7 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
                 input_data=ain.getSamples(round(n/4))[channel]
             except:
                  print('Timeout occured')
-            ain.flushBuffer()
+            ain.stopAcquisition()
             if channel==0:
                 plot_to_file('Trigger condition: Rising Edge channel 0, level='+str(level),  input_data, dir_name, 'trig_RISING_EDGE_ANALOG_ch0.png')
                 trig_csv_vals['Rising Edge ch0']=input_data
@@ -341,7 +341,7 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
                 input_data=ain.getSamples(round(n/4))[channel]
             except:
                  print('Timeout occured')
-            ain.flushBuffer()
+            ain.stopAcquisition()
             if channel==0:
                 plot_to_file('Trigger condition: Falling Edge channel 0, level='+str(level),  input_data, dir_name, 'trig_falling_edge_ch0.png')
                 trig_csv_vals['Falling Edge ch0']=input_data
@@ -365,7 +365,7 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
                 input_data=ain.getSamples(round(n/4))[channel]
             except:
                  print('Timeout occured')
-            ain.flushBuffer()
+            ain.stopAcquisition()
             if channel==0:
                 plot_to_file('Trigger condition: Low Level channel 0, level='+str(low),  input_data, dir_name,'trig_LOW_LEVEL_ANALOG_ch0.png')
                 trig_csv_vals['Low level ch0']=input_data
@@ -388,7 +388,7 @@ def test_analog_trigger(channel, trig, aout, ain, dir_name, file, csv_path):
                 input_data=ain.getSamples(round(n/4))[channel]
             except:
                 print('Timeout occured')
-            ain.flushBuffer()
+            ain.stopAcquisition()
             if channel==0:
                 plot_to_file('Trigger condition: High Level channel 0, level='+str(high),  input_data, dir_name, 'trig_HIGH_LEVEL_ANALOG_ch0.png')
                 trig_csv_vals['High level ch0']=input_data
@@ -439,7 +439,7 @@ def test_offset(out_data,n, ain, aout,trig, channel, dir_name, file, csv_path ):
             input_data = ain.getSamples(n)
         except:
             print('Timeout occured')
-        ain.flushBuffer()
+        ain.stopAcquisition()
 
         for s in input_data[channel] :
             sum=sum+s
@@ -592,7 +592,7 @@ def get_samples_notcyclic(n_samples, ain, channel):
         data=ain.getSamples(n_samples)[channel]
     except:
         print('Timeout occured')
-    ain.flushBuffer()
+    ain.stopAcquisition()
     return data
 
 def compute_frequency(channel, ain, aout, trig, file):
@@ -648,7 +648,7 @@ def compute_frequency(channel, ain, aout, trig, file):
                     input_data=ain.getSamples(round(in_nr_samples))[channel]
                 except:
                     print('Timeout occured')
-                ain.flushBuffer()
+                ain.stopAcquisition()
                 corr, _=pearsonr(ref_data,input_data) #compare the acquired signal with the expected signal
                 if corr>0.8: # a correlation coeff>0.7 => strong correlation
                     in_freq=(adc_sr/len(input_data)) #if the signal is ok, compute its frequency
@@ -734,7 +734,7 @@ def test_oversampling_ratio(channel, ain, aout,trig, file, csv_path):
             input_data=ain.getSamples(in_nr_samples)[channel]
         except:
             print("Timeout ocurred")
-        ain.flushBuffer()
+        ain.stopAcquisition()
        
         c=0 #set the counter of rising edge zero crossings to 0
         for i in range(1,len(input_data)):

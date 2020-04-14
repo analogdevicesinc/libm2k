@@ -65,7 +65,7 @@ aout.pushRawBytes(0, buffer1_raw, NB_OUT_SAMPLES)
 aout.pushRawBytes(1, buffer2_raw, NB_OUT_SAMPLES)
 
 for i in range(10):					# gets 10 triggered samples then quits
-	ain.flushBuffer()
+	ain.stopAcquisition()
 	data = ain.getSamplesRawInterleaved(1000)	# allows a memory view
 	data = data.tobytes()				# convert the memory view to a readable bytearray
 	count = int(len(data) / 2)
