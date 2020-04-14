@@ -225,7 +225,7 @@ namespace stream
 
 
                 dig.stopBufferOut();
-                dig.flushBufferIn();
+                dig.stopAcquisition();
                 k++;
             }
 

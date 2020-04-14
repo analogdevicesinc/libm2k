@@ -207,7 +207,7 @@ int main()
 
 		sr_divider -= SR_DIVIDER_STEP;
 
-		dig->flushBufferIn();
+		dig->stopAcquisition();
 		dig->stopBufferOut();
 		values.clear();
 	}
