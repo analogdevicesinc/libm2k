@@ -418,7 +418,7 @@ struct IIO_OBJECTS M2kDigitalImpl::getIioObjects()
 }
 
 
-void M2kDigitalImpl::cancelBufferIn()
+void M2kDigitalImpl::cancelAcquisition()
 {
 	m_dev_read->cancelBuffer();
 }
