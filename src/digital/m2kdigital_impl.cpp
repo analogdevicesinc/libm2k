@@ -248,7 +248,7 @@ void M2kDigitalImpl::startAcquisition(unsigned int nb_samples)
 	m_dev_read->initializeBuffer(nb_samples);
 }
 
-void M2kDigitalImpl::flushBufferIn()
+void M2kDigitalImpl::stopAcquisition()
 {
 	m_dev_read->flushBuffer();
 }
