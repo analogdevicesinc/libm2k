@@ -172,6 +172,20 @@ namespace libm2k {
 
 
 	/**
+	 * @enum CONTEXT_INFO
+	 * @brief Additional information about the context
+	 */
+	struct CONTEXT_INFO {
+		std::string id_vendor;
+		std::string id_product;
+		std::string manufacturer;
+		std::string product;
+		std::string serial;
+		std::string uri;
+	};
+
+
+	/**
 	 * @private
 	 */
 	struct IIO_OBJECTS {
