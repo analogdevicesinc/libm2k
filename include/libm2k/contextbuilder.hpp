@@ -26,6 +26,7 @@
 #include <string>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/context.hpp>
+#include <libm2k/enums.hpp>
 #include <unordered_set>
 #include <map>
 
@@ -55,6 +56,10 @@ public:
 	* @private
 	*/
 	~ContextBuilder();
+	/**
+	 * @private
+	 */
+	 static std::vector<struct libm2k::CONTEXT_INFO*> getContextsInfo();
 	/**
 	* @private
 	*/
@@ -160,6 +165,13 @@ LIBM2K_API M2k* m2kOpen(struct iio_context* ctx, const char* uri);
  * @note this will try to open USB connected devices
  */
 LIBM2K_API M2k* m2kOpen();
+
+
+/**
+ * @brief List the information about all available contexts
+ * @return A list containing the info about available contexts
+ */
+LIBM2K_API std::vector<struct libm2k::CONTEXT_INFO*> getContextsInfo();
 
 
 /**

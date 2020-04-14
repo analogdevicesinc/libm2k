@@ -31,6 +31,7 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <regex>
 
 
 using namespace libm2k::context;
@@ -61,17 +62,18 @@ ContextBuilder::~ContextBuilder()
 {
 }
 
-std::vector<std::string> ContextBuilder::getAllContexts()
+std::vector<struct libm2k::CONTEXT_INFO*> ContextBuilder::getContextsInfo()
 {
 	struct iio_context_info **info;
 	unsigned int nb_contexts;
-	std::vector<std::string> uris;
+	std::regex re(":| \\(Analog Devices Inc. |\\), serial=");
+	std::vector<struct libm2k::CONTEXT_INFO*> contexts_info;
 
 	struct iio_scan_context *scan_ctx = iio_create_scan_context("usb", 0);
 
 	if (!scan_ctx) {
 		std::cout << "Unable to create scan context!" << std::endl;
-		return uris;
+		return contexts_info;
 	}
 
 	ssize_t ret = iio_scan_context_get_info_list(scan_ctx, &info);
@@ -84,11 +86,36 @@ std::vector<std::string> ContextBuilder::getAllContexts()
 	nb_contexts = static_cast<unsigned int>(ret);
 
 	for (unsigned int i = 0; i < nb_contexts; i++)
-		uris.push_back(std::string(iio_context_info_get_uri(info[i])));
+	{
+		std::string description = std::string(iio_context_info_get_description(info[i]));
+		std::sregex_token_iterator ptr(description.begin(), description.end(), re, -1);
+		auto *ctx_info = new struct libm2k::CONTEXT_INFO();
+		ctx_info->uri = std::string(iio_context_info_get_uri(info[i]));
+		ctx_info->id_vendor = *ptr++;
+		ctx_info->id_product = *ptr++;
+		ctx_info->manufacturer = "Analog Devices Inc.";
+		ctx_info->product = *ptr++;
+		ctx_info->serial = *ptr++;
+		contexts_info.push_back(ctx_info);
+	}
 
 	iio_context_info_list_free(info);
 out_destroy_context:
 	iio_scan_context_destroy(scan_ctx);
+	return contexts_info;
+}
+
+std::vector<std::string> ContextBuilder::getAllContexts()
+{
+	std::vector<std::string> uris;
+
+	auto contexts_info = getContextsInfo();
+	uris.reserve(contexts_info.size());
+
+	for (auto ctx_info: contexts_info) {
+		uris.push_back(ctx_info->uri);
+		delete ctx_info;
+	}
 	return uris;
 }
 
@@ -265,6 +292,11 @@ M2k *libm2k::context::m2kOpen(struct iio_context *ctx, const char *uri)
 M2k *libm2k::context::m2kOpen()
 {
 	return ContextBuilder::m2kOpen();
+}
+
+std::vector<struct libm2k::CONTEXT_INFO*> libm2k::context::getContextsInfo()
+{
+	return ContextBuilder::getContextsInfo();
 }
 
 std::vector<std::string> libm2k::context::getAllContexts()
