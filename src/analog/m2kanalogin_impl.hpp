@@ -40,7 +40,7 @@ public:
 
 	void init() override;
 	void startAcquisition(unsigned int nb_samples) override;
-	void flushBuffer() override;
+	void stopAcquisition() override;
 
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples) override;
 	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples) override;

@@ -25,7 +25,7 @@ def trigger_jitter(buffers, trig, channel, signal, trig_cond, ain, aout, file, c
         test_signal=sine_signals
 
     for  sr in adc_sr:
-        ain.flushBuffer()
+        ain.stopAcquisition()
         ain.setSampleRate(sr)
         file.write('ADC sample rate:' +str(sr)+'; Test signal:'+signal+"; Trigger condition:" +str(trig_cond) +'\n')
         for l in range(len(test_signal)):

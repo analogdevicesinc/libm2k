@@ -64,9 +64,9 @@ public:
 
 
 	/**
-	 * @brief Destroy the buffer
+	 * @brief Destroy the buffer and stop the acquisition
 	 */
-	virtual void flushBuffer() = 0;
+	virtual void stopAcquisition() = 0;
 
 
 	/**
