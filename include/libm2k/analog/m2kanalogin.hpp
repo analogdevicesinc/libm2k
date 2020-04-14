@@ -420,7 +420,7 @@ public:
 	/**
 	* @brief Cancel all buffer operations
 	*/
-	virtual void cancelBuffer() = 0;
+	virtual void cancelAcquisition() = 0;
 
 
 	/**
