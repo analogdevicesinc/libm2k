@@ -91,7 +91,7 @@ public:
 
 	struct IIO_OBJECTS getIioObjects();
 
-	void cancelBufferIn();
+	void cancelAcquisition();
 	void cancelBufferOut();
 
 	unsigned int getNbChannelsIn();
