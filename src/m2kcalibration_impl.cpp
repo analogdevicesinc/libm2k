@@ -664,7 +664,7 @@ bool M2kCalibrationImpl::calibrateADC()
 		updateAdcCorrections();
 		restoreAdcFromCalibMode();
 		m_adc_calibrated = true;
-		m_m2k_adc->flushBuffer();
+		m_m2k_adc->stopAcquisition();
 		return true;
 	} __catch (exception_type &e) {
 		throw_exception(EXC_INVALID_PARAMETER, "ADC calibration failed: " +
@@ -710,7 +710,7 @@ bool M2kCalibrationImpl::calibrateDAC()
 		restoreAdcFromCalibMode();
 
 		m_dac_calibrated = true;
-		m_m2k_adc->flushBuffer();
+		m_m2k_adc->stopAcquisition();
 		return true;
 	} __catch (exception_type &e) {
 		throw_exception(EXC_INVALID_PARAMETER, "DAC calibration failed " +
