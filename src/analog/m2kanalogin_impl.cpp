@@ -618,6 +618,7 @@ struct libm2k::IIO_OBJECTS M2kAnalogInImpl::getIioObjects()
 void M2kAnalogInImpl::cancelAcquisition()
 {
 	m_m2k_adc->cancelBuffer();
+	m_m2k_adc->flushBuffer();
 }
 
 void M2kAnalogInImpl::setKernelBuffersCount(unsigned int count)
