@@ -98,6 +98,8 @@ public:
 	virtual std::pair<std::string, std::string> getContextAttr(unsigned int attrIdx);
 
 	virtual void setCyclic(bool en);
+	virtual bool hasGlobalAttribute(std::string attr);
+	virtual bool hasBufferAttribute(std::string attr);
 
 protected:
 	struct iio_context *m_context;
