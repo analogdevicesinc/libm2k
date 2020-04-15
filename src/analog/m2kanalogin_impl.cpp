@@ -21,7 +21,7 @@
 
 #include "m2kanalogin_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
-
+#include "utils/channel.hpp"
 
 using namespace libm2k::analog;
 using namespace libm2k::utils;
@@ -51,7 +51,7 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	m_filter_compensation_table[1E3] = 1.26;
 
 	// calibbias attribute is only available in firmware versions newer than 0.26
-	m_calibbias_available = (Utils::compareVersions(Utils::getFirmwareVersion(ctx), "v0.26") > 0);
+	m_calibbias_available = m_m2k_adc->getChannel(ANALOG_IN_CHANNEL_1, false)->hasAttribute("calibbias");
 	m_samplerate = 1E8;
 
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
