@@ -64,9 +64,10 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 		syncDevice();
 	}
 	// dma_start_sync attribute is only available in firmware versions newer than 0.24
-	m_dma_start_sync_available = (Utils::compareVersions(Utils::getFirmwareVersion(ctx), "v0.24") > 0);
+	m_dma_start_sync_available = getDacDevice(0)->hasGlobalAttribute("dma_sync_start");
+
 	// data_available attribute exists only in firmware versions newer than 0.23
-	m_dma_data_available = (Utils::compareVersions(Utils::getFirmwareVersion(ctx), "v0.23") > 0);
+	m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
 }
 
 M2kAnalogOutImpl::~M2kAnalogOutImpl()
