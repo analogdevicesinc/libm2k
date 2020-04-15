@@ -590,3 +590,13 @@ void DeviceGeneric::setCyclic(bool enable)
 		m_buffer->setCyclic(enable);
 	}
 }
+
+bool DeviceGeneric::hasGlobalAttribute(string attr)
+{
+	return ContextImpl::iioDevHasAttribute(m_dev, attr);
+}
+
+bool DeviceGeneric::hasBufferAttribute(string attr)
+{
+	return ContextImpl::iioDevBufferHasAttribute(m_dev, attr);
+}
