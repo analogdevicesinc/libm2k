@@ -1,3 +1,5 @@
+#define MsvcLib "msvcp140.dll"
+
 [Setup]
 AppId={{0B97BC46-2BA1-4931-88F2-61E84FC7EFEF}
 AppName="libm2k"
@@ -14,6 +16,7 @@ OutputDir="C:\"
 Compression=lzma
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64
+
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -61,6 +64,15 @@ begin
   end;
  end;
 
+function isMsvcInstalled(): Boolean;
+begin
+  Result := True;
+
+  if not FileExists(ExpandConstant('{sys}\{#MsvcLib}')) then begin
+    Result := False;
+  end;
+ end;
+
  
 [Files]
 Source: "C:\projects\libm2k\build-win64\dist\libm2k-py37-amd64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
@@ -69,8 +81,8 @@ Source: "C:\projects\libm2k\build-win32\dist\libm2k-py37-win32.exe"; DestDir: "{
 Source: "C:\projects\libm2k\build-win32\libm2k.dll"; DestDir: "{sys}"; Flags: 32bit
 Source: "C:\projects\libm2k\build-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode
 
-Source: "C:\projects\libm2k\build-win32\msvcp140.dll"; DestDir: "{sys}"; Flags: 32bit onlyifdoesntexist
-Source: "C:\projects\libm2k\build-win64\msvcp140.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist; Check: Is64BitInstallMode
+Source: "C:\projects\libm2k\build-win32\{#MsvcLib}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
+Source: "C:\projects\libm2k\build-win64\{#MsvcLib}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
 
 ;Source: "C:\projects\libm2k\build-win32\*.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode
 ;Source: "C:\projects\libm2k\build-win64\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode
