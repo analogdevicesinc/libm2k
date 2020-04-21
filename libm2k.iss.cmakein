@@ -94,16 +94,16 @@ Source: "C:\projects\libm2k\build-win32\libm2k.lib"; DestDir: "{pf32}\Microsoft 
 Source: "C:\projects\libm2k\build-win64\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib\amd64"; Check: Is64BitInstallMode
 Source: "C:\projects\libm2k\include\*"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\include"; Flags: ignoreversion recursesubdirs
 
-Source: "C:\libiio-win32\libiio.dll"; DestDir: "{sys}"; Flags: 32bit
+Source: "C:\libiio-win32\libiio.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
 Source: "C:\libiio-win64\libiio.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
-Source: "C:\libiio-win32\libxml2.dll"; DestDir: "{sys}"; Flags: 32bit
+Source: "C:\libiio-win32\libxml2.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
 Source: "C:\libiio-win64\libxml2.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
-Source: "C:\libiio-win32\libusb-1.0.dll"; DestDir: "{sys}"; Flags: 32bit
+Source: "C:\libiio-win32\libusb-1.0.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
 Source: "C:\libiio-win64\libusb-1.0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
-Source: "C:\libiio-win32\libserialport-0.dll"; DestDir: "{sys}"; Flags: 32bit
+Source: "C:\libiio-win32\libserialport-0.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
 Source: "C:\libiio-win64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
 Source: "C:\projects\libm2k\build-win32\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode
