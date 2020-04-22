@@ -202,7 +202,8 @@ bool M2kCalibrationImpl::calibrateADCoffset()
 	double gain = 1.3;
 	double range = 3.192;
 	bool calibrated = false;
-	double voltage0, voltage1 = 0;
+	double voltage0 = 0;
+	double voltage1 = 0;
 	std::vector<std::vector<double>> ch_data = {};
 
 	if (!m_initialized) {
@@ -340,7 +341,7 @@ void M2kCalibrationImpl::updateDacCorrections()
 void M2kCalibrationImpl::updateAdcCorrections()
 {
 	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), m_adc_ch0_offset, m_adc_ch0_vert_offset);
-	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), m_adc_ch0_offset, m_adc_ch1_vert_offset);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), m_adc_ch1_offset, m_adc_ch1_vert_offset);
 
 	m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
 	m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
@@ -432,8 +433,8 @@ bool M2kCalibrationImpl::fine_tune(size_t span, int16_t centerVal0, int16_t cent
 	m_adc_ch0_offset = candidateOffsets0[i0];
 	m_adc_ch1_offset = candidateOffsets1[i1];
 
-	m_ad5625_dev->setDoubleValue(2, m_adc_ch0_offset, "raw", true);
-	m_ad5625_dev->setDoubleValue(3, m_adc_ch1_offset, "raw", true);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), m_adc_ch0_offset);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), m_adc_ch1_offset);
 
 out_cleanup:
 	delete[] candidateOffsets0;
