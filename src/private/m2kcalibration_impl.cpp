@@ -245,8 +245,8 @@ public:
 		voltage0 = m_m2k_adc->convRawToVolts(ch0_avg, 1, 1);
 		voltage1 = m_m2k_adc->convRawToVolts(ch1_avg, 1, 1);
 
-		m_adc_ch0_offset = (int)(2048 - ((voltage0 * 4096 * gain) / range));
-		m_adc_ch1_offset = (int)(2048 - ((voltage1 * 4096 * gain) / range));
+		m_adc_ch0_offset = round(2048 - ((voltage0 * 4096 * gain) / range));
+		m_adc_ch1_offset = round(2048 - ((voltage1 * 4096 * gain) / range));
 
 		fine_tune(20, m_adc_ch0_offset, m_adc_ch1_offset, num_samples);
 
