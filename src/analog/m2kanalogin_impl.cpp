@@ -98,7 +98,7 @@ void M2kAnalogInImpl::init()
 		m_trigger->setAnalogMode(ch, ALWAYS);
 		setRange(ch, PLUS_MINUS_25V);
 		setAdcCalibOffset(ch, 2048);
-		setAdcCalibGain(ch, 1);
+		m_adc_calib_gain.at(i) = 1;
 		setVerticalOffset(ch, 0);
 	}
 	setKernelBuffersCount(4);
@@ -117,7 +117,6 @@ void M2kAnalogInImpl::syncDevice()
 		} else {
                         m_adc_calib_offset.at(i) = 2048;
 		}
-		m_adc_calib_gain.at(i) = m_m2k_adc->getDoubleValue(i, "calibscale", false);
 		m_adc_hw_offset_raw.at(i) = m_ad5625_dev->getLongValue(2 + i, "raw", true);
 		m_adc_hw_vert_offset.at(i) = convertRawToVoltsVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(i), m_adc_hw_offset_raw.at(i) - m_adc_calib_offset.at(i));
 
@@ -130,7 +129,7 @@ void M2kAnalogInImpl::syncDevice()
 void M2kAnalogInImpl::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
 {
 
-	m_adc_calib_gain.at(channel) = m_m2k_adc->setDoubleValue(channel, gain, "calibscale");
+	m_adc_calib_gain.at(channel) = gain;
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
 }
 
