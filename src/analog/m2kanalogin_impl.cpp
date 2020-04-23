@@ -86,7 +86,7 @@ unsigned int M2kAnalogInImpl::getNbChannels()
 	return m_m2k_adc->getNbChannels(false);
 }
 
-void M2kAnalogInImpl::init()
+void M2kAnalogInImpl::reset()
 {
 	setOversamplingRatio(1);
 	setSampleRate(1E8);
@@ -97,8 +97,9 @@ void M2kAnalogInImpl::init()
 
 		m_trigger->setAnalogMode(ch, ALWAYS);
 		setRange(ch, PLUS_MINUS_25V);
-		setAdcCalibOffset(ch, 2048);
 		m_adc_calib_gain.at(i) = 1;
+		setCalibscale(i, m_adc_calib_gain.at(i));
+		setAdcCalibOffset(ch, 2048);
 		setVerticalOffset(ch, 0);
 	}
 	setKernelBuffersCount(4);

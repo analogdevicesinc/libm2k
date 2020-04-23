@@ -36,7 +36,7 @@ public:
 	M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync);
 
 	virtual ~M2kImpl();
-	void init();
+	void reset();
 	void deinitialize();
 
 	void scanAllAnalogIn();

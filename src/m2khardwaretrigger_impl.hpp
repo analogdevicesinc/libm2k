@@ -44,7 +44,7 @@ public:
 
 	virtual ~M2kHardwareTriggerImpl();
 
-	void init();
+	void reset();
 
 	int getAnalogLevelRaw(unsigned int chnIdx);
 	void setAnalogLevelRaw(unsigned int chnIdx, int level);

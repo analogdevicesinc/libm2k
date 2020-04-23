@@ -38,7 +38,7 @@ public:
         M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
 	~M2kAnalogInImpl() override;
 
-	void init() override;
+	void reset() override;
 	void startAcquisition(unsigned int nb_samples) override;
 	void stopAcquisition() override;
 

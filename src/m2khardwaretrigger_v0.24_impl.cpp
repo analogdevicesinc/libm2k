@@ -75,9 +75,9 @@ M2kHardwareTriggerV024Impl::~M2kHardwareTriggerV024Impl()
 {
 }
 
-void M2kHardwareTriggerV024Impl::init()
+void M2kHardwareTriggerV024Impl::reset()
 {
-	M2kHardwareTriggerImpl::init();
+	M2kHardwareTriggerImpl::reset();
 	setAnalogExternalOutSelect(SELECT_NONE);
 	setDigitalSource(SRC_NONE);
 }
