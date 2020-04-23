@@ -52,7 +52,7 @@ DMMImpl::~DMMImpl()
 	m_device_in_list.clear();
 }
 
-void DMMImpl::init()
+void DMMImpl::reset()
 {
 
 }

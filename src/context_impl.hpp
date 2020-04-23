@@ -59,7 +59,7 @@ public:
 	ContextImpl(std::string uri, struct iio_context*, std::string name, bool sync);
 	~ContextImpl();
 
-	void init();
+	void reset();
 	void deinitialize();
 
 	void scanAllDMM();

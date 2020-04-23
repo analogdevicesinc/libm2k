@@ -41,7 +41,7 @@ public:
 	M2kDigitalImpl(struct iio_context* ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger);
 	virtual ~M2kDigitalImpl();
 
-	void init();
+	void reset();
 
 	void setDirection(unsigned short mask);
 	void setDirection(unsigned int index, DIO_DIRECTION dir);

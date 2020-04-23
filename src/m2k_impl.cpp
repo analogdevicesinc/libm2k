@@ -144,24 +144,25 @@ void M2kImpl::deinitialize()
 	m_deinit = true;
 }
 
-void M2kImpl::init()
+void M2kImpl::reset()
 {
 	for (auto ain : m_instancesAnalogIn) {
-		ain->init();
+		ain->reset();
 	}
 	for (auto aout : m_instancesAnalogOut) {
-		aout->init();
+		aout->reset();
 	}
 	for (auto ps : m_instancesPowerSupply) {
-		ps->init();
+		ps->reset();
 	}
 	for (auto d : m_instancesDigital) {
-		d->init();
+		d->reset();
 	}
 	for (auto dmm : m_instancesDMM) {
-		dmm->init();
+		dmm->reset();
 	}
-	m_trigger->init();
+	m_trigger->reset();
+	initialize();
 
 }
 

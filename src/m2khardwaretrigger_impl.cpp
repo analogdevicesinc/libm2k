@@ -167,7 +167,7 @@ M2kHardwareTriggerImpl::~M2kHardwareTriggerImpl()
 	m_digital_channels.clear();
 }
 
-void M2kHardwareTriggerImpl::M2kHardwareTriggerImpl::init()
+void M2kHardwareTriggerImpl::M2kHardwareTriggerImpl::reset()
 {
 	setAnalogSource(CHANNEL_1);
 	setAnalogDelay(0);

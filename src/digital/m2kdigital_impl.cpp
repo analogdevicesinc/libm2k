@@ -97,7 +97,7 @@ void M2kDigitalImpl::syncDevice()
 	}
 }
 
-void M2kDigitalImpl::init()
+void M2kDigitalImpl::reset()
 {
 	for (unsigned int i = 0; i < m_dev_generic->getNbChannels(false); i++) {
 		/* Disable all the TX channels */
@@ -110,7 +110,8 @@ void M2kDigitalImpl::init()
 		m_dev_read->enableChannel(i, true, false);
 	}
 
-	setKernelBuffersCountIn(1);
+	setKernelBuffersCountIn(4);
+	setKernelBuffersCountOut(4);
 }
 
 void M2kDigitalImpl::setKernelBuffersCountIn(unsigned int count)

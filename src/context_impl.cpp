@@ -57,7 +57,7 @@ ContextImpl::~ContextImpl()
 	}
 }
 
-void ContextImpl::init()
+void ContextImpl::reset()
 {
 }
 

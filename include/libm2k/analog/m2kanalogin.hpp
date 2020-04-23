@@ -54,7 +54,7 @@ public:
 	/**
 	* @private
 	*/
-	virtual void init() = 0;
+	virtual void reset() = 0;
 
 	/**
 	 * @brief Create the buffer for both channels and start the acquisition
