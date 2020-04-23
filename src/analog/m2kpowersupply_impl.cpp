@@ -118,11 +118,11 @@ void M2kPowerSupplyImpl::syncDevice()
 	m_channels_enabled.at(1) = !m_dev_write->getBoolValue(m_write_channel_idx.at(1), "powerdown", true);
 }
 
-void M2kPowerSupplyImpl::init()
+void M2kPowerSupplyImpl::reset()
 {
 	powerDownDacs(true);
 	for (unsigned int i : m_write_channel_idx) {
-		m_dev_write->setDoubleValue(i, 0.0, "raw", true);
+		m_dev_write->setDoubleValue(i, 2048, "raw", true);
 	}
 
 	m_write_coefficients.at(0) = 4095.0 / (5.02 * 1.2 );

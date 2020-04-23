@@ -60,7 +60,7 @@ public:
 	/**
 	* @private
 	*/
-	void init();
+	void reset();
 
 
 	/**

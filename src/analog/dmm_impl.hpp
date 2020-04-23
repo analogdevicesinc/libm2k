@@ -37,7 +37,7 @@ public:
 	DMMImpl(struct iio_context *ctx, std::string dev, bool sync);
 	virtual ~DMMImpl();
 
-	void init();
+	void reset();
 	std::vector<std::string> getAllChannels();
 
 	libm2k::analog::DMM_READING readChannel(unsigned int index);

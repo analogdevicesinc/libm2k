@@ -24,7 +24,7 @@ public:
 	M2kAnalogOutImpl(struct iio_context*, std::vector<std::string> dac_devs, bool sync);
 	virtual ~M2kAnalogOutImpl();
 
-	void init();
+	void reset();
 	std::vector<int> getOversamplingRatio();
 
 	int getOversamplingRatio(unsigned int chn);

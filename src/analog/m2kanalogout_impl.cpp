@@ -79,20 +79,18 @@ M2kAnalogOutImpl::~M2kAnalogOutImpl()
 	m_dac_devices.clear();
 }
 
-void M2kAnalogOutImpl::init()
+void M2kAnalogOutImpl::reset()
 {
-	setOversamplingRatio(0, 1);
-	setOversamplingRatio(1, 1);
-	setSampleRate(0, 75E6);
-	setSampleRate(1, 75E6);
-	m_calib_vlsb.at(0) = 10.0 / ((double)( 1 << 12 ));
-	m_calib_vlsb.at(1) = 10.0 / ((double)( 1 << 12 ));
-	m_cyclic.at(0) = true;
-	m_cyclic.at(1) = true;
-	enableChannel(0, true);
-	enableChannel(1, true);
-	m_samplerate.at(0) = 75E6;
-	m_samplerate.at(1) = 75E6;
+	setSyncedDma(false);
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		m_samplerate.at(i) = 75E6;
+		m_cyclic.at(i) = true;
+		m_calib_vlsb.at(i) = 10.0 / ((double)( 1 << 12 ));
+		enableChannel(i, true);
+		setSampleRate(i, 75E6);
+		setOversamplingRatio(i, 1);
+		setKernelBuffersCount(i, 4);
+	}
 }
 
 void M2kAnalogOutImpl::syncDevice()
