@@ -99,6 +99,8 @@ void M2kDigitalImpl::syncDevice()
 
 void M2kDigitalImpl::reset()
 {
+	cancelAcquisition();
+	cancelBufferOut();
 	for (unsigned int i = 0; i < m_dev_generic->getNbChannels(false); i++) {
 		/* Disable all the TX channels */
 
