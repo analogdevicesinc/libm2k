@@ -88,13 +88,13 @@ unsigned int M2kAnalogInImpl::getNbChannels()
 
 void M2kAnalogInImpl::reset()
 {
+	stopAcquisition();
 	setOversamplingRatio(1);
 	setSampleRate(1E8);
 
 	for (unsigned int i = 0; i < m_m2k_adc->getNbChannels(false); i++) {
-		enableChannel(i, true);
+		enableChannel(i, false);
 		auto ch = static_cast<ANALOG_IN_CHANNEL>(i);
-
 		m_trigger->setAnalogMode(ch, ALWAYS);
 		setRange(ch, PLUS_MINUS_25V);
 		m_adc_calib_gain.at(i) = 1;

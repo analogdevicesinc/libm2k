@@ -81,12 +81,13 @@ M2kAnalogOutImpl::~M2kAnalogOutImpl()
 
 void M2kAnalogOutImpl::reset()
 {
+	stop();
 	setSyncedDma(false);
 	for (int i = 0; i < getNbChannels(); i++) {
+		enableChannel(i, false);
 		m_samplerate.at(i) = 75E6;
 		m_cyclic.at(i) = true;
 		m_calib_vlsb.at(i) = 10.0 / ((double)( 1 << 12 ));
-		enableChannel(i, true);
 		setSampleRate(i, 75E6);
 		setOversamplingRatio(i, 1);
 		setKernelBuffersCount(i, 4);
