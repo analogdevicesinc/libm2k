@@ -57,6 +57,7 @@ public:
 
 	virtual std::string getName() = 0;
 	virtual void enableChannel(unsigned int chnIdx, bool enable) = 0;
+	virtual bool isChannelEnabled(unsigned int chnIdx) = 0;
 };
 }
 }
