@@ -85,6 +85,7 @@ public:
 	void cancelBuffer(unsigned int chn);
 
 	unsigned int getNbChannels();
+	std::string getChannelName(unsigned int channel);
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_calib_vlsb;

@@ -285,7 +285,7 @@ string M2kAnalogInImpl::getChannelName(unsigned int channel)
 	std::string name = "";
 	auto chn = m_m2k_adc->getChannel(channel, false);
 	if (chn) {
-		name = chn->getName();
+		name = chn->getId();
 	}
 	return name;
 }
