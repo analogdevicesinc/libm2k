@@ -337,15 +337,6 @@ public:
 
 
 	/**
-	* @brief Retrieve the value of the calibration scale for the given channel
-	*
-	* @param index The index corresponding to the channel
-	* @return The value of the calibration scale
-	*/
-	virtual double getCalibscale(unsigned int index) = 0;
-
-
-	/**
 	* @brief Retrieve the filter compensation for the given sample rate
 	*
 	* @param samplerate A double value representing the sample rate
