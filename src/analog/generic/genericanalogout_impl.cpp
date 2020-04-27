@@ -33,6 +33,9 @@ using namespace libm2k::utils;
 GenericAnalogOutImpl::GenericAnalogOutImpl(iio_context *ctx, std::string dac_dev)
 {
 	m_devices_out.push_back(make_shared<DeviceOut>(ctx, dac_dev));
+	for (auto dac : m_devices_out) {
+		m_cyclic.push_back(false);
+	}
 }
 
 GenericAnalogOutImpl::~GenericAnalogOutImpl()
@@ -83,15 +86,15 @@ std::vector<double> GenericAnalogOutImpl::getAvailableSampleRates()
 
 void GenericAnalogOutImpl::setCyclic(bool en)
 {
-	for (unsigned int i = 0; i < getDacDevice(0)->getNbChannels(true); i++) {
+	for (unsigned int i = 0; i < m_devices_out.size(); i++) {
 		m_cyclic.at(i) = en;
+		getDacDevice(i)->setCyclic(en);
 	}
-	getDacDevice(0)->setCyclic(en);
 }
 
 void GenericAnalogOutImpl::setCyclic(unsigned int chn, bool en)
 {
-	if (chn >= getDacDevice(0)->getNbChannels(true)) {
+	if (chn >= m_devices_out.size()) {
 		throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
 	}
 	m_cyclic.at(chn) = en;
@@ -99,7 +102,7 @@ void GenericAnalogOutImpl::setCyclic(unsigned int chn, bool en)
 
 bool GenericAnalogOutImpl::getCyclic(unsigned int chn)
 {
-	if (chn >= getDacDevice(0)->getNbChannels(true)) {
+	if (chn >=  m_devices_out.size()) {
 		throw_exception(EXC_INVALID_PARAMETER, "Generic Analog Out: No such channel");
 	}
 	return m_cyclic.at(chn);
@@ -138,4 +141,9 @@ string GenericAnalogOutImpl::getName()
 void GenericAnalogOutImpl::enableChannel(unsigned int chnIdx, bool enable)
 {
 	getDacDevice(0)->enableChannel(chnIdx, enable, true);
+}
+
+bool GenericAnalogOutImpl::isChannelEnabled(unsigned int chnIdx)
+{
+	return getDacDevice(0)->isChannelEnabled(chnIdx, true);
 }
