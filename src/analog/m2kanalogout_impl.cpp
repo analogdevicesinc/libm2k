@@ -107,8 +107,7 @@ double M2kAnalogOutImpl::getCalibscale(unsigned int index)
 
 double M2kAnalogOutImpl::setCalibscale(unsigned int index, double calibscale)
 {
-	getDacDevice(index)->setDoubleValue(calibscale, "calibscale");
-	return getCalibscale(index);
+	return getDacDevice(index)->setDoubleValue(calibscale, "calibscale");
 }
 
 std::vector<int> M2kAnalogOutImpl::getOversamplingRatio()
