@@ -57,12 +57,15 @@ public:
 	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
 	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
 
-	int getDacBCalibrationOffset();
-	int getDacACalibrationOffset();
-	double getDacBCalibrationGain();
-	double getDacACalibrationGain();
+	int getDacCalibrationOffset(unsigned int chn);
+	double getDacCalibrationGain(unsigned int chn);
 	int getAdcCalibrationOffset(unsigned int chn);
 	double getAdcCalibrationGain(unsigned int chn);
+	void setDacCalibrationOffset(unsigned int chn, int offset);
+	void setDacCalibrationGain(unsigned int chn, double gain);
+	void setAdcCalibrationOffset(unsigned int chn, int offset);
+	void setAdcCalibrationGain(unsigned int chn, double gain);
+
 
 	void setLed(bool on);
 	bool getLed();
