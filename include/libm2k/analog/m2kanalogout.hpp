@@ -190,15 +190,6 @@ public:
 
 
 	/**
-	* @brief Retrieve the calibration scale for the given channel
-	*
-	* @param index The index corresponding to the channel
-	* @return The value of the calibration scale
-	*/
-	virtual double getCalibscale(unsigned int index) = 0;
-
-
-	/**
 	* @brief Retrieve the scaling factor for the given channel
 	*
 	* @param chn The index corresponding to the channel
