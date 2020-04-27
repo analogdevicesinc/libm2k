@@ -23,6 +23,7 @@
 #include "utils/deviceout.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
+#include "utils/channel.hpp"
 
 #include <iostream>
 #include <thread>
@@ -603,4 +604,14 @@ void M2kAnalogOutImpl::cancelBuffer(unsigned int chn)
 unsigned int M2kAnalogOutImpl::getNbChannels()
 {
 	return m_dac_devices.size();
+}
+
+string M2kAnalogOutImpl::getChannelName(unsigned int channel)
+{
+	std::string name = "";
+	auto chn = getDacDevice(channel)->getChannel(0, true);
+	if (chn) {
+		name = chn->getId();
+	}
+	return name;
 }
