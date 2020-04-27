@@ -74,6 +74,10 @@ public:
 
 	bool setCalibrationMode(int);
 
+	void setDacGain(unsigned int chn, double gain);
+	void setDacOffset(unsigned int chn, int offset);
+	void setAdcOffset(unsigned int chn, int offset);
+	void setAdcGain(unsigned int chn, double gain);
 private:
 	bool m_cancel;
 

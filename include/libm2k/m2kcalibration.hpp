@@ -55,6 +55,11 @@ public:
 	virtual double dacBvlsb() const = 0;
 
 	virtual bool resetCalibration() = 0;
+
+	virtual void setDacGain(unsigned int chn, double gain) = 0;
+	virtual void setDacOffset(unsigned int chn, int offset) = 0;
+	virtual void setAdcOffset(unsigned int chn, int offset) = 0;
+	virtual void setAdcGain(unsigned int chn, double gain) = 0;
 };
 
 }

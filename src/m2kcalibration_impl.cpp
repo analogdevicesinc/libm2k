@@ -326,6 +326,31 @@ double M2kCalibrationImpl::adcGainChannel1() const
 	return m_adc_ch1_gain;
 }
 
+void M2kCalibrationImpl::setAdcOffset(unsigned int chn, int offset)
+{
+	if (chn == 0) {
+		m_adc_ch0_offset = offset;
+		m_adc_ch0_vert_offset = 0;
+		m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), m_adc_ch0_offset, m_adc_ch0_vert_offset);
+	} else if (chn == 1) {
+		m_adc_ch1_offset = offset;
+		m_adc_ch1_vert_offset = 0;
+		m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), m_adc_ch1_offset, m_adc_ch1_vert_offset);
+	}
+}
+
+
+void M2kCalibrationImpl::setAdcGain(unsigned int chn, double gain)
+{
+	if (chn == 0) {
+		m_adc_ch0_gain = gain;
+		m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
+	} else if (chn == 1) {
+		m_adc_ch1_gain = gain;
+		m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
+	}
+}
+
 void M2kCalibrationImpl::updateDacCorrections()
 {
 	m_ad5625_dev->setDoubleValue(0, m_dac_a_ch_offset, "raw", true);
@@ -461,6 +486,28 @@ double M2kCalibrationImpl::dacAvlsb() const
 double M2kCalibrationImpl::dacBvlsb() const
 {
 	return m_dac_b_ch_vlsb;
+}
+
+void M2kCalibrationImpl::setDacOffset(unsigned int chn, int offset)
+{
+	if (chn == 0) {
+		m_dac_a_ch_offset = offset;
+		m_ad5625_dev->setDoubleValue(0, m_dac_a_ch_offset, "raw", true);
+	} else if (chn == 1) {
+		m_dac_b_ch_offset = offset;
+		m_ad5625_dev->setDoubleValue(1, m_dac_b_ch_offset, "raw", true);
+	}
+}
+
+void M2kCalibrationImpl::setDacGain(unsigned int chn, double gain)
+{
+	if (chn == 0) {
+		m_dac_a_ch_vlsb = gain;
+		m_m2k_dac->setCalibscale(0, m_dac_default_vlsb / dacAvlsb());
+	} else if (chn == 1) {
+		m_dac_b_ch_vlsb = gain;
+		m_m2k_dac->setCalibscale(1, m_dac_default_vlsb / dacBvlsb());
+	}
 }
 
 bool M2kCalibrationImpl::calibrateDACoffset()
