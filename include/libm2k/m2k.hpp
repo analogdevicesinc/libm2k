@@ -164,35 +164,21 @@ public:
 
 
 	/**
-	* @brief Get the calibration offset of the DAC-B
+	* @brief Get the calibration offset of the DAC
 	*
+	* @param chn The index corresponding to a channel
 	* @return The value of the calibration offset
 	*/
-	virtual int getDacBCalibrationOffset() = 0;
+	virtual int getDacCalibrationOffset(unsigned int chn) = 0;
 
 
 	/**
-	* @brief Get the calibration offset of the DAC-A
+	* @brief Get the calibration gain of the DAC
 	*
-	* @return The value of the calibration offset
-	*/
-	virtual int getDacACalibrationOffset() = 0;
-
-
-	/**
-	* @brief Get the calibration gain of the DAC-B
-	*
+	* @param chn The index corresponding to a channel
 	* @return The value of the calibration gain
 	*/
-	virtual double getDacBCalibrationGain() = 0;
-
-
-	/**
-	* @brief Get the calibration gain of the DAC-A
-	*
-	* @return The value of the calibration gain
-	*/
-	virtual double getDacACalibrationGain() = 0;
+	virtual double getDacCalibrationGain(unsigned int chn) = 0;
 
 
 	/**
@@ -211,6 +197,46 @@ public:
 	* @return The value of the calibration gain
 	*/
 	virtual double getAdcCalibrationGain(unsigned int chn) = 0;
+
+
+	/**
+	* @brief Set the calibration offset of the DAC
+	* @param chn The index corresponding to a channel
+	* @param offset The calibration offset value
+	* @note Overrides the calibration coefficients.\n
+	* Can be reset by running a calibration.
+	*/
+	virtual void setDacCalibrationOffset(unsigned int chn, int offset) = 0;
+
+
+	/**
+	* @brief Set the calibration gain of the DAC
+	* @param chn The index corresponding to a channel
+	* @param gain The calibration gain value
+	* @note Overrides the calibration coefficients.\n
+	* Can be reset by running a calibration.
+	*/
+	virtual void setDacCalibrationGain(unsigned int chn, double gain) = 0;
+
+
+	/**
+	* @brief Set the calibration offset of the ADC
+	* @param chn The index corresponding to a channel
+	* @param offset The calibration offset value
+	* @note Overrides the calibration coefficients.\n
+	* Can be reset by running a calibration.
+	*/
+	virtual void setAdcCalibrationOffset(unsigned int chn, int offset) = 0;
+
+
+	/**
+	* @brief Set the calibration gain of the ADC
+	* @param chn The index corresponding to a channel
+	* @param gain The calibration gain value
+	* @note Overrides the calibration coefficients.\n
+	* Can be reset by running a calibration.
+	*/
+	virtual void setAdcCalibrationGain(unsigned int chn, double gain) = 0;
 
 
 	/**
