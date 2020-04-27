@@ -59,6 +59,7 @@ public:
 
 	std::string getName();
 	void enableChannel(unsigned int chnIdx, bool enable);
+	bool isChannelEnabled(unsigned int chnIdx);
 
 private:
 	std::vector<bool> m_cyclic;
