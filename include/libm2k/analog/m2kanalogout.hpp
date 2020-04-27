@@ -406,6 +406,14 @@ public:
 	* @return The number of channels
 	*/
 	virtual unsigned int getNbChannels() = 0;
+
+
+	/**
+	 * @brief Get the channel name for each DAC channel
+	 * @param channel - unsigned int representing the index of the channel
+	 * @return std::string - name of the channel
+	 */
+	virtual std::string getChannelName(unsigned int channel) = 0;
 };
 }
 }
