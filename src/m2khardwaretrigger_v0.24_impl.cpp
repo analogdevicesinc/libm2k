@@ -174,7 +174,15 @@ M2K_TRIGGER_SOURCE_DIGITAL M2kHardwareTriggerV024Impl::getDigitalSource() const
 		throw_exception(EXC_OUT_OF_RANGE, "unexpected value read from attribute: trigger");
 	}
 
-	return static_cast<M2K_TRIGGER_SOURCE_DIGITAL>(it - m_trigger_ext_digital_source.begin());
+	auto src = static_cast<M2K_TRIGGER_SOURCE_DIGITAL>(it - m_trigger_ext_digital_source.begin());
+	if (src == SRC_ANALOG_IN) {
+		return src;
+	}
+
+	if (getDigitalExternalCondition() != NO_TRIGGER_DIGITAL) {
+		return SRC_TRIGGER_IN;
+	}
+	return SRC_NONE;
 }
 
 M2K_TRIGGER_SOURCE_DIGITAL M2kHardwareTrigger::getDigitalSource() const
