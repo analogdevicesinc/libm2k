@@ -96,7 +96,7 @@ public:
 	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond);
 
 
-	M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition();
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition() const;
 	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION_DIGITAL cond);
 
 	bool hasExternalTriggerIn() const;

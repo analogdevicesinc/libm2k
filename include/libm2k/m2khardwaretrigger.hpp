@@ -330,7 +330,7 @@ public:
 	 * @brief getDigitalExternalCondition
 	 * @return M2K_TRIGGER_CONDITION_DIGITAL
 	 */
-	virtual M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition() = 0;
+	virtual M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition() const = 0;
 
 
 	/**
