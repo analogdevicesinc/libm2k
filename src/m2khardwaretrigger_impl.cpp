@@ -200,7 +200,7 @@ bool M2kHardwareTriggerImpl::hasCrossInstrumentTrigger() const
 }
 
 
-M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTriggerImpl::getDigitalExternalCondition()
+M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTriggerImpl::getDigitalExternalCondition() const
 {
 	std::string buf = m_digital_trigger_device->getStringValue(16, "trigger");
 
