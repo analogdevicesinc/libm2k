@@ -143,7 +143,6 @@ public:
 	virtual libm2k::analog::M2kAnalogIn* getAnalogIn(std::string dev_name) = 0;
 
 
-
 	/**
 	* @brief Retrieve the AnalogOut object
 	*
@@ -157,6 +156,8 @@ public:
 	* @private
 	*/
 	virtual std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn() = 0;
+
+
 	/**
 	* @private
 	*/
@@ -170,6 +171,14 @@ public:
 	 * @note Only available from firmware v0.26.
 	 */
 	virtual void startMixedSignalAcquisition(unsigned int nb_samples) = 0;
+
+
+	/**
+	 * @brief Stop the mixed acquisition
+	 *
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual void stopMixedSignalAcquisition() = 0;
 
 
 	/**
