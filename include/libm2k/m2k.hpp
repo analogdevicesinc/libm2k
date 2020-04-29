@@ -214,7 +214,8 @@ public:
 	* @param chn The index corresponding to a channel
 	* @param gain The calibration gain value
 	* @note Overrides the calibration coefficients.\n
-	* Can be reset by running a calibration.
+	* Can be reset by running a calibration.\n
+	* The gain value is currently limited at the (-2,2) range  by the hardware.
 	*/
 	virtual void setDacCalibrationGain(unsigned int chn, double gain) = 0;
 
@@ -234,7 +235,8 @@ public:
 	* @param chn The index corresponding to a channel
 	* @param gain The calibration gain value
 	* @note Overrides the calibration coefficients.\n
-	* Can be reset by running a calibration.
+	* Can be reset by running a calibration.\n
+	* The gain value is currently limited at the (-2,2) range  by the hardware.
 	*/
 	virtual void setAdcCalibrationGain(unsigned int chn, double gain) = 0;
 

@@ -87,9 +87,10 @@ public:
 	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset, int vert_offset);
 
 	double setCalibscale(unsigned int index, double calibscale);
-	double getCalibscale(unsigned int index) override;
+	double getCalibscale(unsigned int index);
 
 	void setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain);
+	int getAdcCalibOffset(ANALOG_IN_CHANNEL channel);
 
 	double getFilterCompensation(double samplerate) override;
 

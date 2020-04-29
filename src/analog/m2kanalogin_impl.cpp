@@ -703,3 +703,13 @@ void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_off
 
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
 }
+
+int M2kAnalogInImpl::getAdcCalibOffset(ANALOG_IN_CHANNEL channel)
+{
+	if (m_calibbias_available) {
+		return m_m2k_adc->getLongValue(channel, "calibbias", false);
+	} else {
+		auto adc_hw_offset = m_ad5625_dev->getLongValue(channel + 2, "raw", true);
+		return (adc_hw_offset - m_adc_hw_vert_offset.at(channel));
+	}
+}

@@ -306,33 +306,45 @@ bool M2kCalibrationImpl::calibrateADCgain()
 	return calibrated;
 }
 
-int M2kCalibrationImpl::adcOffsetChannel0() const
+int M2kCalibrationImpl::getAdcOffset(unsigned int channel)
 {
-	return m_adc_ch0_offset;
+	if (channel >= m_m2k_adc->getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
+	}
+	auto calib_offset = m_m2k_adc->getAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(channel));
+	if (channel == 0) {
+		m_adc_ch0_offset = calib_offset;
+	} else {
+		m_adc_ch1_offset = calib_offset;
+	}
+	return calib_offset;
 }
 
-int M2kCalibrationImpl::adcOffsetChannel1() const
+double M2kCalibrationImpl::getAdcGain(unsigned int channel)
 {
-	return m_adc_ch1_offset;
-}
-
-double M2kCalibrationImpl::adcGainChannel0() const
-{
-	return m_adc_ch0_gain;
-}
-
-double M2kCalibrationImpl::adcGainChannel1() const
-{
-	return m_adc_ch1_gain;
+	if (channel >= m_m2k_adc->getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
+	}
+	auto gain = m_m2k_adc->getCalibscale(channel);
+	if (channel == 0) {
+		m_adc_ch0_gain = gain;
+	} else {
+		m_adc_ch1_gain = gain;
+	}
+	return gain;
 }
 
 void M2kCalibrationImpl::setAdcOffset(unsigned int chn, int offset)
 {
+	if (chn >= m_m2k_adc->getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
+	}
+
 	if (chn == 0) {
 		m_adc_ch0_offset = offset;
 		m_adc_ch0_vert_offset = 0;
 		m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), m_adc_ch0_offset, m_adc_ch0_vert_offset);
-	} else if (chn == 1) {
+	} else {
 		m_adc_ch1_offset = offset;
 		m_adc_ch1_vert_offset = 0;
 		m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), m_adc_ch1_offset, m_adc_ch1_vert_offset);
@@ -342,10 +354,14 @@ void M2kCalibrationImpl::setAdcOffset(unsigned int chn, int offset)
 
 void M2kCalibrationImpl::setAdcGain(unsigned int chn, double gain)
 {
+	if (chn >= m_m2k_adc->getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
+	}
+
 	if (chn == 0) {
 		m_adc_ch0_gain = gain;
 		m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
-	} else if (chn == 1) {
+	} else {
 		m_adc_ch1_gain = gain;
 		m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
 	}
@@ -359,9 +375,11 @@ void M2kCalibrationImpl::updateDacCorrections()
 	m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_1, m_adc_ch0_gain);
 	m_m2k_adc->setCalibscale(ANALOG_IN_CHANNEL_2, m_adc_ch1_gain);
 
-	m_m2k_dac->setCalibscale(0, m_dac_default_vlsb / dacAvlsb());
-	m_m2k_dac->setCalibscale(1, m_dac_default_vlsb / dacBvlsb());
+	m_m2k_dac->setCalibscale(0, m_dac_default_vlsb / m_dac_a_ch_vlsb);
+	m_m2k_dac->setCalibscale(1, m_dac_default_vlsb / m_dac_b_ch_vlsb);
 }
+
+
 
 void M2kCalibrationImpl::updateAdcCorrections()
 {
@@ -469,45 +487,63 @@ out_cleanup:
 	return ret;
 }
 
-int M2kCalibrationImpl::dacAoffset() const
+int M2kCalibrationImpl::getDacOffset(unsigned int channel)
 {
-	return m_dac_a_ch_offset;
+	if (channel >= m_m2k_dac->getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "No such DAC channel");
+	}
+
+	double offset = m_ad5625_dev->getDoubleValue(channel, "raw", true);
+	if (channel == 0) {
+		m_dac_a_ch_offset = offset;
+	} else {
+		m_dac_b_ch_offset = offset;
+	}
+	return offset;
 }
 
-int M2kCalibrationImpl::dacBoffset() const
+double M2kCalibrationImpl::getDacGain(unsigned int channel)
 {
-	return m_dac_b_ch_offset;
-}
+	if (channel >= m_m2k_dac->getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "No such DAC channel");
+	}
 
-double M2kCalibrationImpl::dacAvlsb() const
-{
-	return m_dac_a_ch_vlsb;
-}
-double M2kCalibrationImpl::dacBvlsb() const
-{
-	return m_dac_b_ch_vlsb;
+	auto gain = m_m2k_dac->getCalibscale(channel);
+	if (channel == 0) {
+		m_dac_a_ch_vlsb =  m_dac_default_vlsb / gain;
+	} else {
+		m_dac_b_ch_vlsb =  m_dac_default_vlsb / gain;
+	}
+	return gain;
 }
 
 void M2kCalibrationImpl::setDacOffset(unsigned int chn, int offset)
 {
+	if (chn >= m_m2k_dac->getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "No such DAC channel");
+	}
+
 	if (chn == 0) {
 		m_dac_a_ch_offset = offset;
-		m_ad5625_dev->setDoubleValue(0, m_dac_a_ch_offset, "raw", true);
-	} else if (chn == 1) {
+		m_ad5625_dev->setDoubleValue(chn, m_dac_a_ch_offset, "raw", true);
+	} else {
 		m_dac_b_ch_offset = offset;
-		m_ad5625_dev->setDoubleValue(1, m_dac_b_ch_offset, "raw", true);
+		m_ad5625_dev->setDoubleValue(chn, m_dac_b_ch_offset, "raw", true);
 	}
 }
 
 void M2kCalibrationImpl::setDacGain(unsigned int chn, double gain)
 {
-	if (chn == 0) {
-		m_dac_a_ch_vlsb = gain;
-		m_m2k_dac->setCalibscale(0, m_dac_default_vlsb / dacAvlsb());
-	} else if (chn == 1) {
-		m_dac_b_ch_vlsb = gain;
-		m_m2k_dac->setCalibscale(1, m_dac_default_vlsb / dacBvlsb());
+	if (chn >= m_m2k_dac->getNbChannels()) {
+		throw_exception(EXC_OUT_OF_RANGE, "No such DAC channel");
 	}
+
+	if (chn == 0) {
+		m_dac_a_ch_vlsb = m_dac_default_vlsb / gain;
+	} else {
+		m_dac_b_ch_vlsb = m_dac_default_vlsb / gain;
+	}
+	m_m2k_dac->setCalibscale(chn, gain);
 }
 
 bool M2kCalibrationImpl::calibrateDACoffset()

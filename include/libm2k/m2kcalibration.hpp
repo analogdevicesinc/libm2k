@@ -45,14 +45,11 @@ public:
 	virtual bool calibrateDAC() = 0;
 	virtual void cancelCalibration() = 0;
 
-	virtual int adcOffsetChannel0() const = 0;
-	virtual int adcOffsetChannel1() const = 0;
-	virtual int dacAoffset() const = 0;
-	virtual int dacBoffset() const = 0;
-	virtual double adcGainChannel0() const = 0;
-	virtual double adcGainChannel1() const = 0;
-	virtual double dacAvlsb() const = 0;
-	virtual double dacBvlsb() const = 0;
+	virtual int getAdcOffset(unsigned int channel) = 0;
+	virtual int getDacOffset(unsigned int channel) = 0;
+	virtual double getAdcGain(unsigned int channel) = 0;
+	virtual double getDacGain(unsigned int channel) = 0;
+
 
 	virtual bool resetCalibration() = 0;
 
