@@ -59,6 +59,7 @@ public:
 	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
 
 	void startMixedSignalAcquisition(unsigned int nb_samples) override;
+	void stopMixedSignalAcquisition() override;
 
 	int getDacCalibrationOffset(unsigned int chn);
 	double getDacCalibrationGain(unsigned int chn);

@@ -353,6 +353,19 @@ void M2kImpl::startMixedSignalAcquisition(unsigned int nb_samples)
 	}
 }
 
+void M2kImpl::stopMixedSignalAcquisition()
+{
+	for (auto analogIn : m_instancesAnalogIn) {
+		analogIn->stopAcquisition();
+	}
+	for (auto digital : m_instancesDigital) {
+		digital->stopAcquisition();
+	}
+	m_instancesDigital.at(0)->resetRateMux();
+	m_trigger->setAnalogSource(analogSource);
+	m_trigger->setDigitalSource(digitalSource);
+}
+
 bool M2kImpl::hasAnalogTrigger()
 {
 	enum M2K_TRIGGER_SOURCE_ANALOG source;
