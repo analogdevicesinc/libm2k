@@ -59,14 +59,10 @@ public:
 	bool calibrateDACgain();
 	void cancelCalibration();
 
-	int adcOffsetChannel0() const;
-	int adcOffsetChannel1() const;
-	int dacAoffset() const;
-	int dacBoffset() const;
-	double adcGainChannel0() const;
-	double adcGainChannel1() const;
-	double dacAvlsb() const;
-	double dacBvlsb() const;
+	int getAdcOffset(unsigned int channel);
+	int getDacOffset(unsigned int channel);
+	double getAdcGain(unsigned int channel);
+	double getDacGain(unsigned int channel);
 
 	bool resetCalibration();
 	void updateAdcCorrections();

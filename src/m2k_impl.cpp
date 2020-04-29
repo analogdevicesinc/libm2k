@@ -216,50 +216,22 @@ bool M2kImpl::calibrateDAC()
 
 double M2kImpl::getAdcCalibrationGain(unsigned int chn)
 {
-	if (chn >= getAnalogIn()->getNbChannels()) {
-		throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
-	}
-	if (chn == 0) {
-		return m_calibration->adcGainChannel0();
-	} else {
-		return m_calibration->adcGainChannel1();
-	}
+	return m_calibration->getAdcGain(chn);
 }
 
 int M2kImpl::getAdcCalibrationOffset(unsigned int chn)
 {
-	if (chn >= getAnalogIn()->getNbChannels()) {
-		throw_exception(EXC_OUT_OF_RANGE, "No such ADC channel");
-	}
-	if (chn == 0) {
-		return m_calibration->adcOffsetChannel0();
-	} else {
-		return m_calibration->adcOffsetChannel1();
-	}
+	return m_calibration->getAdcOffset(chn);
 }
 
 double M2kImpl::getDacCalibrationGain(unsigned int chn)
 {
-	if (chn >= getAnalogOut()->getNbChannels()) {
-		throw_exception(EXC_OUT_OF_RANGE, "No such DAC channel");
-	}
-	if (chn == 0) {
-		return m_calibration->dacAvlsb();
-	} else {
-		return m_calibration->dacBvlsb();
-	}
+	return m_calibration->getDacGain(chn);
 }
 
 int M2kImpl::getDacCalibrationOffset(unsigned int chn)
 {
-	if (chn >= getAnalogOut()->getNbChannels()) {
-		throw_exception(EXC_OUT_OF_RANGE, "No such DAC channel");
-	}
-	if (chn == 0) {
-		return m_calibration->dacAoffset();
-	} else {
-		return m_calibration->dacBoffset();
-	}
+	return m_calibration->getDacOffset(chn);
 }
 
 void M2kImpl::setAdcCalibrationGain(unsigned int chn, double gain)
