@@ -21,6 +21,7 @@
 
 #include "m2kanalogin_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
+#include <algorithm>
 #include "utils/channel.hpp"
 
 using namespace libm2k;
@@ -639,7 +640,13 @@ void M2kAnalogInImpl::setKernelBuffersCount(unsigned int count)
 
 std::vector<double> M2kAnalogInImpl::getAvailableSampleRates()
 {
-	return m_m2k_adc->getAvailableSampleRates();
+	std::vector<std::string> stringValues;
+	std::vector<double> values;
+
+	stringValues = m_m2k_adc->getAvailableAttributeValues("sampling_frequency");
+	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
+		       [] (std::string &s) -> double { return std::stod(s); });
+	return values;
 }
 
 std::string M2kAnalogInImpl::getName()

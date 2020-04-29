@@ -206,46 +206,6 @@ double Utils::average(double *data, size_t numElements)
 	return (sum / (double)numElements);
 }
 
-std::vector<double> Utils::getAvailableSamplerates(iio_device *dev)
-{
-	std::vector<double> values;
-	std::vector<std::string> str_values;
-	char buf[1024];
-	int ret;
-
-	ret = iio_device_attr_read(dev, "sampling_frequency_available",
-				   buf, sizeof(buf));
-
-	if (ret > 0) {
-		str_values = Utils::split(buf, " ");
-
-		for (auto it : str_values) {
-			__try {
-				values.push_back(std::stod(it));
-			} __catch (exception_type &e) {
-				std::cout << "Not a valid samplerate " << e.what();
-			}
-
-		}
-	}
-
-	if (values.empty()) {
-		ret = iio_device_attr_read(dev, "sampling_frequency",
-					   buf, sizeof(buf));
-
-		if (!ret) {
-			__try {
-				values.push_back(std::stoul(buf));
-			} __catch (exception_type &e) {
-				std::cout << "Not a valid samplerate " << e.what();
-			}
-		}
-	}
-
-	std::sort(values.begin(), values.end());
-	return values;
-}
-
 DEVICE_DIRECTION Utils::getIioDeviceDirection(struct iio_device* dev)
 {
 	DEVICE_DIRECTION dir = NO_DIRECTION;
