@@ -24,6 +24,7 @@
 
 #include <libm2k/m2k.hpp>
 #include "context_impl.hpp"
+#include <libm2k/enums.hpp>
 
 namespace libm2k {
 class M2kHardwareTrigger;
@@ -57,6 +58,8 @@ public:
 	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
 	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
 
+	void startMixedSignalAcquisition(unsigned int nb_samples) override;
+
 	int getDacCalibrationOffset(unsigned int chn);
 	double getDacCalibrationGain(unsigned int chn);
 	int getAdcCalibrationOffset(unsigned int chn);
@@ -79,7 +82,8 @@ private:
 	std::vector<digital::M2kDigital*> m_instancesDigital;
 	bool m_sync;
 	std::string m_firmware_version;
-
+	enum libm2k::M2K_TRIGGER_SOURCE_ANALOG analogSource;
+	enum libm2k::M2K_TRIGGER_SOURCE_DIGITAL digitalSource;
 	bool hasAnalogTrigger();
 	bool hasDigitalTrigger();
 	void blinkLed(const double duration = 4, bool blocking = false);
