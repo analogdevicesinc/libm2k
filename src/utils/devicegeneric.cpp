@@ -453,41 +453,6 @@ string DeviceGeneric::getStringValue(unsigned int chn_idx, string attr, bool out
 	return chn->getStringValue(attr);
 }
 
-std::vector<double> DeviceGeneric::getAvailableSampleRates()
-{
-	std::vector<double> values = {};
-	std::vector<std::string> str_values;
-	char buf[1024];
-	int ret;
-
-	ret = iio_device_attr_read(m_dev, "sampling_frequency_available",
-				   buf, sizeof(buf));
-
-	if (ret > 0) {
-		str_values = Utils::split(buf, " ");
-
-		for (auto it : str_values) {
-			values.push_back(std::stod(it));
-		}
-	}
-
-	if (values.empty()) {
-		ret = iio_device_attr_read(m_dev, "sampling_frequency",
-					   buf, sizeof(buf));
-
-		if (!ret) {
-			__try {
-				values.push_back(std::stoul(buf));
-			} __catch (exception_type &e) {
-				throw_exception(EXC_INVALID_PARAMETER, "Device: Not a valid samplerate.");
-			}
-		}
-	}
-
-	std::sort(values.begin(), values.end());
-	return values;
-}
-
 std::vector<std::string> DeviceGeneric::getAvailableAttributeValues(const string &attr)
 {
 	std::string dev_name;

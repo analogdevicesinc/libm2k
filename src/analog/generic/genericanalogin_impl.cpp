@@ -87,7 +87,13 @@ double GenericAnalogInImpl::setSampleRate(unsigned int chn_idx, double sampleRat
 
 std::vector<double> GenericAnalogInImpl::getAvailableSampleRates()
 {
-	return getAdcDevice(0)->getAvailableSampleRates();
+	std::vector<std::string> stringValues;
+	std::vector<double> values;
+
+	stringValues = getAdcDevice(0)->getAvailableAttributeValues("sampling_frequency");
+	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
+		       [] (std::string &s) -> double { return std::stod(s); });
+	return values;
 }
 
 string GenericAnalogInImpl::getDeviceName()
