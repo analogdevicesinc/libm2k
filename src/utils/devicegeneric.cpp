@@ -27,6 +27,8 @@
 #include "context_impl.hpp"
 #include <algorithm>
 #include <cstring>
+#include <sstream>
+#include <iterator>
 
 using namespace std;
 using namespace libm2k::utils;
@@ -484,6 +486,52 @@ std::vector<double> DeviceGeneric::getAvailableSampleRates()
 
 	std::sort(values.begin(), values.end());
 	return values;
+}
+
+std::vector<std::string> DeviceGeneric::getAvailableAttributeValues(const string &attr)
+{
+	std::string dev_name;
+	std::string valuesAsString;
+	std::vector<std::string> values;
+
+	dev_name = getName();
+	if (!ContextImpl::iioDevHasAttribute(m_dev, attr)) {
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no " + attr + " attribute");
+		return std::vector<std::string>();
+	}
+
+	__try {
+		valuesAsString = getStringValue(std::string(attr + "_available"));
+		std::istringstream iss(valuesAsString);
+		values = std::vector<std::string>(std::istream_iterator<std::string>{iss},
+						  std::istream_iterator<std::string>());
+	} __catch (exception_type &e) {
+		values.push_back(getStringValue(attr));
+	}
+	return values;
+}
+
+std::vector<std::string> DeviceGeneric::getAvailableAttributeValues(unsigned int chn_idx, const std::string &attr, bool output)
+{
+	unsigned int nb_channels;
+	std::string dev_name;
+
+	nb_channels = iio_device_get_channels_count(m_dev);
+	dev_name = getName();
+
+	if (chn_idx >= nb_channels) {
+		throw_exception(EXC_INVALID_PARAMETER, dev_name + " has no such channel");
+		return std::vector<std::string>();
+	}
+
+	auto chn = getChannel(chn_idx, output);
+	if (!chn->hasAttribute(attr)) {
+		throw_exception(EXC_INVALID_PARAMETER, dev_name +
+						       " has no " + attr +
+						       " attribute for the selected channel");
+		return std::vector<std::string>();
+	}
+	return chn->getAvailableAttributeValues(attr);
 }
 
 void DeviceGeneric::writeRegister(uint32_t address, uint32_t value)

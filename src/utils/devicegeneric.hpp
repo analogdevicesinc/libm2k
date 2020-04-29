@@ -82,6 +82,8 @@ public:
 	virtual	std::string getStringValue(std::string attr);
 	virtual std::string getStringValue(unsigned int chn, std::string attr, bool output=false);
 
+	std::vector<std::string> getAvailableAttributeValues(const std::string &attr);
+	std::vector<std::string> getAvailableAttributeValues(unsigned int chn_idx, const std::string &attr, bool output=false);
 	std::vector<double> getAvailableSampleRates();
 
 	virtual void writeRegister(uint32_t address, uint32_t value);
