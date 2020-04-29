@@ -315,6 +315,77 @@ std::vector<M2kAnalogOut*> M2kImpl::getAllAnalogOut()
 	return m_instancesAnalogOut;
 }
 
+bool M2kImpl::hasAnalogTrigger()
+{
+	enum M2K_TRIGGER_SOURCE_ANALOG source;
+	enum M2K_TRIGGER_MODE mode;
+
+	source = m_trigger->getAnalogSource();
+	switch (source) {
+	case CHANNEL_1:
+	case CHANNEL_2:
+		mode = m_trigger->getAnalogMode(source);
+		if (mode != ALWAYS) {
+			return true;
+		}
+		break;
+	case CHANNEL_1_OR_CHANNEL_2:
+	case CHANNEL_1_AND_CHANNEL_2:
+	case CHANNEL_1_XOR_CHANNEL_2:
+		return m_trigger->getAnalogMode(CHANNEL_1) || m_trigger->getAnalogMode(CHANNEL_2);
+	case SRC_DIGITAL_IN:
+		return false;
+	case CHANNEL_1_OR_SRC_LOGIC_ANALYZER:
+		if (m_trigger->getDigitalSource() == SRC_ANALOG_IN) {
+			return true;
+		}
+		mode = m_trigger->getAnalogMode(CHANNEL_1);
+		return mode || hasDigitalTrigger();
+	case CHANNEL_2_OR_SRC_LOGIC_ANALYZER:
+		if (m_trigger->getDigitalSource() == SRC_ANALOG_IN) {
+			return true;
+		}
+		mode = m_trigger->getAnalogMode(CHANNEL_2);
+		return mode || hasDigitalTrigger();
+	case CHANNEL_1_OR_CHANNEL_2_OR_SRC_LOGIC_ANALYZER:
+		if (m_trigger->getDigitalSource() == SRC_ANALOG_IN) {
+			return true;
+		}
+		return m_trigger->getAnalogMode(CHANNEL_1) || m_trigger->getAnalogMode(CHANNEL_2) || hasDigitalTrigger();
+	case NO_SOURCE:
+		return false;
+	}
+	return false;
+}
+
+bool M2kImpl::hasDigitalTrigger()
+{
+	enum M2K_TRIGGER_SOURCE_DIGITAL source;
+	enum M2K_TRIGGER_CONDITION_DIGITAL condition;
+	unsigned int ch_index;
+
+	source = m_trigger->getDigitalSource();
+	switch (source) {
+	case SRC_NONE:
+		for (auto digital : m_instancesDigital) {
+			for (ch_index = 0; ch_index < digital->getNbChannelsIn(); ch_index++) {
+				condition = m_trigger->getDigitalCondition(ch_index);
+				if (condition != NO_TRIGGER_DIGITAL) {
+					return true;
+				}
+			}
+		}
+		return false;
+	case SRC_ANALOG_IN:
+		return false;
+	case SRC_TRIGGER_IN:
+		return true;
+	case SRC_DISABLED:
+		return false;
+	}
+	return false;
+}
+
 void M2kImpl::initialize()
 {
 	std::string hw_rev = Utils::getHardwareRevision(m_context);
