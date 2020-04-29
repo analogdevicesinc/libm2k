@@ -29,6 +29,7 @@
 #include <chrono>
 #include <iio.h>
 #include <string.h>
+#include <algorithm>
 
 using namespace libm2k::analog;
 using namespace libm2k::utils;
@@ -559,7 +560,13 @@ DeviceOut* M2kAnalogOutImpl::getDacDevice(unsigned int chnIdx)
 
 std::vector<double> M2kAnalogOutImpl::getAvailableSampleRates(unsigned int chnIdx)
 {
-	return getDacDevice(chnIdx)->getAvailableSampleRates();
+	std::vector<std::string> stringValues;
+	std::vector<double> values;
+
+	stringValues = getDacDevice(chnIdx)->getAvailableAttributeValues("sampling_frequency");
+	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
+		       [] (std::string &s) -> double { return std::stod(s); });
+	return values;
 }
 
 void M2kAnalogOutImpl::setKernelBuffersCount(unsigned int chnIdx, unsigned int count)

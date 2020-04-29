@@ -24,6 +24,7 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 using namespace libm2k::analog;
@@ -71,7 +72,13 @@ double GenericAnalogOutImpl::setSampleRate(unsigned int chn_idx, double sampleRa
 
 std::vector<double> GenericAnalogOutImpl::getAvailableSampleRates()
 {
-	return getDacDevice(0)->getAvailableSampleRates();
+	std::vector<std::string> stringValues;
+	std::vector<double> values;
+
+	stringValues = getDacDevice(0)->getAvailableAttributeValues("sampling_frequency");
+	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
+	      [] (std::string &s) -> double { return std::stod(s); });
+	return values;
 }
 
 void GenericAnalogOutImpl::setCyclic(bool en)
