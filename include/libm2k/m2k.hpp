@@ -164,6 +164,15 @@ public:
 
 
 	/**
+	 * @brief Initiate the mixed acquisition
+	 * @param nb_samples The number of samples that will be retrieved
+	 *
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual void startMixedSignalAcquisition(unsigned int nb_samples) = 0;
+
+
+	/**
 	* @brief Get the calibration offset of the DAC
 	*
 	* @param chn The index corresponding to a channel

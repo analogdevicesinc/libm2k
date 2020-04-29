@@ -315,6 +315,44 @@ std::vector<M2kAnalogOut*> M2kImpl::getAllAnalogOut()
 	return m_instancesAnalogOut;
 }
 
+void M2kImpl::startMixedSignalAcquisition(unsigned int nb_samples)
+{
+	const bool hasAnalogTrigger = this->hasAnalogTrigger();
+	const bool hasDigitalTrigger = this->hasDigitalTrigger();
+
+	analogSource = m_trigger->getAnalogSource();
+	digitalSource = m_trigger->getDigitalSource();
+
+	if (!hasAnalogTrigger && !hasDigitalTrigger) {
+		// no trigger
+		m_trigger->setAnalogSource(NO_SOURCE);
+		m_trigger->setDigitalSource(SRC_ANALOG_IN);
+	} else if (!hasDigitalTrigger) {
+		// analog trigger
+		m_trigger->setDigitalSource(SRC_ANALOG_IN);
+	} else if (!hasAnalogTrigger) {
+		// digital trigger
+		m_trigger->setAnalogSource(SRC_DIGITAL_IN);
+	}
+
+	// share the same rate
+	m_instancesDigital.at(0)->setRateMux();
+
+	// start acquisition
+	for (auto analogIn : m_instancesAnalogIn) {
+		analogIn->startAcquisition(nb_samples);
+	}
+	for (auto digital : m_instancesDigital) {
+		digital->startAcquisition(nb_samples);
+	}
+
+	// release the trigger
+	if (!hasAnalogTrigger && !hasDigitalTrigger) {
+		m_trigger->setAnalogMode(CHANNEL_1, ALWAYS);
+		m_trigger->setAnalogSource(CHANNEL_1);
+	}
+}
+
 bool M2kImpl::hasAnalogTrigger()
 {
 	enum M2K_TRIGGER_SOURCE_ANALOG source;
