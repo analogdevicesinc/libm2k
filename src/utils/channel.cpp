@@ -22,6 +22,8 @@
 #include "channel.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
+#include <sstream>
+#include <iterator>
 
 using namespace libm2k;
 using namespace libm2k::utils;
@@ -331,6 +333,22 @@ bool Channel::getBoolValue(std::string attr)
 		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
 	}
 	return value;
+}
+
+std::vector<std::string> Channel::getAvailableAttributeValues(const std::string &attr)
+{
+	std::vector<std::string> values;
+	std::string valuesAsString;
+
+	__try {
+		valuesAsString = getStringValue(std::string(attr + "_available"));
+		std::istringstream iss(valuesAsString);
+		values = std::vector<std::string>(std::istream_iterator<std::string>{iss},
+						  std::istream_iterator<std::string>());
+	} __catch (exception_type &e) {
+		values.push_back(getStringValue(attr));
+	}
+	return values;
 }
 
 bool Channel::isValid()

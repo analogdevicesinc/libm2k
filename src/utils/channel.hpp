@@ -65,6 +65,8 @@ public:
 	void setBoolValue(std::string attr, bool val);
 	bool getBoolValue(std::string attr);
 
+	std::vector<std::string> getAvailableAttributeValues(const std::string &attr);
+
 	void enableChannel(bool enable);
 	uintptr_t getFirst(struct iio_buffer* buffer);
 	void *getFirstVoid(iio_buffer *buffer);
