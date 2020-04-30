@@ -4,7 +4,15 @@
 
 brew_install_if_not_exists cmake doxygen libusb libxml2 swig curl python
 
-wget http://swdownloads.analog.com/cse/travis_builds/${LIBIIO_BRANCH}_latest_libiio${LDIST}.pkg
-sudo installer -pkg ${LIBIIO_BRANCH}_latest_libiio${LDIST}.pkg -target /
+cd $TRAVIS_BUILD_DIR
+git clone https://github.com/analogdevicesinc/libiio
+mkdir -p libiio/build
+cd libiio/build
+cmake ..
+make
+sudo make install
+
+#wget http://swdownloads.analog.com/cse/travis_builds/${LIBIIO_BRANCH}_latest_libiio${LDIST}.pkg
+#sudo installer -pkg ${LIBIIO_BRANCH}_latest_libiio${LDIST}.pkg -target /
 
 pip3 install wheel
