@@ -1,14 +1,26 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-if (NOT WIN32)
-	set(Python_ADDITIONAL_VERSIONS 3)
+if(${CMAKE_VERSION} VERSION_LESS "3.12.0")
+	if (NOT WIN32)
+		set(Python_ADDITIONAL_VERSIONS 3)
+	endif()
+
+	include(FindPythonInterp)
+	include(FindPythonLibs)
+
+	set(Python_Interpreter_FOUND ${PYTHONINTERP_FOUND})
+	set(Python_EXECUTABLE ${PYTHON_EXECUTABLE})
+	set(Python_LIBRARIES ${PYTHON_LIBRARIES})
+	set(Python_INCLUDE_PATH ${PYTHON_INCLUDE_PATH})
+	set(Python_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
+else()
+	find_package(Python COMPONENTS Interpreter Development)
 endif()
 
 FIND_PACKAGE(SWIG REQUIRED)
 include(UseSWIG)
-FIND_PACKAGE(PythonInterp REQUIRED)
-FIND_PACKAGE(PythonLibs)
-INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH}
+
+INCLUDE_DIRECTORIES(${Python_INCLUDE_PATH}
 	${CMAKE_SOURCE_DIR}/include
 	${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -42,7 +54,7 @@ set_property(SOURCE ../${PROJECT_NAME}.i PROPERTY SWIG_MODULE_NAME "libm2k")
 SWIG_ADD_LIBRARY(${PROJECT_NAME} TYPE MODULE LANGUAGE python OUTPUT_DIR ${CMAKE_BINARY_DIR} OUTFILE_DIR ${CMAKE_BINARY_DIR} SOURCES ../${PROJECT_NAME}.i)
 
 # Handle Anaconda issues on OSX
-execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var('LDSHARED'))"
+execute_process(COMMAND ${Python_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var('LDSHARED'))"
 	RESULT_VARIABLE PY_CONF_VAR
 	OUTPUT_VARIABLE PY_LD_SHARED
 	OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -61,16 +73,16 @@ IF (NOT PYTHON_LINK)
 ENDIF()
 
 target_include_directories(_${PROJECT_NAME} PRIVATE
-	${PYTHON_INCLUDE_DIRS}
+	${Python_INCLUDE_DIRS}
 	${CMAKE_SOURCE_DIR}/include)
 
 target_link_libraries(_${PROJECT_NAME} ${PROJECT_NAME})
 
 IF (PYTHON_LINK)
-	target_link_libraries(_${PROJECT_NAME} ${PYTHON_LIBRARIES})
+	target_link_libraries(_${PROJECT_NAME} ${Python_LIBRARIES})
 ENDIF()
 
-set(PYTHON_EXECUTABLE_LIB_VERSION ${PYTHON_EXECUTABLE})
+set(PYTHON_EXECUTABLE_LIB_VERSION ${Python_EXECUTABLE})
 if(UNIX)
 	if(NOT APPLE)
 		set_target_properties(${SWIG_MODULE_libm2k_REAL_NAME} PROPERTIES
@@ -97,8 +109,10 @@ add_custom_target(${PROJECT_NAME}py ALL DEPENDS _${PROJECT_NAME} WORKING_DIRECTO
 	${CMAKE_BINARY_DIR} COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} build)
 
 if(NOT SKIP_INSTALL_ALL)
-	install(CODE "execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-		COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} install
-		--record=${CMAKE_BINARY_DIR}/install_manifest_py.txt
-		--root=\$ENV{DESTDIR}/ --prefix=${CMAKE_INSTALL_PREFIX})")
+	if (NOT APPLE)
+		install(CODE "execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+			COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} install
+			--record=${CMAKE_BINARY_DIR}/install_manifest_py.txt
+			--root=\$ENV{DESTDIR}/ --prefix=${CMAKE_INSTALL_PREFIX})")
+	endif()
 endif()
