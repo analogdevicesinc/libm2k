@@ -25,7 +25,7 @@ matrix:
       env:
         - PYTHON=python PIP=pip
     - os: linux
-      dist: xenial
+      dist: bionic
       env:
         - OS_TYPE=doxygen
       addons: { apt: { packages: ["cmake", "graphviz"] } }
