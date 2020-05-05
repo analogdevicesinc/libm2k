@@ -130,6 +130,7 @@ namespace libm2k {
 		CHANNEL_1_OR_SRC_LOGIC_ANALYZER = 6,
 		CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 7,
 		CHANNEL_1_OR_CHANNEL_2_OR_SRC_LOGIC_ANALYZER = 8,
+		NO_SOURCE = 9, ///< NO_SOURCE - block the AnalogIn interface
 	};
 
 
@@ -140,7 +141,8 @@ namespace libm2k {
 	enum M2K_TRIGGER_SOURCE_DIGITAL {
 		SRC_TRIGGER_IN = 0, ///< SRC_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalIn interface
 		SRC_ANALOG_IN = 1, ///< SRC_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalIn interface
-		SRC_NONE = 2 ///< SRC_NONE - trigger events on the DigitalIn are conditioned by the internal digital trigger structure
+		SRC_NONE = 2, ///< SRC_NONE - trigger events on the DigitalIn are conditioned by the internal digital trigger structure
+		SRC_DISABLED = 3, ///< SRC_DISABLED - block the DigitalIn interface
 	};
 
 

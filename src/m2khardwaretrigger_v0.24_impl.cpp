@@ -57,11 +57,13 @@ std::vector<std::string> M2kHardwareTriggerV024Impl::m_trigger_source = {
 	"a_OR_trigger_in",
 	"b_OR_trigger_in",
 	"a_OR_b_OR_trigger_in",
+	"disabled",
 };
 
 std::vector<std::string> M2kHardwareTriggerV024Impl::m_trigger_ext_digital_source = {
 	"trigger-logic",
-	"trigger-in"
+	"trigger-in",
+	"disabled"
 };
 
 typedef std::pair<Channel *, std::string> channel_pair;
@@ -145,16 +147,24 @@ bool M2kHardwareTriggerV024Impl::hasCrossInstrumentTrigger() const
 
 void M2kHardwareTriggerV024Impl::setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)
 {
+	std::string source;
 	if (!hasCrossInstrumentTrigger()) {
 		M2kHardwareTriggerImpl::setDigitalSource(external_src);
 	}
 
-	if (external_src == SRC_NONE) {
-		external_src = SRC_TRIGGER_IN;
+	switch(external_src) {
+	case SRC_NONE:
+	case SRC_TRIGGER_IN:
+		source = "trigger-logic";
+		break;
+	case SRC_ANALOG_IN:
+		source = "trigger-in";
+		break;
+	case SRC_DISABLED:
+		source = "disabled";
+		break;
 	}
-
-	m_digital_trigger_device->setStringValue(16, "trigger_mux_out",
-						 m_trigger_ext_digital_source.at(external_src));
+	m_digital_trigger_device->setStringValue(16, "trigger_mux_out", source);
 }
 
 void M2kHardwareTrigger::setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)
@@ -170,21 +180,15 @@ M2K_TRIGGER_SOURCE_DIGITAL M2kHardwareTriggerV024Impl::getDigitalSource() const
 	if (!hasCrossInstrumentTrigger()) {
 		M2kHardwareTriggerImpl::getDigitalSource();
 	}
-
-	std::string buf = m_digital_trigger_device->getStringValue(16, "trigger_mux_out");
-	auto it = std::find(m_trigger_ext_digital_source.begin(),
-			    m_trigger_ext_digital_source.end(), buf.c_str());
-	if  (it == m_trigger_ext_digital_source.end()) {
-		THROW_M2K_EXCEPTION("Unexpected value read from attribute: trigger", libm2k::EXC_OUT_OF_RANGE);
-	}
-
-	auto src = static_cast<M2K_TRIGGER_SOURCE_DIGITAL>(it - m_trigger_ext_digital_source.begin());
-	if (src == SRC_ANALOG_IN) {
-		return src;
-	}
-
-	if (getDigitalExternalCondition() != NO_TRIGGER_DIGITAL) {
-		return SRC_TRIGGER_IN;
+	std::string source = m_digital_trigger_device->getStringValue(16, "trigger_mux_out");
+	if (source == "trigger-logic") {
+		if (getDigitalExternalCondition() != NO_TRIGGER_DIGITAL) {
+			return SRC_TRIGGER_IN;
+		}
+	} else if (source == "trigger-in") {
+		return SRC_ANALOG_IN;
+	} else if (source == "disabled") {
+		return SRC_DISABLED;
 	}
 	return SRC_NONE;
 }
