@@ -335,6 +335,7 @@ public:
 
 	/**
 	 * @brief Cancel all buffer operations of enabled channels
+	 * @note Should be used to cancel an ongoing data write.
 	 */
 	virtual void cancelBuffer() = 0;
 
@@ -342,6 +343,7 @@ public:
 	/**
 	 * @brief Cancel all buffer operations of the given channel
 	 * @param chn The index corresponding to the channel
+	 * @note Should be used to cancel an ongoing data write.
 	 */
 	virtual void cancelBuffer(unsigned int chn) = 0;
 
