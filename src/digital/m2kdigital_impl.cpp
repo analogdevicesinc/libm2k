@@ -424,12 +424,11 @@ struct IIO_OBJECTS M2kDigitalImpl::getIioObjects()
 void M2kDigitalImpl::cancelAcquisition()
 {
 	m_dev_read->cancelBuffer();
-	m_dev_read->flushBuffer();
 }
 
 void M2kDigitalImpl::cancelBufferOut()
 {
-	m_dev_write->stop();
+	m_dev_write->cancelBuffer();
 }
 
 unsigned int M2kDigitalImpl::getNbChannelsIn()
