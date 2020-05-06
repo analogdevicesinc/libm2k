@@ -110,7 +110,11 @@ void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_sa
 			}
 
 		}
-		iio_buffer_push(m_buffer);
+		ssize_t ret = iio_buffer_push(m_buffer);
+		if (ret < 0) {
+			destroy();
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
+		}
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
 
@@ -152,7 +156,11 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 			}
 
 		}
-		iio_buffer_push(m_buffer);
+		ssize_t ret = iio_buffer_push(m_buffer);
+		if (ret < 0) {
+			destroy();
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
+		}
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
 
@@ -193,7 +201,11 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 			}
 
 		}
-		iio_buffer_push(m_buffer);
+		ssize_t ret = iio_buffer_push(m_buffer);
+		if (ret < 0) {
+			destroy();
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
+		}
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
 
@@ -222,7 +234,11 @@ void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cy
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data);
-		iio_buffer_push(m_buffer);
+		ssize_t ret = iio_buffer_push(m_buffer);
+		if (ret < 0) {
+			destroy();
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
+		}
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
 	}
@@ -263,7 +279,11 @@ void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, b
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
-		iio_buffer_push(m_buffer);
+		ssize_t ret = iio_buffer_push(m_buffer);
+		if (ret < 0) {
+			destroy();
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
+		}
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
 	}
@@ -290,7 +310,11 @@ void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bo
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
-		iio_buffer_push(m_buffer);
+		ssize_t ret = iio_buffer_push(m_buffer);
+		if (ret < 0) {
+			destroy();
+			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
+		}
 	} else {
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Please setup channels before pushing data");
 	}
@@ -310,7 +334,7 @@ void Buffer::getSamples(std::vector<unsigned short> &data, unsigned int nb_sampl
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
 	}
 
-	int ret = iio_buffer_refill(m_buffer);
+	ssize_t ret = iio_buffer_refill(m_buffer);
 
 
 	if (ret < 0) {
@@ -345,7 +369,7 @@ const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 		return nullptr;
 	}
 
-	int ret = iio_buffer_refill(m_buffer);
+	ssize_t ret = iio_buffer_refill(m_buffer);
 
 
 	if (ret < 0) {
