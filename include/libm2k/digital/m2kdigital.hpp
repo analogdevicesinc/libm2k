@@ -189,11 +189,13 @@ public:
 
 	/**
 	* @brief Cancel all rx-buffer operations
+	* @note Should be used to cancel an ongoing acquisition
 	*/
 	virtual void cancelAcquisition() = 0;
 
 	/**
 	* @brief Cancel all tx-buffer operations
+	* @note Should be used to cancel an ongoing data write.
 	*/
 	virtual void cancelBufferOut() = 0;
 

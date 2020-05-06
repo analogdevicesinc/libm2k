@@ -410,6 +410,7 @@ public:
 
 	/**
 	* @brief Cancel all buffer operations
+	* @note Should be used to cancel an ongoing acquisition
 	*/
 	virtual void cancelAcquisition() = 0;
 
