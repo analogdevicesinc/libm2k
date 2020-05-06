@@ -329,9 +329,11 @@ void M2kAnalogOutImpl::pushRaw(std::vector<std::vector<short>> const &data)
 	std::vector<std::vector<short>> data_buffers;
 	bool streamingData = true;
 	bool isBufferEmpty = true;
+	bool allChannelsPushed = (data.size() != getNbChannels()) ? false : true;
 
 	for (unsigned int  chn = 0; chn < data.size(); chn++) {
 		streamingData &= !getCyclic(chn);
+		allChannelsPushed &= (data.at(chn).size() != 0);
 	}
 	if (streamingData && m_dma_data_available) {
 		// all kernel buffers are empty when maximum buffer space is equal with the unused space
@@ -358,7 +360,7 @@ void M2kAnalogOutImpl::pushRaw(std::vector<std::vector<short>> const &data)
 	}
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
-		if (m_dma_start_sync_available) {
+		if (m_dma_start_sync_available && allChannelsPushed) {
 			setSyncedStartDma(true);
 		}
 		setSyncedDma(false);
@@ -374,6 +376,7 @@ void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels,
 	unsigned int bufferSize = nb_samples/nb_channels;
 	bool streamingData = true;
 	bool isBufferEmpty = true;
+	bool allChannelsPushed = (nb_channels != getNbChannels()) ? false : true;
 
 	for (unsigned int  chn = 0; chn < nb_channels; chn++) {
 		streamingData &= !getCyclic(chn);
@@ -404,7 +407,7 @@ void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels,
 	}
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
-		if (m_dma_start_sync_available) {
+		if (m_dma_start_sync_available && allChannelsPushed) {
 			setSyncedStartDma(true);
 		}
 		setSyncedDma(false);
@@ -420,10 +423,13 @@ void M2kAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 	std::vector<std::vector<short>> data_buffers;
 	bool streamingData = true;
 	bool isBufferEmpty = true;
+	bool allChannelsPushed = (data.size() != getNbChannels()) ? false : true;
 
 	for (unsigned int  chn = 0; chn < data.size(); chn++) {
 		streamingData &= !getCyclic(chn);
+		allChannelsPushed &= (data.at(chn).size() != 0);
 	}
+
 	if (streamingData && m_dma_data_available) {
 		// all kernel buffers are empty when maximum buffer space is equal with the unused space
 		unsigned int unusedBufferSpace, maxBufferSpace;
@@ -453,7 +459,7 @@ void M2kAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 	}
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
-		if (m_dma_start_sync_available) {
+		if (m_dma_start_sync_available && allChannelsPushed) {
 			setSyncedStartDma(true);
 		}
 		setSyncedDma(false);
@@ -469,6 +475,7 @@ void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, u
 	unsigned int bufferSize = nb_samples/nb_channels;
 	bool streamingData = true;
 	bool isBufferEmpty = true;
+	bool allChannelsPushed = (nb_channels != getNbChannels()) ? false : true;
 
 	for (unsigned int  chn = 0; chn < nb_channels; chn++) {
 		streamingData &= !getCyclic(chn);
@@ -499,7 +506,7 @@ void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, u
 	}
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
-		if (m_dma_start_sync_available) {
+		if (m_dma_start_sync_available && allChannelsPushed) {
 			setSyncedStartDma(true);
 		}
 		setSyncedDma(false);
