@@ -3,11 +3,9 @@ cmake_minimum_required(VERSION 2.8.7)
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.5")
 	# Check CMake Policy added in v3.13 regarding the SWIG generated target name
 	# https://cmake.org/cmake/help/v3.14/policy/CMP0078.html
-	cmake_policy(SET CMP0078 NEW)
-	set(SWIG_OUTPUT_NAME _libm2k)
-else()
-	set(SWIG_OUTPUT_NAME libm2k)
+	cmake_policy(SET CMP0078 OLD)
 endif()
+set(SWIG_OUTPUT_NAME libm2k)
 
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14.7")
@@ -36,7 +34,7 @@ endif()
 FIND_PACKAGE(SWIG REQUIRED)
 include(UseSWIG)
 
-INCLUDE_DIRECTORIES(${Python_INCLUDE_PATH}
+INCLUDE_DIRECTORIES(${Python_INCLUDE_DIRS}
 	${CMAKE_SOURCE_DIR}/include
 	${CMAKE_CURRENT_SOURCE_DIR})
 
