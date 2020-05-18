@@ -67,6 +67,7 @@ std::vector<struct libm2k::CONTEXT_INFO*> ContextBuilder::getContextsInfo()
 	struct iio_context_info **info;
 	unsigned int nb_contexts;
 	std::regex re(":| \\(Analog Devices Inc. |\\), serial=");
+	const sregex_token_iterator end;
 	std::vector<struct libm2k::CONTEXT_INFO*> contexts_info;
 
 	struct iio_scan_context *scan_ctx = iio_create_scan_context("usb", 0);
@@ -91,11 +92,19 @@ std::vector<struct libm2k::CONTEXT_INFO*> ContextBuilder::getContextsInfo()
 		std::sregex_token_iterator ptr(description.begin(), description.end(), re, -1);
 		auto *ctx_info = new struct libm2k::CONTEXT_INFO();
 		ctx_info->uri = std::string(iio_context_info_get_uri(info[i]));
-		ctx_info->id_vendor = *ptr++;
-		ctx_info->id_product = *ptr++;
 		ctx_info->manufacturer = "Analog Devices Inc.";
-		ctx_info->product = *ptr++;
-		ctx_info->serial = *ptr++;
+		if (ptr != end) {
+			ctx_info->id_vendor = *ptr++;
+		}
+		if (ptr != end) {
+			ctx_info->id_product = *ptr++;
+		}
+		if (ptr != end) {
+			ctx_info->product = *ptr++;
+		}
+		if (ptr != end) {
+			ctx_info->serial = *ptr++;
+		}
 		contexts_info.push_back(ctx_info);
 	}
 
