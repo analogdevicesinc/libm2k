@@ -71,6 +71,7 @@ public:
 	void setAdcCalibrationOffset(unsigned int chn, int offset);
 	void setAdcCalibrationGain(unsigned int chn, double gain);
 
+	bool isCalibrated() override;
 
 	void setLed(bool on);
 	bool getLed();
