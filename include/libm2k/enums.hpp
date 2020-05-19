@@ -49,6 +49,23 @@ namespace libm2k {
 		NONE
 	};
 
+
+	/**
+	* @struct CALIBRATION_PARAMETERS
+	* @brief Calibration parameters of m2k
+	*/
+	struct CALIBRATION_PARAMETERS {
+		int adc_offset_ch_1; ///< ADC calibration offset - channel 1
+		int adc_offset_ch_2; ///< ADC calibration offset - channel 2
+		double adc_gain_ch_1; ///< ADC calibration gain - channel 1
+		double adc_gain_ch_2; ///< ADC calibration gain - channel 2
+		int dac_a_offset; ///< DAC calibration offset - channel 1
+		int dac_b_offset; ///< DAC calibration offset - channel 2
+		double dac_a_gain; ///< DAC calibration gain - channel 1
+		double dac_b_gain; ///< DAC calibration gain - channel 2
+	};
+
+
 	/**
 	 * @private
 	 */
