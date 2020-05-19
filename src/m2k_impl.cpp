@@ -44,6 +44,9 @@ using namespace libm2k::analog;
 using namespace libm2k::digital;
 using namespace libm2k::utils;
 
+constexpr int defaultOffset = 2048;
+constexpr double defaultGain = 1;
+
 M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync) :
 	ContextImpl(uri, ctx, name, sync),
 	m_sync(sync)
@@ -516,4 +519,18 @@ bool M2kImpl::getLed()
 		on = !m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
 	}
 	return on;
+}
+
+bool M2kImpl::isCalibrated()
+{
+	for (unsigned int i = 0; i < 2; i++) {
+		if (m_calibration->getAdcOffset(i) != defaultOffset || m_calibration->getDacOffset(i) != defaultOffset) {
+			return true;
+		}
+
+		if (m_calibration->getAdcGain(i) != defaultGain || m_calibration->getDacGain(i) != defaultGain) {
+			return true;
+		}
+	}
+	return false;
 }

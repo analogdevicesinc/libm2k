@@ -267,6 +267,13 @@ public:
 
 
 	/**
+	 * @brief Check if the board was calibrated
+	 * @return True if the board was calibrated, False otherwise
+	 */
+	virtual bool isCalibrated() = 0;
+
+
+	/**
 	* @brief Turn on or off the board's led
 	*
 	* @param on A boolean value corresponding to the state of the led
