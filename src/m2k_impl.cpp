@@ -537,6 +537,64 @@ bool M2kImpl::getLed()
 	return on;
 }
 
+bool M2kImpl::hasContextCalibration()
+{
+	std::string values;
+	double temperature;
+
+	auto it_attr = m_context_attributes.find("cal,temp_lut");
+	if (it_attr == m_context_attributes.end()){
+		return false;
+	}
+	values = it_attr->second;
+
+	if (!m_calibration_lut.empty()) {
+		return true;
+	}
+	auto splitValues = Utils::split(values, ",");
+	if (splitValues.size() % 9 != 0) {
+		return false;
+	}
+
+	auto it = splitValues.begin();
+	while (it != splitValues.end()) {
+		try {
+			temperature = std::stod(*it);
+			auto parameters = std::make_shared<struct CALIBRATION_PARAMETERS>();
+			it = std::next(it);
+			parameters->adc_offset_ch_1 = std::stoi(*it);
+			it = std::next(it);
+			parameters->adc_offset_ch_2 = std::stoi(*it);
+			it = std::next(it);
+			parameters->adc_gain_ch_1 = std::stod(*it);
+			it = std::next(it);
+			parameters->adc_gain_ch_2 = std::stod(*it);
+			it = std::next(it);
+			parameters->dac_a_offset = std::stoi(*it);
+			it = std::next(it);
+			parameters->dac_b_offset = std::stoi(*it);
+			it = std::next(it);
+			parameters->dac_a_gain = std::stod(*it);
+			it = std::next(it);
+			parameters->dac_b_gain = std::stod(*it);
+			it = std::next(it);
+
+			m_calibration_lut.insert({temperature, parameters});
+		} catch (const std::exception&) {
+			return false;
+		}
+	}
+	if (m_calibration_lut.empty()) {
+		return false;
+	}
+	return true;
+}
+
+std::map<double, std::shared_ptr<struct CALIBRATION_PARAMETERS>> &M2kImpl::getLUT()
+{
+	return m_calibration_lut;
+}
+
 bool M2kImpl::isCalibrated()
 {
 	for (unsigned int i = 0; i < 2; i++) {
@@ -549,4 +607,51 @@ bool M2kImpl::isCalibrated()
 		}
 	}
 	return false;
+}
+
+double M2kImpl::getCalibrationTemperature(double temperature)
+{
+	std::map<double, shared_ptr<struct CALIBRATION_PARAMETERS>>::iterator low, prev;
+
+	if (m_calibration_lut.empty()) {
+		if (!hasContextCalibration()) {
+		        THROW_M2K_EXCEPTION("Calibration from context is unavailable", libm2k::EXC_RUNTIME_ERROR);
+		}
+	}
+
+	low = m_calibration_lut.lower_bound(temperature);
+	if (low == m_calibration_lut.end()) {
+		return m_calibration_lut.rbegin()->first;
+	}
+	if (low == m_calibration_lut.begin()) {
+		return low->first;
+	}
+	prev = std::prev(low);
+	if ((temperature - prev->first) < (low->first - temperature)) {
+		return prev->first;
+	}
+	return low->first;
+}
+
+double M2kImpl::calibrateFromContext()
+{
+	LIBM2K_LOG(INFO, "[BEGIN] Calibrate from context");
+	double temperature = getDMM("ad9963")->readChannel("temp0").value;
+	double calibrationTemperature = getCalibrationTemperature(temperature);
+	auto it = m_calibration_lut.find(calibrationTemperature);
+	if (it == m_calibration_lut.end()) {
+		THROW_M2K_EXCEPTION("Calibration from context is unavailable", libm2k::EXC_RUNTIME_ERROR);
+	}
+	auto calibrationParameters = it->second;
+
+	m_calibration->setAdcOffset(0, calibrationParameters->adc_offset_ch_1);
+	m_calibration->setAdcOffset(1, calibrationParameters->adc_offset_ch_2);
+	m_calibration->setAdcGain(0, calibrationParameters->adc_gain_ch_1);
+	m_calibration->setAdcGain(1, calibrationParameters->adc_gain_ch_2);
+	m_calibration->setDacOffset(0, calibrationParameters->dac_a_offset);
+	m_calibration->setDacOffset(1, calibrationParameters->dac_b_offset);
+	m_calibration->setDacGain(0, calibrationParameters->dac_a_gain);
+	m_calibration->setDacGain(1, calibrationParameters->dac_b_gain);
+	LIBM2K_LOG(INFO, "[END] Calibrate from context");
+	return calibrationTemperature;
 }

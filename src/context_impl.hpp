@@ -94,13 +94,14 @@ public:
 protected:
 	struct iio_context* m_context;
 	std::vector<libm2k::analog::DMM*> m_instancesDMM;
+	std::map<std::string, std::string> m_context_attributes;
+
 	bool isIioDeviceBufferCapable(std::string dev_name);
 	std::vector<std::pair<std::string, std::string> > getIioDevByChannelAttrs(std::vector<std::string> attr_list);
 	libm2k::utils::DEVICE_TYPE getIioDeviceType(std::string dev_name);
 	libm2k::utils::DEVICE_DIRECTION getIioDeviceDirection(std::string dev_name);
 private:
 	void initializeContextAttributes();
-	std::map<std::string, std::string> m_context_attributes;
 
 	std::string m_uri;
 	std::string m_name;

@@ -49,6 +49,7 @@ public:
 	bool calibrateADC();
 	bool calibrateDAC();
 	bool resetCalibration();
+	double calibrateFromContext() override;
 
 	libm2k::digital::M2kDigital* getDigital();
 	libm2k::analog::M2kPowerSupply* getPowerSupply();
@@ -71,6 +72,8 @@ public:
 	void setAdcCalibrationOffset(unsigned int chn, int offset);
 	void setAdcCalibrationGain(unsigned int chn, double gain);
 
+	bool hasContextCalibration() override;
+	std::map<double, std::shared_ptr<struct CALIBRATION_PARAMETERS>> &getLUT() override;
 	bool isCalibrated() override;
 
 	void setLed(bool on);
@@ -89,6 +92,9 @@ private:
 	enum libm2k::M2K_TRIGGER_SOURCE_DIGITAL digitalSource;
 	bool hasAnalogTrigger();
 	bool hasDigitalTrigger();
+	std::map<double, shared_ptr<struct CALIBRATION_PARAMETERS>> m_calibration_lut;
+
+	double getCalibrationTemperature(double temperature);
 	void blinkLed(const double duration = 4, bool blocking = false);
 	void initialize();
 };

@@ -24,8 +24,10 @@
 
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/context.hpp>
+#include <libm2k/enums.hpp>
 #include <iostream>
 #include <vector>
+#include <map>
 
 namespace libm2k {
 namespace analog {
@@ -104,6 +106,15 @@ public:
 	* @private
 	*/
 	virtual bool resetCalibration() = 0;
+
+
+	/**
+	 * @brief Calibrate both ADC and DACs using predefined calibration values located in context
+	 * @return The closest temperature found in the lookup table
+	 *
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual double calibrateFromContext() = 0;
 
 
 	/**
@@ -264,6 +275,20 @@ public:
 	* The gain value is currently limited at the (-2,2) range  by the hardware.
 	*/
 	virtual void setAdcCalibrationGain(unsigned int chn, double gain) = 0;
+
+
+	/**
+	 * @brief Check if the calibration based on temperature can be performed
+	 * @return True if the calibration parameters are available, False otherwise
+	 */
+	virtual bool hasContextCalibration() = 0;
+
+
+	/**
+	 * @brief Retrieve the predefined calibration parameter
+	 * @return Map <temperature, parameters>
+	 */
+	virtual std::map<double, std::shared_ptr<struct CALIBRATION_PARAMETERS>> &getLUT() = 0;
 
 
 	/**
