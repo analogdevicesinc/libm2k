@@ -187,11 +187,25 @@ TODO: try to use the "local" context,
 before trying the "usb" one. */
 Context* ContextBuilder::contextOpen()
 {
-	auto lst = getAllContexts();
-	if (lst.size() <= 0) {
+	auto uries = getAllContexts();
+	if (uries.empty()) {
 		return nullptr;
 	}
-	return contextOpen(lst.at(0).c_str());
+#ifdef _WIN32
+	return contextOpen(uries.at(0).c_str());
+#else
+	struct iio_context *context;
+	fclose(stderr);
+	for (auto &uri : uries) {
+		context = iio_create_context_from_uri(uri.c_str());
+		if (context) {
+			stderr = fdopen(2 , "a");
+			return contextOpen(context, uri.c_str());
+		}
+	}
+	stderr = fdopen(2 , "a");
+	return nullptr;
+#endif
 }
 
 M2k *ContextBuilder::m2kOpen(struct iio_context* ctx, const char *uri)
