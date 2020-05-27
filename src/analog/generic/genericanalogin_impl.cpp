@@ -96,6 +96,18 @@ std::vector<double> GenericAnalogInImpl::getAvailableSampleRates()
 	return values;
 }
 
+std::vector<double> GenericAnalogInImpl::getAvailableSampleRates(unsigned int chn_idx)
+{
+	std::vector<std::string> stringValues;
+	std::vector<double> values;
+
+	stringValues = getAdcDevice(0)->getAvailableAttributeValues(chn_idx, "sampling_frequency");
+	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
+		       [] (std::string &s) -> double { return std::stod(s); });
+	return values;
+}
+
+
 string GenericAnalogInImpl::getDeviceName()
 {
 	return m_dev_name;
@@ -104,6 +116,23 @@ string GenericAnalogInImpl::getDeviceName()
 libm2k::IIO_OBJECTS GenericAnalogInImpl::getIioObjects()
 {
 	return getAdcDevice(0)->getIioObjects();
+}
+
+unsigned int GenericAnalogInImpl::getNbChannels()
+{
+	return getAdcDevice(0)->getNbChannels(false);
+}
+
+double GenericAnalogInImpl::getMaximumSamplerate()
+{
+	auto values = getAvailableSampleRates();
+	return *(max_element(values.begin(), values.end()));
+}
+
+double GenericAnalogInImpl::getMaximumSamplerate(unsigned int chn_idx)
+{
+	auto values = getAvailableSampleRates(chn_idx);
+	return *(max_element(values.begin(), values.end()));
 }
 
 void GenericAnalogInImpl::enableChannel(unsigned int index, bool enable)
