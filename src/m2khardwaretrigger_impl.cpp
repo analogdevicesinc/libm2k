@@ -337,7 +337,7 @@ double M2kHardwareTriggerImpl::getAnalogLevel(unsigned int chnIdx)
 	}
 
 	int raw = getAnalogLevelRaw(chnIdx);
-	double volts = raw * m_scaling.at(chnIdx) + m_offset.at(chnIdx);
+	double volts = raw * m_scaling.at(chnIdx) - m_offset.at(chnIdx);
 	return volts;
 }
 
@@ -347,7 +347,7 @@ void M2kHardwareTriggerImpl::setAnalogLevel(unsigned int chnIdx, double v_level)
 		throw_exception(EXC_OUT_OF_RANGE, "Channel index is out of range");
 	}
 
-	int raw = (v_level - m_offset.at(chnIdx)) / m_scaling.at(chnIdx);
+	int raw = (v_level + m_offset.at(chnIdx)) / m_scaling.at(chnIdx);
 	setAnalogLevelRaw(chnIdx, raw);
 }
 
