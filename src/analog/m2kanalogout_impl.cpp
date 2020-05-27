@@ -60,6 +60,7 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 		m_cyclic.push_back(true);
 		m_samplerate.push_back(75E6);
 		m_nb_kernel_buffers.push_back(4);
+		m_max_samplerate.push_back(-1);
 	}
 
 	if (sync) {
@@ -621,4 +622,16 @@ string M2kAnalogOutImpl::getChannelName(unsigned int channel)
 		name = chn->getId();
 	}
 	return name;
+}
+
+double M2kAnalogOutImpl::getMaximumSamplerate(unsigned int chn_idx)
+{
+	if (chn_idx >= m_dac_devices.size()) {
+		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+	}
+	if (m_max_samplerate[chn_idx] < 0) {
+		auto values = getAvailableSampleRates(chn_idx);
+		m_max_samplerate[chn_idx] = *(max_element(values.begin(), values.end()));
+	}
+	return m_max_samplerate[chn_idx];
 }

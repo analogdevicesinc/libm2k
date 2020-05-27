@@ -123,11 +123,13 @@ public:
 	void getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples);
 
 	std::string getChannelName(unsigned int channel);
+	double getMaximumSamplerate() override;
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::shared_ptr<libm2k::utils::DeviceIn> m_m2k_adc;
 	bool m_need_processing;
+	double m_max_samplerate;
 
 	double m_samplerate;
 	libm2k::M2kHardwareTrigger *m_trigger;

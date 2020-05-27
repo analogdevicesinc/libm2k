@@ -37,6 +37,7 @@ using namespace std::placeholders;
 M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger) :
 	M2kAnalogIn(),
 	m_need_processing(false),
+	m_max_samplerate(-1),
 	m_trigger(trigger)
 {
 	m_m2k_adc = make_shared<DeviceIn>(ctx, adc_dev);
@@ -288,6 +289,15 @@ string M2kAnalogInImpl::getChannelName(unsigned int channel)
 		name = chn->getId();
 	}
 	return name;
+}
+
+double M2kAnalogInImpl::getMaximumSamplerate()
+{
+	if (m_max_samplerate < 0) {
+		auto values = getAvailableSampleRates();
+		m_max_samplerate = *(max_element(values.begin(), values.end()));
+	}
+	return m_max_samplerate;
 }
 
 const double* M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples)

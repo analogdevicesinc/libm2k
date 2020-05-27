@@ -416,6 +416,13 @@ public:
 	 * @return std::string - name of the channel
 	 */
 	virtual std::string getChannelName(unsigned int channel) = 0;
+
+	/**
+	 * @brief Get the maximum samplerate for the DAC
+	 * @param chn_idx - unsigned int representing the index of the channel
+	 * @return double - the value of the maximum samplerate
+	 */
+	virtual double getMaximumSamplerate(unsigned int chn_idx) = 0;
 };
 }
 }
