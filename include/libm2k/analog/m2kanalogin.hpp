@@ -455,6 +455,12 @@ public:
 	 */
 	virtual std::string getChannelName(unsigned int channel) = 0;
 
+	/**
+	 * @brief Get the maximum samplerate for the ADC
+	 * @return double - the value of the maximum samplerate
+	 */
+	virtual double getMaximumSamplerate() = 0;
+
 };
 }
 }
