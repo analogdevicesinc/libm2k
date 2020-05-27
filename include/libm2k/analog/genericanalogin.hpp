@@ -41,12 +41,16 @@ public:
 	virtual double setSampleRate(double sampleRate) = 0;
 	virtual double setSampleRate(unsigned int chn_idx, double sampleRate) = 0;
 	virtual std::vector<double> getAvailableSampleRates() = 0;
+	virtual std::vector<double> getAvailableSampleRates(unsigned int chn_idx) = 0;
+	virtual double getMaximumSamplerate() = 0;
+	virtual double getMaximumSamplerate(unsigned int chn_idx) = 0;
 
 	virtual void enableChannel(unsigned int index, bool enable) = 0;
 	virtual void setKernelBuffersCount(unsigned int count) = 0;
 	virtual std::string getDeviceName() = 0;
 
 	virtual struct IIO_OBJECTS getIioObjects() = 0;
+	virtual unsigned int getNbChannels() = 0;
 };
 }
 }

@@ -43,12 +43,16 @@ public:
 	double setSampleRate(double sampleRate);
 	double setSampleRate(unsigned int chn_idx, double sampleRate);
 	std::vector<double> getAvailableSampleRates();
+	std::vector<double> getAvailableSampleRates(unsigned int chn_idx);
 
 	void enableChannel(unsigned int index, bool enable);
 	void setKernelBuffersCount(unsigned int count);
 	std::string getDeviceName();
 
 	struct IIO_OBJECTS getIioObjects();
+	unsigned int getNbChannels();
+	double getMaximumSamplerate();
+	double getMaximumSamplerate(unsigned int chn_idx);
 private:
 	std::vector<std::shared_ptr<libm2k::utils::DeviceIn>> m_devices_in;
 	std::string m_dev_name;
