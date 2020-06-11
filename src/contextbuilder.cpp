@@ -238,13 +238,17 @@ M2k *ContextBuilder::m2kOpen()
 
 void ContextBuilder::contextClose(Context* device, bool deinit)
 {
-	if (deinit) {
-		device->deinitialize();
-	}
-
 	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),
 					     s_connectedDevices.end(),
 					     device), s_connectedDevices.end());
+	try {
+		if (deinit) {
+			device->deinitialize();
+		}
+	} catch (std::exception &e ){
+		delete device;
+		throw_exception(EXC_RUNTIME_ERROR, "Context deinit: " + std::string(e.what()));
+	}
 	delete device;
 }
 
