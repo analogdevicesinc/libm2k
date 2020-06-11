@@ -87,6 +87,7 @@ public:
 	unsigned int getNbChannels();
 	std::string getChannelName(unsigned int channel);
 	double getMaximumSamplerate(unsigned int chn_idx) override;
+	void deinitialize();
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_max_samplerate;

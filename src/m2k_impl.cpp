@@ -126,6 +126,10 @@ void M2kImpl::deinitialize()
 	if (ain_impl) {
 		ain_impl->deinitialize();
 	}
+	auto aout_impl = dynamic_cast<M2kAnalogOutImpl*>(getAnalogOut());
+	if (aout_impl) {
+		aout_impl->deinitialize();
+	}
 }
 
 void M2kImpl::reset()
