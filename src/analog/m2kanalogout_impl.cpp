@@ -75,11 +75,15 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 
 M2kAnalogOutImpl::~M2kAnalogOutImpl()
 {
-	stop();
 	for (auto d : m_dac_devices) {
 		delete d;
 	}
 	m_dac_devices.clear();
+}
+
+void M2kAnalogOutImpl::deinitialize()
+{
+	stop();
 }
 
 void M2kAnalogOutImpl::reset()
