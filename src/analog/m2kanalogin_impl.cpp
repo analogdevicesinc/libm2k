@@ -71,6 +71,8 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	}
 }
 
+
+
 M2kAnalogInImpl::~M2kAnalogInImpl() = default;
 
 void M2kAnalogInImpl::enableChannel(unsigned int chn_idx, bool enable)
@@ -298,6 +300,27 @@ double M2kAnalogInImpl::getMaximumSamplerate()
 		m_max_samplerate = *(max_element(values.begin(), values.end()));
 	}
 	return m_max_samplerate;
+}
+
+void M2kAnalogInImpl::deinitialize()
+{
+	// The vertical offset register in the device has dual purpose:
+	// 1. use as ADC offset for calibration
+	// 2. use as ADC vertical offset for measurement
+	// This can cause some confusion when initializing the board
+	// because it is not clear whether the value in the register is
+	// the calibration value or the calibration+vertical offset value
+	// This workaround will always set the vertical offset to 0 on deinitialization
+	// and upon initialization the offset will be loaded from the register
+	// (when no calibration is done)
+	//
+	// The correct fix would be adding a separate caliboffset register in the firmware
+	// which will clear up the confusion
+
+	if (!m_calibbias_available) {
+		setVerticalOffset(ANALOG_IN_CHANNEL_1,0);
+		setVerticalOffset(ANALOG_IN_CHANNEL_2,0);
+	}
 }
 
 const double* M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples)
