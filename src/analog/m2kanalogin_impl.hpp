@@ -124,6 +124,8 @@ public:
 
 	std::string getChannelName(unsigned int channel);
 	double getMaximumSamplerate() override;
+
+	void deinitialize();
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
