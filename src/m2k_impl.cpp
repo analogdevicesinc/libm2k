@@ -45,8 +45,7 @@ using namespace libm2k::utils;
 
 M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync) :
 	ContextImpl(uri, ctx, name, sync),
-	m_sync(sync),
-	m_deinit(false)
+	m_sync(sync)
 {
 	initialize();
 	setTimeout(UINT_MAX);
@@ -86,20 +85,6 @@ M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync)
 
 M2kImpl::~M2kImpl()
 {
-	if (m_deinit) {
-		std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
-		if (m_m2k_fabric) {
-			m_m2k_fabric->setBoolValue(0, true, "powerdown", false);
-			m_m2k_fabric->setBoolValue(1, true, "powerdown", false);
-
-			/* ADF4360 global clock power down */
-			m_m2k_fabric->setBoolValue(true, "clk_powerdown");
-			for (auto ps : m_instancesPowerSupply) {
-				ps->powerDownDacs(true);
-			}
-		}
-	}
-
 	// The vertical offset register in the device has dual purpose:
 	// 1. use as ADC offset for calibration
 	// 2. use as ADC vertical offset for measurement
@@ -141,7 +126,17 @@ M2kImpl::~M2kImpl()
 
 void M2kImpl::deinitialize()
 {
-	m_deinit = true;
+	std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
+	if (m_m2k_fabric) {
+		m_m2k_fabric->setBoolValue(0, true, "powerdown", false);
+		m_m2k_fabric->setBoolValue(1, true, "powerdown", false);
+
+		/* ADF4360 global clock power down */
+		m_m2k_fabric->setBoolValue(true, "clk_powerdown");
+		for (auto ps : m_instancesPowerSupply) {
+			ps->powerDownDacs(true);
+		}
+	}
 }
 
 void M2kImpl::reset()

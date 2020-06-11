@@ -78,7 +78,6 @@ private:
 	std::vector<analog::M2kPowerSupply*> m_instancesPowerSupply;
 	std::vector<digital::M2kDigital*> m_instancesDigital;
 	bool m_sync;
-	bool m_deinit;
 	std::string m_firmware_version;
 
 	void blinkLed(const double duration = 4, bool blocking = false);
