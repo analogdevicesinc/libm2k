@@ -452,3 +452,18 @@ void M2kDigitalImpl::getSamples(std::vector<unsigned short> &data, unsigned int 
 	nb_samples = ((nb_samples + 3) / 4) * 4;
 	m_dev_read->getSamples(data, nb_samples);
 }
+
+bool M2kDigitalImpl::hasRateMux()
+{
+	return m_dev_read->hasGlobalAttribute("rate_mux");
+}
+
+void M2kDigitalImpl::setRateMux()
+{
+	m_dev_read->setStringValue("rate_mux", "oscilloscope");
+}
+
+void M2kDigitalImpl::resetRateMux()
+{
+	m_dev_read->setStringValue("rate_mux", "logic_analyzer");
+}
