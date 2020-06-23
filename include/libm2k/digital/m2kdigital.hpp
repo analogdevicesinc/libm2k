@@ -407,6 +407,22 @@ public:
 	 */
 	virtual void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples) = 0;
 
+
+	/**
+	 * @brief Force the digital interface to use the analogical rate
+	 *
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual void setRateMux() = 0;
+
+
+	/**
+	 * @brief Reset the digital rate to default
+	 *
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual void resetRateMux() = 0;
+
 };
 }
 }

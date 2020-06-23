@@ -98,6 +98,10 @@ public:
 	unsigned int getNbChannelsOut();
 
 	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples);
+
+	bool hasRateMux();
+	void setRateMux() override;
+	void resetRateMux() override;
 private:
 	bool m_cyclic;
 	std::shared_ptr<libm2k::utils::DeviceIn> m_dev_read;
