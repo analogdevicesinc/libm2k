@@ -214,8 +214,13 @@ bool M2kCalibrationImpl::calibrateADCoffset()
 	setCalibrationMode(ADC_GND);
 
 	// Set DAC channels to middle scale
-	m_adc_ch0_vert_offset = m_m2k_adc->getRawVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0));
-	m_adc_ch1_vert_offset = m_m2k_adc->getRawVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1));
+	if (m_m2k_adc->hasCalibbias()) {
+		m_adc_ch0_vert_offset = m_m2k_adc->getRawVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0));
+		m_adc_ch1_vert_offset = m_m2k_adc->getRawVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1));
+	} else {
+		m_adc_ch0_vert_offset = 0;
+		m_adc_ch1_vert_offset = 0;
+	}
 
 	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), 2048);
 	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0), 0);
