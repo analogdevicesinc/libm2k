@@ -323,6 +323,11 @@ void M2kAnalogInImpl::deinitialize()
 	}
 }
 
+bool M2kAnalogInImpl::hasCalibbias()
+{
+	return m_calibbias_available;
+}
+
 const double* M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples)
 {
 	return this->getSamplesInterleaved(nb_samples, true);
