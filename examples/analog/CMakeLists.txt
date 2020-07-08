@@ -31,14 +31,20 @@ add_executable(analog_in_out "analog_in_out.cpp")
 add_executable(streaming_one_channel "streaming_one_channel.cpp")
 add_executable(streaming_synchronized "streaming_synchronized.cpp")
 add_executable(sync_stream_diff_frequencies "sync_stream_diff_frequencies.cpp")
+add_executable(stream_test_adc "stream_test_adc.cpp")
+add_executable(stream_test_dac "stream_test_dac.cpp")
 
 target_link_libraries(analog_in_out ${LIBM2K_LIBRARIES})
 target_link_libraries(streaming_one_channel ${LIBM2K_LIBRARIES})
 target_link_libraries(streaming_synchronized ${LIBM2K_LIBRARIES})
 target_link_libraries(sync_stream_diff_frequencies ${LIBM2K_LIBRARIES})
+target_link_libraries(stream_test_adc ${LIBM2K_LIBRARIES})
+target_link_libraries(stream_test_dac ${LIBM2K_LIBRARIES})
 
 if (PTHREAD_LIBRARIES)
 	target_link_libraries(sync_stream_diff_frequencies ${PTHREAD_LIBRARIES})
+	target_link_libraries(stream_test_adc ${PTHREAD_LIBRARIES})
+	target_link_libraries(stream_test_dac ${PTHREAD_LIBRARIES})
 endif()
 
 
