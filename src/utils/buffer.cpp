@@ -113,6 +113,10 @@ void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_sa
 		ssize_t ret = iio_buffer_push(m_buffer);
 		if (ret < 0) {
 			destroy();
+			// timeout error code
+			if (ret == -ETIMEDOUT) {
+				throw_exception(EXC_TIMEOUT, "Buffer: Push timeout occurred");
+			}
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
 		}
 	} else {
@@ -159,6 +163,10 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 		ssize_t ret = iio_buffer_push(m_buffer);
 		if (ret < 0) {
 			destroy();
+			// timeout error code
+			if (ret == -ETIMEDOUT) {
+				throw_exception(EXC_TIMEOUT, "Buffer: Push timeout occurred");
+			}
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
 		}
 	} else {
@@ -204,6 +212,10 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 		ssize_t ret = iio_buffer_push(m_buffer);
 		if (ret < 0) {
 			destroy();
+			// timeout error code
+			if (ret == -ETIMEDOUT) {
+				throw_exception(EXC_TIMEOUT, "Buffer: Push timeout occurred");
+			}
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
 		}
 	} else {
@@ -237,6 +249,10 @@ void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cy
 		ssize_t ret = iio_buffer_push(m_buffer);
 		if (ret < 0) {
 			destroy();
+			// timeout error code
+			if (ret == -ETIMEDOUT) {
+				throw_exception(EXC_TIMEOUT, "Buffer: Push timeout occurred");
+			}
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
 		}
 	} else {
@@ -282,6 +298,10 @@ void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, b
 		ssize_t ret = iio_buffer_push(m_buffer);
 		if (ret < 0) {
 			destroy();
+			// timeout error code
+			if (ret == -ETIMEDOUT) {
+				throw_exception(EXC_TIMEOUT, "Buffer: Push timeout occurred");
+			}
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
 		}
 	} else {
@@ -313,6 +333,10 @@ void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bo
 		ssize_t ret = iio_buffer_push(m_buffer);
 		if (ret < 0) {
 			destroy();
+			// timeout error code
+			if (ret == -ETIMEDOUT) {
+				throw_exception(EXC_TIMEOUT, "Buffer: Push timeout occurred");
+			}
 			throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot push TX buffer");
 		}
 	} else {
@@ -339,6 +363,10 @@ void Buffer::getSamples(std::vector<unsigned short> &data, unsigned int nb_sampl
 
 	if (ret < 0) {
 		destroy();
+		// timeout error code
+		if (ret == -ETIMEDOUT) {
+			throw_exception(EXC_TIMEOUT, "Buffer: Refill timeout occurred");
+		}
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 	}
 
@@ -374,6 +402,10 @@ const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 
 	if (ret < 0) {
 		destroy();
+		// timeout error code
+		if (ret == -ETIMEDOUT) {
+			throw_exception(EXC_TIMEOUT, "Buffer: Refill timeout occurred");
+		}
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		return nullptr;
 	}
@@ -451,6 +483,10 @@ void* Buffer::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 	ssize_t ret = iio_buffer_refill(m_buffer);
 	if (ret < 0) {
 		destroy();
+		// timeout error code
+		if (ret == -ETIMEDOUT) {
+			throw_exception(EXC_TIMEOUT, "Buffer: Refill timeout occurred");
+		}
 		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot refill RX buffer");
 		return nullptr;
 	}
