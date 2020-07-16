@@ -54,7 +54,7 @@ Buffer::~Buffer() {
 	m_data_short.clear();
 }
 
-void Buffer::initializeBuffer(unsigned int size, bool cyclic)
+void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output)
 {
 	/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
 		* data transferring; the buffer must be destroy when its size is changed
@@ -65,6 +65,21 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic)
 		destroy();
 		m_last_nb_samples = size;
 		m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
+		if (!m_buffer) {
+			if (output) {
+				if (errno == ETIMEDOUT) {
+					throw_exception(EXC_TIMEOUT,
+							"Buffer: Cannot create the TX buffer");
+				}
+				throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the TX buffer");
+			} else {
+				if (errno == ETIMEDOUT) {
+					throw_exception(EXC_TIMEOUT,
+							"Buffer: Cannot create the RX buffer");
+				}
+				throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
+			}
+		}
 	}
 }
 
@@ -84,17 +99,13 @@ void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_sa
 		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 	}
 
-	initializeBuffer(nb_samples, cyclic);
+	initializeBuffer(nb_samples, cyclic, true);
 
 	/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
 		 * we destroy the buffer */
 	if (nb_samples == 0) {
 		return;
-	}
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
 	}
 
 	if (channel < m_channel_list.size() ) {
@@ -134,17 +145,13 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 	}
 
-	initializeBuffer(size, cyclic);
+	initializeBuffer(size, cyclic, true);
 
 	/* If the data vector is empty, then it means we want
 		* to remove what was pushed earlier to the device, so
 		* we destroy the buffer */
 	if (data.size() == 0) {
 		return;
-	}
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
 	}
 
 	if (channel < m_channel_list.size() ) {
@@ -183,17 +190,13 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 	}
 
-	initializeBuffer(size, cyclic);
+	initializeBuffer(size, cyclic, true);
 
 	/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
 		 * we destroy the buffer */
 	if (data.size() == 0) {
 		return;
-	}
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
 	}
 
 	if (channel < m_channel_list.size() ) {
@@ -231,17 +234,13 @@ void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cy
 		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 	}
 
-	initializeBuffer(size, cyclic);
+	initializeBuffer(size, cyclic, true);
 
 	/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
 		 * we destroy the buffer */
 	if (data.size() == 0) {
 		return;
-	}
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
 	}
 
 	if (channel < m_channel_list.size() ) {
@@ -279,18 +278,13 @@ void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, b
 		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 	}
 
-	initializeBuffer(nb_samples, cyclic);
+	initializeBuffer(nb_samples, cyclic, true);
 
 	/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
 		 * we destroy the buffer */
 	if (nb_samples == 0) {
 		return;
-	}
-
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
 	}
 
 	if (channel < m_channel_list.size() ) {
@@ -315,17 +309,13 @@ void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bo
 		throw_exception(EXC_INVALID_PARAMETER, "Device not output buffer capable, so no buffer was created");
 	}
 
-	initializeBuffer(nb_samples, cyclic);
+	initializeBuffer(nb_samples, cyclic, true);
 
 	/* If the data vector is empty, then it means we want
 		 * to remove what was pushed earlier to the device, so
 		 * we destroy the buffer */
 	if (nb_samples == 0) {
 		return;
-	}
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the TX buffer");
 	}
 
 	if (channel < m_channel_list.size() ) {
@@ -352,11 +342,7 @@ void Buffer::getSamples(std::vector<unsigned short> &data, unsigned int nb_sampl
 
 	data.clear();
 
-	initializeBuffer(nb_samples, false);
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
-	}
+	initializeBuffer(nb_samples, false, false);
 
 	ssize_t ret = iio_buffer_refill(m_buffer);
 
@@ -390,12 +376,7 @@ const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 		return nullptr;
 	}
 
-	initializeBuffer(nb_samples, false);
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Cannot create the RX buffer");
-		return nullptr;
-	}
+	initializeBuffer(nb_samples, false, false);
 
 	ssize_t ret = iio_buffer_refill(m_buffer);
 
@@ -473,12 +454,7 @@ void* Buffer::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 		return nullptr;
 	}
 
-	initializeBuffer(nb_samples, false);
-
-	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Buffer: Can't create the RX buffer");
-		return nullptr;
-	}
+	initializeBuffer(nb_samples, false, false);
 
 	ssize_t ret = iio_buffer_refill(m_buffer);
 	if (ret < 0) {

@@ -42,7 +42,7 @@ DeviceIn::DeviceIn(struct iio_context* context, std::string dev_name) :
 
 void DeviceIn::initializeBuffer(unsigned int nb_samples)
 {
-	m_buffer->initializeBuffer(nb_samples, false);
+	m_buffer->initializeBuffer(nb_samples, false, false);
 }
 
 void DeviceIn::cancelBuffer()
