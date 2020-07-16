@@ -39,7 +39,7 @@ public:
 	Buffer(struct iio_device *dev);
 	~Buffer();
 
-	void initializeBuffer(unsigned int size, bool cyclic);
+	void initializeBuffer(unsigned int size, bool cyclic, bool output);
 	void push(std::vector<short> const &data, unsigned int channel = 0,
 		bool cyclic = true, bool multiplex = false);
 	void push(std::vector<unsigned short> const &data, unsigned int channel = 0,

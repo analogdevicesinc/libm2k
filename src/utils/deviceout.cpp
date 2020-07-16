@@ -51,7 +51,7 @@ void DeviceOut::initializeBuffer(unsigned int size, bool cyclic)
 	if (!m_buffer) {
 		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
 	}
-	m_buffer->initializeBuffer(size, cyclic);
+	m_buffer->initializeBuffer(size, cyclic, true);
 }
 
 void DeviceOut::push(std::vector<short> const &data, unsigned int channel,
