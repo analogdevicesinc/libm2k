@@ -96,6 +96,10 @@ public:
 	*
 	* @param nb_samples The number of samples that will be retrieved
 	* @return A pointer to the interleaved samples
+	*
+	* @note Before the acquisition, both channels will be automatically enabled
+	* @note The data array will contain samples from both channels
+	* @note After the acquisition is finished, the channels will return to their initial state
 	*/
 	virtual const double* getSamplesInterleaved(unsigned int nb_samples) = 0;
 
@@ -105,6 +109,10 @@ public:
 	*
 	* @param nb_samples The number of samples that will be retrieved
 	* @return A pointer to the interleaved raw samples
+	*
+	* @note Before the acquisition, both channels will be automatically enabled
+	* @note The data array will contain samples from both channels
+	* @note After the acquisition is finished, the channels will return to their initial state
 	*/
 	virtual const short* getSamplesRawInterleaved(unsigned int nb_samples) = 0;
 

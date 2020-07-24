@@ -242,6 +242,15 @@ void M2kAnalogInImpl::handleChannelsEnableState(bool before_refill)
 
 }
 
+void M2kAnalogInImpl::removeSamplesDisabledChannels(std::vector<std::vector<double>> &samples)
+{
+	for (unsigned int i = 0; i < getNbChannels(); i++) {
+		if (!m_channels_enabled.at(i)) {
+			samples.at(i) = std::vector<double>();
+		}
+	}
+}
+
 std::vector<std::vector<double>> M2kAnalogInImpl::getSamples(unsigned int nb_samples)
 {
 	return this->getSamples(nb_samples, true);
@@ -263,6 +272,7 @@ std::vector<std::vector<double>> M2kAnalogInImpl::getSamples(unsigned int nb_sam
 	auto fp = std::bind(&M2kAnalogInImpl::processSample, this, std::placeholders::_1, std::placeholders::_2);
 	auto samps = m_m2k_adc->getSamples(nb_samples, fp);
 
+	removeSamplesDisabledChannels(samps);
 	handleChannelsEnableState(false);
 	if (processed) {
 		m_need_processing = false;
@@ -279,6 +289,7 @@ void M2kAnalogInImpl::getSamples(std::vector<std::vector<double> > &data, unsign
 	auto fp = std::bind(&M2kAnalogInImpl::processSample, this, _1, _2);
 	m_m2k_adc->getSamples(data, nb_samples, fp);
 
+	removeSamplesDisabledChannels(data);
 	handleChannelsEnableState(false);
 	m_need_processing = false;
 }

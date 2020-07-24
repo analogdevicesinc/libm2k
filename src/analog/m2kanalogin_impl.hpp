@@ -157,6 +157,7 @@ private:
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples, bool processed);
 
 	void handleChannelsEnableState(bool before_refill);
+	void removeSamplesDisabledChannels(std::vector<std::vector<double>> &samples);
 
 	const double *getSamplesInterleaved(unsigned int nb_samples, bool processed = false);
 
