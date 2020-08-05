@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef M2KEXCEPTIONS_H
-#define M2KEXCEPTIONS_H
+#ifndef M2KEXCEPTIONS_HPP
+#define M2KEXCEPTIONS_HPP
 
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/logger.hpp>
 #include <libm2k/enums.hpp>
+#include <libm2k/logger.hpp>
 #include <stdexcept>
 #include <string>
 #include <iostream>
@@ -43,71 +43,76 @@
 	#endif
 #endif
 
-class LIBM2K_API no_device_exception: public std::runtime_error {
+namespace libm2k {
+
+class m2k_exception_builder;
+
+class LIBM2K_API m2k_exception : public std::runtime_error {
 public:
-	explicit no_device_exception(const std::string& what) :
-		runtime_error(what) {}
-	explicit no_device_exception(const char* what) :
-		runtime_error(what) {}
-	~no_device_exception() {}
+	friend class m2k_exception_builder;
+
+	static m2k_exception_builder make(std::string what);
+
+	~m2k_exception() override = default;
+
+	int iioCode() const noexcept;
+
+	libm2k::M2K_EXCEPTION_TYPE type() const noexcept;
+
+	const char *what() const noexcept override;
+
+private:
+	m2k_exception() : runtime_error("")
+	{
+	}
+
+	explicit m2k_exception(const std::string &what) :
+		runtime_error(what)
+	{
+	}
+
+	explicit m2k_exception(const char *what) :
+		runtime_error(what)
+	{
+	}
+
+	int m_iio_code = 0;
+	libm2k::M2K_EXCEPTION_TYPE m_type = libm2k::EXC_RUNTIME_ERROR;
+	std::string m_message = "ERR: Runtime - ";
+	std::string m_error;
 };
 
-class LIBM2K_API instrument_already_in_use_exception : public std::runtime_error {
+
+class LIBM2K_API m2k_exception_builder {
 public:
-	explicit instrument_already_in_use_exception(const std::string& what) :
-		runtime_error(what) {}
-	explicit instrument_already_in_use_exception(const char* what) :
-		runtime_error(what) {}
-	~instrument_already_in_use_exception() {}
+	m2k_exception_builder() = default;
+
+	explicit m2k_exception_builder(std::string &what);
+
+	explicit m2k_exception_builder(const char *what);
+
+	m2k_exception_builder &iioCode(int code);
+
+	m2k_exception_builder &type(libm2k::M2K_EXCEPTION_TYPE type);
+
+	explicit operator m2k_exception &&();
+
+	m2k_exception build();
+
+private:
+	m2k_exception m2KException;
 };
 
-class LIBM2K_API invalid_parameter_exception: public std::runtime_error {
-public:
-	explicit invalid_parameter_exception(const std::string& what) :
-		runtime_error(what) {}
-	explicit invalid_parameter_exception(const char* what) :
-		runtime_error(what) {}
-	~invalid_parameter_exception() {}
-};
-
-class LIBM2K_API timeout_exception: public std::runtime_error {
-public:
-	explicit timeout_exception(const std::string& what) :
-		runtime_error(what) {}
-	explicit timeout_exception(const char* what) :
-		runtime_error(what) {}
-	~timeout_exception() {}
-};
-
-static std::exception e;
-
-static void throw_exception(libm2k::M2K_EXCEPTION exc_type, std::string exception)
+static void throw_exception(const m2k_exception &exception)
 {
 #if _EXCEPTIONS || defined(__cpp_exceptions)
-	switch (exc_type) {
-	case libm2k::EXC_OUT_OF_RANGE: {
-		throw std::out_of_range("ERR: Out of range - " + exception);
-	}
-	case libm2k::EXC_RUNTIME_ERROR: {
-		throw std::runtime_error("ERR: Runtime - " + exception);
-	}
-	case libm2k::EXC_INVALID_PARAMETER: {
-		throw std::invalid_argument("ERR: Invalid argument - " + exception);
-	}
-	case libm2k::EXC_TIMEOUT: {
-		throw std::invalid_argument("ERR: Timeout - " + exception);
-	}
-	default: {
-		throw std::runtime_error("ERR: Generic - " + exception);
-	}
-	}
+	throw exception;
 #else
 	LOG("exception");
 
-	std::cout << "Exception: " << exception << std::endl;
+	std::cout << "Exception: " << exception.what() << std::endl;
 #endif
 }
+}
 
-
-
-#endif // M2KEXCEPTIONS_H
+#endif // M2KEXCEPTIONS_HPP
