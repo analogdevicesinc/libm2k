@@ -58,13 +58,16 @@ namespace libm2k {
 	};
 
 	/**
-	 * @private
-	 */
-	enum M2K_EXCEPTION {
-		EXC_OUT_OF_RANGE,
-		EXC_RUNTIME_ERROR,
-		EXC_INVALID_PARAMETER,
-		EXC_TIMEOUT
+	* @enum M2K_EXCEPTION_TYPE
+	* @brief M2k exception types
+	*
+	*/
+	enum M2K_EXCEPTION_TYPE {
+		EXC_OUT_OF_RANGE = 0,
+		EXC_RUNTIME_ERROR = 1,
+		EXC_INVALID_PARAMETER = 2,
+		EXC_TIMEOUT = 3,
+		EXC_INVALID_FIRMWARE_VERSION = 4
 	};
 
 
