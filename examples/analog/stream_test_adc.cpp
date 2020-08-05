@@ -53,9 +53,8 @@
 
 #include <thread>
 #include <mutex>
-#include <iomanip>
 #include <condition_variable>
-#include <math.h>
+#include <cmath>
 #include <fstream>
 
 using namespace std;
@@ -80,7 +79,7 @@ static vector<bool> running {true, true};
 static std::mutex data_mtx, process_mtx, analyze_mtx;
 static std::condition_variable cv_process, cv_process_done, cv_analyze;
 static const short* tmp_buffer_p = nullptr;
-static std::vector<queue<double>> values = {{}, {}};
+static std::vector<queue<double>> values = {std::queue<double>(), std::queue<double>()};
 
 
 std::vector<double> generate_sawtooth_wave(double signal_frequency, double signal_amplitude, double signal_offset)
@@ -159,8 +158,6 @@ void analyze_thread(M2kAnalogIn *ain, unsigned int channel) {
 	int nb_crossings = 0;
 	double last_sample;
 	bool stable = true;
-	int dropped = 0;
-	int dropped_index = 0;
 
 
 	std::ofstream outfile;
@@ -222,7 +219,6 @@ void analyze_thread(M2kAnalogIn *ain, unsigned int channel) {
 
 			if ((current_sample <= 0) && (last_sample > 0) && (abs(last_sample - current_sample) >= 0.1)) {
 				if (abs(prev_samp_cnt - samp_cnt) > 1) {
-					dropped = abs(prev_samp_cnt - samp_cnt);
 					stable = false;
 					std::cout << std::endl << "UNSTABLE channel: " << channel
 						  << " cross. len: " << samp_cnt
@@ -311,8 +307,6 @@ int main(int argc, char **argv)
 	OFFSET_SIGNAL_OUT = -(AMPLITUDE_SIGNAL_OUT/2);
 
 
-	int sr_divider = OVERSAMPLING_RATIO;
-	int sample_rate_in;
 	printf("ADC stream speed test parameters\nDAC generating a %f sawtooth of amplitude %f\nBuffersize: %d\nKernel Buffers: %d\nADC Samplerate: %f\n",
 	       FREQUENCY_SIGNAL_OUT, AMPLITUDE_SIGNAL_OUT, IN_NO_SAMPLES, KERNEL_BUFFERS_COUNT, (double)MAX_SAMPLE_RATE_IN / OVERSAMPLING_RATIO);
 
@@ -337,8 +331,7 @@ int main(int argc, char **argv)
 	// set number of kernel buffers for the analog input interface
 	ain->setKernelBuffersCount(KERNEL_BUFFERS_COUNT);
 
-	for(int i=0; i < ain->getNbChannels(); i++)
-	{
+	for(unsigned int i = 0; i < ain->getNbChannels(); i++) {
 		ain->enableChannel(i, true);
 	}
 
@@ -347,8 +340,6 @@ int main(int argc, char **argv)
 
 	auto buf_ch1 = generate_sawtooth_wave(FREQUENCY_SIGNAL_OUT, AMPLITUDE_SIGNAL_OUT, OFFSET_SIGNAL_OUT);
 	vector<vector<double>> bufferOut {buf_ch1, buf_ch1};
-
-	sample_rate_in = MAX_SAMPLE_RATE_IN / OVERSAMPLING_RATIO;
 
 	/* Enable the DAC channels before every push(after every stop) in order to setup powerdown */
 	aout->enableChannel(0, true);
