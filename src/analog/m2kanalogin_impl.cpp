@@ -227,7 +227,7 @@ void M2kAnalogInImpl::handleChannelsEnableState(bool before_refill)
 			anyChannelEnabled = en ? true : anyChannelEnabled;
 		}
 		if (!anyChannelEnabled) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: No channel enabled for RX buffer");
+			throw_exception(m2k_exception::make("M2kAnalogIn: No channel enabled for RX buffer").type(libm2k::EXC_INVALID_PARAMETER).build());
 		}
 
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
@@ -397,7 +397,7 @@ short M2kAnalogInImpl::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 	bool enabled;
 
 	if (ch >= getNbChannels()) {
-		throw_exception(EXC_INVALID_PARAMETER, "M2kAnalogIn: no such channel");
+		throw_exception(m2k_exception::make("M2kAnalogIn: no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 		return -1;
 	}
 
@@ -457,7 +457,7 @@ double M2kAnalogInImpl::getVoltage(ANALOG_IN_CHANNEL ch)
 	bool enabled;
 
 	if (ch >= getNbChannels()) {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogIn: no such channel");
+		throw_exception(m2k_exception::make("M2kAnalogIn: no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 		return -1;
 	}
 	mode = m_trigger->getAnalogMode(ch);
@@ -655,7 +655,7 @@ double M2kAnalogInImpl::getFilterCompensation(double samplerate)
 	if(m_filter_compensation_table.find(samplerate) != m_filter_compensation_table.end()) {
 		compensation = m_filter_compensation_table.at(samplerate);
 	} else {
-		throw invalid_parameter_exception("Cannot get compensation value for the given samplerate.");
+		throw_exception(m2k_exception::make("Cannot get compensation value for the given samplerate.").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	return compensation;
 }

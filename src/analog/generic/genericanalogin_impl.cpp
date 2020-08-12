@@ -44,7 +44,7 @@ GenericAnalogInImpl::~GenericAnalogInImpl()
 std::shared_ptr<DeviceIn> GenericAnalogInImpl::getAdcDevice(unsigned int index)
 {
 	if (index >= m_devices_in.size()) {
-		throw_exception(EXC_INVALID_PARAMETER, "Generic Analog In: No such ADC device");
+		throw_exception(m2k_exception::make("Generic Analog In: No such ADC device").type(libm2k::EXC_OUT_OF_RANGE).build());
 		return nullptr;
 	}
 	return m_devices_in.at(index);

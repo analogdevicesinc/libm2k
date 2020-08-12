@@ -43,7 +43,7 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 
 	m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 	if (!m_m2k_fabric) {
-		throw_exception(EXC_INVALID_PARAMETER, "Analog out: Cannot find m2k fabric device");
+		throw_exception(m2k_exception::make("Analog out: Cannot find m2k fabric device").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 )));
@@ -167,7 +167,7 @@ double M2kAnalogOutImpl::getSampleRate(unsigned int chn_idx)
 std::vector<double> M2kAnalogOutImpl::setSampleRate(std::vector<double> samplerates)
 {
 	if (samplerates.size() >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	std::vector<double> values = {};
 	for (unsigned int i = 0; i < samplerates.size(); i++) {
@@ -181,7 +181,7 @@ std::vector<double> M2kAnalogOutImpl::setSampleRate(std::vector<double> samplera
 double M2kAnalogOutImpl::setSampleRate(unsigned int chn_idx, double samplerate)
 {
 	if (chn_idx >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	m_samplerate.at(chn_idx) = getDacDevice(chn_idx)->setDoubleValue(samplerate, "sampling_frequency");
 	return m_samplerate.at(chn_idx);
@@ -206,7 +206,7 @@ bool M2kAnalogOutImpl::getSyncedDma(int chn)
 void M2kAnalogOutImpl::setSyncedStartDma(bool en, int chn)
 {
 	if (!m_dma_start_sync_available) {
-		throw_exception(EXC_RUNTIME_ERROR, "Invalid firmware version: 0.24 or greater is required.");
+		throw_exception(m2k_exception::make("Invalid firmware version: 0.24 or greater is required.").type(libm2k::EXC_INVALID_FIRMWARE_VERSION).build());
 	}
 	if (chn < 0) {
 		for (auto dac : m_dac_devices) {
@@ -220,7 +220,7 @@ void M2kAnalogOutImpl::setSyncedStartDma(bool en, int chn)
 bool M2kAnalogOutImpl::getSyncedStartDma(int chn)
 {
 	if (!m_dma_start_sync_available) {
-		throw_exception(EXC_RUNTIME_ERROR, "Invalid firmware version: 0.24 or greater is required.");
+		throw_exception(m2k_exception::make("Invalid firmware version: 0.24 or greater is required.").type(libm2k::EXC_INVALID_FIRMWARE_VERSION).build());
 	}
 	return getDacDevice(chn)->getBoolValue("dma_sync_start");
 }
@@ -242,7 +242,7 @@ void M2kAnalogOutImpl::setCyclic(unsigned int chn, bool en)
 bool M2kAnalogOutImpl::getCyclic(unsigned int chn)
 {
 	if (chn >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	return m_cyclic.at(chn);
 }
@@ -257,7 +257,7 @@ short M2kAnalogOutImpl::convVoltsToRaw(double voltage, double vlsb,
 short M2kAnalogOutImpl::convertVoltsToRaw(unsigned int channel, double voltage)
 {
 	if (channel >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 
 	return convVoltsToRaw(voltage, m_calib_vlsb.at(channel),
@@ -273,7 +273,7 @@ double M2kAnalogOutImpl::convRawToVolts(short raw, double vlsb, double filterCom
 double M2kAnalogOutImpl::convertRawToVolts(unsigned int channel, short raw)
 {
 	if (channel >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 
 	return convRawToVolts(raw, m_calib_vlsb.at(channel),
@@ -296,7 +296,7 @@ void M2kAnalogOutImpl::pushRaw(unsigned int chnIdx, std::vector<short> const &da
 void M2kAnalogOutImpl::pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples)
 {
 	if (chnIdx >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 
 	m_dac_devices.at(chnIdx)->push(data, 0, nb_samples, getCyclic(chnIdx));
@@ -315,7 +315,7 @@ void M2kAnalogOutImpl::push(unsigned int chnIdx, std::vector<double> const &data
 void M2kAnalogOutImpl::pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples)
 {
 	if (chnIdx >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	std::vector<short> raw_data_buffer = {};
 
@@ -375,7 +375,7 @@ void M2kAnalogOutImpl::pushRaw(std::vector<std::vector<short>> const &data)
 void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples)
 {
 	if ((nb_samples % nb_channels) !=0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
+		throw_exception(m2k_exception::make("Analog Out: Input array length must be multiple of channels").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	std::vector<std::vector<short>> data_buffers;
 	unsigned int bufferSize = nb_samples/nb_channels;
@@ -474,7 +474,7 @@ void M2kAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples)
 {
 	if ((nb_samples % nb_channels) !=0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Analog Out: Input array length must be multiple of channels");
+		throw_exception(m2k_exception::make("Analog Out: Input array length must be multiple of channels").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	std::vector<std::vector<short>> data_buffers;
 	unsigned int bufferSize = nb_samples/nb_channels;
@@ -521,7 +521,8 @@ void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, u
 double M2kAnalogOutImpl::getScalingFactor(unsigned int chn)
 {
 	if (chn >= m_calib_vlsb.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+
 	}
 	return (-1 * (1 / m_calib_vlsb.at(chn)) * 16) /
 			getFilterCompensation(getSampleRate(chn));
@@ -566,7 +567,7 @@ bool M2kAnalogOutImpl::isChannelEnabled(unsigned int chnIdx)
 DeviceOut* M2kAnalogOutImpl::getDacDevice(unsigned int chnIdx)
 {
 	if (chnIdx >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	return m_dac_devices.at(chnIdx);
 }
@@ -585,7 +586,7 @@ std::vector<double> M2kAnalogOutImpl::getAvailableSampleRates(unsigned int chnId
 void M2kAnalogOutImpl::setKernelBuffersCount(unsigned int chnIdx, unsigned int count)
 {
 	if (chnIdx >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kAnalogOut: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	m_dac_devices[chnIdx]->setKernelBuffersCount(count);
 	m_nb_kernel_buffers[chnIdx] = count;
@@ -631,7 +632,7 @@ string M2kAnalogOutImpl::getChannelName(unsigned int channel)
 double M2kAnalogOutImpl::getMaximumSamplerate(unsigned int chn_idx)
 {
 	if (chn_idx >= m_dac_devices.size()) {
-		throw_exception(EXC_OUT_OF_RANGE, "Analog Out: No such channel");
+		throw_exception(m2k_exception::make("Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	if (m_max_samplerate[chn_idx] < 0) {
 		auto values = getAvailableSampleRates(chn_idx);
