@@ -48,7 +48,7 @@ void DeviceIn::initializeBuffer(unsigned int nb_samples)
 void DeviceIn::cancelBuffer()
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: not buffer capable");
+		throw_exception(m2k_exception::make("Device: not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	m_buffer->cancelBuffer();
 }
@@ -62,7 +62,7 @@ DeviceIn::~DeviceIn()
 std::vector<unsigned short> DeviceIn::getSamplesShort(unsigned int nb_samples)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 		return std::vector<unsigned short>();
 	}
 	m_buffer->setChannels(m_channel_list);
@@ -73,7 +73,7 @@ std::vector<unsigned short> DeviceIn::getSamplesShort(unsigned int nb_samples)
 const unsigned short* DeviceIn::getSamplesP(unsigned int nb_samples)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 		return nullptr;
 	}
 	m_buffer->setChannels(m_channel_list);
@@ -85,7 +85,7 @@ std::vector<std::vector<double> > DeviceIn::getSamples(unsigned int nb_samples,
 						       const std::function<double(int16_t, unsigned int)> &process)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 		std::vector<std::vector<double>>();
 	}
 	m_buffer->setChannels(m_channel_list);
@@ -95,7 +95,7 @@ std::vector<std::vector<double> > DeviceIn::getSamples(unsigned int nb_samples,
 void* DeviceIn::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 		return nullptr;
 	}
 	m_buffer->setChannels(m_channel_list);
@@ -106,7 +106,7 @@ const double *DeviceIn::getSamplesInterleaved(unsigned int nb_samples,
 					      const std::function<double(int16_t, unsigned int)> &process)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 		return nullptr;
 	}
 	m_buffer->setChannels(m_channel_list);
@@ -117,7 +117,7 @@ void DeviceIn::getSamples(std::vector<std::vector<double> > &data, unsigned int 
 			  const std::function<double(int16_t, unsigned int)> &process)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	m_buffer->setChannels(m_channel_list);
 	m_buffer->getSamples(data, nb_samples, process);
@@ -126,7 +126,7 @@ void DeviceIn::getSamples(std::vector<std::vector<double> > &data, unsigned int 
 void DeviceIn::getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Cannot refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	m_buffer->setChannels(m_channel_list);
 	m_buffer->getSamples(data, nb_samples);
@@ -135,7 +135,7 @@ void DeviceIn::getSamples(std::vector<unsigned short> &data, unsigned int nb_sam
 const short *DeviceIn::getSamplesRawInterleaved(unsigned int nb_samples)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 		return nullptr;
 	}
 	m_buffer->setChannels(m_channel_list);
@@ -145,7 +145,7 @@ const short *DeviceIn::getSamplesRawInterleaved(unsigned int nb_samples)
 void DeviceIn::flushBuffer()
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: Can not refill; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot refill; device not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	m_buffer->flushBuffer();
 }
