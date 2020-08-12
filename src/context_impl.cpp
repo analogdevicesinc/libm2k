@@ -105,7 +105,7 @@ DEVICE_DIRECTION ContextImpl::getIioDeviceDirection(std::string dev_name)
 	DEVICE_DIRECTION dir = NO_DIRECTION;
 	auto dev = iio_context_find_device(m_context, dev_name.c_str());
 	if (!dev) {
-		throw_exception(EXC_RUNTIME_ERROR, "No device found with name: " + dev_name);
+		throw_exception(m2k_exception::make("No device found with name: " + dev_name).type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	auto chn_count = iio_device_get_channels_count(dev);
@@ -133,7 +133,7 @@ DEVICE_TYPE ContextImpl::getIioDeviceType(std::string dev_name)
 {
 	auto dev = iio_context_find_device(m_context, dev_name.c_str());
 	if (!dev) {
-		throw_exception(EXC_INVALID_PARAMETER, "No device found with name: " + dev_name);
+		throw_exception(m2k_exception::make("No device found with name: " + dev_name).type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	auto chn = iio_device_get_channel(dev, 0);
@@ -274,7 +274,7 @@ std::string ContextImpl::getContextAttributeValue(std::string attr)
 	__try {
 		val = m_context_attributes.at(attr);
 	} __catch (std::exception &) {
-		throw_exception(EXC_INVALID_PARAMETER, "No such context attribute" + attr);
+		throw_exception(m2k_exception::make("No such context attribute" + attr).type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	return val;
 }
@@ -345,8 +345,8 @@ void ContextImpl::initializeContextAttributes()
 		std::pair<std::string, std::string> pair;
 		int ret = iio_context_get_attr(m_context, i, &name, &value);
 		if (ret < 0) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Can't get context attribute " +
-					std::to_string(i));
+			throw_exception(m2k_exception::make("Device: Can't get context attribute " +
+							    std::to_string(i)).type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
 		}
 		pair.first = std::string(name);
 		pair.second = std::string(value);
