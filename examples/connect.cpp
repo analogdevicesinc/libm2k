@@ -43,7 +43,7 @@ using namespace libm2k::analog;
 using namespace libm2k::digital;
 
 void test() {
-	throw_exception(EXC_RUNTIME_ERROR, "no device found");
+	throw_exception(m2k_exception::make("no device found").type(libm2k::EXC_RUNTIME_ERROR).build());
 }
 
 
@@ -336,8 +336,11 @@ int main(int argc, char **argv)
 //	delete m2kd;
 //	__try {
 //		test();
-//	} __catch(no_device_exception& e) {
-//		std::cout << e.what() << std::endl;
+//	} __catch(m2k_exception& e) {
+//		std::cout << "Message: " << e.what() << std::endl;
+//		std::cout << "IIO Code: " << e.iioCode() << std::endl;
+//		std::cout << "Type: " << e.type() << std::endl;
+//
 //	}
 
 
