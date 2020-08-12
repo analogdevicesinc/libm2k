@@ -44,7 +44,7 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 		m_dev_generic = make_shared<DeviceGeneric>(ctx, logic_dev);
 	} __catch (exception_type &e) {
 		m_dev_generic = nullptr;
-		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No generic digital device was found.");
+		throw_exception(m2k_exception::make("M2K Digital: No generic digital device was found.").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	m_trigger = trigger;
@@ -56,7 +56,7 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 			m_dev_write = make_shared<DeviceOut>(ctx, m_dev_name_write);
 		} __catch (exception_type &e) {
 			m_dev_write = nullptr;
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for writing");
+			throw_exception(m2k_exception::make("M2K Digital: No device was found for writing").type(libm2k::EXC_INVALID_PARAMETER).build());
 		}
 	}
 
@@ -65,14 +65,14 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 			m_dev_read = make_shared<DeviceIn>(ctx, m_dev_name_read);
 		} __catch (exception_type &e) {
 			m_dev_read = nullptr;
-			throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: No device was found for reading");
+			throw_exception(m2k_exception::make("M2K Digital: No device was found for reading").type(libm2k::EXC_INVALID_PARAMETER).build());
 		}
 	}
 
 	if (!m_dev_read || !m_dev_write) {
 		m_dev_read = nullptr;
 		m_dev_write = nullptr;
-		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: logic device not found");
+		throw_exception(m2k_exception::make("M2K Digital: logic device not found").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	if (sync) {
@@ -170,7 +170,7 @@ void M2kDigitalImpl::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 		}
 		m_dev_generic->setStringValue(index, "direction", dir_str);
 	} else {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel.");
+		throw_exception(m2k_exception::make("M2kDigital: No such digital channel.").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 
 }
@@ -178,7 +178,7 @@ void M2kDigitalImpl::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 DIO_DIRECTION M2kDigitalImpl::getDirection(DIO_CHANNEL index)
 {
 	if (index >= m_dev_generic->getNbChannels(false)) {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
+		throw_exception(m2k_exception::make("M2kDigital: No such digital channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 
 	std::string dir_str = m_dev_generic->getStringValue(index, "direction");
@@ -191,7 +191,7 @@ DIO_DIRECTION M2kDigitalImpl::getDirection(DIO_CHANNEL index)
 void M2kDigitalImpl::setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 {
 	if (index >= m_dev_generic->getNbChannels(false)) {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
+		throw_exception(m2k_exception::make("M2kDigital: No such digital channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	long long val = static_cast<long long>(level);
 	m_dev_generic->setDoubleValue(index, val, "raw");
@@ -212,7 +212,7 @@ void M2kDigitalImpl::setValueRaw(DIO_CHANNEL index, bool level)
 DIO_LEVEL M2kDigitalImpl::getValueRaw(DIO_CHANNEL index)
 {
 	if (index >= m_dev_generic->getNbChannels(false)) {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: No such digital channel");
+		throw_exception(m2k_exception::make("M2kDigital: No such digital channel").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 	long long val;
 	val = m_dev_generic->getDoubleValue(index, "raw");
@@ -228,7 +228,7 @@ DIO_LEVEL M2kDigitalImpl::getValueRaw(unsigned int index)
 void M2kDigitalImpl::push(std::vector<unsigned short> const &data)
 {
 	if (!anyChannelEnabled(DIO_OUTPUT)) {
-		throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.");
+		throw_exception(m2k_exception::make("M2kDigital: No TX channel enabled.").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	m_dev_write->push(data, 0, getCyclic(), true);
 }
@@ -236,7 +236,7 @@ void M2kDigitalImpl::push(std::vector<unsigned short> const &data)
 void M2kDigitalImpl::push(unsigned short *data, unsigned int nb_samples)
 {
 	if (!anyChannelEnabled(DIO_OUTPUT)) {
-		throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No TX channel enabled.");
+		throw_exception(m2k_exception::make("M2kDigital: No TX channel enabled.").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	m_dev_write->push(data, 0, nb_samples, getCyclic(), true);
 }
@@ -260,7 +260,7 @@ std::vector<unsigned short> M2kDigitalImpl::getSamples(unsigned int nb_samples)
 {
 	__try {
 		if (!anyChannelEnabled(DIO_INPUT)) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
+			throw_exception(m2k_exception::make("M2kDigital: No RX channel enabled.").type(libm2k::EXC_INVALID_PARAMETER).build());
 
 		}
 
@@ -271,7 +271,7 @@ std::vector<unsigned short> M2kDigitalImpl::getSamples(unsigned int nb_samples)
 		return m_dev_read->getSamplesShort(nb_samples);
 
 	} __catch (exception_type &e) {
-		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+		throw_exception(m2k_exception::make("M2K Digital: " + string(e.what())).type(libm2k::EXC_INVALID_PARAMETER).build());
 		return std::vector<unsigned short>();
 	}
 }
@@ -280,7 +280,7 @@ const unsigned short* M2kDigitalImpl::getSamplesP(unsigned int nb_samples)
 {
 	__try {
 		if (!anyChannelEnabled(DIO_INPUT)) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
+			throw_exception(m2k_exception::make("M2kDigital: No RX channel enabled.").type(libm2k::EXC_INVALID_PARAMETER).build());
 			return nullptr;
 		}
 
@@ -291,7 +291,7 @@ const unsigned short* M2kDigitalImpl::getSamplesP(unsigned int nb_samples)
 		return m_dev_read->getSamplesP(nb_samples);
 
 	} __catch (exception_type &e) {
-		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+		throw_exception(m2k_exception::make("M2K Digital: " + string(e.what())).type(libm2k::EXC_INVALID_PARAMETER).build());
 		return nullptr;
 	}
 }
@@ -302,7 +302,7 @@ void M2kDigitalImpl::enableChannel(unsigned int index, bool enable)
 		m_dev_write->enableChannel(index, enable, true);
 		m_tx_channels_enabled.at(index) = enable;
 	} else {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel");
+		throw_exception(m2k_exception::make("M2kDigital: Cannot enable digital TX channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
@@ -312,7 +312,7 @@ void M2kDigitalImpl::enableChannel(DIO_CHANNEL index, bool enable)
 		m_dev_write->enableChannel(index, enable, true);
 		m_tx_channels_enabled.at(index) = enable;
 	} else {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot enable digital TX channel");
+		throw_exception(m2k_exception::make("M2kDigital: Cannot enable digital TX channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
@@ -367,7 +367,7 @@ DIO_MODE M2kDigitalImpl::getOutputMode(DIO_CHANNEL chn)
 	auto it = std::find(m_output_mode.begin(), m_output_mode.end(),
 			    output_mode.c_str());
 	if (it == m_output_mode.end()) {
-		throw_exception(EXC_OUT_OF_RANGE, "M2kDigital: Cannot read channel attribute: output mode");
+		throw_exception(m2k_exception::make("M2kDigital: Cannot read channel attribute: output mode").type(libm2k::EXC_OUT_OF_RANGE).build());
 	}
 
 	return static_cast<DIO_MODE>(it - m_output_mode.begin());
@@ -445,8 +445,7 @@ void M2kDigitalImpl::getSamples(std::vector<unsigned short> &data, unsigned int 
 {
 	__try {
 		if (!anyChannelEnabled(DIO_INPUT)) {
-			throw_exception(EXC_INVALID_PARAMETER, "M2kDigital: No RX channel enabled.");
-
+			throw_exception(m2k_exception::make("M2kDigital: No RX channel enabled.").type(libm2k::EXC_INVALID_PARAMETER).build());
 		}
 
 		/* There is a restriction in the HDL that the buffer size must
@@ -456,6 +455,6 @@ void M2kDigitalImpl::getSamples(std::vector<unsigned short> &data, unsigned int 
 		m_dev_read->getSamples(data, nb_samples);
 
 	} __catch (exception_type &e) {
-		throw_exception(EXC_INVALID_PARAMETER, "M2K Digital: " + string(e.what()));
+		throw_exception(m2k_exception::make("M2K Digital: " + string(e.what())).type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
