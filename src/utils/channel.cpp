@@ -59,7 +59,7 @@ Channel::~Channel() {
 std::string Channel::getName()
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	std::string name = "";
 	auto n = iio_channel_get_name(m_channel);
@@ -72,7 +72,7 @@ std::string Channel::getName()
 std::string Channel::getId()
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	return iio_channel_get_id(m_channel);
 }
@@ -80,7 +80,7 @@ std::string Channel::getId()
 unsigned int Channel::getIndex()
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	return iio_channel_get_index(m_channel);
 }
@@ -88,7 +88,7 @@ unsigned int Channel::getIndex()
 bool Channel::isOutput()
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	return iio_channel_is_output(m_channel);
 }
@@ -96,7 +96,7 @@ bool Channel::isOutput()
 bool Channel::isEnabled()
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	return iio_channel_is_enabled(m_channel);
 }
@@ -104,7 +104,7 @@ bool Channel::isEnabled()
 bool Channel::hasAttribute(std::string attr)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	if (iio_channel_find_attr(m_channel, attr.c_str()) != NULL) {
 		return true;
@@ -115,7 +115,7 @@ bool Channel::hasAttribute(std::string attr)
 void Channel::enableChannel(bool enable)
 {
 	if (!m_channel) {
-		throw_exception(EXC_OUT_OF_RANGE, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	if (enable) {
@@ -139,7 +139,7 @@ void* Channel::getFirstVoid(iio_buffer *buffer)
 void Channel::write(struct iio_buffer* buffer, std::vector<short> const &data)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	size_t size = data.size();
@@ -147,14 +147,14 @@ void Channel::write(struct iio_buffer* buffer, std::vector<short> const &data)
 				       size * sizeof(short));
 
 	if (ret == 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write; result is 0 bytes");
+		throw_exception(m2k_exception::make("Channel: could not write; result is 0 bytes").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
 void Channel::write(struct iio_buffer* buffer, std::vector<unsigned short> const &data)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	size_t size = data.size();
@@ -162,14 +162,14 @@ void Channel::write(struct iio_buffer* buffer, std::vector<unsigned short> const
 				       size * sizeof(unsigned short));
 
 	if (ret == 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write; result is 0 bytes");
+		throw_exception(m2k_exception::make("Channel: could not write; result is 0 bytes").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
 void Channel::write(struct iio_buffer* buffer, std::vector<double> const &data)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	size_t size = data.size();
@@ -177,56 +177,56 @@ void Channel::write(struct iio_buffer* buffer, std::vector<double> const &data)
 				       size * sizeof(double));
 
 	if (ret == 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write; result is 0 bytes");
+		throw_exception(m2k_exception::make("Channel: could not write; result is 0 bytes").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
 void Channel::write(struct iio_buffer* buffer, double *data, unsigned int nb_samples)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	size_t ret = iio_channel_write(m_channel, buffer, data,
 				       nb_samples * sizeof(double));
 
 	if (ret == 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+		throw_exception(m2k_exception::make("Channel: could not write; result is 0 bytes").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
 void Channel::write(struct iio_buffer* buffer, short *data, unsigned int nb_samples)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	size_t ret = iio_channel_write(m_channel, buffer, data,
 				       nb_samples * sizeof(short));
 
 	if (ret == 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+		throw_exception(m2k_exception::make("Channel: could not write; result is 0 bytes").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
 void Channel::write(struct iio_buffer* buffer, unsigned short *data, unsigned int nb_samples)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Can not find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
 	size_t ret = iio_channel_write(m_channel, buffer, data,
 				       nb_samples * sizeof(unsigned short));
 
 	if (ret == 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: could not write; result is 0 bytes");
+		throw_exception(m2k_exception::make("Channel: could not write; result is 0 bytes").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
 void Channel::convert(int16_t *avg, int16_t *src)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
 }
@@ -234,7 +234,7 @@ void Channel::convert(int16_t *avg, int16_t *src)
 void Channel::convert(double *avg, int16_t *src)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
 }
@@ -242,12 +242,12 @@ void Channel::convert(double *avg, int16_t *src)
 double Channel::getDoubleValue(std::string attr)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	double value = 0.0;
 	int ret = iio_channel_attr_read_double(m_channel, attr.c_str(), &value);
 	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot read " + attr);
+		throw_exception(m2k_exception::make( "Channel: Cannot read " + attr).type(libm2k::EXC_INVALID_PARAMETER).iioCode(ret).build());
 	}
 	return value;
 }
@@ -255,34 +255,34 @@ double Channel::getDoubleValue(std::string attr)
 void Channel::setDoubleValue(std::string attr, double val)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	int ret = iio_channel_attr_write_double(m_channel, attr.c_str(), val);
 	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		throw_exception(m2k_exception::make("Channel: Cannot write " + attr).type(libm2k::EXC_INVALID_PARAMETER).iioCode(ret).build());
 	}
 }
 
 void Channel::setLongValue(std::string attr, long long val)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	int ret = iio_channel_attr_write_longlong(m_channel, attr.c_str(), val);
 	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		throw_exception(m2k_exception::make("Channel: Cannot write " + attr).type(libm2k::EXC_INVALID_PARAMETER).iioCode(ret).build());
 	}
 }
 
 long long Channel::getLongValue(std::string attr)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	long long value = 0;
 	int ret = iio_channel_attr_read_longlong(m_channel, attr.c_str(), &value);
 	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		throw_exception(m2k_exception::make("Channel: Cannot write " + attr).type(libm2k::EXC_INVALID_PARAMETER).iioCode(ret).build());
 	}
 	return value;
 }
@@ -290,23 +290,23 @@ long long Channel::getLongValue(std::string attr)
 void Channel::setStringValue(std::string attr, std::string val)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	int ret = iio_channel_attr_write(m_channel, attr.c_str(), val.c_str());
 	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		throw_exception(m2k_exception::make("Channel: Cannot write " + attr).type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 }
 
 std::string Channel::getStringValue(std::string attr)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	char value[1024];
 	int ret = iio_channel_attr_read(m_channel, attr.c_str(), value, sizeof(value));
 	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		throw_exception(m2k_exception::make("Channel: Cannot write " + attr).type(libm2k::EXC_INVALID_PARAMETER).iioCode(ret).build());
 	}
 	return std::string(value);
 }
@@ -314,23 +314,23 @@ std::string Channel::getStringValue(std::string attr)
 void Channel::setBoolValue(std::string attr, bool val)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	int ret = iio_channel_attr_write_bool(m_channel, attr.c_str(), val);
 	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		throw_exception(m2k_exception::make("Channel: Cannot write " + attr).type(libm2k::EXC_INVALID_PARAMETER).iioCode(ret).build());
 	}
 }
 
 bool Channel::getBoolValue(std::string attr)
 {
 	if (!m_channel) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot find associated channel");
+		throw_exception(m2k_exception::make("Channel: Cannot find associated channel").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	bool value;
 	int ret = iio_channel_attr_read_bool(m_channel, attr.c_str(), &value);
 	if (ret < 0) {
-		throw_exception(EXC_INVALID_PARAMETER, "Channel: Cannot write " + attr);
+		throw_exception(m2k_exception::make("Channel: Cannot write " + attr).type(libm2k::EXC_INVALID_PARAMETER).iioCode(ret).build());
 	}
 	return value;
 }

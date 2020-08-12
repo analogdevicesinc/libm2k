@@ -49,7 +49,7 @@ DeviceOut::~DeviceOut()
 void DeviceOut::initializeBuffer(unsigned int size, bool cyclic)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot push; device not buffer capable").type(libm2k::EXC_RUNTIME_ERROR).build());
 	}
 	m_buffer->initializeBuffer(size, cyclic, true);
 }
@@ -58,7 +58,7 @@ void DeviceOut::push(std::vector<short> const &data, unsigned int channel,
 		     bool cyclic, bool multiplex)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot push; device not buffer capable").type(libm2k::EXC_RUNTIME_ERROR).build());
 	}
 	m_buffer->setChannels(m_channel_list);
 	m_buffer->push(data, channel, cyclic, multiplex);
@@ -68,7 +68,7 @@ void DeviceOut::push(std::vector<short> const &data, unsigned int channel,
 void DeviceOut::cancelBuffer()
 {
 	if (!m_buffer) {
-		throw_exception(EXC_INVALID_PARAMETER, "Device: not buffer capable");
+		throw_exception(m2k_exception::make("Device: not buffer capable").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 	m_buffer->cancelBuffer();
 }
@@ -78,7 +78,7 @@ void DeviceOut::push(std::vector<unsigned short> const &data, unsigned int chann
 		     bool cyclic, bool multiplex)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot push; device not buffer capable").type(libm2k::EXC_RUNTIME_ERROR).build());
 	}
 	m_buffer->setChannels(m_channel_list);
 	m_buffer->push(data, channel, cyclic, multiplex);
@@ -89,7 +89,7 @@ void DeviceOut::push(unsigned short *data, unsigned int channel, unsigned int nb
 		     bool cyclic, bool multiplex)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot push; device not buffer capable").type(libm2k::EXC_RUNTIME_ERROR).build());
 	}
 	m_buffer->setChannels(m_channel_list);
 	m_buffer->push(data, channel, nb_samples, cyclic, multiplex);
@@ -98,7 +98,7 @@ void DeviceOut::push(unsigned short *data, unsigned int channel, unsigned int nb
 void DeviceOut::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot push; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot push; device not buffer capable").type(libm2k::EXC_RUNTIME_ERROR).build());
 	}
 	m_buffer->setChannels(m_channel_list);
 	m_buffer->push(data, channel, cyclic);
@@ -107,7 +107,7 @@ void DeviceOut::push(std::vector<double> const &data, unsigned int channel, bool
 void DeviceOut::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot push; device not buffer capable").type(libm2k::EXC_RUNTIME_ERROR).build());
 	}
 	m_buffer->setChannels(m_channel_list);
 	m_buffer->push(data, channel, nb_samples, cyclic);
@@ -116,7 +116,7 @@ void DeviceOut::push(double *data, unsigned int channel, unsigned int nb_samples
 void DeviceOut::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 {
 	if (!m_buffer) {
-		throw_exception(EXC_RUNTIME_ERROR, "Device: Can not push; device not buffer capable");
+		throw_exception(m2k_exception::make("Device: Cannot push; device not buffer capable").type(libm2k::EXC_RUNTIME_ERROR).build());
 	}
 	m_buffer->setChannels(m_channel_list);
 	m_buffer->push(data, channel, nb_samples, cyclic);
@@ -133,7 +133,7 @@ void DeviceOut::setKernelBuffersCount(unsigned int count)
 {
 	if (m_dev) {
 		if (iio_device_set_kernel_buffers_count(m_dev, count) != 0) {
-			throw_exception(EXC_RUNTIME_ERROR, "Device: Cannot set the number of kernel buffers");
+			throw_exception(m2k_exception::make("Device: Cannot set the number of kernel buffers").type(libm2k::EXC_RUNTIME_ERROR).build());
 		}
 	}
 }
