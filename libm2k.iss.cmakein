@@ -78,8 +78,8 @@ begin
 Source: "C:\projects\libm2k\build-win64\dist\libm2k-py*-win64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Source: "C:\projects\libm2k\build-win32\dist\libm2k-py*-win32.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
-Source: "C:\projects\libm2k\build-win32\libm2k.dll"; DestDir: "{sys}"; Flags: 32bit
-Source: "C:\projects\libm2k\build-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode
+Source: "C:\projects\libm2k\build-win32\libm2k.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion
+Source: "C:\projects\libm2k\build-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
 
 Source: "C:\projects\libm2k\build-win32\{#MsvcLib}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
 Source: "C:\projects\libm2k\build-win64\{#MsvcLib}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
@@ -92,10 +92,10 @@ Source: "C:\projects\libm2k\build-win64\m2kcli.exe"; DestDir: "{sys}"; Check: Is
 
 Source: "C:\projects\libm2k\build-win32\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib"; Check: not Is64BitInstallMode
 Source: "C:\projects\libm2k\build-win64\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib\amd64"; Check: Is64BitInstallMode
-Source: "C:\projects\libm2k\include\*"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\include"; Flags: ignoreversion recursesubdirs
+Source: "C:\projects\libm2k\include\*"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\include"; Flags: replacesameversion recursesubdirs
 
-Source: "C:\libiio-win32\libiio.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
-Source: "C:\libiio-win64\libiio.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
+Source: "C:\libiio-win32\libiio.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit replacesameversion
+Source: "C:\libiio-win64\libiio.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio; Flags: replacesameversion
 
 Source: "C:\libiio-win32\libxml2.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
 Source: "C:\libiio-win64\libxml2.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
@@ -106,11 +106,11 @@ Source: "C:\libiio-win64\libusb-1.0.dll"; DestDir: "{sys}"; Check: Is64BitInstal
 Source: "C:\libiio-win32\libserialport-0.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
 Source: "C:\libiio-win64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
-Source: "C:\projects\libm2k\build-win32\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode
-Source: "C:\projects\libm2k\build-win32\libm2k-sharp-cxx-wrap.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode
+Source: "C:\projects\libm2k\build-win32\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode; Flags: replacesameversion
+Source: "C:\projects\libm2k\build-win32\libm2k-sharp-cxx-wrap.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode; Flags: replacesameversion
 
-Source: "C:\projects\libm2k\build-win64\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode
-Source: "C:\projects\libm2k\build-win64\libm2k-sharp-cxx-wrap.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode
+Source: "C:\projects\libm2k\build-win64\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode; Flags: replacesameversion
+Source: "C:\projects\libm2k\build-win64\libm2k-sharp-cxx-wrap.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode; Flags: replacesameversion
 
 [Tasks]
 Name: "install_python_bindings_37"; 				Description: "Install libm2k Python-3.7 bindings";
