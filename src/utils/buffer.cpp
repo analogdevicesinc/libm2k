@@ -36,12 +36,12 @@ Buffer::Buffer(struct iio_device *dev) {
 
 	if (!m_dev) {
 		m_dev = nullptr;
-		throw_exception(m2k_exception::make("Buffer: Device not found, so no buffer can be created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Buffer: Device not found, so no buffer can be created", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	unsigned int dev_count = iio_device_get_buffer_attrs_count(m_dev);
 	if (dev_count <= 0) {
-		throw_exception(m2k_exception::make("Buffer: Device is not buffer capable, no buffer can be created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Buffer: Device is not buffer capable, no buffer can be created", libm2k::EXC_INVALID_PARAMETER);
 	}
 	m_buffer = nullptr;
 	m_last_nb_samples = 0;
@@ -68,14 +68,14 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output)
 		if (!m_buffer) {
 			if (output) {
 				if (errno == ETIMEDOUT) {
-					throw_exception(m2k_exception::make("Buffer: Cannot create the TX buffer").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+					THROW_M2K_EXCEPTION("Buffer: Cannot create the TX buffer", libm2k::EXC_TIMEOUT, -ETIMEDOUT);
 				}
-				throw_exception(m2k_exception::make("Buffer: Cannot create the TX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(errno).build());
+				THROW_M2K_EXCEPTION("Buffer: Cannot create the TX buffer", libm2k::EXC_RUNTIME_ERROR, errno);
 			} else {
 				if (errno == ETIMEDOUT) {
-					throw_exception(m2k_exception::make("Buffer: Cannot create the RX buffer").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+					THROW_M2K_EXCEPTION("Buffer: Cannot create the RX buffer", libm2k::EXC_TIMEOUT, -ETIMEDOUT);
 				}
-				throw_exception(m2k_exception::make("Buffer: Cannot create the RX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(errno).build());
+				THROW_M2K_EXCEPTION("Buffer: Cannot create the RX buffer", libm2k::EXC_RUNTIME_ERROR, errno);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_sa
 	  bool cyclic, bool multiplex)
 {
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	/* If the data vector is empty, then it means we want
@@ -124,12 +124,12 @@ void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_sa
 			destroy();
 			// timeout error code
 			if (ret == -ETIMEDOUT) {
-				throw_exception(m2k_exception::make("Buffer: Push timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
 			}
-			throw_exception(m2k_exception::make("Buffer: Cannot push TX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 		}
 	} else {
-		throw_exception(m2k_exception::make("Buffer: Please setup channels before pushing data").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
 	}
 }
 
@@ -139,7 +139,7 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	/* If the data vector is empty, then it means we want
@@ -169,13 +169,12 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 			destroy();
 			// timeout error code
 			if (ret == -ETIMEDOUT) {
-				throw_exception(m2k_exception::make("Buffer: Push timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
 			}
-			throw_exception(m2k_exception::make("Buffer: Cannot push TX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 		}
 	} else {
-		throw_exception(m2k_exception::make("Buffer: Please setup channels before pushing data").type(libm2k::EXC_INVALID_PARAMETER).build());
-
+		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
 	}
 }
 
@@ -184,7 +183,7 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	/* If the data vector is empty, then it means we want
@@ -214,12 +213,12 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 			destroy();
 			// timeout error code
 			if (ret == -ETIMEDOUT) {
-				throw_exception(m2k_exception::make("Buffer: Push timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
 			}
-			throw_exception(m2k_exception::make("Buffer: Cannot push TX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 		}
 	} else {
-		throw_exception(m2k_exception::make("Buffer: Please setup channels before pushing data").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
 
 	}
 }
@@ -228,7 +227,7 @@ void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cy
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	/* If the data vector is empty, then it means we want
@@ -247,13 +246,12 @@ void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cy
 			destroy();
 			// timeout error code
 			if (ret == -ETIMEDOUT) {
-				throw_exception(m2k_exception::make("Buffer: Push timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
 			}
-			throw_exception(m2k_exception::make("Buffer: Cannot push TX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 		}
 	} else {
-		throw_exception(m2k_exception::make("Buffer: Please setup channels before pushing data").type(libm2k::EXC_INVALID_PARAMETER).build());
-
+		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
 	}
 }
 
@@ -262,7 +260,7 @@ void Buffer::push(std::vector<std::vector<short>> const &data)
 	size_t data_ch_nb = data.size();
 
 	if (data_ch_nb > m_channel_list.size()) {
-		throw_exception(m2k_exception::make("Buffer: Please setup channels before pushing data").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	for (unsigned int i = 0; i < data_ch_nb; i++) {
@@ -273,7 +271,7 @@ void Buffer::push(std::vector<std::vector<short>> const &data)
 void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 {
 	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	/* If the data vector is empty, then it means we want
@@ -292,20 +290,19 @@ void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, b
 			destroy();
 			// timeout error code
 			if (ret == -ETIMEDOUT) {
-				throw_exception(m2k_exception::make("Buffer: Push timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
 			}
-			throw_exception(m2k_exception::make("Buffer: Cannot push TX buffer").type(libm2k::EXC_INVALID_PARAMETER).build());
+			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 		}
 	} else {
-		throw_exception(m2k_exception::make("Buffer: Please setup channels before pushing data").type(libm2k::EXC_INVALID_PARAMETER).build());
-
+		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
 	}
 }
 
 void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
 {
 	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	/* If the data vector is empty, then it means we want
@@ -324,20 +321,19 @@ void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bo
 			destroy();
 			// timeout error code
 			if (ret == -ETIMEDOUT) {
-				throw_exception(m2k_exception::make("Buffer: Push timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
 			}
-			throw_exception(m2k_exception::make("Buffer: Cannot push TX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 		}
 	} else {
-		throw_exception(m2k_exception::make("Buffer: Please setup channels before pushing data").type(libm2k::EXC_INVALID_PARAMETER).build());
-
+		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
 	}
 }
 
 void Buffer::getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
 {
 	if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
-		throw_exception(m2k_exception::make("Device not input-buffer capable, so no buffer was created").type(libm2k::EXC_RUNTIME_ERROR).build());
+		THROW_M2K_EXCEPTION("Device not input-buffer capable, so no buffer was created", libm2k::EXC_RUNTIME_ERROR);
 	}
 
 	data.clear();
@@ -351,9 +347,9 @@ void Buffer::getSamples(std::vector<unsigned short> &data, unsigned int nb_sampl
 		destroy();
 		// timeout error code
 		if (ret == -ETIMEDOUT) {
-			throw_exception(m2k_exception::make("Buffer: Refill timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+			THROW_M2K_EXCEPTION("Buffer: Refill timeout occurred", libm2k::EXC_TIMEOUT, ret);
 		}
-		throw_exception(m2k_exception::make("Buffer: Cannot refill RX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+		THROW_M2K_EXCEPTION("Buffer: Cannot refill RX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 	}
 
 	unsigned short* d_ptr = (unsigned short*)iio_buffer_start(m_buffer);
@@ -372,7 +368,7 @@ std::vector<unsigned short> Buffer::getSamples(unsigned int nb_samples)
 const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 {
 	if (Utils::getIioDeviceDirection(m_dev) == OUTPUT) {
-		throw_exception(m2k_exception::make("Device not input-buffer capable, so no buffer was created").type(libm2k::EXC_RUNTIME_ERROR).build());
+		THROW_M2K_EXCEPTION("Device not input-buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 		return nullptr;
 	}
 
@@ -385,9 +381,9 @@ const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 		destroy();
 		// timeout error code
 		if (ret == -ETIMEDOUT) {
-			throw_exception(m2k_exception::make("Buffer: Refill timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+			THROW_M2K_EXCEPTION("Buffer: Refill timeout occurred", libm2k::EXC_TIMEOUT, ret);
 		}
-		throw_exception(m2k_exception::make("Buffer: Cannot refill RX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+		THROW_M2K_EXCEPTION("Buffer: Cannot refill RX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 		return nullptr;
 	}
 
@@ -440,7 +436,7 @@ void* Buffer::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 {
 	bool anyChannelEnabled = false;
 	if (Utils::getIioDeviceDirection(m_dev) != INPUT) {
-		throw_exception(m2k_exception::make("Device not input-buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Device not input-buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 		return nullptr;
 	}
 
@@ -450,7 +446,7 @@ void* Buffer::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 	}
 
 	if (!anyChannelEnabled) {
-		throw_exception(m2k_exception::make("Buffer: No channel enabled for RX buffer").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Buffer: No channel enabled for RX buffer", libm2k::EXC_INVALID_PARAMETER);
 		return nullptr;
 	}
 
@@ -461,9 +457,9 @@ void* Buffer::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 		destroy();
 		// timeout error code
 		if (ret == -ETIMEDOUT) {
-			throw_exception(m2k_exception::make("Buffer: Refill timeout occurred").type(libm2k::EXC_TIMEOUT).iioCode(-ETIMEDOUT).build());
+			THROW_M2K_EXCEPTION("Buffer: Refill timeout occurred", libm2k::EXC_TIMEOUT, ret);
 		}
-		throw_exception(m2k_exception::make("Buffer: Cannot refill RX buffer").type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+		THROW_M2K_EXCEPTION("Buffer: Cannot refill RX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
 		return nullptr;
 	}
 

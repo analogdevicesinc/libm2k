@@ -93,108 +93,85 @@ bool M2kCalibrationImpl::isInitialized() const
 void M2kCalibrationImpl::setAdcInCalibMode()
 {
 	// Make sure hardware triggers are disabled before calibrating
-	__try {
-		m_trigger0_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_1);
-		m_trigger1_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_2);
-		m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, ALWAYS);
-		m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, ALWAYS);
+	m_trigger0_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_1);
+	m_trigger1_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_2);
+	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, ALWAYS);
+	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, ALWAYS);
 
-		m_trigger_src = m_m2k_trigger->getAnalogSource();
-		m_m2k_trigger->setAnalogSource(CHANNEL_1);
+	m_trigger_src = m_m2k_trigger->getAnalogSource();
+	m_m2k_trigger->setAnalogSource(CHANNEL_1);
 
-		/* Save the previous values for sampling frequency and oversampling ratio */
-		adc_sampl_freq = m_m2k_adc->getSampleRate();
-		adc_oversampl = m_m2k_adc->getOversamplingRatio();
+	/* Save the previous values for sampling frequency and oversampling ratio */
+	adc_sampl_freq = m_m2k_adc->getSampleRate();
+	adc_oversampl = m_m2k_adc->getOversamplingRatio();
 
-		m_m2k_adc->setCalibscale(0, 1.0);
-		m_m2k_adc->setCalibscale(1, 1.0);
+	m_m2k_adc->setCalibscale(0, 1.0);
+	m_m2k_adc->setCalibscale(1, 1.0);
 
-		m_adc_channels_enabled.at(0) = m_m2k_adc->isChannelEnabled(0);
-		m_adc_channels_enabled.at(1) = m_m2k_adc->isChannelEnabled(1);
+	m_adc_channels_enabled.at(0) = m_m2k_adc->isChannelEnabled(0);
+	m_adc_channels_enabled.at(1) = m_m2k_adc->isChannelEnabled(1);
 
-		m_m2k_adc->enableChannel(0, true);
-		m_m2k_adc->enableChannel(1, true);
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_adc->enableChannel(0, true);
+	m_m2k_adc->enableChannel(1, true);
 }
 
 void M2kCalibrationImpl::setDacInCalibMode()
 {
-	__try {
-		dac_a_sampl_freq = m_m2k_dac->getSampleRate(0);
-		dac_a_oversampl = m_m2k_dac->getOversamplingRatio(0);
-		dac_b_sampl_freq = m_m2k_dac->getSampleRate(1);
-		dac_b_oversampl = m_m2k_dac->getOversamplingRatio(1);
+	dac_a_sampl_freq = m_m2k_dac->getSampleRate(0);
+	dac_a_oversampl = m_m2k_dac->getOversamplingRatio(0);
+	dac_b_sampl_freq = m_m2k_dac->getSampleRate(1);
+	dac_b_oversampl = m_m2k_dac->getOversamplingRatio(1);
 
-		m_m2k_dac->setCalibscale(0, 1.0);
-		m_m2k_dac->setCalibscale(1, 1.0);
+	m_m2k_dac->setCalibscale(0, 1.0);
+	m_m2k_dac->setCalibscale(1, 1.0);
 
-		m_dac_channels_enabled.at(0) = m_m2k_dac->isChannelEnabled(0);
-		m_dac_channels_enabled.at(1) = m_m2k_dac->isChannelEnabled(1);
+	m_dac_channels_enabled.at(0) = m_m2k_dac->isChannelEnabled(0);
+	m_dac_channels_enabled.at(1) = m_m2k_dac->isChannelEnabled(1);
 
-		m_m2k_dac->enableChannel(0, true);
-		m_m2k_dac->enableChannel(1, true);
-	} __catch(exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_dac->enableChannel(0, true);
+	m_m2k_dac->enableChannel(1, true);
 }
 
 void M2kCalibrationImpl::restoreAdcFromCalibMode()
 {
-	__try {
-		m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, m_trigger0_mode);
-		m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
+	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, m_trigger0_mode);
+	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
 
-		m_m2k_trigger->setAnalogSource(m_trigger_src);
+	m_m2k_trigger->setAnalogSource(m_trigger_src);
 
-		/* Restore the previous values for sampling frequency and oversampling ratio */
-		m_m2k_adc->setSampleRate(adc_sampl_freq);
-		m_m2k_adc->setOversamplingRatio(adc_oversampl);
+	/* Restore the previous values for sampling frequency and oversampling ratio */
+	m_m2k_adc->setSampleRate(adc_sampl_freq);
+	m_m2k_adc->setOversamplingRatio(adc_oversampl);
 
-		m_m2k_adc->enableChannel(0, m_adc_channels_enabled.at(0));
-		m_m2k_adc->enableChannel(1, m_adc_channels_enabled.at(1));
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_adc->enableChannel(0, m_adc_channels_enabled.at(0));
+	m_m2k_adc->enableChannel(1, m_adc_channels_enabled.at(1));
+
 }
 
 void M2kCalibrationImpl::restoreDacFromCalibMode()
 {
-	__try {
-		m_m2k_dac->setSampleRate(0, dac_a_sampl_freq);
-		m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
-		m_m2k_dac->setSampleRate(1, dac_b_sampl_freq);
-		m_m2k_dac->setOversamplingRatio(1, dac_b_oversampl);
+	m_m2k_dac->setSampleRate(0, dac_a_sampl_freq);
+	m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
+	m_m2k_dac->setSampleRate(1, dac_b_sampl_freq);
+	m_m2k_dac->setOversamplingRatio(1, dac_b_oversampl);
 
-		m_m2k_dac->enableChannel(0, m_dac_channels_enabled.at(0));
-		m_m2k_dac->enableChannel(1, m_dac_channels_enabled.at(1));
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_dac->enableChannel(0, m_dac_channels_enabled.at(0));
+	m_m2k_dac->enableChannel(1, m_dac_channels_enabled.at(1));
 }
 
 void M2kCalibrationImpl::configAdcSamplerate()
 {
 	// Make sure we calibrate at the highest sample rate
-	__try {
-		m_m2k_adc->setSampleRate(1e8);
-		m_m2k_adc->setOversamplingRatio(1);
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_adc->setSampleRate(1e8);
+	m_m2k_adc->setOversamplingRatio(1);
 }
 
 void M2kCalibrationImpl::configDacSamplerate()
 {
-	__try {
-		m_m2k_dac->setSampleRate(0, 75E6);
-		m_m2k_dac->setOversamplingRatio(0, 1);
-		m_m2k_dac->setSampleRate(1, 75E6);
-		m_m2k_dac->setOversamplingRatio(1, 1);
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_dac->setSampleRate(0, 75E6);
+	m_m2k_dac->setOversamplingRatio(0, 1);
+	m_m2k_dac->setSampleRate(1, 75E6);
+	m_m2k_dac->setOversamplingRatio(1, 1);
 }
 
 bool M2kCalibrationImpl::calibrateADCoffset()
@@ -231,11 +208,7 @@ bool M2kCalibrationImpl::calibrateADCoffset()
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	const unsigned int num_samples = 1e5;
-	__try {
-		ch_data = m_m2k_adc->getSamplesRaw(num_samples);
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 	if (ch_data.size() == 0) {
 		return false;
 	}
@@ -280,11 +253,7 @@ bool M2kCalibrationImpl::calibrateADCgain()
 
 	setCalibrationMode(ADC_REF1);
 
-	__try {
-		ch_data = m_m2k_adc->getSamplesRaw(num_samples);
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 	if (ch_data.size() == 0) {
 		return false;
 	}
@@ -314,7 +283,7 @@ bool M2kCalibrationImpl::calibrateADCgain()
 int M2kCalibrationImpl::getAdcOffset(unsigned int channel)
 {
 	if (channel >= m_m2k_adc->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such ADC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such ADC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	auto calib_offset = m_m2k_adc->getAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(channel));
 	if (channel == 0) {
@@ -328,7 +297,7 @@ int M2kCalibrationImpl::getAdcOffset(unsigned int channel)
 double M2kCalibrationImpl::getAdcGain(unsigned int channel)
 {
 	if (channel >= m_m2k_adc->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such ADC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such ADC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	auto gain = m_m2k_adc->getCalibscale(channel);
 	if (channel == 0) {
@@ -342,7 +311,7 @@ double M2kCalibrationImpl::getAdcGain(unsigned int channel)
 void M2kCalibrationImpl::setAdcOffset(unsigned int chn, int offset)
 {
 	if (chn >= m_m2k_adc->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such ADC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such ADC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	if (chn == 0) {
@@ -360,7 +329,7 @@ void M2kCalibrationImpl::setAdcOffset(unsigned int chn, int offset)
 void M2kCalibrationImpl::setAdcGain(unsigned int chn, double gain)
 {
 	if (chn >= m_m2k_adc->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such ADC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such ADC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	if (chn == 0) {
@@ -449,11 +418,7 @@ bool M2kCalibrationImpl::fine_tune(size_t span, int16_t centerVal0, int16_t cent
 		// Allow some time for the voltage to settle
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
-		__try {
-			ch_data = m_m2k_adc->getSamplesRaw(num_samples);
-		} __catch (exception_type &e) {
-			throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-		}
+		ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 		if (ch_data.size() == 0) {
 			goto out_cleanup;
 		}
@@ -495,7 +460,7 @@ out_cleanup:
 int M2kCalibrationImpl::getDacOffset(unsigned int channel)
 {
 	if (channel >= m_m2k_dac->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such DAC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	double offset = m_ad5625_dev->getDoubleValue(channel, "raw", true);
@@ -510,7 +475,7 @@ int M2kCalibrationImpl::getDacOffset(unsigned int channel)
 double M2kCalibrationImpl::getDacGain(unsigned int channel)
 {
 	if (channel >= m_m2k_dac->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such DAC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto gain = m_m2k_dac->getCalibscale(channel);
@@ -525,7 +490,7 @@ double M2kCalibrationImpl::getDacGain(unsigned int channel)
 void M2kCalibrationImpl::setDacOffset(unsigned int chn, int offset)
 {
 	if (chn >= m_m2k_dac->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such DAC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	if (chn == 0) {
@@ -540,7 +505,7 @@ void M2kCalibrationImpl::setDacOffset(unsigned int chn, int offset)
 void M2kCalibrationImpl::setDacGain(unsigned int chn, double gain)
 {
 	if (chn >= m_m2k_dac->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such DAC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	if (chn == 0) {
@@ -573,38 +538,26 @@ bool M2kCalibrationImpl::calibrateDACoffset()
 	int16_t value = processRawSample(0);
 	std::vector<short> vec_data(256, value);
 	std::vector<std::vector<short>> vec_data_all;
-	__try {
-		vec_data_all.push_back(vec_data);
-		vec_data_all.push_back(vec_data);
+	vec_data_all.push_back(vec_data);
+	vec_data_all.push_back(vec_data);
 
-		//powerdown true before, false after->to start it,
-		// should set synced all?
-		m_m2k_dac->setSyncedDma(true);
-		m_m2k_dac->enableChannel(0, true);
-		m_m2k_dac->enableChannel(1, true);
+	//powerdown true before, false after->to start it,
+	// should set synced all?
+	m_m2k_dac->setSyncedDma(true);
+	m_m2k_dac->enableChannel(0, true);
+	m_m2k_dac->enableChannel(1, true);
 
-		m_m2k_dac->setCyclic(true);
-		m_m2k_dac->pushRaw(vec_data_all);
+	m_m2k_dac->setCyclic(true);
+	m_m2k_dac->pushRaw(vec_data_all);
 
-		m_m2k_dac->setSyncedDma(false);
-		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
-		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
-
-
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make("DAC offset calibration failed: "
-						    + std::string(e.what())).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_dac->setSyncedDma(false);
+	m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
+	m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 
 	// Allow some time for the voltage to settle
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-	__try {
-		ch_data = m_m2k_adc->getSamplesRaw(num_samples);
-	} __catch (exception_type &e) {
-		ch_data.clear();
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 	if (ch_data.size() == 0) {
 		return false;
 	}
@@ -628,13 +581,9 @@ bool M2kCalibrationImpl::calibrateDACoffset()
 	m_ad5625_dev->setDoubleValue(0, m_dac_a_ch_offset, "raw", true);
 	m_ad5625_dev->setDoubleValue(1, m_dac_b_ch_offset, "raw", true);
 
-	__try {
-		m_m2k_dac->stop();
-		m_m2k_dac->enableChannel(0, false);
-		m_m2k_dac->enableChannel(1, false);
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_dac->stop();
+	m_m2k_dac->enableChannel(0, false);
+	m_m2k_dac->enableChannel(1, false);
 
 	setCalibrationMode(NONE);
 
@@ -657,36 +606,27 @@ bool M2kCalibrationImpl::calibrateDACgain()
 	// Use the positive half scale point for gain calibration
 	std::vector<short> vec_data(256, value);
 	std::vector<std::vector<short>> vec_data_all;
-	__try {
-		vec_data_all.push_back(vec_data);
-		vec_data_all.push_back(vec_data);
+	vec_data_all.push_back(vec_data);
+	vec_data_all.push_back(vec_data);
 
-		//powerdown true before, false after->to start it,
-		// should set synced all?
-		m_m2k_dac->setSyncedDma(true);
-		m_m2k_dac->enableChannel(0, true);
-		m_m2k_dac->enableChannel(1, true);
+	//powerdown true before, false after->to start it,
+	// should set synced all?
+	m_m2k_dac->setSyncedDma(true);
+	m_m2k_dac->enableChannel(0, true);
+	m_m2k_dac->enableChannel(1, true);
 
-		m_m2k_dac->setCyclic(true);
-		m_m2k_dac->pushRaw(vec_data_all);
+	m_m2k_dac->setCyclic(true);
+	m_m2k_dac->pushRaw(vec_data_all);
 
-		m_m2k_dac->setSyncedDma(false);
-		m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
-		m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make("DAC gain calibration failed: "
-						    + std::string(e.what())).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_dac->setSyncedDma(false);
+	m_m2k_fabric->setBoolValue(0, false, "powerdown", true);
+	m_m2k_fabric->setBoolValue(1, false, "powerdown", true);
 
 	// Allow some time for the voltage to settle
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	const unsigned int num_samples = 15e4;
-	__try {
-		ch_data = m_m2k_adc->getSamplesRaw(num_samples);
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 	if (ch_data.size() == 0) {
 		return false;
 	}
@@ -711,14 +651,9 @@ bool M2kCalibrationImpl::calibrateDACgain()
 	m_dac_a_ch_vlsb = voltage0 / 1024;
 	m_dac_b_ch_vlsb = voltage1 / 1024;
 
-	__try {
-		m_m2k_dac->stop();
-		m_m2k_dac->enableChannel(0, false);
-		m_m2k_dac->enableChannel(1, false);
-	} __catch (exception_type &e) {
-		//		throw std::runtime_error(
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	m_m2k_dac->stop();
+	m_m2k_dac->enableChannel(0, false);
+	m_m2k_dac->enableChannel(1, false);
 
 	setCalibrationMode(NONE);
 
@@ -731,34 +666,29 @@ bool M2kCalibrationImpl::calibrateDACgain()
 bool M2kCalibrationImpl::calibrateADC()
 {
 	bool ok;
-	__try {
-		if (!m_initialized) {
-			initialize();
-		}
-
-		setAdcInCalibMode();
-
-		configAdcSamplerate();
-		ok = calibrateADCoffset();
-		if (!ok || m_cancel) {
-			goto calibration_fail;
-		}
-
-		ok = calibrateADCgain();
-
-		if (!ok || m_cancel) {
-			goto calibration_fail;
-		}
-
-		updateAdcCorrections();
-		restoreAdcFromCalibMode();
-		m_adc_calibrated = true;
-		m_m2k_adc->stopAcquisition();
-		return true;
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make("ADC calibration failed: " +
-						    std::string(e.what())).type(libm2k::EXC_INVALID_PARAMETER).build());
+	if (!m_initialized) {
+		initialize();
 	}
+
+	setAdcInCalibMode();
+
+	configAdcSamplerate();
+	ok = calibrateADCoffset();
+	if (!ok || m_cancel) {
+		goto calibration_fail;
+	}
+
+	ok = calibrateADCgain();
+
+	if (!ok || m_cancel) {
+		goto calibration_fail;
+	}
+
+	updateAdcCorrections();
+	restoreAdcFromCalibMode();
+	m_adc_calibrated = true;
+	m_m2k_adc->stopAcquisition();
+	return true;
 calibration_fail:
 	m_cancel=false;
 	m_adc_calibrated = false;
@@ -768,43 +698,38 @@ calibration_fail:
 bool M2kCalibrationImpl::calibrateDAC()
 {
 	bool ok;
-	__try {
-		if (!m_initialized) {
-			initialize();
-		}
-
-		if (!m_adc_calibrated) {
-			calibrateADC();
-		}
-		setDacInCalibMode();
-		setAdcInCalibMode();
-
-		configAdcSamplerate();
-		configDacSamplerate();
-
-		ok = calibrateDACoffset();
-
-		if (!ok || m_cancel) {
-			goto calibration_fail;
-		}
-
-		ok = calibrateDACgain();
-
-		if (!ok  || m_cancel) {
-			goto calibration_fail;
-		}
-
-		updateDacCorrections();
-		restoreDacFromCalibMode();
-		restoreAdcFromCalibMode();
-
-		m_dac_calibrated = true;
-		m_m2k_adc->stopAcquisition();
-		return true;
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make("DAC calibration failed " +
-						    std::string(e.what())).type(libm2k::EXC_INVALID_PARAMETER).build());
+	if (!m_initialized) {
+		initialize();
 	}
+
+	if (!m_adc_calibrated) {
+		calibrateADC();
+	}
+	setDacInCalibMode();
+	setAdcInCalibMode();
+
+	configAdcSamplerate();
+	configDacSamplerate();
+
+	ok = calibrateDACoffset();
+
+	if (!ok || m_cancel) {
+		goto calibration_fail;
+	}
+
+	ok = calibrateDACgain();
+
+	if (!ok  || m_cancel) {
+		goto calibration_fail;
+	}
+
+	updateDacCorrections();
+	restoreDacFromCalibMode();
+	restoreAdcFromCalibMode();
+
+	m_dac_calibrated = true;
+	m_m2k_adc->stopAcquisition();
+	return true;
 calibration_fail:
 	m_cancel=false;
 	m_dac_calibrated = false;
@@ -814,30 +739,27 @@ calibration_fail:
 bool M2kCalibrationImpl::calibrateAll()
 {
 	bool ok;
-	__try {
-		initialize();
+	initialize();
 
-		ok = calibrateADC();
+	ok = calibrateADC();
 
-		if (!ok || m_cancel) {
-			goto calibration_fail;
-		}
-
-		if (Utils::getHardwareRevision(m_ctx) != "A") {
-			std::this_thread::sleep_for
-					(std::chrono::milliseconds(750));
-		}
-
-		ok = calibrateDAC();
-
-		if (!ok || m_cancel) {
-			goto calibration_fail;
-		}
-
-		return true;
-	} __catch (exception_type &e) {
-		throw_exception(m2k_exception::make(e.what()).type(libm2k::EXC_INVALID_PARAMETER).build());
+	if (!ok || m_cancel) {
+		goto calibration_fail;
 	}
+
+	if (Utils::getHardwareRevision(m_ctx) != "A") {
+		std::this_thread::sleep_for
+				(std::chrono::milliseconds(750));
+	}
+
+	ok = calibrateDAC();
+
+	if (!ok || m_cancel) {
+		goto calibration_fail;
+	}
+
+	return true;
+
 calibration_fail:
 	m_cancel=false;
 	return false;

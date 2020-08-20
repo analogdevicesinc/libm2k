@@ -70,7 +70,7 @@ std::vector<ini_device_struct> Utils::parseIniFile(std::string path)
 				}
 
 			} else {
-				throw_exception(m2k_exception::make("Invalid configuration file: " + path).type(libm2k::EXC_INVALID_PARAMETER).build());
+				THROW_M2K_EXCEPTION("Invalid configuration file: " + path, libm2k::EXC_INVALID_PARAMETER);
 			}
 		}
 		if (!device.key_val_pairs.empty()) {
@@ -191,7 +191,7 @@ std::string Utils::getFirmwareVersion(struct iio_context *ctx)
 			"fw_version");
 
 	if (!hw_fw_version) {
-		throw_exception(m2k_exception::make("Can't determine firmware version.").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Can't determine firmware version.", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return hw_fw_version;
 }

@@ -38,12 +38,13 @@
 #include "assert.h"
 #include <sstream>
 
+using namespace libm2k;
 using namespace libm2k::devices;
 using namespace libm2k::analog;
 using namespace libm2k::digital;
 
 void test() {
-	throw_exception(m2k_exception::make("no device found").type(libm2k::EXC_RUNTIME_ERROR).build());
+	THROW_M2K_EXCEPTION("no device found", libm2k::EXC_RUNTIME_ERROR);
 }
 
 
@@ -336,11 +337,12 @@ int main(int argc, char **argv)
 //	delete m2kd;
 //	__try {
 //		test();
-//	} __catch(m2k_exception& e) {
+//	} __catch(libm2k::m2k_exception& e) {
 //		std::cout << "Message: " << e.what() << std::endl;
 //		std::cout << "IIO Code: " << e.iioCode() << std::endl;
 //		std::cout << "Type: " << e.type() << std::endl;
-//
+//		std::cout << "File: " << e.file() << std::endl;
+//		std::cout << "Line: " << e.line() << std::endl;
 //	}
 
 
