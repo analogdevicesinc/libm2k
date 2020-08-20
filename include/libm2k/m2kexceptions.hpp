@@ -43,6 +43,7 @@
 	#endif
 #endif
 
+
 namespace libm2k {
 
 class m2k_exception_builder;
@@ -58,6 +59,10 @@ public:
 	int iioCode() const noexcept;
 
 	libm2k::M2K_EXCEPTION_TYPE type() const noexcept;
+
+	int line() const noexcept;
+
+	std::string file() const noexcept;
 
 	const char *what() const noexcept override;
 
@@ -78,6 +83,8 @@ private:
 
 	int m_iio_code = 0;
 	libm2k::M2K_EXCEPTION_TYPE m_type = libm2k::EXC_RUNTIME_ERROR;
+	int m_line = -1;
+	std::string m_file;
 	std::string m_message = "ERR: Runtime - ";
 	std::string m_error;
 };
@@ -94,6 +101,10 @@ public:
 	m2k_exception_builder &iioCode(int code);
 
 	m2k_exception_builder &type(libm2k::M2K_EXCEPTION_TYPE type);
+
+	m2k_exception_builder &line(int lineNumber);
+
+	m2k_exception_builder &file(std::string fileName);
 
 	explicit operator m2k_exception &&();
 
@@ -112,6 +123,13 @@ static void throw_exception(const m2k_exception &exception)
 
 	std::cout << "Exception: " << exception.what() << std::endl;
 #endif
+
+#define THROW_M2K_EXCEPTION_2(m, t) throw_exception(m2k_exception::make(m).type(t).file(__FILE__).line(__LINE__).build())
+#define THROW_M2K_EXCEPTION_3(m, t, c) throw_exception(m2k_exception::make(m).type(t).iioCode(c).file(__FILE__).line(__LINE__).build())
+
+
+#define GET_THROW_MACRO(_1, _2, _3, NAME, ...) NAME
+#define THROW_M2K_EXCEPTION(...) GET_THROW_MACRO(__VA_ARGS__, THROW_M2K_EXCEPTION_3, THROW_M2K_EXCEPTION_2)(__VA_ARGS__)
 }
 }
 

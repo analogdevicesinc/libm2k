@@ -73,7 +73,7 @@ M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync)
 	}
 
 	if (!m_trigger) {
-		throw_exception(m2k_exception::make("Can't instantiate M2K board; M2K trigger is invalid.").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Can't instantiate M2K board; M2K trigger is invalid.", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	scanAllAnalogIn();
@@ -225,7 +225,7 @@ int M2kImpl::getDacCalibrationOffset(unsigned int chn)
 void M2kImpl::setAdcCalibrationGain(unsigned int chn, double gain)
 {
 	if (chn >= getAnalogIn()->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such ADC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such ADC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	m_calibration->setAdcGain(chn, gain);
 }
@@ -233,7 +233,7 @@ void M2kImpl::setAdcCalibrationGain(unsigned int chn, double gain)
 void M2kImpl::setAdcCalibrationOffset(unsigned int chn, int offset)
 {
 	if (chn >= getAnalogIn()->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such ADC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such ADC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	m_calibration->setAdcOffset(chn, offset);
 }
@@ -241,7 +241,7 @@ void M2kImpl::setAdcCalibrationOffset(unsigned int chn, int offset)
 void M2kImpl::setDacCalibrationOffset(unsigned int chn, int offset)
 {
 	if (chn >= getAnalogOut()->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such DAC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	m_calibration->setDacOffset(chn, offset);
 }
@@ -249,7 +249,7 @@ void M2kImpl::setDacCalibrationOffset(unsigned int chn, int offset)
 void M2kImpl::setDacCalibrationGain(unsigned int chn, double gain)
 {
 	if (chn >= getAnalogOut()->getNbChannels()) {
-		throw_exception(m2k_exception::make("No such DAC channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	m_calibration->setDacGain(chn, gain);
 }
@@ -283,7 +283,7 @@ M2kPowerSupply* M2kImpl::getPowerSupply()
 {
 	M2kPowerSupply* pSupply = dynamic_cast<M2kPowerSupply*>(m_instancesPowerSupply.at(0));
 	if (!pSupply) {
-		throw_exception(m2k_exception::make("No M2K power supply").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("No M2K power supply", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return pSupply;
 }
@@ -292,7 +292,7 @@ M2kDigital* M2kImpl::getDigital()
 {
 	M2kDigital* logic = dynamic_cast<M2kDigital*>(m_instancesDigital.at(0));
 	if (!logic) {
-		throw_exception(m2k_exception::make("No M2K digital device found").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("No M2K digital device found", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return logic;
 }

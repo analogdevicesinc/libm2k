@@ -105,7 +105,7 @@ DEVICE_DIRECTION ContextImpl::getIioDeviceDirection(std::string dev_name)
 	DEVICE_DIRECTION dir = NO_DIRECTION;
 	auto dev = iio_context_find_device(m_context, dev_name.c_str());
 	if (!dev) {
-		throw_exception(m2k_exception::make("No device found with name: " + dev_name).type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("No device found with name: " + dev_name, libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	auto chn_count = iio_device_get_channels_count(dev);
@@ -133,7 +133,7 @@ DEVICE_TYPE ContextImpl::getIioDeviceType(std::string dev_name)
 {
 	auto dev = iio_context_find_device(m_context, dev_name.c_str());
 	if (!dev) {
-		throw_exception(m2k_exception::make("No device found with name: " + dev_name).type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("No device found with name: " + dev_name, libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	auto chn = iio_device_get_channel(dev, 0);
@@ -271,11 +271,7 @@ std::vector<std::string> ContextImpl::getAvailableContextAttributes()
 std::string ContextImpl::getContextAttributeValue(std::string attr)
 {
 	std::string val;
-	__try {
-		val = m_context_attributes.at(attr);
-	} __catch (std::exception &) {
-		throw_exception(m2k_exception::make("No such context attribute" + attr).type(libm2k::EXC_INVALID_PARAMETER).build());
-	}
+	val = m_context_attributes.at(attr);
 	return val;
 }
 
@@ -339,14 +335,17 @@ void ContextImpl::initializeContextAttributes()
 	const char *value;
 	char ctx_git_tag[8];
 	unsigned int ctx_major, ctx_minor;
-	iio_context_get_version(m_context, &ctx_major, &ctx_minor, ctx_git_tag);
+	int ret;
+	ret = iio_context_get_version(m_context, &ctx_major, &ctx_minor, ctx_git_tag);
+	if (ret < 0) {
+		THROW_M2K_EXCEPTION("Context: Can't get context version", libm2k::EXC_RUNTIME_ERROR, ret);
+	}
 	unsigned int attr_no = iio_context_get_attrs_count(m_context);
 	for (unsigned int i = 0; i < attr_no; i++) {
 		std::pair<std::string, std::string> pair;
 		int ret = iio_context_get_attr(m_context, i, &name, &value);
 		if (ret < 0) {
-			throw_exception(m2k_exception::make("Device: Can't get context attribute " +
-							    std::to_string(i)).type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+			THROW_M2K_EXCEPTION("Device: Can't get context attribute " + std::to_string(i), libm2k::EXC_RUNTIME_ERROR, ret);
 		}
 		pair.first = std::string(name);
 		pair.second = std::string(value);

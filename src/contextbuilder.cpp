@@ -247,7 +247,7 @@ void ContextBuilder::contextClose(Context* device, bool deinit)
 		}
 	} catch (std::exception &e ){
 		delete device;
-		throw_exception(m2k_exception::make("Context deinit: " + std::string(e.what())).type(libm2k::EXC_RUNTIME_ERROR).build());
+		THROW_M2K_EXCEPTION("Context deinit: " + std::string(e.what()), libm2k::EXC_RUNTIME_ERROR);
 	}
 	delete device;
 }

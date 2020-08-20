@@ -46,7 +46,7 @@ GenericAnalogOutImpl::~GenericAnalogOutImpl()
 std::shared_ptr<libm2k::utils::DeviceOut> GenericAnalogOutImpl::getDacDevice(unsigned int index)
 {
 	if (index >= m_devices_out.size()) {
-		throw_exception(m2k_exception::make("No such DAC device").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such DAC device", libm2k::EXC_OUT_OF_RANGE);
 		return nullptr;
 	}
 	return m_devices_out.at(index);
@@ -95,7 +95,7 @@ void GenericAnalogOutImpl::setCyclic(bool en)
 void GenericAnalogOutImpl::setCyclic(unsigned int chn, bool en)
 {
 	if (chn >= m_devices_out.size()) {
-		throw_exception(m2k_exception::make("Generic Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("Generic Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	m_cyclic.at(chn) = en;
 }
@@ -103,7 +103,7 @@ void GenericAnalogOutImpl::setCyclic(unsigned int chn, bool en)
 bool GenericAnalogOutImpl::getCyclic(unsigned int chn)
 {
 	if (chn >=  m_devices_out.size()) {
-		throw_exception(m2k_exception::make("Generic Analog Out: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("Generic Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	return m_cyclic.at(chn);
 }

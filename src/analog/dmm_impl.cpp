@@ -60,7 +60,7 @@ void DMMImpl::reset()
 DeviceIn* DMMImpl::getDevice(unsigned int index)
 {
 	if (index >= m_device_in_list.size()) {
-		throw_exception(m2k_exception::make("No such DMM device.").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("No such DMM device.", libm2k::EXC_OUT_OF_RANGE);
 	}
 	return m_device_in_list.at(index);
 }
@@ -102,8 +102,7 @@ DMM_READING DMMImpl::readChannel(std::string chn_name)
 	} else if (channel->hasAttribute("input")) {
 		value = channel->getDoubleValue("input");
 	} else {
-		throw_exception(m2k_exception::make("DMM: Cannot read channel " +
-						    getName() + " : " + chn_name).type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("DMM: Cannot read channel " + getName() + " : " + chn_name, libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	if (channel->hasAttribute("offset")) {

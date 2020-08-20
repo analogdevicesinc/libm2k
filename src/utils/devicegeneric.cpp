@@ -45,7 +45,7 @@ DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name)
 	if (dev_name != "") {
 		m_dev = iio_context_find_device(context, dev_name.c_str());
 		if (!m_dev) {
-			throw_exception(m2k_exception::make("Device: No such device").type(libm2k::EXC_INVALID_PARAMETER).build());
+			THROW_M2K_EXCEPTION("Device: No such device", libm2k::EXC_INVALID_PARAMETER);
 		}
 
 		__try {
@@ -112,7 +112,7 @@ Channel* DeviceGeneric::getChannel(unsigned int chnIdx, bool output)
 		return m_channel_list_in.at(chnIdx);
 	}
 error:
-	throw_exception(m2k_exception::make("Device: No such channel: " + to_string(chnIdx)).type(libm2k::EXC_OUT_OF_RANGE).build());
+	THROW_M2K_EXCEPTION("Device: No such channel: " + to_string(chnIdx), libm2k::EXC_OUT_OF_RANGE);
 	return nullptr;
 }
 
@@ -153,7 +153,7 @@ bool DeviceGeneric::isChannelEnabled(unsigned int chnIdx, bool output)
 string DeviceGeneric::getName()
 {
 	if (!m_dev) {
-		throw_exception(m2k_exception::make("Device: No available device").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("Device: No available device", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return iio_device_get_name(m_dev);
 }
@@ -167,8 +167,7 @@ double DeviceGeneric::getDoubleValue(std::string attr)
 		iio_device_attr_read_double(m_dev, attr.c_str(),
 					    &value);
 	} else {
-		throw_exception(m2k_exception::make(dev_name + " has no " +
-						    attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return value;
 }
@@ -179,14 +178,13 @@ double DeviceGeneric::getDoubleValue(unsigned int chn_idx, std::string attr, boo
 	std::string dev_name = getName();
 
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make(dev_name + " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name + " has no " +
-						    attr + " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute for the selected channel", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	return chn->getDoubleValue(attr);
@@ -199,8 +197,7 @@ double DeviceGeneric::setDoubleValue(double value, std::string attr)
 		iio_device_attr_write_double(m_dev, attr.c_str(),
 					     value);
 	} else {
-		throw_exception(m2k_exception::make(dev_name + " has no " +
-						    attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return getDoubleValue(attr);
 }
@@ -210,15 +207,15 @@ double DeviceGeneric::setDoubleValue(unsigned int chn_idx, double value, std::st
 	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 	std::string dev_name = getName();
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr +
-						    " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name +
+				    " has no " + attr +
+				    " attribute for the selected channel",
+				    libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	chn->setDoubleValue(attr, value);
@@ -234,8 +231,7 @@ int DeviceGeneric::getLongValue(std::string attr)
 		iio_device_attr_read_longlong(m_dev, attr.c_str(),
 					      &value);
 	} else {
-		throw_exception(m2k_exception::make(dev_name + " has no " +
-						    attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return value;
 }
@@ -246,13 +242,12 @@ int DeviceGeneric::getLongValue(unsigned int chn_idx, std::string attr, bool out
 	std::string dev_name = getName();
 
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make( dev_name + " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name + " has no " +
-						    attr + " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute for the selected channel", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	return chn->getLongValue(attr);
@@ -267,8 +262,7 @@ int DeviceGeneric::getBufferLongValue(std::string attr)
 		iio_device_buffer_attr_read_longlong(m_dev, attr.c_str(),
 						     &value);
 	} else {
-		throw_exception(m2k_exception::make(dev_name + " has no " +
-						    attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return value;
 }
@@ -280,8 +274,7 @@ int DeviceGeneric::setLongValue(int value, std::string attr)
 		iio_device_attr_write_longlong(m_dev, attr.c_str(),
 					       value);
 	} else {
-		throw_exception(m2k_exception::make(dev_name + " has no " +
-						    attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return getLongValue(attr);
 }
@@ -291,15 +284,15 @@ int DeviceGeneric::setLongValue(unsigned int chn_idx, int value, std::string att
 	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 	std::string dev_name = getName();
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr +
-						    " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name +
+				    " has no " + attr +
+				    " attribute for the selected channel",
+				    libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	chn->setLongValue(attr, value);
@@ -313,8 +306,7 @@ int DeviceGeneric::setBufferLongValue(int value, std::string attr)
 		iio_device_buffer_attr_write_longlong(m_dev, attr.c_str(),
 						      value);
 	} else {
-		throw_exception(m2k_exception::make(dev_name + " has no " +
-						    attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return getLongValue(attr);
 }
@@ -328,8 +320,7 @@ bool DeviceGeneric::getBoolValue(string attr)
 		iio_device_attr_read_bool(m_dev, attr.c_str(),
 					  &value);
 	} else {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return value;
 }
@@ -340,15 +331,15 @@ bool DeviceGeneric::getBoolValue(unsigned int chn_idx, string attr, bool output)
 	std::string dev_name = getName();
 
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr +
-						    " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name +
+				    " has no " + attr +
+				    " attribute for the selected channel",
+				    libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	return chn->getBoolValue(attr);
@@ -360,9 +351,10 @@ bool DeviceGeneric::setBoolValue(bool value, string attr)
 	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write_bool(m_dev, attr.c_str(), value);
 	} else {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr +
-						    " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name +
+				    " has no " + attr +
+				    " attribute",
+				    libm2k::EXC_INVALID_PARAMETER);
 	}
 	return getBoolValue(attr);
 }
@@ -372,15 +364,15 @@ bool DeviceGeneric::setBoolValue(unsigned int chn_idx, bool value, string attr, 
 	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 	std::string dev_name = getName();
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr +
-						    " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name +
+				    " has no " + attr +
+				    " attribute for the selected channel",
+				    libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	chn->setBoolValue(attr, value);
@@ -393,8 +385,7 @@ string DeviceGeneric::setStringValue(string attr, string value)
 	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
 		iio_device_attr_write(m_dev, attr.c_str(), value.c_str());
 	} else {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	return getStringValue(attr);
 }
@@ -404,15 +395,15 @@ string DeviceGeneric::setStringValue(unsigned int chn_idx, string attr, string v
 	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 	std::string dev_name = getName();
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr +
-						    " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name +
+				    " has no " + attr +
+				    " attribute for the selected channel",
+				    libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	chn->setStringValue(attr, value);
@@ -428,8 +419,7 @@ string DeviceGeneric::getStringValue(string attr)
 		iio_device_attr_read(m_dev, attr.c_str(),
 				     value, sizeof(value));
 	} else {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 
 	}
 	return std::string(value);
@@ -441,15 +431,15 @@ string DeviceGeneric::getStringValue(unsigned int chn_idx, string attr, bool out
 	std::string dev_name = getName();
 
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr +
-						    " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name +
+				    " has no " + attr +
+				    " attribute for the selected channel",
+				    libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	return chn->getStringValue(attr);
@@ -463,7 +453,7 @@ std::vector<std::string> DeviceGeneric::getAvailableAttributeValues(const string
 
 	dev_name = getName();
 	if (!ContextImpl::iioDevHasAttribute(m_dev, attr)) {
-		throw_exception(m2k_exception::make(dev_name + " has no " + attr + " attribute").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 		return std::vector<std::string>();
 	}
 
@@ -487,15 +477,16 @@ std::vector<std::string> DeviceGeneric::getAvailableAttributeValues(unsigned int
 	dev_name = getName();
 
 	if (chn_idx >= nb_channels) {
-		throw_exception(m2k_exception::make(dev_name + " has no such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION(dev_name + " has no such channel", libm2k::EXC_OUT_OF_RANGE);
 		return std::vector<std::string>();
 	}
 
 	auto chn = getChannel(chn_idx, output);
 	if (!chn->hasAttribute(attr)) {
-		throw_exception(m2k_exception::make(dev_name +
-						    " has no " + attr +
-						    " attribute for the selected channel").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION(dev_name +
+				    " has no " + attr +
+				    " attribute for the selected channel",
+				    libm2k::EXC_INVALID_PARAMETER);
 		return std::vector<std::string>();
 	}
 	return chn->getAvailableAttributeValues(attr);
@@ -505,8 +496,7 @@ void DeviceGeneric::writeRegister(uint32_t address, uint32_t value)
 {
 	int ret = iio_device_reg_write(m_dev, address, value);
 	if (ret) {
-		throw_exception(m2k_exception::make("Device: can't write register" +
-						    std::string(std::strerror(-ret))).type(libm2k::EXC_INVALID_PARAMETER).iioCode(ret).build());
+		THROW_M2K_EXCEPTION("Device: can't write register", libm2k::EXC_INVALID_PARAMETER, ret);
 	}
 }
 
@@ -544,7 +534,7 @@ void DeviceGeneric::convertChannelHostFormat(unsigned int chn_idx, int16_t *avg,
 	if (chn_idx < tmp.size()) {
 		tmp.at(chn_idx)->convert(avg, src);
 	} else {
-		throw_exception(m2k_exception::make("Device: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("Device: No such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 }
 
@@ -554,14 +544,14 @@ void DeviceGeneric::convertChannelHostFormat(unsigned int chn_idx, double *avg, 
 	if (chn_idx < tmp.size()) {
 		tmp.at(chn_idx)->convert(avg, src);
 	} else {
-		throw_exception(m2k_exception::make("Device: No such channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("Device: No such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 }
 
 void DeviceGeneric::setKernelBuffersCount(unsigned int count)
 {
 	if (!m_dev) {
-		throw_exception(m2k_exception::make("Device: no such device").type(libm2k::EXC_RUNTIME_ERROR).build());
+		THROW_M2K_EXCEPTION("Device: no such device", libm2k::EXC_OUT_OF_RANGE);
 	}
 	iio_device_set_kernel_buffers_count(m_dev, count);
 }
@@ -569,7 +559,7 @@ void DeviceGeneric::setKernelBuffersCount(unsigned int count)
 bool DeviceGeneric::isValidDmmChannel(unsigned int chnIdx)
 {
 	if (chnIdx >= m_channel_list_in.size()) {
-		throw_exception(m2k_exception::make("Device: no such DMM channel").type(libm2k::EXC_OUT_OF_RANGE).build());
+		THROW_M2K_EXCEPTION("Device: no such DMM channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
 	auto chn = m_channel_list_in.at(chnIdx);
@@ -591,8 +581,7 @@ std::pair<string, string> DeviceGeneric::getContextAttr(unsigned int attrIdx)
 	const char *value;
 	int ret = iio_context_get_attr(m_context, attrIdx, &name, &value);
 	if (ret < 0) {
-		throw_exception(m2k_exception::make("Device: Can't get context attribute " +
-						    std::to_string(attrIdx)).type(libm2k::EXC_RUNTIME_ERROR).iioCode(ret).build());
+		THROW_M2K_EXCEPTION("Device: Can't get context attribute " + std::to_string(attrIdx), libm2k::EXC_RUNTIME_ERROR, ret);
 	}
 	pair.first = std::string(name);
 	pair.second = std::string(value);

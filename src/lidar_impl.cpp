@@ -38,8 +38,7 @@ void LidarImpl::channelEnableDisable(string channel, bool enable) {
 	else if (channel == "voltage4")
 		adc_dev->enableChannel(4, enable, false);
 	else
-		throw_exception(m2k_exception::make("The supplied channel, " +
-						    channel + ", does not exist").type(libm2k::EXC_INVALID_PARAMETER).build());
+		THROW_M2K_EXCEPTION("The supplied channel, " + channel + ", does not exist", libm2k::EXC_INVALID_PARAMETER);
 }
 
 vector<string> LidarImpl::enabledChannelsList() {

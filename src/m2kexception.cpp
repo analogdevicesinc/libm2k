@@ -21,6 +21,7 @@
 
 
 #include <libm2k/m2kexceptions.hpp>
+#include <utility>
 
 using namespace libm2k;
 
@@ -36,6 +37,16 @@ int m2k_exception::iioCode() const noexcept
 libm2k::M2K_EXCEPTION_TYPE m2k_exception::type() const noexcept
 {
 	return m_type;
+}
+
+int m2k_exception::line() const noexcept
+{
+	return m_line;
+}
+
+std::string m2k_exception::file() const noexcept
+{
+	return m_file;
 }
 
 const char* m2k_exception::what() const noexcept
@@ -93,6 +104,18 @@ m2k_exception_builder &m2k_exception_builder::type(libm2k::M2K_EXCEPTION_TYPE ty
 	}
 	}
 	m2KException.m_type = type;
+	return *this;
+}
+
+m2k_exception_builder &m2k_exception_builder::line(int lineNumber)
+{
+	m2KException.m_line = lineNumber;
+	return *this;
+}
+
+m2k_exception_builder &m2k_exception_builder::file(std::string fileName)
+{
+	m2KException.m_file = std::move(fileName);
 	return *this;
 }
 
