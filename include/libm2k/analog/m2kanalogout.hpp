@@ -218,6 +218,8 @@ public:
 	*
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
+	* @note Due to a hardware limitation, the number of samples per channel must
+	* be a multiple of 4 and greater than 16
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	virtual void pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples) = 0;
@@ -232,6 +234,8 @@ public:
 	*
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
+	* @note Due to a hardware limitation, the number of samples per channel must
+	* be a multiple of 4 and greater than 16
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	virtual void pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples) = 0;
@@ -246,6 +250,8 @@ public:
 	* @note Make sure the samples are interleaved
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel will be synchronized with the other channel
+	* @note Due to a hardware limitation, the number of samples per channel must
+	* be a multiple of 4 and greater than 16
 	*/
 	virtual void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples) = 0;
 
@@ -259,6 +265,8 @@ public:
 	* @note Make sure the raw samples are interleaved
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel will be synchronized with the other channel
+	* @note Due to a hardware limitation, the number of samples per channel must
+	* be a multiple of 4 and greater than 16
 	*/
 	virtual void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples) = 0;
 
@@ -271,6 +279,8 @@ public:
 	*
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
+	* @note Due to a hardware limitation, the number of samples per channel must
+	* be a multiple of 4 and greater than 16
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	virtual void push(unsigned int chnIdx, std::vector<double> const &data) = 0;
@@ -284,6 +294,8 @@ public:
 	*
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
+	* @note Due to a hardware limitation, the number of samples per channel must
+	* be a multiple of 4 and greater than 16
 	* @throw EXC_OUT_OF_RANGE No such channel
 	*/
 	virtual void pushRaw(unsigned int chnIdx, std::vector<short> const &data) = 0;
@@ -297,6 +309,8 @@ public:
 	* @note The index of each list of samples represents the channel's index
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
+	* @note Due to a hardware limitation, the number of samples per channel must
+	* be a multiple of 4 and greater than 16
 	*/
 	virtual void push(std::vector<std::vector<double>> const &data) = 0;
 
@@ -309,6 +323,8 @@ public:
 	* @note The index of each list of samples represents the channel's index
 	* @note Streaming data is possible - required multiple kernel buffers
 	* @note The given channel won't be synchronized with the other channel
+	* @note Due to a hardware limitation, the number of samples per channel must
+	* be a multiple of 4 and greater than 16
 	*/
 	virtual void pushRaw(std::vector<std::vector<short>> const &data) = 0;
 
