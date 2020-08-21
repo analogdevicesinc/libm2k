@@ -76,6 +76,8 @@ public:
 	* @return A list containing lists of samples for each channel
 	*
 	* @note The index of the list corresponds to the index of the channel
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
 	*/
 	virtual std::vector<std::vector<double>> getSamples(unsigned int nb_samples) = 0;
 
@@ -87,6 +89,8 @@ public:
 	* @return A list containing lists of raw samples for each channel
 	*
 	* @note The index of the list corresponds to the index of the channel
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
 	*/
 	virtual std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples) = 0;
 
@@ -100,6 +104,8 @@ public:
 	* @note Before the acquisition, both channels will be automatically enabled
 	* @note The data array will contain samples from both channels
 	* @note After the acquisition is finished, the channels will return to their initial state
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
 	*/
 	virtual const double* getSamplesInterleaved(unsigned int nb_samples) = 0;
 
@@ -113,6 +119,8 @@ public:
 	* @note Before the acquisition, both channels will be automatically enabled
 	* @note The data array will contain samples from both channels
 	* @note After the acquisition is finished, the channels will return to their initial state
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
 	*/
 	virtual const short* getSamplesRawInterleaved(unsigned int nb_samples) = 0;
 
@@ -453,6 +461,8 @@ public:
 	*
 	* @note The vector will be cleaned and then filled with samples
 	* @note The index of the list corresponds to the index of the channel
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
 	*/
 	virtual void getSamples(std::vector<std::vector<double>> &data, unsigned int nb_samples) = 0;
 

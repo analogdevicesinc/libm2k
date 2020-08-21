@@ -118,6 +118,8 @@ public:
 	* @brief Send the samples to all digital channels
 	*
 	* @param data The std vector that contains the samples
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
 	*/
 	virtual void push(std::vector<unsigned short> const &data) = 0;
 
@@ -127,6 +129,8 @@ public:
 	*
 	* @param data a pointer to the samples
 	* @param nb_samples the number of samples
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
 	*/
 	virtual void push(unsigned short *data, unsigned int nb_samples) = 0;
 
@@ -205,6 +209,8 @@ public:
 	*
 	* @param nb_samples The number of samples that will be retrieved
 	* @return A list that contains the samples
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
 	*/
 	virtual std::vector<unsigned short> getSamples(unsigned int nb_samples) = 0;
 
@@ -212,6 +218,8 @@ public:
 	 * @brief Retrieve a specific number of samples
 	 * @param nb_samples The number of samples that will be retrieved
 	 * @return A pointer to the data
+	 * @note Due to a hardware limitation, the number of samples must
+	 * be a multiple of 4 and greater than 16.
 	 */
 	virtual const unsigned short *getSamplesP(unsigned int nb_samples) = 0;
 
@@ -394,6 +402,8 @@ public:
 	 * @brief Retrieve a specific number of samples
 	 * @param data - a reference to a vector owned/created by the client
 	 * @param nb_samples The number of samples that will be retrieved. The vector will be cleaned and then filled with samples.
+	 * @note Due to a hardware limitation, the number of samples must
+	 * be a multiple of 4 and greater than 16.
 	 */
 	virtual void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples) = 0;
 
