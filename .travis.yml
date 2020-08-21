@@ -15,6 +15,11 @@ env:
 matrix:
   include:
     - os: linux
+      dist: focal
+      python: 3.6
+      env:
+        - PYTHON=python PIP=pip
+    - os: linux
       dist: bionic
       python: 3.6
       env:
@@ -37,6 +42,11 @@ matrix:
     - compiler: "gcc"
       os: osx
       osx_image: xcode11
+      env:
+        - EXTRA_SSH=-oHostKeyAlgorithms=+ssh-dss
+    - compiler: "gcc"
+      os: osx
+      osx_image: xcode12
       env:
         - EXTRA_SSH=-oHostKeyAlgorithms=+ssh-dss
 

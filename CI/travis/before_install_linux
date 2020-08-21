@@ -2,14 +2,22 @@
 
 . CI/travis/lib.sh
 
+get_libiio_release() {
+	git clone https://github.com/analogdevicesinc/libiio && cd libiio
+	IIO_TAG=`git describe --tags $(git rev-list --tags --max-count=1)`
+	git checkout ${IIO_TAG}
+	IIO_TAG_SHA=${IIO_TAG}.g`git rev-parse --short HEAD`
+	wget https://github.com/analogdevicesinc/libiio/releases/download/${IIO_TAG}/libiio-${IIO_TAG_SHA}${LDIST}.deb
+}
+
 handle_centos() {
 	# FIXME: see about adding `libserialport-dev` from EPEL ; maybe libusb-1.0.0-devel...
 	yum -y groupinstall 'Development Tools'
 	yum -y install cmake libxml2-devel libusb1-devel doxygen libaio-devel \
 		avahi-devel bzip2 gzip rpm rpm-build 
 
-	wget http://swdownloads.analog.com/cse/travis_builds/${LIBIIO_BRANCH}_latest_libiio${LDIST}.rpm
-	sudo yum localinstall -y ./${LIBIIO_BRANCH}_latest_libiio${LDIST}.rpm
+	get_libiio_release
+	sudo yum localinstall -y ./libiio-*${LDIST}.rpm
 }
 
 handle_centos_docker() {
@@ -27,8 +35,8 @@ handle_default() {
 		sudo apt-get install -y libserialport-dev
 	fi
 
-	wget http://swdownloads.analog.com/cse/travis_builds/${LIBIIO_BRANCH}_latest_libiio${LDIST}.deb
-	sudo dpkg -i ./${LIBIIO_BRANCH}_latest_libiio${LDIST}.deb
+	get_libiio_release
+	sudo dpkg -i ./libiio-*${LDIST}.deb
 
 	#Install SWIG 4.0
 	wget https://downloads.sourceforge.net/swig/swig-4.0.1.tar.gz
