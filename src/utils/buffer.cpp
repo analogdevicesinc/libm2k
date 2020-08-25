@@ -97,14 +97,14 @@ void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_sa
 		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
-	initializeBuffer(nb_samples, cyclic, true);
-
 	/* If the data vector is empty, then it means we want
-		 * to remove what was pushed earlier to the device, so
-		 * we destroy the buffer */
+	 * to remove what was pushed earlier to the device, so
+	 * we destroy the buffer */
 	if (nb_samples == 0) {
 		return;
 	}
+
+	initializeBuffer(nb_samples, cyclic, true);
 
 	if (channel < m_channel_list.size() ) {
 		if (!multiplex) {
@@ -142,14 +142,14 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
-	initializeBuffer(size, cyclic, true);
-
 	/* If the data vector is empty, then it means we want
-		* to remove what was pushed earlier to the device, so
-		* we destroy the buffer */
+	* to remove what was pushed earlier to the device, so
+	* we destroy the buffer */
 	if (data.size() == 0) {
 		return;
 	}
+
+	initializeBuffer(size, cyclic, true);
 
 	if (channel < m_channel_list.size() ) {
 		if (!multiplex) {
@@ -187,14 +187,14 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
-	initializeBuffer(size, cyclic, true);
-
 	/* If the data vector is empty, then it means we want
-		 * to remove what was pushed earlier to the device, so
-		 * we destroy the buffer */
+	 * to remove what was pushed earlier to the device, so
+	 * we destroy the buffer */
 	if (data.size() == 0) {
 		return;
 	}
+
+	initializeBuffer(size, cyclic, true);
 
 	if (channel < m_channel_list.size() ) {
 		if (!multiplex) {
@@ -231,14 +231,14 @@ void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cy
 		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
-	initializeBuffer(size, cyclic, true);
-
 	/* If the data vector is empty, then it means we want
-		 * to remove what was pushed earlier to the device, so
-		 * we destroy the buffer */
+	 * to remove what was pushed earlier to the device, so
+	 * we destroy the buffer */
 	if (data.size() == 0) {
 		return;
 	}
+
+	initializeBuffer(size, cyclic, true);
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data);
@@ -276,14 +276,14 @@ void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, b
 		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
-	initializeBuffer(nb_samples, cyclic, true);
-
 	/* If the data vector is empty, then it means we want
-		 * to remove what was pushed earlier to the device, so
-		 * we destroy the buffer */
+	 * to remove what was pushed earlier to the device, so
+	 * we destroy the buffer */
 	if (nb_samples == 0) {
 		return;
 	}
+
+	initializeBuffer(nb_samples, cyclic, true);
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
@@ -308,14 +308,14 @@ void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bo
 		throw_exception(m2k_exception::make("Device not output buffer capable, so no buffer was created").type(libm2k::EXC_INVALID_PARAMETER).build());
 	}
 
-	initializeBuffer(nb_samples, cyclic, true);
-
 	/* If the data vector is empty, then it means we want
-		 * to remove what was pushed earlier to the device, so
-		 * we destroy the buffer */
+	 * to remove what was pushed earlier to the device, so
+	 * we destroy the buffer */
 	if (nb_samples == 0) {
 		return;
 	}
+
+	initializeBuffer(nb_samples, cyclic, true);
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
