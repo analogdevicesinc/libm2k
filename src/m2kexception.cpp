@@ -44,7 +44,7 @@ int m2k_exception::line() const noexcept
 	return m_line;
 }
 
-std::string m2k_exception::file() const noexcept
+std::string m2k_exception::file() const
 {
 	return m_file;
 }
@@ -66,11 +66,6 @@ m2k_exception_builder::m2k_exception_builder(const char* what)
 	m2KException = m2k_exception(what);
 	m2KException.m_error = what;
 	m2KException.m_message.append(m2KException.m_error);
-}
-
-m2k_exception_builder::operator m2k_exception &&()
-{
-	return std::move(m2KException);
 }
 
 m2k_exception_builder &m2k_exception_builder::iioCode(int code)
@@ -113,9 +108,9 @@ m2k_exception_builder &m2k_exception_builder::line(int lineNumber)
 	return *this;
 }
 
-m2k_exception_builder &m2k_exception_builder::file(std::string fileName)
+m2k_exception_builder &m2k_exception_builder::file(const std::string &fileName)
 {
-	m2KException.m_file = std::move(fileName);
+	m2KException.m_file = fileName;
 	return *this;
 }
 
