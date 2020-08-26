@@ -23,6 +23,7 @@
 #include "analog/m2kanalogout_impl.hpp"
 #include "analog/m2kanalogin_impl.hpp"
 #include "analog/m2kpowersupply_impl.hpp"
+#include <digital/m2kdigital_impl.hpp>
 #include "m2khardwaretrigger_impl.hpp"
 #include "m2khardwaretrigger_v0.24_impl.hpp"
 #include "m2kcalibration_impl.hpp"
@@ -313,6 +314,12 @@ std::vector<M2kAnalogIn*> M2kImpl::getAllAnalogIn()
 std::vector<M2kAnalogOut*> M2kImpl::getAllAnalogOut()
 {
 	return m_instancesAnalogOut;
+}
+
+bool M2kImpl::hasMixedSignal()
+{
+	auto digital_impl = dynamic_cast<M2kDigitalImpl*>(getDigital());
+	return digital_impl->hasRateMux();
 }
 
 void M2kImpl::startMixedSignalAcquisition(unsigned int nb_samples)
