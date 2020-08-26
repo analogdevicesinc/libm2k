@@ -54,15 +54,13 @@ public:
 
 	static m2k_exception_builder make(std::string what);
 
-	~m2k_exception() override = default;
-
 	int iioCode() const noexcept;
 
 	libm2k::M2K_EXCEPTION_TYPE type() const noexcept;
 
 	int line() const noexcept;
 
-	std::string file() const noexcept;
+	std::string file() const;
 
 	const char *what() const noexcept override;
 
@@ -104,9 +102,7 @@ public:
 
 	m2k_exception_builder &line(int lineNumber);
 
-	m2k_exception_builder &file(std::string fileName);
-
-	explicit operator m2k_exception &&();
+	m2k_exception_builder &file(const std::string &fileName);
 
 	m2k_exception build();
 
