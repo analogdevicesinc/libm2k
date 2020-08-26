@@ -95,9 +95,10 @@ void M2kHardwareTriggerV024Impl::setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELE
 
 void M2kHardwareTrigger::setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT output_select)
 {
-	throw std::runtime_error("M2kHardwareTrigger: "
-				 "the analog external output is not configurable on "
-				 "the current board; Check the firmware version.");
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog external output is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
 }
 
 
@@ -120,9 +121,11 @@ M2K_TRIGGER_OUT_SELECT M2kHardwareTriggerV024Impl::getAnalogExternalOutSelect()
 
 M2K_TRIGGER_OUT_SELECT M2kHardwareTrigger::getAnalogExternalOutSelect()
 {
-	throw std::runtime_error("M2kHardwareTrigger: "
-				 "the analog external output is not available on "
-				 "the current board; Check the firmware version.");
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog external output is not available on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	return SELECT_NONE;
 }
 
 bool M2kHardwareTriggerV024Impl::hasExternalTriggerOut() const
@@ -156,9 +159,10 @@ void M2kHardwareTriggerV024Impl::setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL ext
 
 void M2kHardwareTrigger::setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)
 {
-	throw std::runtime_error("M2kHardwareTrigger: "
-				 "the digital external source is not configurable on "
-				 "the current board; Check the firmware version.");
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the digital external source is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
 }
 
 M2K_TRIGGER_SOURCE_DIGITAL M2kHardwareTriggerV024Impl::getDigitalSource() const
@@ -187,9 +191,11 @@ M2K_TRIGGER_SOURCE_DIGITAL M2kHardwareTriggerV024Impl::getDigitalSource() const
 
 M2K_TRIGGER_SOURCE_DIGITAL M2kHardwareTrigger::getDigitalSource() const
 {
-	throw std::runtime_error("M2kHardwareTrigger: "
-				 "the digital external source is not available on "
-				 "the current board; Check the firmware version.");
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the digital external source is not available on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	return SRC_NONE;
 }
 
 M2K_TRIGGER_SOURCE_ANALOG M2kHardwareTriggerV024Impl::getAnalogSource()
