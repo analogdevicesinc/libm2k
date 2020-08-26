@@ -165,6 +165,13 @@ public:
 
 
 	/**
+	 * @brief Check if the mixed signal acquisition is available on the current firmware version
+	 * @return True if the mixed signal acquisition is available, false otherwise
+	 */
+	virtual bool hasMixedSignal() = 0;
+
+
+	/**
 	 * @brief Initiate the mixed acquisition
 	 * @param nb_samples The number of samples that will be retrieved
 	 *

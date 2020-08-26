@@ -58,6 +58,7 @@ public:
 	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
 	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
 
+	bool hasMixedSignal() override;
 	void startMixedSignalAcquisition(unsigned int nb_samples) override;
 	void stopMixedSignalAcquisition() override;
 
