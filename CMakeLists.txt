@@ -213,7 +213,12 @@ if(OSX_PACKAGE)
 	set(LIBM2K_TEMP_PKG ${CMAKE_CURRENT_BINARY_DIR}/libm2k-${VERSION}-temp.pkg)
 	set(LIBM2K_DISTRIBUTION_XML ${CMAKE_CURRENT_BINARY_DIR}/Distribution.xml)
 	set(LIBM2K_FRAMEWORK_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/libm2k.framework)
+	set(LIBM2K_FRAMEWORK_HEADERS_DIR ${LIBM2K_FRAMEWORK_DIR}/Headers)
 	configure_file(Distribution.xml.cmakein ${LIBM2K_DISTRIBUTION_XML} @ONLY)
+
+	# Include the headers in the Framework directory, keeping the directory structure healthy.
+	# Otherwise, the headers are not included in the .pkg and therefore not installed.
+	file(COPY ${CMAKE_SOURCE_DIR}/include/libm2k/ DESTINATION "${LIBM2K_FRAMEWORK_HEADERS_DIR}/libm2k" FILES_MATCHING PATTERN "*.hpp")
 
 	find_program(PKGBUILD_EXECUTABLE
 		NAMES pkgbuild
