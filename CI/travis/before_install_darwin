@@ -2,7 +2,7 @@
 
 . CI/travis/lib.sh
 
-brew_install_if_not_exists cmake doxygen libusb libxml2 swig curl python
+brew_install_if_not_exists cmake doxygen libusb libxml2 swig curl python mono
 
 cd $TRAVIS_BUILD_DIR
 git clone https://github.com/analogdevicesinc/libiio
