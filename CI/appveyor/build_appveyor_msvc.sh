@@ -32,7 +32,7 @@ __build_libm2k() {
 	cmake --build . --config Release
 
 	"$PY_PATH/python.exe" -m pip install --user --upgrade setuptools wheel
-	"$PY_PATH/python.exe" setup.py bdist_wininst
+	SETUPTOOLS_USE_DISTUTILS=stdlib "$PY_PATH/python.exe" setup.py bdist_wininst
 	"$PY_PATH/python.exe" setup.py sdist bdist_wheel --plat-name "$PLAT_NAME" --python-tag py"$PY_VERSION"
     cp dist/libm2k-*.exe "/c/projects/libm2k/build-$PLATFORM/dist/libm2k-py$PY_VERSION-$PLATFORM.exe"
 	cp dist/libm2k-*.whl "/c/projects/libm2k/build-$PLATFORM/dist/"
