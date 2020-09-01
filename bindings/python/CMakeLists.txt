@@ -127,10 +127,8 @@ add_custom_target(${PROJECT_NAME}py ALL DEPENDS _${PROJECT_NAME} WORKING_DIRECTO
 	${CMAKE_BINARY_DIR} COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} build)
 
 if(NOT SKIP_INSTALL_ALL)
-	if (NOT APPLE)
-		install(CODE "execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-			COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} install
-			--record=${CMAKE_BINARY_DIR}/install_manifest_py.txt
-			--root=\$ENV{DESTDIR}/ --prefix=${CMAKE_INSTALL_PREFIX})")
-	endif()
+	install(CODE "execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} install
+		--record=${CMAKE_BINARY_DIR}/install_manifest_py.txt
+		--root=\$ENV{DESTDIR}/ --prefix=${CMAKE_INSTALL_PREFIX})")
 endif()
