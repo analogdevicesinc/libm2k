@@ -339,9 +339,11 @@ void M2kImpl::startMixedSignalAcquisition(unsigned int nb_samples)
 		m_trigger->setDigitalSource(SRC_ANALOG_IN);
 	} else if (!hasDigitalTrigger) {
 		// analog trigger
+		m_trigger->setAnalogSource(NO_SOURCE);
 		m_trigger->setDigitalSource(SRC_ANALOG_IN);
 	} else if (!hasAnalogTrigger) {
 		// digital trigger
+		m_trigger->setDigitalSource(SRC_DISABLED);
 		m_trigger->setAnalogSource(SRC_DIGITAL_IN);
 	}
 
@@ -360,6 +362,10 @@ void M2kImpl::startMixedSignalAcquisition(unsigned int nb_samples)
 	if (!hasAnalogTrigger && !hasDigitalTrigger) {
 		m_trigger->setAnalogMode(CHANNEL_1, ALWAYS);
 		m_trigger->setAnalogSource(CHANNEL_1);
+	} else if (!hasDigitalTrigger) {
+		m_trigger->setAnalogSource(analogSource);
+	} else if (!hasAnalogTrigger) {
+		m_trigger->setDigitalSource(digitalSource);
 	}
 }
 
