@@ -353,6 +353,16 @@ void ContextImpl::initializeContextAttributes()
 	}
 }
 
+const struct libm2k::IIO_CONTEXT_VERSION ContextImpl::getIioContextVersion()
+{
+        libm2k::IIO_CONTEXT_VERSION iioContextVersion = {};
+        int ret = iio_context_get_version(m_context, &iioContextVersion.major, &iioContextVersion.minor, iioContextVersion.git_tag);
+        if (ret < 0) {
+                THROW_M2K_EXCEPTION("Context: Cannot get context version ", libm2k::EXC_RUNTIME_ERROR, ret);
+        }
+        return iioContextVersion;
+}
+
 void ContextImpl::setTimeout(unsigned int timeout)
 {
 	iio_context_set_timeout(m_context, timeout);

@@ -201,6 +201,16 @@ namespace libm2k {
 		std::vector<iio_buffer*> buffers_tx;
 		iio_context* context;
 	};
+
+	/**
+	 * @struct IIO_CONTEXT_VERSION
+	 * @brief The version of the backend
+	 */
+	struct IIO_CONTEXT_VERSION {
+	        unsigned int major; ///< major version
+	        unsigned int minor; ///< minor version
+	        char git_tag[8]; ///< git tag
+	};
 }
 
 

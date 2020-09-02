@@ -25,6 +25,7 @@
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/enums.hpp>
 #include <libm2k/utils/utils.hpp>
+#include <libm2k/enums.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -174,6 +175,13 @@ public:
 	 * @return a string containing the firmware version
 	 */
 	virtual std::string getFirmwareVersion() = 0;
+
+
+	/**
+	 * Get the version of the backend in use
+	 * @return IIO_CONTEXT_VERSION struct
+	 */
+	virtual const struct libm2k::IIO_CONTEXT_VERSION getIioContextVersion() = 0;
 
 
 	/**
