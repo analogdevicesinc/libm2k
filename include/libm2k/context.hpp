@@ -185,6 +185,13 @@ public:
 
 
 	/**
+	 * Retrieve the iio context
+	 * @return A pointer to the iio context
+	 */
+	virtual struct iio_context *getIioContext() = 0;
+
+
+	/**
 	* @brief Set a timeout for I/O operations
 	* @param timeout A positive integer representing the time in milliseconds after which a timeout occurs. A value of 0 is used to specify that no timeout should occur.
 	*/
