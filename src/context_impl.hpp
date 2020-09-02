@@ -87,6 +87,7 @@ public:
 
 	unsigned int getDmmCount();
 	std::string getFirmwareVersion();
+	const struct libm2k::IIO_CONTEXT_VERSION getIioContextVersion() override;
 	void setTimeout(unsigned int timeout);
 
 protected:
