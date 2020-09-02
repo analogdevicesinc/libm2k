@@ -363,6 +363,11 @@ const struct libm2k::IIO_CONTEXT_VERSION ContextImpl::getIioContextVersion()
         return iioContextVersion;
 }
 
+struct iio_context *ContextImpl::getIioContext()
+{
+        return m_context;
+}
+
 void ContextImpl::setTimeout(unsigned int timeout)
 {
 	iio_context_set_timeout(m_context, timeout);
