@@ -209,6 +209,8 @@ bool M2kCalibrationImpl::calibrateADCoffset()
 
 	const unsigned int num_samples = 1e5;
 	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
+	m_m2k_adc->stopAcquisition();
+
 	if (ch_data.size() == 0) {
 		return false;
 	}
@@ -254,6 +256,8 @@ bool M2kCalibrationImpl::calibrateADCgain()
 	setCalibrationMode(ADC_REF1);
 
 	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
+	m_m2k_adc->stopAcquisition();
+
 	if (ch_data.size() == 0) {
 		return false;
 	}
@@ -419,6 +423,8 @@ bool M2kCalibrationImpl::fine_tune(size_t span, int16_t centerVal0, int16_t cent
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		ch_data = m_m2k_adc->getSamplesRaw(num_samples);
+		m_m2k_adc->stopAcquisition();
+
 		if (ch_data.size() == 0) {
 			goto out_cleanup;
 		}
@@ -558,6 +564,8 @@ bool M2kCalibrationImpl::calibrateDACoffset()
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
+	m_m2k_adc->stopAcquisition();
+
 	if (ch_data.size() == 0) {
 		return false;
 	}
@@ -627,6 +635,8 @@ bool M2kCalibrationImpl::calibrateDACgain()
 
 	const unsigned int num_samples = 15e4;
 	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
+	m_m2k_adc->stopAcquisition();
+
 	if (ch_data.size() == 0) {
 		return false;
 	}
@@ -687,7 +697,6 @@ bool M2kCalibrationImpl::calibrateADC()
 	updateAdcCorrections();
 	restoreAdcFromCalibMode();
 	m_adc_calibrated = true;
-	m_m2k_adc->stopAcquisition();
 	return true;
 calibration_fail:
 	m_cancel=false;
@@ -728,7 +737,6 @@ bool M2kCalibrationImpl::calibrateDAC()
 	restoreAdcFromCalibMode();
 
 	m_dac_calibrated = true;
-	m_m2k_adc->stopAcquisition();
 	return true;
 calibration_fail:
 	m_cancel=false;
