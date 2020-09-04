@@ -46,8 +46,8 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 		THROW_M2K_EXCEPTION("Analog out: Cannot find m2k fabric device", libm2k::EXC_INVALID_PARAMETER);
 	}
 
-	m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 )));
-	m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 )));
+	m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 ) - 1));
+	m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 ) - 1));
 
 	m_filter_compensation_table[75E6] = 1.00;
 	m_filter_compensation_table[75E5] = 1.525879;
@@ -93,7 +93,7 @@ void M2kAnalogOutImpl::reset()
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		m_samplerate.at(i) = 75E6;
 		m_cyclic.at(i) = true;
-		m_calib_vlsb.at(i) = 10.0 / ((double)( 1 << 12 ));
+		m_calib_vlsb.at(i) = 10.0 / ((double)( 1 << 12 ) - 1);
 		setSampleRate(i, 75E6);
 		setOversamplingRatio(i, 1);
 		setKernelBuffersCount(i, 4);
@@ -251,7 +251,7 @@ short M2kAnalogOutImpl::convVoltsToRaw(double voltage, double vlsb,
 				       double filterCompensation)
 {
 	// TO DO: explain this formula....
-	return voltage * ((-1 * (1 / vlsb) * 16) / filterCompensation);
+	return (short)(((voltage * (-1 * (1 / vlsb)) - 0.5) / filterCompensation)  ) << 4;
 }
 
 short M2kAnalogOutImpl::convertVoltsToRaw(unsigned int channel, double voltage)
@@ -267,7 +267,7 @@ short M2kAnalogOutImpl::convertVoltsToRaw(unsigned int channel, double voltage)
 
 double M2kAnalogOutImpl::convRawToVolts(short raw, double vlsb, double filterCompensation)
 {
-	return -((raw * filterCompensation * vlsb) / 16);
+	return -((((double)(raw >> 4) + 0.5) * filterCompensation * vlsb));
 }
 
 double M2kAnalogOutImpl::convertRawToVolts(unsigned int channel, short raw)
