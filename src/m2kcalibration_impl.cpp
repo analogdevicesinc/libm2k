@@ -95,8 +95,15 @@ void M2kCalibrationImpl::setAdcInCalibMode()
 	// Make sure hardware triggers are disabled before calibrating
 	m_trigger0_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_1);
 	m_trigger1_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_2);
+
 	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, ALWAYS);
 	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, ALWAYS);
+
+	m_adc_ch0_vert_offset = m_m2k_adc->getVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0));
+	m_adc_ch1_vert_offset = m_m2k_adc->getVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1));
+
+	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0),0);
+	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1),0);
 
 	m_trigger_src = m_m2k_trigger->getAnalogSource();
 	m_m2k_trigger->setAnalogSource(CHANNEL_1);
@@ -142,6 +149,9 @@ void M2kCalibrationImpl::restoreAdcFromCalibMode()
 	/* Restore the previous values for sampling frequency and oversampling ratio */
 	m_m2k_adc->setSampleRate(adc_sampl_freq);
 	m_m2k_adc->setOversamplingRatio(adc_oversampl);
+
+	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0), m_adc_ch0_vert_offset);
+	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1), m_adc_ch1_vert_offset);
 
 	m_m2k_adc->enableChannel(0, m_adc_channels_enabled.at(0));
 	m_m2k_adc->enableChannel(1, m_adc_channels_enabled.at(1));
@@ -190,19 +200,11 @@ bool M2kCalibrationImpl::calibrateADCoffset()
 	// Ground ADC inputs
 	setCalibrationMode(ADC_GND);
 
-	// Set DAC channels to middle scale
-	if (m_m2k_adc->hasCalibbias()) {
-		m_adc_ch0_vert_offset = m_m2k_adc->getRawVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0));
-		m_adc_ch1_vert_offset = m_m2k_adc->getRawVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1));
-	} else {
-		m_adc_ch0_vert_offset = 0;
-		m_adc_ch1_vert_offset = 0;
-	}
-
-	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), 2048);
 	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(0), 0);
-	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), 2048);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), 2048);
 	m_m2k_adc->setVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(1), 0);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), 2048);
+
 
 	// Allow some time for the voltage to settle
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -733,8 +735,9 @@ bool M2kCalibrationImpl::calibrateDAC()
 	}
 
 	updateDacCorrections();
-	restoreDacFromCalibMode();
+
 	restoreAdcFromCalibMode();
+	restoreDacFromCalibMode();
 
 	m_dac_calibrated = true;
 	return true;

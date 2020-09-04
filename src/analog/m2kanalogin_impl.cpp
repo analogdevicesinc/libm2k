@@ -579,6 +579,7 @@ void M2kAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 	}
 
 	m_m2k_fabric->setStringValue(channel, "gain", std::string(str_gain_mode));
+	setVerticalOffset(channel,m_adc_hw_vert_offset[channel]);
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
 }
 
