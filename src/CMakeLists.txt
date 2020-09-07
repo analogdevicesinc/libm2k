@@ -48,10 +48,10 @@ endif()
 
 
 #Link the required dependencies
-target_link_libraries(${PROJECT_NAME}
-	${IIO_LIBRARIES}
-        ${LOG4CPP_LIBRARies}
-)
+target_link_libraries(${PROJECT_NAME} ${IIO_LIBRARIES})
+if (ENABLE_LOG)
+	target_link_libraries(${PROJECT_NAME} glog::glog)
+endif()
 
 #Take care of the library properties
 set_target_properties(${PROJECT_NAME} PROPERTIES

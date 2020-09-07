@@ -91,7 +91,7 @@ set(LIBM2K_VERSION_FULL v${PROJECT_VERSION} - ${LIBM2K_VERSION_GIT})
 
 if (ENABLE_LOG)
 	add_definitions(-DLIBM2K_ENABLE_LOG)
-	include(findLog4Cpp)
+	FIND_PACKAGE(glog REQUIRED)
 endif()
 
 #Enable or disable exception handling
