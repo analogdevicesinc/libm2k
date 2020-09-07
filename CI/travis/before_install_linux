@@ -38,7 +38,16 @@ handle_default() {
 	get_libiio_release
 	sudo dpkg -i ./libiio-*${LDIST}.deb
 
+	#Install glog
+  cd ${TRAVIS_BUILD_DIR}
+  git clone --branch v0.3.5 --depth 1 https://github.com/google/glog
+  mkdir -p glog/build && cd glog/build
+  cmake ..
+  make
+  sudo make install
+
 	#Install SWIG 4.0
+  cd ${TRAVIS_BUILD_DIR}
 	wget https://downloads.sourceforge.net/swig/swig-4.0.1.tar.gz
 	tar -xzvf ./swig-4.0.1.tar.gz
 	cd swig-4.0.1
