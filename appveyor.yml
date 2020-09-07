@@ -4,6 +4,7 @@ image:
 #init:
 #  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
+
 version: '{branch}.{build}'
 clone_depth: 1
 
@@ -12,6 +13,9 @@ environment:
     MSYSTEM: MINGW64
     # Tell msys2 to inherit the current directory when starting the shell
     CHERE_INVOKING: 1
+
+cache:
+  - C:\projects\libm2k\deps\glog -> CI\appveyor\install_glog.bat
 
 install:
     # Download libiio
@@ -30,7 +34,7 @@ install:
     - cp libiio-*/include/* libiio-mingw-win32/
     - mv libiio-*/MinGW64/* libiio-mingw-win64/
     - cp libiio-*/include/* libiio-mingw-win64/
-    
+
     # Download SWIG
     - cd c:\
     - appveyor DownloadFile https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip
@@ -43,6 +47,10 @@ install:
     - set PATH=%PATH%;"C:\Program Files (x86)\Inno Setup 5"
 
 build_script:
+    # Download glog
+    - C:\projects\libm2k\CI\appveyor\install_glog.bat "Release" "x64"
+    - C:\projects\libm2k\CI\appveyor\install_glog.bat "Release" "Win32
+
     - bash -c "/c/projects/libm2k/CI/appveyor/build_appveyor_msvc.sh"
     #Create the installer
     - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT\msvcp140.dll" c:\projects\libm2k\build-win32

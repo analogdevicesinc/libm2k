@@ -27,6 +27,7 @@ __build_libm2k() {
         -DSWIG_EXECUTABLE=/c/swig/swig.exe \
         -DSWIG_VERSION="4.0.0" \
         -DENABLE_TOOLS=ON \
+        -DENABLE_LOG=ON \
         -DPython_EXECUTABLE="$PY_PATH/python.exe" \
         ..
 	cmake --build . --config Release
