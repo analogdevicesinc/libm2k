@@ -114,14 +114,16 @@ static void throw_exception(const m2k_exception &exception)
 {
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	throw exception;
-#else
-	LOG("exception");
-
-	std::cout << "Exception: " << exception.what() << std::endl;
 #endif
 
-#define THROW_M2K_EXCEPTION_2(m, t) throw_exception(m2k_exception::make(m).type(t).file(__FILE__).line(__LINE__).build())
-#define THROW_M2K_EXCEPTION_3(m, t, c) throw_exception(m2k_exception::make(m).type(t).iioCode(c).file(__FILE__).line(__LINE__).build())
+#define THROW_M2K_EXCEPTION_2(m, t) do { \
+	LIBM2K_LOG(ERROR, m); \
+	throw_exception(m2k_exception::make(m).type(t).file(__FILE__).line(__LINE__).build()); \
+	} while(false)
+#define THROW_M2K_EXCEPTION_3(m, t, c) do { \
+	LIBM2K_LOG(ERROR, m); \
+	throw_exception(m2k_exception::make(m).type(t).iioCode(c).file(__FILE__).line(__LINE__).build()); \
+	} while(false)
 
 
 #define GET_THROW_MACRO(_1, _2, _3, NAME, ...) NAME
