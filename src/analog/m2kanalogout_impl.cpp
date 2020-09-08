@@ -22,6 +22,7 @@
 #include "utils/devicegeneric.hpp"
 #include "utils/deviceout.hpp"
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/logger.hpp>
 #include <libm2k/utils/utils.hpp>
 #include "utils/channel.hpp"
 
@@ -38,6 +39,7 @@ using namespace std;
 
 M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs, bool sync)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kAnalogOut");
 	m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(0)));
 	m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(1)));
 
@@ -71,6 +73,7 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 
 	// data_available attribute exists only in firmware versions newer than 0.23
 	m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
+	LIBM2K_LOG(INFO, "[END] Initialize M2kAnalogOut");
 }
 
 M2kAnalogOutImpl::~M2kAnalogOutImpl()
@@ -102,9 +105,11 @@ void M2kAnalogOutImpl::reset()
 
 void M2kAnalogOutImpl::syncDevice()
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogOut sync");
 	m_samplerate.at(0) = getSampleRate(0);
 	m_samplerate.at(1) = getSampleRate(1);
 	//enable???
+	LIBM2K_LOG(INFO, "[END] M2kAnalogOut sync");
 }
 
 double M2kAnalogOutImpl::getCalibscale(unsigned int index)
@@ -331,6 +336,7 @@ void M2kAnalogOutImpl::pushBytes(unsigned int chnIdx, double *data, unsigned int
 	 */
 void M2kAnalogOutImpl::pushRaw(std::vector<std::vector<short>> const &data)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogOut pushRaw");
 	std::vector<std::vector<short>> data_buffers;
 	bool streamingData = true;
 	bool isBufferEmpty = true;
@@ -370,10 +376,12 @@ void M2kAnalogOutImpl::pushRaw(std::vector<std::vector<short>> const &data)
 		}
 		setSyncedDma(false);
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogOut pushRaw");
 }
 
 void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogOut pushRawInterleaved");
 	if ((nb_samples % nb_channels) !=0) {
 		THROW_M2K_EXCEPTION("Analog Out: Input array length must be multiple of channels", libm2k::EXC_INVALID_PARAMETER);
 	}
@@ -417,6 +425,7 @@ void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels,
 		}
 		setSyncedDma(false);
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogOut pushRawInterleaved");
 }
 
 
@@ -425,6 +434,7 @@ void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels,
 	 */
 void M2kAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogOut push");
 	std::vector<std::vector<short>> data_buffers;
 	bool streamingData = true;
 	bool isBufferEmpty = true;
@@ -469,10 +479,12 @@ void M2kAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 		}
 		setSyncedDma(false);
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogOut push");
 }
 
 void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogOut pushInterleaved");
 	if ((nb_samples % nb_channels) !=0) {
 		THROW_M2K_EXCEPTION("Analog Out: Input array length must be multiple of channels", libm2k::EXC_INVALID_PARAMETER);
 	}
@@ -516,6 +528,7 @@ void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, u
 		}
 		setSyncedDma(false);
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogOut pushInterleaved");
 }
 
 double M2kAnalogOutImpl::getScalingFactor(unsigned int chn)

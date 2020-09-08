@@ -21,6 +21,7 @@
 
 #include "m2kdigital_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/logger.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <iio.h>
 #include <iostream>
@@ -40,6 +41,7 @@ std::vector<std::string> M2kDigitalImpl::m_output_mode = {
 
 M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kDigital");
 	__try {
 		m_dev_generic = make_shared<DeviceGeneric>(ctx, logic_dev);
 	} __catch (exception_type &e) {
@@ -78,6 +80,7 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 	if (sync) {
 		syncDevice();
 	}
+	LIBM2K_LOG(INFO, "[END] Initialize M2kDigital");
 }
 
 M2kDigitalImpl::~M2kDigitalImpl()
@@ -86,6 +89,7 @@ M2kDigitalImpl::~M2kDigitalImpl()
 
 void M2kDigitalImpl::syncDevice()
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kDigital sync");
 	for (unsigned int i = 0; i < m_dev_generic->getNbChannels(false); i++) {
 		/* Disable all the TX channels */
 		bool en = m_dev_write->isChannelEnabled(i, true);
@@ -95,6 +99,7 @@ void M2kDigitalImpl::syncDevice()
 		m_rx_channels_enabled.push_back(true);
 		m_dev_read->enableChannel(i, true, false);
 	}
+	LIBM2K_LOG(INFO, "[END] M2kDigital sync");
 }
 
 void M2kDigitalImpl::reset()
@@ -227,18 +232,22 @@ DIO_LEVEL M2kDigitalImpl::getValueRaw(unsigned int index)
 
 void M2kDigitalImpl::push(std::vector<unsigned short> const &data)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kDigital push");
 	if (!anyChannelEnabled(DIO_OUTPUT)) {
 		THROW_M2K_EXCEPTION("M2kDigital: No TX channel enabled.", libm2k::EXC_INVALID_PARAMETER);
 	}
 	m_dev_write->push(data, 0, getCyclic(), true);
+	LIBM2K_LOG(INFO, "[END] M2kDigital push");
 }
 
 void M2kDigitalImpl::push(unsigned short *data, unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kDigital push");
 	if (!anyChannelEnabled(DIO_OUTPUT)) {
 		THROW_M2K_EXCEPTION("M2kDigital: No TX channel enabled.", libm2k::EXC_INVALID_PARAMETER);
 	}
 	m_dev_write->push(data, 0, nb_samples, getCyclic(), true);
+	LIBM2K_LOG(INFO, "[END] M2kDigital push");
 }
 
 void M2kDigitalImpl::stopBufferOut()
@@ -258,6 +267,7 @@ void M2kDigitalImpl::stopAcquisition()
 
 std::vector<unsigned short> M2kDigitalImpl::getSamples(unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kDigital getSamples");
 	__try {
 		if (!anyChannelEnabled(DIO_INPUT)) {
 			THROW_M2K_EXCEPTION("M2kDigital: No RX channel enabled.", libm2k::EXC_INVALID_PARAMETER);
@@ -267,6 +277,7 @@ std::vector<unsigned short> M2kDigitalImpl::getSamples(unsigned int nb_samples)
 			 * be a multiple of 8 bytes (4x 16-bit samples). Round up to the
 			 * nearest multiple.*/
 		nb_samples = ((nb_samples + 3) / 4) * 4;
+		LIBM2K_LOG(INFO, "[END] M2kDigital getSamples");
 		return m_dev_read->getSamplesShort(nb_samples);
 
 	} __catch (exception_type &e) {
@@ -277,6 +288,7 @@ std::vector<unsigned short> M2kDigitalImpl::getSamples(unsigned int nb_samples)
 
 const unsigned short* M2kDigitalImpl::getSamplesP(unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kDigital getSamplesP");
 	__try {
 		if (!anyChannelEnabled(DIO_INPUT)) {
 			THROW_M2K_EXCEPTION("M2kDigital: No RX channel enabled.", libm2k::EXC_INVALID_PARAMETER);
@@ -287,6 +299,7 @@ const unsigned short* M2kDigitalImpl::getSamplesP(unsigned int nb_samples)
 			 * be a multiple of 8 bytes (4x 16-bit samples). Round up to the
 			 * nearest multiple.*/
 		nb_samples = ((nb_samples + 3) / 4) * 4;
+		LIBM2K_LOG(INFO, "[END] M2kDigital getSamplesP");
 		return m_dev_read->getSamplesP(nb_samples);
 
 	} __catch (exception_type &e) {
@@ -442,6 +455,7 @@ unsigned int M2kDigitalImpl::getNbChannelsOut()
 
 void M2kDigitalImpl::getSamples(std::vector<unsigned short> &data, unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kDigital getSamples");
 	if (!anyChannelEnabled(DIO_INPUT)) {
 		THROW_M2K_EXCEPTION("M2kDigital: No RX channel enabled.", libm2k::EXC_INVALID_PARAMETER);
 	}
@@ -451,6 +465,7 @@ void M2kDigitalImpl::getSamples(std::vector<unsigned short> &data, unsigned int 
 	 * nearest multiple.*/
 	nb_samples = ((nb_samples + 3) / 4) * 4;
 	m_dev_read->getSamples(data, nb_samples);
+	LIBM2K_LOG(INFO, "[END] M2kDigital getSamples");
 }
 
 bool M2kDigitalImpl::hasRateMux()
