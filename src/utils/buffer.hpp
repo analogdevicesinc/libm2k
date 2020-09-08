@@ -76,6 +76,7 @@ public:
 private:
 	struct iio_device* m_dev;
 	struct iio_buffer* m_buffer;
+	const char *m_dev_name;
 	unsigned int m_last_nb_samples;
 	bool m_cyclic;
 	std::vector<Channel*> m_channel_list;
