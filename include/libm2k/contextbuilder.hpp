@@ -33,6 +33,7 @@
 enum ContextTypes {
 	CtxFMCOMMS,
 	CtxM2K,
+	CtxM2KFake,
 	CtxLIDAR,
 	Other
 };
@@ -68,10 +69,13 @@ public:
 	 * @private
 	 */
 	static Context* contextOpen(const char*);
+
+	static Context* fakeContextOpen(const char*);
 	/**
 	* @private
 	*/
 	static Context* contextOpen(struct iio_context*, const char*);
+	static Context* fakeContextOpen(struct iio_context*, const char*);
 	/**
 	* @private
 	*/

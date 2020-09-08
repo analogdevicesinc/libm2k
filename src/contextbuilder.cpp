@@ -20,6 +20,7 @@
  */
 
 #include "m2k_impl.hpp"
+#include "fake/m2k_fake_impl.hpp"
 #include "lidar_impl.hpp"
 #include "generic_impl.hpp"
 #include <libm2k/contextbuilder.hpp>
@@ -50,6 +51,7 @@ std::map<ContextTypes, std::vector<std::string>> ContextBuilder::m_dev_map = {
 std::map<ContextTypes, std::string> ContextBuilder::m_dev_name_map = {
 	{ContextTypes::CtxFMCOMMS, "FMMCOMMS"},
 	{ContextTypes::CtxM2K, "M2K"},
+	{ContextTypes::CtxM2KFake, "M2KFake"},
 	{ContextTypes::CtxLIDAR, "LIDAR"},
 	{Other, "Generic"}
 };
@@ -134,6 +136,7 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
 		case CtxM2K: return new M2kImpl(uri, ctx, name, sync);
+		case CtxM2KFake: return new M2kFakeImpl(uri, ctx, name, sync);
 		case CtxLIDAR: return new LidarImpl(uri, ctx, name, sync);
 		case Other:
 		default:
@@ -159,6 +162,34 @@ Context* ContextBuilder::contextOpen(const char *uri)
 	Context* dev = buildContext(dev_type, std::string(uri), ctx, true);
 	s_connectedDevices.push_back(dev);
 
+	return dev;
+}
+
+Context* ContextBuilder::fakeContextOpen(const char *uri)
+{
+	for (Context* dev : s_connectedDevices) {
+		if (dev->getUri() == std::string(uri)) {
+			return dev;
+		}
+	}
+
+	struct iio_context* ctx = iio_create_context_from_uri(uri);
+	if (!ctx) {
+		return nullptr;
+	}
+
+	ContextTypes dev_type = ContextBuilder::identifyContext(ctx);
+
+	Context* dev = buildContext(CtxM2KFake, std::string(uri), ctx, true);
+	s_connectedDevices.push_back(dev);
+
+	return dev;
+}
+
+Context* ContextBuilder::fakeContextOpen(struct iio_context* ctx, const char* uri)
+{
+	Context* dev = buildContext(CtxM2KFake, std::string(uri), ctx, true);
+	s_connectedDevices.push_back(dev);
 	return dev;
 }
 
@@ -196,7 +227,16 @@ Context* ContextBuilder::contextOpen()
 
 M2k *ContextBuilder::m2kOpen(struct iio_context* ctx, const char *uri)
 {
-	auto dev = contextOpen(ctx, uri);
+	auto str = iio_context_get_name(ctx);
+	Context* dev;
+	if(!strcmp(str,"xml"))
+	{
+		dev = fakeContextOpen(ctx, uri);
+	}
+	else
+	{
+		dev = contextOpen(ctx, uri);
+	}
 	if (!dev) {
 		return nullptr;
 	}
@@ -210,7 +250,16 @@ M2k *ContextBuilder::m2kOpen(struct iio_context* ctx, const char *uri)
 
 M2k *ContextBuilder::m2kOpen(const char *uri)
 {
-	auto dev = contextOpen(uri);
+	Context* dev;
+	if(!strncmp(uri,"xml:",4))
+	{
+		dev = fakeContextOpen(uri);
+	}
+	else
+	{
+		dev = contextOpen(uri);
+	}
+
 	if (!dev) {
 		return nullptr;
 	}

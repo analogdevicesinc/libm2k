@@ -1,0 +1,342 @@
+/*
+ * Copyright (c) 2019 Analog Devices Inc.
+ *
+ * This file is part of libm2k
+ * (see http://www.github.com/analogdevicesinc/libm2k).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include "m2k_fake_impl.hpp"
+#include "fake/m2kanalogin_fake_impl.hpp"
+#include "analog/m2kanalogin_impl.hpp"
+#include "fake/m2kpowersupply_fake_impl.hpp"
+#include <fake/m2kdigital_fake_impl.hpp>
+#include "fake/m2khardwaretrigger_fake_impl.hpp"
+#include "fake/m2kcalibration_fake_impl.hpp"
+#include <libm2k/analog/dmm.hpp>
+#include "utils/channel.hpp"
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/utils/utils.hpp>
+#include "utils/devicegeneric.hpp"
+#include <libm2k/logger.hpp>
+#include <iio.h>
+#include <iostream>
+#include <thread>
+
+using namespace std;
+using namespace libm2k::context;
+using namespace libm2k::analog;
+using namespace libm2k::digital;
+using namespace libm2k::utils;
+
+constexpr int defaultOffset = 2048;
+constexpr double defaultGain = 1;
+
+M2kFakeImpl::M2kFakeImpl(std::string uri, iio_context* ctx, std::string name, bool sync) :
+	ContextImpl(uri, ctx, name, sync),
+	m_sync(sync)
+{	
+	for (auto ain : m_instancesAnalogIn) {
+		delete ain;
+	}
+	for (auto aout : m_instancesAnalogOut) {
+		delete aout;
+	}
+	for (auto ps : m_instancesPowerSupply) {
+		delete ps;
+	}
+	m_instancesAnalogIn.clear();
+	m_instancesAnalogOut.clear();
+	m_instancesPowerSupply.clear();
+
+	m_firmware_version = getFirmwareVersion();
+
+
+	m_trigger = new M2kFakeHardwareTriggerImpl(ctx);
+
+	if (!m_trigger) {
+		//THROW_M2K_EXCEPTION("Can't instantiate M2K board; M2K trigger is invalid.", libm2k::EXC_INVALID_PARAMETER);
+	}
+
+	scanAllAnalogIn();
+	scanAllAnalogOut();
+	scanAllPowerSupply();
+	scanAllDigital();
+	m_calibration = new M2kFakeCalibrationImpl(ctx, getAnalogIn(), getAnalogOut());
+}
+
+M2kFakeImpl::~M2kFakeImpl()
+{
+	delete m_calibration;
+
+	if (m_trigger) {
+		delete m_trigger;
+	}
+
+	for (auto ain : m_instancesAnalogIn) {
+		delete ain;
+	}
+	for (auto aout : m_instancesAnalogOut) {
+		delete aout;
+	}
+	for (auto ps : m_instancesPowerSupply) {
+		delete ps;
+	}
+	for (auto d : m_instancesDigital) {
+		delete d;
+	}
+	m_instancesAnalogIn.clear();
+	m_instancesAnalogOut.clear();
+	m_instancesPowerSupply.clear();
+}
+
+
+
+void M2kFakeImpl::deinitialize()
+{
+
+}
+void M2kFakeImpl::reset()
+{
+	for (auto ain : m_instancesAnalogIn) {
+		ain->reset();
+	}
+	for (auto aout : m_instancesAnalogOut) {
+		aout->reset();
+	}
+	for (auto ps : m_instancesPowerSupply) {
+		ps->reset();
+	}
+	for (auto d : m_instancesDigital) {
+		d->reset();
+	}
+	for (auto dmm : m_instancesDMM) {
+		dmm->reset();
+	}
+	m_trigger->reset();
+	initialize();
+
+}
+
+void M2kFakeImpl::scanAllAnalogIn()
+{
+	M2kAnalogIn* aIn = new libm2k::analog::M2kFakeAnalogInImpl(m_context, "m2k-adc", m_sync, m_trigger);
+	m_instancesAnalogIn.push_back(aIn);
+}
+
+void M2kFakeImpl::scanAllAnalogOut()
+{
+	std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
+	M2kAnalogOut* aOut = new libm2k::analog::M2kFakeAnalogOutImpl(m_context, devs, m_sync);
+	m_instancesAnalogOut.push_back(aOut);
+}
+
+void M2kFakeImpl::scanAllPowerSupply()
+{
+	libm2k::analog::M2kPowerSupply* pSupply = new libm2k::analog::M2kFakePowerSupplyImpl(m_context, "ad5627", "ad9963", m_sync);
+	m_instancesPowerSupply.push_back(pSupply);
+}
+
+void M2kFakeImpl::scanAllDigital()
+{
+	libm2k::digital::M2kDigital* logic = new libm2k::digital::M2kFakeDigitalImpl(m_context, "m2k-logic-analyzer", m_sync, m_trigger);
+	m_instancesDigital.push_back(logic);
+}
+
+bool M2kFakeImpl::calibrate()
+{
+	return true;
+}
+
+bool M2kFakeImpl::resetCalibration()
+{
+	return m_calibration->resetCalibration();
+}
+
+bool M2kFakeImpl::calibrateADC()
+{
+	return true;
+}
+
+bool M2kFakeImpl::calibrateDAC()
+{
+	return true;
+}
+
+double M2kFakeImpl::getAdcCalibrationGain(unsigned int chn)
+{
+	return m_calibration->getAdcGain(chn);
+}
+
+int M2kFakeImpl::getAdcCalibrationOffset(unsigned int chn)
+{
+	return m_calibration->getAdcOffset(chn);
+}
+
+double M2kFakeImpl::getDacCalibrationGain(unsigned int chn)
+{
+	return m_calibration->getDacGain(chn);
+}
+
+int M2kFakeImpl::getDacCalibrationOffset(unsigned int chn)
+{
+	return m_calibration->getDacOffset(chn);
+}
+
+void M2kFakeImpl::setAdcCalibrationGain(unsigned int chn, double gain)
+{
+	if (chn >= getAnalogIn()->getNbChannels()) {
+		THROW_M2K_EXCEPTION("No such ADC channel", libm2k::EXC_OUT_OF_RANGE);
+	}
+	m_calibration->setAdcGain(chn, gain);
+}
+
+void M2kFakeImpl::setAdcCalibrationOffset(unsigned int chn, int offset)
+{
+	if (chn >= getAnalogIn()->getNbChannels()) {
+		THROW_M2K_EXCEPTION("No such ADC channel", libm2k::EXC_OUT_OF_RANGE);
+	}
+	m_calibration->setAdcOffset(chn, offset);
+}
+
+void M2kFakeImpl::setDacCalibrationOffset(unsigned int chn, int offset)
+{
+	if (chn >= getAnalogOut()->getNbChannels()) {
+		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
+	}
+	m_calibration->setDacOffset(chn, offset);
+}
+
+void M2kFakeImpl::setDacCalibrationGain(unsigned int chn, double gain)
+{
+	if (chn >= getAnalogOut()->getNbChannels()) {
+		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
+	}
+	m_calibration->setDacGain(chn, gain);
+}
+
+M2kAnalogIn* M2kFakeImpl::getAnalogIn()
+{
+	auto aIn = dynamic_cast<libm2k::analog::M2kAnalogIn*>(
+				m_instancesAnalogIn.at(0));
+	if (aIn) {
+		return aIn;
+	} else {
+		return nullptr;
+	}
+}
+
+M2kAnalogIn* M2kFakeImpl::getAnalogIn(string dev_name)
+{
+	for (M2kAnalogIn* d : m_instancesAnalogIn) {
+		if (d->getName() == dev_name) {
+			libm2k::analog::M2kAnalogIn* analogIn =
+					dynamic_cast<libm2k::analog::M2kAnalogIn*>(d);
+			if (analogIn) {
+				return analogIn;
+			}
+		}
+	}
+	return nullptr;
+}
+
+M2kPowerSupply* M2kFakeImpl::getPowerSupply()
+{
+	M2kPowerSupply* pSupply = dynamic_cast<M2kPowerSupply*>(m_instancesPowerSupply.at(0));
+	if (!pSupply) {
+		THROW_M2K_EXCEPTION("No M2K power supply", libm2k::EXC_INVALID_PARAMETER);
+	}
+	return pSupply;
+}
+
+M2kDigital* M2kFakeImpl::getDigital()
+{
+	M2kDigital* logic = dynamic_cast<M2kDigital*>(m_instancesDigital.at(0));
+	if (!logic) {
+		THROW_M2K_EXCEPTION("No M2K digital device found", libm2k::EXC_INVALID_PARAMETER);
+	}
+	return logic;
+}
+
+M2kAnalogOut* M2kFakeImpl::getAnalogOut()
+{
+	if (m_instancesAnalogOut.size() > 0) {
+		return m_instancesAnalogOut.at(0);
+	}
+	return nullptr;
+}
+
+std::vector<M2kAnalogIn*> M2kFakeImpl::getAllAnalogIn()
+{
+	return m_instancesAnalogIn;
+}
+
+std::vector<M2kAnalogOut*> M2kFakeImpl::getAllAnalogOut()
+{
+	return m_instancesAnalogOut;
+}
+
+bool M2kFakeImpl::hasMixedSignal()
+{
+	return false;
+}
+
+void M2kFakeImpl::startMixedSignalAcquisition(unsigned int nb_samples)
+{	
+}
+
+void M2kFakeImpl::stopMixedSignalAcquisition()
+{
+
+}
+
+bool M2kFakeImpl::hasAnalogTrigger()
+{
+	return true;
+}
+
+bool M2kFakeImpl::hasDigitalTrigger()
+{
+	return true;
+}
+
+void M2kFakeImpl::initialize()
+{
+	std::string hw_rev = Utils::getHardwareRevision(m_context);
+
+	std::shared_ptr<DeviceGeneric> m_ad9963 = make_shared<DeviceGeneric>(m_context, "ad9963");
+	std::shared_ptr<DeviceGeneric> m_m2k_fabric = make_shared<DeviceGeneric>(m_context, "m2k-fabric");
+}
+
+void M2kFakeImpl::blinkLed(const double duration, bool blocking)
+{
+
+}
+
+void M2kFakeImpl::setLed(bool on)
+{
+
+}
+
+bool M2kFakeImpl::getLed()
+{
+	return true;
+}
+
+bool M2kFakeImpl::isCalibrated()
+{
+	return true;
+}
