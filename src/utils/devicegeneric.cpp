@@ -48,6 +48,7 @@ DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name)
 		if (!m_dev) {
 			THROW_M2K_EXCEPTION("Device: No such device", libm2k::EXC_INVALID_PARAMETER);
 		}
+		m_dev_name = iio_device_get_name(m_dev);
 		__try {
 			LIBM2K_LOG(INFO, "Testing if the device " + dev_name + " is buffer capable");
 			m_buffer = new Buffer(m_dev);
@@ -170,6 +171,7 @@ double DeviceGeneric::getDoubleValue(std::string attr)
 	} else {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_READ}, std::to_string(value)));
 	return value;
 }
 
@@ -187,7 +189,6 @@ double DeviceGeneric::getDoubleValue(unsigned int chn_idx, std::string attr, boo
 	if (!chn->hasAttribute(attr)) {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute for the selected channel", libm2k::EXC_INVALID_PARAMETER);
 	}
-
 	return chn->getDoubleValue(attr);
 }
 
@@ -200,6 +201,7 @@ double DeviceGeneric::setDoubleValue(double value, std::string attr)
 	} else {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_WRITE}, std::to_string(value)));
 	return getDoubleValue(attr);
 }
 
@@ -234,6 +236,7 @@ int DeviceGeneric::getLongValue(std::string attr)
 	} else {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_READ}, std::to_string(value)));
 	return value;
 }
 
@@ -265,6 +268,8 @@ int DeviceGeneric::getBufferLongValue(std::string attr)
 	} else {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO,
+               libm2k::buildLoggingMessage({m_dev_name, "buffer", attr.c_str(), LIBM2K_ATTRIBUTE_READ}, std::to_string(value)));
 	return value;
 }
 
@@ -277,6 +282,7 @@ int DeviceGeneric::setLongValue(int value, std::string attr)
 	} else {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_WRITE}, std::to_string(value)));
 	return getLongValue(attr);
 }
 
@@ -309,6 +315,8 @@ int DeviceGeneric::setBufferLongValue(int value, std::string attr)
 	} else {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO,
+               libm2k::buildLoggingMessage({m_dev_name, "buffer", attr.c_str(), LIBM2K_ATTRIBUTE_WRITE}, std::to_string(value)));
 	return getLongValue(attr);
 }
 
@@ -323,6 +331,7 @@ bool DeviceGeneric::getBoolValue(string attr)
 	} else {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_READ}, std::to_string(value)));
 	return value;
 }
 
@@ -357,6 +366,7 @@ bool DeviceGeneric::setBoolValue(bool value, string attr)
 				    " attribute",
 				    libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_WRITE}, std::to_string(value)));
 	return getBoolValue(attr);
 }
 
@@ -388,6 +398,7 @@ string DeviceGeneric::setStringValue(string attr, string value)
 	} else {
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_WRITE}, value));
 	return getStringValue(attr);
 }
 
@@ -423,6 +434,7 @@ string DeviceGeneric::getStringValue(string attr)
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 
 	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_READ}, value));
 	return std::string(value);
 }
 
@@ -499,6 +511,9 @@ void DeviceGeneric::writeRegister(uint32_t address, uint32_t value)
 	if (ret) {
 		THROW_M2K_EXCEPTION("Device: can't write register", libm2k::EXC_INVALID_PARAMETER, ret);
 	}
+	LIBM2K_LOG(INFO,
+               libm2k::buildLoggingMessage({m_dev_name, std::to_string(address).c_str(), LIBM2K_ATTRIBUTE_WRITE},
+                                   std::to_string(value)));
 }
 
 std::string DeviceGeneric::getHardwareRevision()
@@ -554,7 +569,11 @@ void DeviceGeneric::setKernelBuffersCount(unsigned int count)
 	if (!m_dev) {
 		THROW_M2K_EXCEPTION("Device: no such device", libm2k::EXC_OUT_OF_RANGE);
 	}
-	iio_device_set_kernel_buffers_count(m_dev, count);
+	if (iio_device_set_kernel_buffers_count(m_dev, count) != 0) {
+		THROW_M2K_EXCEPTION("Device: Cannot set the number of kernel buffers", libm2k::EXC_RUNTIME_ERROR);
+	}
+	const char *deviceName = iio_device_get_name(m_dev);
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({deviceName}, "Set kernel buffers count: " + std::to_string(count)));
 }
 
 bool DeviceGeneric::isValidDmmChannel(unsigned int chnIdx)

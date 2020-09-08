@@ -24,6 +24,7 @@
 #include "utils/channel.hpp"
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/logger.hpp>
 #include <libm2k/context.hpp>
 #include <algorithm>
 #include <cstring>
@@ -135,6 +136,9 @@ void DeviceOut::setKernelBuffersCount(unsigned int count)
 		if (iio_device_set_kernel_buffers_count(m_dev, count) != 0) {
 			THROW_M2K_EXCEPTION("Device: Cannot set the number of kernel buffers", libm2k::EXC_RUNTIME_ERROR);
 		}
+		const char *deviceName = iio_device_get_name(m_dev);
+		LIBM2K_LOG(INFO,
+                   libm2k::buildLoggingMessage({deviceName}, ("Set kernel buffers count: " + std::to_string(count)).c_str()));
 	}
 }
 
