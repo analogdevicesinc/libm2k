@@ -24,6 +24,7 @@
 #include "generic_impl.hpp"
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/logger.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/config.hpp>
 #include <iio.h>
@@ -143,6 +144,8 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 
 Context* ContextBuilder::contextOpen(const char *uri)
 {
+	LIBM2K_LOG(INFO, "libm2k version: " + getVersion());
+
 	for (Context* dev : s_connectedDevices) {
 		if (dev->getUri() == std::string(uri)) {
 			return dev;
@@ -152,6 +155,20 @@ Context* ContextBuilder::contextOpen(const char *uri)
 	struct iio_context* ctx = iio_create_context_from_uri(uri);
 	if (!ctx) {
 		return nullptr;
+	}
+	char ctx_git_tag[8];
+	unsigned int ctx_major, ctx_minor;
+	iio_context_get_version(ctx, &ctx_major, &ctx_minor, ctx_git_tag);
+	LIBM2K_LOG(INFO, "libiio version: " + to_string(ctx_major) + "." +
+					      to_string(ctx_minor));
+	const char *libusb_version = iio_context_get_attr_value(ctx, "usb,libusb");
+	if (libusb_version != nullptr) {
+                LIBM2K_LOG(INFO, "libusb version: " + std::string(libusb_version));
+	}
+
+	const char *hw_fw_version = iio_context_get_attr_value(ctx, "fw_version");
+	if (hw_fw_version != nullptr) {
+		LIBM2K_LOG(INFO, "Firmware version: " + std::string(hw_fw_version));
 	}
 
 	ContextTypes dev_type = ContextBuilder::identifyContext(ctx);
@@ -164,6 +181,24 @@ Context* ContextBuilder::contextOpen(const char *uri)
 
 Context* ContextBuilder::contextOpen(struct iio_context* ctx, const char* uri)
 {
+	LIBM2K_LOG(INFO, "libm2k version: " + getVersion());
+
+	char ctx_git_tag[8];
+	unsigned int ctx_major, ctx_minor;
+	iio_context_get_version(ctx, &ctx_major, &ctx_minor, ctx_git_tag);
+	LIBM2K_LOG(INFO, "libiio version: " + to_string(ctx_major) + "." +
+			 to_string(ctx_minor));
+
+	std::string libusb_version = iio_context_get_attr_value(ctx, "usb,libusb");
+	if (!libusb_version.empty()) {
+		LIBM2K_LOG(INFO, "libusb version: " + libusb_version);
+	}
+
+	std::string hw_fw_version = iio_context_get_attr_value(ctx, "fw_version");
+	if (!hw_fw_version.empty()) {
+		LIBM2K_LOG(INFO, "Firmware version: " + hw_fw_version);
+	}
+
 	for (Context* dev : s_connectedDevices) {
 		if (dev->getUri() == std::string(uri)) {
 			return dev;

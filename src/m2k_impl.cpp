@@ -198,12 +198,18 @@ bool M2kImpl::resetCalibration()
 
 bool M2kImpl::calibrateADC()
 {
-	return m_calibration->calibrateADC();
+	LIBM2K_LOG(INFO, "[BEGIN] Calibrate ADC");
+	const bool calibrationResult = m_calibration->calibrateADC();
+	LIBM2K_LOG(INFO, "[END] Calibrate ADC");
+	return calibrationResult;
 }
 
 bool M2kImpl::calibrateDAC()
 {
-	return m_calibration->calibrateDAC();
+	LIBM2K_LOG(INFO, "[BEGIN] Calibrate DAC");
+	bool calibrationResult = m_calibration->calibrateDAC();
+	LIBM2K_LOG(INFO, "[END] Calibrate DAC");
+	return calibrationResult;
 }
 
 double M2kImpl::getAdcCalibrationGain(unsigned int chn)
@@ -327,6 +333,7 @@ bool M2kImpl::hasMixedSignal()
 
 void M2kImpl::startMixedSignalAcquisition(unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] Start mixed signal acquisition");
 	const bool hasAnalogTrigger = this->hasAnalogTrigger();
 	const bool hasDigitalTrigger = this->hasDigitalTrigger();
 
@@ -367,10 +374,12 @@ void M2kImpl::startMixedSignalAcquisition(unsigned int nb_samples)
 	} else if (!hasAnalogTrigger) {
 		m_trigger->setDigitalSource(digitalSource);
 	}
+	LIBM2K_LOG(INFO, "[END] Start mixed signal acquisition");
 }
 
 void M2kImpl::stopMixedSignalAcquisition()
 {
+	LIBM2K_LOG(INFO, "[BEGIN] Stop mixed signal acquisition");
 	for (auto analogIn : m_instancesAnalogIn) {
 		analogIn->stopAcquisition();
 	}
@@ -380,6 +389,7 @@ void M2kImpl::stopMixedSignalAcquisition()
 	m_instancesDigital.at(0)->resetRateMux();
 	m_trigger->setAnalogSource(analogSource);
 	m_trigger->setDigitalSource(digitalSource);
+	LIBM2K_LOG(INFO, "[END] Stop mixed signal acquisition");
 }
 
 bool M2kImpl::hasAnalogTrigger()

@@ -21,6 +21,7 @@
 
 #include "m2kanalogin_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/logger.hpp>
 #include <algorithm>
 #include "utils/channel.hpp"
 
@@ -40,6 +41,7 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	m_max_samplerate(-1),
 	m_trigger(trigger)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kAnalogIn");
 	m_m2k_adc = make_shared<DeviceIn>(ctx, adc_dev);
 	m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 	m_ad5625_dev = make_shared<DeviceGeneric>(ctx, "ad5625");
@@ -69,6 +71,7 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	if (sync) {
 		syncDevice();
 	}
+	LIBM2K_LOG(INFO, "[END] Initialize M2kAnalogIn");
 }
 
 
@@ -115,6 +118,7 @@ void M2kAnalogInImpl::reset()
 
 void M2kAnalogInImpl::syncDevice()
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn Sync");
 	m_samplerate = m_m2k_adc->getDoubleValue("sampling_frequency");
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		auto range = getRangeDevice(static_cast<ANALOG_IN_CHANNEL>(i));
@@ -133,6 +137,7 @@ void M2kAnalogInImpl::syncDevice()
 
 		m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogIn Sync");
 }
 
 void M2kAnalogInImpl::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
@@ -284,6 +289,7 @@ std::vector<std::vector<double>> M2kAnalogInImpl::getSamplesRaw(unsigned int nb_
 
 std::vector<std::vector<double>> M2kAnalogInImpl::getSamples(unsigned int nb_samples, bool processed)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getSamples");
 	if (processed) {
 		m_need_processing = true;
 	}
@@ -298,11 +304,13 @@ std::vector<std::vector<double>> M2kAnalogInImpl::getSamples(unsigned int nb_sam
 	if (processed) {
 		m_need_processing = false;
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getSamples");
 	return samps;
 }
 
 void M2kAnalogInImpl::getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getSamples");
 	m_need_processing = true;
 	m_samplerate = getSampleRate();
 	handleChannelsEnableState(true);
@@ -313,6 +321,7 @@ void M2kAnalogInImpl::getSamples(std::vector<std::vector<double> > &data, unsign
 	removeSamplesDisabledChannels(data);
 	handleChannelsEnableState(false);
 	m_need_processing = false;
+	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getSamples");
 }
 
 string M2kAnalogInImpl::getChannelName(unsigned int channel)
@@ -370,6 +379,7 @@ const double* M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples)
 
 const double *M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples, bool processed)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getSamplesInterleaved");
 	if (processed) {
 		m_need_processing = true;
 	}
@@ -383,15 +393,18 @@ const double *M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples, bo
 	if (processed) {
 		m_need_processing = false;
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getSamplesInterleaved");
 	return samps;
 }
 
 const short *M2kAnalogInImpl::getSamplesRawInterleaved(unsigned int nb_samples)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getSamplesRawInterleaved");
 	m_samplerate = getSampleRate();
 	handleChannelsEnableState(true);
 	auto samps = m_m2k_adc->getSamplesRawInterleaved(nb_samples);
 	handleChannelsEnableState(false);
+	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getSamplesRawInterleaved");
 	return samps;
 }
 
@@ -422,6 +435,7 @@ short M2kAnalogInImpl::getVoltageRaw(unsigned int ch)
 
 short M2kAnalogInImpl::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getVoltageRaw");
 	unsigned int num_samples = 100;
 	M2K_TRIGGER_MODE mode;
 	bool enabled;
@@ -442,11 +456,13 @@ short M2kAnalogInImpl::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 
 	m_trigger->setAnalogMode(ch, mode);
 	enableChannel(ch, enabled);
+	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getVoltageRaw");
 	return (short)avg;
 }
 
 std::vector<short> M2kAnalogInImpl::getVoltageRaw()
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getVoltageRaw");
 	unsigned int num_samples = 100;
 	std::vector<short> avgs;
 	std::vector<M2K_TRIGGER_MODE> modes = {};
@@ -465,6 +481,7 @@ std::vector<short> M2kAnalogInImpl::getVoltageRaw()
 		m_trigger->setAnalogMode(i, modes.at(i));
 		enableChannel(i, enabled.at(i));
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getVoltageRaw");
 	return avgs;
 }
 
@@ -485,6 +502,7 @@ double M2kAnalogInImpl::getVoltage(unsigned int ch)
 
 double M2kAnalogInImpl::getVoltage(ANALOG_IN_CHANNEL ch)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getVoltage");
 	unsigned int num_samples = 100;
 	M2K_TRIGGER_MODE mode;
 	bool enabled;
@@ -504,11 +522,13 @@ double M2kAnalogInImpl::getVoltage(ANALOG_IN_CHANNEL ch)
 
 	m_trigger->setAnalogMode(ch, mode);
 	enableChannel(ch, enabled);
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getVoltage");
 	return avg;
 }
 
 std::vector<double> M2kAnalogInImpl::getVoltage()
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getVoltage");
 	size_t num_samples = 100;
 	std::vector<double> avgs;
 	std::vector<M2K_TRIGGER_MODE> modes = {};
@@ -526,6 +546,7 @@ std::vector<double> M2kAnalogInImpl::getVoltage()
 		m_trigger->setAnalogMode(i, modes.at(i));
 		enableChannel(i, enabled.at(i));
 	}
+	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getVoltage");
 	return avgs;
 }
 

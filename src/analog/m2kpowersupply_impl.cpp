@@ -22,6 +22,7 @@
 #include <cmath>
 #include "m2kpowersupply_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/logger.hpp>
 #include "utils/channel.hpp"
 #include <iio.h>
 
@@ -35,6 +36,7 @@ M2kPowerSupplyImpl::M2kPowerSupplyImpl(iio_context *ctx, std::string write_dev,
 	m_neg_powerdown_idx(3),
 	m_individual_powerdown(false)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kPowerSupply");
 	m_generic_device = make_shared<DeviceOut>(ctx, "");
 
 	if (write_dev != "") {
@@ -105,6 +107,7 @@ M2kPowerSupplyImpl::M2kPowerSupplyImpl(iio_context *ctx, std::string write_dev,
 	if (sync) {
 		syncDevice();
 	}
+	LIBM2K_LOG(INFO, "[END] Initialize M2kPowerSupply");
 }
 
 M2kPowerSupplyImpl::~M2kPowerSupplyImpl()
@@ -114,8 +117,10 @@ M2kPowerSupplyImpl::~M2kPowerSupplyImpl()
 
 void M2kPowerSupplyImpl::syncDevice()
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kPowerSupply sync");
 	m_channels_enabled.at(0) = !m_dev_write->getBoolValue(m_write_channel_idx.at(0), "powerdown", true);
 	m_channels_enabled.at(1) = !m_dev_write->getBoolValue(m_write_channel_idx.at(1), "powerdown", true);
+	LIBM2K_LOG(INFO, "[END] M2kPowerSupply sync");
 }
 
 void M2kPowerSupplyImpl::reset()
@@ -215,6 +220,7 @@ void M2kPowerSupplyImpl::enableAll(bool en)
 
 double M2kPowerSupplyImpl::readChannel(unsigned int idx)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kPowerSupply readChannel");
 	double val = 0;
 	double offset = 0;
 	double gain = 0;
@@ -237,11 +243,13 @@ double M2kPowerSupplyImpl::readChannel(unsigned int idx)
 	auto chn = m_dev_read->getChannel(chn_name, false);
 	val = chn->getDoubleValue("raw");
 	value = ((val * m_read_coefficients.at(idx)) + offset) * gain;
+	LIBM2K_LOG(INFO, "[END] M2kPowerSupply readChannel");
 	return value;
 }
 
 void M2kPowerSupplyImpl::pushChannel(unsigned int chnIdx, double value)
 {
+	LIBM2K_LOG(INFO, "[BEGIN] M2kPowerSupply pushChannel");
 	double offset = 0;
 	double gain = 0;
 	double val;
@@ -268,4 +276,5 @@ void M2kPowerSupplyImpl::pushChannel(unsigned int chnIdx, double value)
 	}
 
 	m_dev_write->setDoubleValue(m_write_channel_idx.at(chnIdx), val, "raw", true);
+	LIBM2K_LOG(INFO, "[END] M2kPowerSupply pushChannel");
 }
