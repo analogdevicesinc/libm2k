@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Analog Devices Inc.
+ * Copyright (c) 2020 Analog Devices Inc.
  *
  * This file is part of libm2k
  * (see http://www.github.com/analogdevicesinc/libm2k).
@@ -18,47 +18,48 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef LOGGER_H
-#define LOGGER_H
 
-#ifdef LIBM2K_LOG4CPP
+#ifndef LOGGER_HPP
+#define LOGGER_HPP
 
-#include <log4cpp/Appender.hh>
-#include <log4cpp/OstreamAppender.hh>
-#include <log4cpp/BasicLayout.hh>
-#include <log4cpp/Priority.hh>
-#include <log4cpp/Category.hh>
-
-#endif
-
-#include <string>
-#include <iostream>
 #include <libm2k/m2kglobal.hpp>
+#include <vector>
+#include <string>
+#include <sstream>
 
-#ifdef LIBM2K_ENABLE_LOG
-	#define LOG(x) libm2k::Logger::getInstance().warn(x)
-#else
-	#define LOG(x)
-#endif
+// operations
+#define LIBM2K_ATTRIBUTE_WRITE "write"
+#define LIBM2K_ATTRIBUTE_READ "read"
 
 namespace libm2k {
-class LIBM2K_API Logger
-{
-public:
-    static Logger & getInstance();
-    void warn(std::string message);
-
-
-private:
-	Logger();
-
-#ifdef LIBM2K_LOG4CPP
-
-        log4cpp::Appender *appender;
-        log4cpp::BasicLayout *basicLayout;
-
-#endif
-};
+    static std::string buildLoggingMessage(const std::vector<const char *> &info, const std::string &message)
+    {
+        std::stringstream ss;
+        for (auto val : info) {
+            ss << "[" << val << "]";
+        }
+        ss << " " << message;
+        return ss.str();
+    }
 }
 
-#endif // LOGGER_H
+#ifdef LIBM2K_ENABLE_LOG
+#include <glog/logging.h>
+
+#define LIBM2K_LOG(S, M) LOG(S) << (M)
+#define LIBM2K_LOG_IF(S, COND,M) LOG_IF(S, COND) << (M)
+
+#else
+
+#define INFO 0
+#define WARNING 1
+#define ERROR 2
+#define FATAL 3
+
+#define LIBM2K_LOG(S, M) do { (void)(S); (void)(M); } while(false)
+
+#define LIBM2K_LOG_IF(S, COND, M) do { (void)(S); (void)(COND); (void)(M); } while(false)
+
+#endif
+
+#endif // LOGGER_HPP
