@@ -24,6 +24,7 @@
 #include "utils/channel.hpp"
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2kexceptions.hpp>
+#include <libm2k/logger.hpp>
 #include "context_impl.hpp"
 #include <algorithm>
 #include <cstring>
@@ -47,8 +48,8 @@ DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name)
 		if (!m_dev) {
 			THROW_M2K_EXCEPTION("Device: No such device", libm2k::EXC_INVALID_PARAMETER);
 		}
-
 		__try {
+			LIBM2K_LOG(INFO, "Testing if the device " + dev_name + " is buffer capable");
 			m_buffer = new Buffer(m_dev);
 		} __catch (exception_type &e) {
 			delete m_buffer;
