@@ -22,6 +22,13 @@ add_executable(${PROJECT_NAME} ${SRC_LIST} ${GETOPT_C_FILE})
 
 target_link_libraries(${PROJECT_NAME} libm2k)
 
+if (NOT WIN32)
+        find_library(PTHREAD_LIBRARIES pthread)
+        if (PTHREAD_LIBRARIES)
+                target_link_libraries(${PROJECT_NAME} ${PTHREAD_LIBRARIES})
+        endif()
+endif()
+
 if (NOT SKIP_INSTALL_ALL)
     install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif ()
