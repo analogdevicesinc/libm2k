@@ -10,14 +10,6 @@ endif()
 
 SET(CMAKE_EXE_LINKER_FLAGS  "/FORCE")
 
-include_directories(
-	SYSTEM 
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_SOURCE_DIR}/include
-	${IIO_INCLUDE_DIRS}
-	${LOG4CPP_INCLUDE_DIR}
-)
-
 FILE(GLOB_RECURSE SRC_LIST  *.cpp *_impl.hpp */*_impl.hpp)
 
 FILE(GLOB_RECURSE HEADERS_LIST ${CMAKE_SOURCE_DIR}/include/libm2k/*.hpp)
@@ -36,22 +28,44 @@ endif()
 #Create the libm2k library
 add_library(${PROJECT_NAME} SHARED
 			${SRC_LIST}
-                        ${HEADERS_LIST}
+			${HEADERS_LIST}
 			${DEVICES})
+
+# build with LIBM2K_EXPORTS defined in order to export everything that is marked with LIBM2K_API.
+target_compile_definitions(${PROJECT_NAME} PRIVATE LIBM2K_EXPORTS)
+if (ENABLE_LOG)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC LIBM2K_ENABLE_LOG)
+endif()
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        ${IIO_INCLUDE_DIRS}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 if (NOT WIN32)
 	find_library(PTHREAD_LIBRARIES pthread)
 	if (PTHREAD_LIBRARIES)
-		target_link_libraries(libm2k ${PTHREAD_LIBRARIES})
+                target_link_libraries(libm2k PRIVATE ${PTHREAD_LIBRARIES})
 	endif()
 endif()
 
 
 #Link the required dependencies
-target_link_libraries(${PROJECT_NAME} ${IIO_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+		PUBLIC
+		${IIO_LIBRARIES}
+		)
 if (ENABLE_LOG)
-	target_link_libraries(${PROJECT_NAME} glog::glog)
+	target_link_libraries(${PROJECT_NAME}
+			PUBLIC
+			glog::glog
+			)
 endif()
+
 
 #Take care of the library properties
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -75,12 +89,30 @@ if (APPLE)
 	endif()
 endif()
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
 	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
 	FRAMEWORK DESTINATION "${OSX_INSTALL_FRAMEWORKSDIR}"
 )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/libm2k/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/libm2k"
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/libm2k/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
 	FILES_MATCHING PATTERN "*.hpp")
+
+# Add alias to libm2k as libm2k::libm2k
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+install(EXPORT ${PROJECT_NAME}Targets
+    FILE ${PROJECT_NAME}Targets.cmake
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    VERSION ${VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake ${CMAKE_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
