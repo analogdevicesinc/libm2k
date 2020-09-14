@@ -62,8 +62,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}/src
 	${CMAKE_SOURCE_DIR}/include
-	${IIO_INCLUDE_DIRS}
-	${LOG4CPP_INCLUDE_DIR})
+	${IIO_INCLUDE_DIRS})
 
 add_library(${CSHARP_WRAPPER_DLL} SHARED ${SRC_WRAPPER_FILE})
 
@@ -72,8 +71,7 @@ target_include_directories(${CSHARP_WRAPPER_DLL} PRIVATE ${CMAKE_SOURCE_DIR}/inc
 #Link the required dependencies
 target_link_libraries(${CSHARP_WRAPPER_DLL}
 	${PROJECT_NAME}
-	${IIO_LIBRARIES}
-	${LOG4CPP_LIBRARies})
+	${IIO_LIBRARIES})
 
 #Take care of the library properties
 set_target_properties(${CSHARP_WRAPPER_DLL} PROPERTIES
