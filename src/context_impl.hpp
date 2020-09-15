@@ -57,39 +57,39 @@ class M2k;
 class ContextImpl : public virtual Context {
 public:
 	ContextImpl(std::string uri, struct iio_context*, std::string name, bool sync);
-	~ContextImpl();
+	~ContextImpl() override;
 
-	void reset();
-	void deinitialize();
+	void reset() override;
+	void deinitialize() override;
 
 	void scanAllDMM();
 
-	std::string getUri();
+	std::string getUri() override;
 
-	libm2k::analog::DMM* getDMM(unsigned int);
-	libm2k::analog::DMM* getDMM(std::string);
-	std::vector<libm2k::analog::DMM*> getAllDmm();
+	libm2k::analog::DMM* getDMM(unsigned int) override;
+	libm2k::analog::DMM* getDMM(std::string) override;
+	std::vector<libm2k::analog::DMM*> getAllDmm() override;
 
-	std::vector<std::string> getAvailableContextAttributes();
-	std::string getContextAttributeValue(std::string attr);
-	std::string getContextDescription();
-	std::string getSerialNumber();
-	std::unordered_set<std::string> getAllDevices() const;
+	std::vector<std::string> getAvailableContextAttributes() override;
+	std::string getContextAttributeValue(std::string attr) override;
+	std::string getContextDescription() override;
+	std::string getSerialNumber() override;
+	std::unordered_set<std::string> getAllDevices() const override;
 	void logAllAttributes() const override;
 
-	libm2k::context::M2k* toM2k();
-	libm2k::context::Generic* toGeneric();
-	libm2k::context::Lidar* toLidar();
+	libm2k::context::M2k* toM2k() override;
+	libm2k::context::Generic* toGeneric() override;
+	libm2k::context::Lidar* toLidar() override;
 
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);
 	static bool iioDevBufferHasAttribute(iio_device *dev, const std::string &attr);
 
-	unsigned int getDmmCount();
-	std::string getFirmwareVersion();
+	unsigned int getDmmCount() override;
+	std::string getFirmwareVersion() override;
 	const struct libm2k::IIO_CONTEXT_VERSION getIioContextVersion() override;
 	struct iio_context *getIioContext() override;
-	void setTimeout(unsigned int timeout);
+	void setTimeout(unsigned int timeout) override;
 
 protected:
 	struct iio_context* m_context;

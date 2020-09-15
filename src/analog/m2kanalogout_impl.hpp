@@ -24,68 +24,68 @@ public:
 	M2kAnalogOutImpl(struct iio_context*, std::vector<std::string> dac_devs, bool sync);
 	virtual ~M2kAnalogOutImpl();
 
-	void reset();
-	std::vector<int> getOversamplingRatio();
+	void reset() override;
+	std::vector<int> getOversamplingRatio() override;
 
-	int getOversamplingRatio(unsigned int chn);
-	std::vector<int> setOversamplingRatio(std::vector<int> oversampling_ratio);
-	int setOversamplingRatio(unsigned int chn, int oversampling_ratio);
+	int getOversamplingRatio(unsigned int chn) override;
+	std::vector<int> setOversamplingRatio(std::vector<int> oversampling_ratio) override;
+	int setOversamplingRatio(unsigned int chn, int oversampling_ratio) override;
 
-	std::vector<double> getSampleRate();
-	double getSampleRate(unsigned int chn);
-	std::vector<double> getAvailableSampleRates(unsigned int chn);
-	std::vector<double> setSampleRate(std::vector<double> samplerates);
-	double setSampleRate(unsigned int chn, double samplerate);
+	std::vector<double> getSampleRate() override;
+	double getSampleRate(unsigned int chn) override;
+	std::vector<double> getAvailableSampleRates(unsigned int chn) override;
+	std::vector<double> setSampleRate(std::vector<double> samplerates) override;
+	double setSampleRate(unsigned int chn, double samplerate) override;
 
-	void setSyncedDma(bool en, int chn = -1);
-	bool getSyncedDma(int chn = -1);
-	void setSyncedStartDma(bool en, int chn = -1);
-	bool getSyncedStartDma(int chn = -1);
+	void setSyncedDma(bool en, int chn = -1) override;
+	bool getSyncedDma(int chn = -1) override;
+	void setSyncedStartDma(bool en, int chn = -1) override;
+	bool getSyncedStartDma(int chn = -1) override;
 
-	void setCyclic(bool en);
-	void setCyclic(unsigned int chn, bool en);
-	bool getCyclic(unsigned int chn);
+	void setCyclic(bool en) override;
+	void setCyclic(unsigned int chn, bool en) override;
+	bool getCyclic(unsigned int chn) override;
 
 	double setCalibscale(unsigned int index, double calibscale);
 	double getCalibscale(unsigned int index);
 
-	double getScalingFactor(unsigned int chn);
+	double getScalingFactor(unsigned int chn) override;
 
-	double getFilterCompensation(double samplerate);
+	double getFilterCompensation(double samplerate) override;
 
 	short convVoltsToRaw(double voltage, double vlsb, double filterCompensation);
 
-	void pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples);
-	void pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples);
+	void pushBytes(unsigned int chnIdx, double *data, unsigned int nb_samples) override;
+	void pushRawBytes(unsigned int chnIdx, short *data, unsigned int nb_samples) override;
 
-	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples);
-	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples);
+	void pushInterleaved(double *data, unsigned int nb_channels, unsigned int nb_samples) override;
+	void pushRawInterleaved(short *data, unsigned int nb_channels, unsigned int nb_samples) override;
 
 	void setDacCalibVlsb(unsigned int chn, double vlsb);
 
-	void push(unsigned int chnIdx, std::vector<double> const &data);
-	void pushRaw(unsigned int chnIdx, std::vector<short> const &data);
-	void push(std::vector<std::vector<double>> const &data);
-	void pushRaw(std::vector<std::vector<short>> const &data);
+	void push(unsigned int chnIdx, std::vector<double> const &data) override;
+	void pushRaw(unsigned int chnIdx, std::vector<short> const &data) override;
+	void push(std::vector<std::vector<double>> const &data) override;
+	void pushRaw(std::vector<std::vector<short>> const &data) override;
 
-	void stop();
-	void stop(unsigned int chn);
+	void stop() override;
+	void stop(unsigned int chn) override;
 
-	void enableChannel(unsigned int chnIdx, bool enable);
-	bool isChannelEnabled(unsigned int chnIdx);
+	void enableChannel(unsigned int chnIdx, bool enable) override;
+	bool isChannelEnabled(unsigned int chnIdx) override;
 
-	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count);
+	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count) override;
 
-	short convertVoltsToRaw(unsigned int channel, double voltage);
-	double convertRawToVolts(unsigned int channel, short raw);
+	short convertVoltsToRaw(unsigned int channel, double voltage) override;
+	double convertRawToVolts(unsigned int channel, short raw) override;
 
-	struct IIO_OBJECTS getIioObjects();
+	struct IIO_OBJECTS getIioObjects() override;
 
-	void cancelBuffer();
-	void cancelBuffer(unsigned int chn);
+	void cancelBuffer() override;
+	void cancelBuffer(unsigned int chn) override;
 
-	unsigned int getNbChannels();
-	std::string getChannelName(unsigned int channel);
+	unsigned int getNbChannels() override;
+	std::string getChannelName(unsigned int channel) override;
 	double getMaximumSamplerate(unsigned int chn_idx) override;
 	void deinitialize();
 private:
