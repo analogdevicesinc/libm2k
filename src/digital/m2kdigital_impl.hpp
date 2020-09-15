@@ -41,63 +41,63 @@ public:
 	M2kDigitalImpl(struct iio_context* ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger);
 	virtual ~M2kDigitalImpl();
 
-	void reset();
+	void reset() override;
 
-	void setDirection(unsigned short mask);
-	void setDirection(unsigned int index, DIO_DIRECTION dir);
-	void setDirection(unsigned int index, bool dir);
-	void setDirection(DIO_CHANNEL index, bool dir);
-	void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir);
-	DIO_DIRECTION getDirection(DIO_CHANNEL index);
+	void setDirection(unsigned short mask) override;
+	void setDirection(unsigned int index, DIO_DIRECTION dir) override;
+	void setDirection(unsigned int index, bool dir) override;
+	void setDirection(DIO_CHANNEL index, bool dir) override;
+	void setDirection(DIO_CHANNEL index, DIO_DIRECTION dir) override;
+	DIO_DIRECTION getDirection(DIO_CHANNEL index) override;
 
-	void push(std::vector<unsigned short> const &data);
-	void push(unsigned short *data, unsigned int nb_samples);
+	void push(std::vector<unsigned short> const &data) override;
+	void push(unsigned short *data, unsigned int nb_samples) override;
 
-	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL level);
-	void setValueRaw(unsigned int index, DIO_LEVEL level);
-	void setValueRaw(DIO_CHANNEL index, bool level);
-	DIO_LEVEL getValueRaw(DIO_CHANNEL index);
-	DIO_LEVEL getValueRaw(unsigned int index);
+	void setValueRaw(DIO_CHANNEL index, DIO_LEVEL level) override;
+	void setValueRaw(unsigned int index, DIO_LEVEL level) override;
+	void setValueRaw(DIO_CHANNEL index, bool level) override;
+	DIO_LEVEL getValueRaw(DIO_CHANNEL index) override;
+	DIO_LEVEL getValueRaw(unsigned int index) override;
 
-	void stopBufferOut();
+	void stopBufferOut() override;
 	void startAcquisition(unsigned int nb_samples) override;
-	void stopAcquisition();
+	void stopAcquisition() override;
 
-	std::vector<unsigned short> getSamples(unsigned int nb_samples);
-	const unsigned short *getSamplesP(unsigned int nb_samples);
+	std::vector<unsigned short> getSamples(unsigned int nb_samples) override;
+	const unsigned short *getSamplesP(unsigned int nb_samples) override;
 
-	void enableChannel(unsigned int index, bool enable);
-	void enableChannel(DIO_CHANNEL index, bool enable);
-	void enableAllOut(bool enable);
-	bool anyChannelEnabled(DIO_DIRECTION dir);
+	void enableChannel(unsigned int index, bool enable) override;
+	void enableChannel(DIO_CHANNEL index, bool enable) override;
+	void enableAllOut(bool enable) override;
+	bool anyChannelEnabled(DIO_DIRECTION dir) override;
 
-	void setOutputMode(DIO_CHANNEL chn, DIO_MODE mode);
-	void setOutputMode(unsigned int chn, DIO_MODE mode);
-	DIO_MODE getOutputMode(DIO_CHANNEL chn);
-	DIO_MODE getOutputMode(unsigned int chn);
+	void setOutputMode(DIO_CHANNEL chn, DIO_MODE mode) override;
+	void setOutputMode(unsigned int chn, DIO_MODE mode) override;
+	DIO_MODE getOutputMode(DIO_CHANNEL chn) override;
+	DIO_MODE getOutputMode(unsigned int chn) override;
 
-	double setSampleRateIn(double samplerate);
-	double setSampleRateOut(double samplerate);
-	double getSampleRateIn();
-	double getSampleRateOut();
+	double setSampleRateIn(double samplerate) override;
+	double setSampleRateOut(double samplerate) override;
+	double getSampleRateIn() override;
+	double getSampleRateOut() override;
 
-	bool getCyclic();
-	void setCyclic(bool cyclic);
+	bool getCyclic() override;
+	void setCyclic(bool cyclic) override;
 
-	libm2k::M2kHardwareTrigger* getTrigger();
+	libm2k::M2kHardwareTrigger* getTrigger() override;
 
-	void setKernelBuffersCountIn(unsigned int count);
-	void setKernelBuffersCountOut(unsigned int count);
+	void setKernelBuffersCountIn(unsigned int count) override;
+	void setKernelBuffersCountOut(unsigned int count) override;
 
-	struct IIO_OBJECTS getIioObjects();
+	struct IIO_OBJECTS getIioObjects() override;
 
-	void cancelAcquisition();
-	void cancelBufferOut();
+	void cancelAcquisition() override;
+	void cancelBufferOut() override;
 
-	unsigned int getNbChannelsIn();
-	unsigned int getNbChannelsOut();
+	unsigned int getNbChannelsIn() override;
+	unsigned int getNbChannelsOut() override;
 
-	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples);
+	void getSamples(std::vector<unsigned short> &data, unsigned int nb_samples) override;
 
 	bool hasRateMux();
 	void setRateMux() override;

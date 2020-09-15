@@ -33,51 +33,53 @@ class M2kCalibration;
 namespace context {
 class M2kImpl : public M2k, public ContextImpl
 {
+
 public:
 	M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync);
 
-	virtual ~M2kImpl();
-	void reset();
-	void deinitialize();
+	~M2kImpl() override;
+	void reset() override;
+	void deinitialize() override;
 
 	void scanAllAnalogIn();
 	void scanAllAnalogOut();
 	void scanAllPowerSupply();
 	void scanAllDigital();
 
-	bool calibrate();
-	bool calibrateADC();
-	bool calibrateDAC();
-	bool resetCalibration();
+	bool calibrate() override;
+	bool calibrateADC() override;
+	bool calibrateDAC() override;
+	bool resetCalibration() override;
 	double calibrateFromContext() override;
 
-	libm2k::digital::M2kDigital* getDigital();
-	libm2k::analog::M2kPowerSupply* getPowerSupply();
-	libm2k::analog::M2kAnalogIn* getAnalogIn();
-	libm2k::analog::M2kAnalogIn* getAnalogIn(std::string dev_name);
-	libm2k::analog::M2kAnalogOut* getAnalogOut();
-	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn();
-	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut();
+	libm2k::digital::M2kDigital* getDigital() override;
+	libm2k::analog::M2kPowerSupply* getPowerSupply() override;
+	libm2k::analog::M2kAnalogIn* getAnalogIn() override;
+	libm2k::analog::M2kAnalogIn* getAnalogIn(std::string dev_name) override;
+	libm2k::analog::M2kAnalogOut* getAnalogOut() override;
+	std::vector<libm2k::analog::M2kAnalogIn*> getAllAnalogIn() override;
+	std::vector<libm2k::analog::M2kAnalogOut*> getAllAnalogOut() override;
 
 	bool hasMixedSignal() override;
 	void startMixedSignalAcquisition(unsigned int nb_samples) override;
 	void stopMixedSignalAcquisition() override;
 
-	int getDacCalibrationOffset(unsigned int chn);
-	double getDacCalibrationGain(unsigned int chn);
-	int getAdcCalibrationOffset(unsigned int chn);
-	double getAdcCalibrationGain(unsigned int chn);
-	void setDacCalibrationOffset(unsigned int chn, int offset);
-	void setDacCalibrationGain(unsigned int chn, double gain);
-	void setAdcCalibrationOffset(unsigned int chn, int offset);
-	void setAdcCalibrationGain(unsigned int chn, double gain);
+	int getDacCalibrationOffset(unsigned int chn) override;
+	double getDacCalibrationGain(unsigned int chn) override;
+	int getAdcCalibrationOffset(unsigned int chn) override;
+	double getAdcCalibrationGain(unsigned int chn) override;
+	void setDacCalibrationOffset(unsigned int chn, int offset) override;
+	void setDacCalibrationGain(unsigned int chn, double gain) override;
+	void setAdcCalibrationOffset(unsigned int chn, int offset) override;
+	void setAdcCalibrationGain(unsigned int chn, double gain) override;
 
 	bool hasContextCalibration() override;
 	std::map<double, std::shared_ptr<struct CALIBRATION_PARAMETERS>> &getLUT() override;
 	bool isCalibrated() override;
 
-	void setLed(bool on);
-	bool getLed();
+	void setLed(bool on) override;
+	bool getLed() override;
+
 
 private:
 	M2kCalibration* m_calibration;

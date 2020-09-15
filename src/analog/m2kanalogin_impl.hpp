@@ -118,9 +118,9 @@ public:
 
 	void cancelAcquisition() override;
 
-	void getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples);
+	void getSamples(std::vector<std::vector<double> > &data, unsigned int nb_samples) override;
 
-	std::string getChannelName(unsigned int channel);
+	std::string getChannelName(unsigned int channel) override;
 	double getMaximumSamplerate() override;
 
 	void deinitialize();
