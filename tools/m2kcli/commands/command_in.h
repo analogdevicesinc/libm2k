@@ -28,6 +28,9 @@ namespace libm2k {
 namespace cli {
 
 class CommandIn : virtual public Command {
+public:
+	virtual ~CommandIn() = default;
+
 protected:
 	static void printSamplesCsvFormat(std::vector<uint16_t> &samples, unsigned int nb_samples);
 

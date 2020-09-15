@@ -28,6 +28,9 @@
 #include "utils/command_out_generator.h"
 
 class DigitalOutGenerator : virtual public CommandOutGenerator {
+public:
+	virtual ~DigitalOutGenerator() = default;
+
 protected:
 	DigitalOutGenerator(libm2k::digital::M2kDigital *digital, unsigned int bufferSize, std::vector<unsigned int> &channels,
 			    bool cyclic);
