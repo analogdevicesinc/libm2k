@@ -29,6 +29,10 @@
 #include <string>
 #include <iostream>
 
+#ifndef UNUSED
+#define UNUSED
+#endif // UNUSED
+
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	#define exception_type std::exception
 	#if defined(_MSC_VER) || (__APPLE__)
@@ -115,6 +119,7 @@ static void throw_exception(const m2k_exception &exception)
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	throw exception;
 #endif
+}
 
 #define THROW_M2K_EXCEPTION_2(m, t) do { \
 	LIBM2K_LOG(ERROR, m); \
@@ -127,8 +132,7 @@ static void throw_exception(const m2k_exception &exception)
 
 
 #define GET_THROW_MACRO(_1, _2, _3, NAME, ...) NAME
-#define THROW_M2K_EXCEPTION(...) GET_THROW_MACRO(__VA_ARGS__, THROW_M2K_EXCEPTION_3, THROW_M2K_EXCEPTION_2)(__VA_ARGS__)
-}
+#define THROW_M2K_EXCEPTION(...) GET_THROW_MACRO(__VA_ARGS__, THROW_M2K_EXCEPTION_3, THROW_M2K_EXCEPTION_2, UNUSED)(__VA_ARGS__)
 }
 
 #endif // M2KEXCEPTIONS_HPP
