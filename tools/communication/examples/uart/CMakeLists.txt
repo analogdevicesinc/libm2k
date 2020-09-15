@@ -13,3 +13,10 @@ include_directories(
 add_executable(${PROJECT_NAME} main.cpp)
 
 target_link_libraries(${PROJECT_NAME} libm2k)
+
+if (NOT WIN32)
+        find_library(PTHREAD_LIBRARIES pthread)
+        if (PTHREAD_LIBRARIES)
+                target_link_libraries(${PROJECT_NAME} ${PTHREAD_LIBRARIES})
+        endif()
+endif()
