@@ -27,6 +27,8 @@ class CommandOutGenerator {
 public:
 	virtual void generate(bool &keepReading) = 0;
 
+	virtual ~CommandOutGenerator() = default;
+
 protected:
 	virtual void getSamples(bool &keepReading) = 0;
 };

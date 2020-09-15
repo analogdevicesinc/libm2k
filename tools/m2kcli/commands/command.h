@@ -34,6 +34,7 @@ namespace cli {
 class Command {
 public:
 	Command() = default;
+	virtual ~Command() = default;
 
 	Command(int argc, char **argv);
 
