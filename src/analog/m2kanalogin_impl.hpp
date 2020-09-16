@@ -76,10 +76,8 @@ public:
 	int setOversamplingRatio(unsigned int chn_idx, int oversampling) override;
 
 	double getSampleRate() override;
-	double getSampleRate(unsigned int chn_idx) override;
 	std::vector<double> getAvailableSampleRates() override;
 	double setSampleRate(double samplerate) override;
-	double setSampleRate(unsigned int chn_idx, double samplerate) override;
 
 	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn) override;
 

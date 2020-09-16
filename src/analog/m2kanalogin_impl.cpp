@@ -694,29 +694,11 @@ double M2kAnalogInImpl::getSampleRate()
 	return m_m2k_adc->getDoubleValue("sampling_frequency");
 }
 
-double M2kAnalogInImpl::getSampleRate(unsigned int chn_idx)
-{
-	if (chn_idx >= getNbChannels()) {
-		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
-	}
-	return m_m2k_adc->getDoubleValue(chn_idx, "sampling_frequency");
-}
-
 double M2kAnalogInImpl::setSampleRate(double samplerate)
 {
 	m_samplerate = m_m2k_adc->setLongValue((int)samplerate, "sampling_frequency");
 	m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_vert_offset.at(0));
 	m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_vert_offset.at(1));
-	return m_samplerate;
-}
-
-double M2kAnalogInImpl::setSampleRate(unsigned int chn_idx, double samplerate)
-{
-	if (chn_idx >= getNbChannels()) {
-		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
-	}
-	m_samplerate = m_m2k_adc->setLongValue((int)samplerate, "sampling_frequency");
-	m_trigger->setCalibParameters(chn_idx, getScalingFactor(chn_idx), m_adc_hw_vert_offset.at(chn_idx));
 	return m_samplerate;
 }
 

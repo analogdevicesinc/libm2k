@@ -310,15 +310,6 @@ public:
 
 
 	/**
-	* @brief Retrieve the sample rate of the given channel
-	*
-	* @param chn_idx The index corresponding to the channel
-	* @return The value of the sample rate
-	*/
-	virtual double getSampleRate(unsigned int chn_idx) = 0;
-
-
-	/**
 	 * @brief getAvailableSampleRates
 	 * @return The list of available samplerates for this device
 	 */
@@ -331,16 +322,6 @@ public:
 	* @return The value of the global sample rate
 	*/
 	virtual double setSampleRate(double samplerate) = 0;
-
-
-	/**
-	* @brief Set the sample rate of the given channel
-	*
-	* @param chn_idx The index corresponding to the channel
-	* @param samplerate A double value to set the sample rate to
-	* @return The value of the global sample rate
-	*/
-	virtual double setSampleRate(unsigned int chn_idx, double samplerate) = 0;
 
 
 	/**
