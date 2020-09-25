@@ -578,7 +578,14 @@ std::vector<double> M2kAnalogOutImpl::getAvailableSampleRates(unsigned int chnId
 
 	stringValues = getDacDevice(chnIdx)->getAvailableAttributeValues("sampling_frequency");
 	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
-		       [] (std::string &s) -> double { return std::stod(s); });
+		       [] (std::string &s) -> double {
+		try {
+			auto value = std::stod(s);
+			return value;
+		} catch (std::exception &e) {
+			THROW_M2K_EXCEPTION("Can't determine available sampling frequencies.", libm2k::EXC_RUNTIME_ERROR);
+		}
+	});
 	return values;
 }
 
