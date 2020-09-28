@@ -16,7 +16,7 @@
 #define LIBM2K_UART_H
 
 #include <libm2k/tools/uart.hpp>
-#include <tools/m2kcli/commands/command.h>
+#include "commands/command.h"
 
 namespace libm2k {
 namespace cli {

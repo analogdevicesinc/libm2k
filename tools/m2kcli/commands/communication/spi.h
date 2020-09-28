@@ -15,7 +15,7 @@
 #ifndef LIBM2K_SPI_H
 #define LIBM2K_SPI_H
 
-#include <tools/m2kcli/commands/command.h>
+#include <commands/command.h>
 #include <libm2k/tools/spi.hpp>
 
 namespace libm2k {

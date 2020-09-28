@@ -15,7 +15,7 @@
 #ifndef LIBM2K_I2C_H
 #define LIBM2K_I2C_H
 
-#include <tools/m2kcli/commands/command.h>
+#include <commands/command.h>
 #include <libm2k/tools/i2c.hpp>
 
 namespace libm2k {

@@ -22,8 +22,8 @@
 #ifndef M2KCLI_DIGITAL_H
 #define M2KCLI_DIGITAL_H
 
-#include "tools/m2kcli/commands/command_in.h"
 #include <libm2k/digital/m2kdigital.hpp>
+#include "commands/command_in.h"
 
 namespace libm2k {
 namespace cli {

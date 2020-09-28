@@ -24,7 +24,7 @@
 
 #include <libm2k/m2k.hpp>
 #include <libm2k/analog/m2kanalogin.hpp>
-#include "tools/m2kcli/commands/command_in.h"
+#include "commands/command_in.h"
 
 namespace libm2k {
 namespace cli {

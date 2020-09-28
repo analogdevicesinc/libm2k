@@ -9,18 +9,15 @@ if (MSVC)
     set(GETOPT_C_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../deps/wingetopt/src/getopt.c)
 endif (MSVC)
 
-
-include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${IIO_INCLUDE_DIRS}
-        ${CMAKE_SOURCE_DIR}/include
-)
-
 FILE(GLOB_RECURSE SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_SOURCE_DIR}/tools/communication/src/utils/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${GETOPT_C_FILE})
+target_include_directories(${PROJECT_NAME}
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+                ${CMAKE_CURRENT_SOURCE_DIR}/..
+        )
 
-target_link_libraries(${PROJECT_NAME} libm2k)
+target_link_libraries(${PROJECT_NAME} libm2k::libm2k)
 
 if (NOT WIN32)
         find_library(PTHREAD_LIBRARIES pthread)
