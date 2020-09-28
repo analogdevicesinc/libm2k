@@ -26,7 +26,7 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/logger.hpp>
 #include <libm2k/utils/utils.hpp>
-#include <libm2k/config.hpp>
+#include <libm2k/version.hpp>
 #include <iio.h>
 #include <algorithm>
 #include <vector>
