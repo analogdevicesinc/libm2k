@@ -15,8 +15,8 @@
 #include "uart_terminal.h"
 #include <thread>
 #include <libm2k/tools/uart_extra.hpp>
-#include <tools/m2kcli/utils/linux_key_encoder.h>
-#include "tools/communication/src/utils/util.h"
+#include "utils/linux_key_encoder.h"
+#include "communication/src/utils/util.h"
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #include <conio.h>

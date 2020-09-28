@@ -27,9 +27,9 @@
 #include <utility>
 #include <thread>
 #include <chrono>
-#include <tools/m2kcli/utils/command_out_generator.h>
-#include <tools/m2kcli/commands/digital/generation_controller/digital_out_binary.h>
-#include <tools/m2kcli/commands/digital/generation_controller/digital_out_csv.h>
+#include "utils/command_out_generator.h"
+#include "commands/digital/generation_controller/digital_out_binary.h"
+#include "commands/digital/generation_controller/digital_out_csv.h"
 #include "digital.h"
 
 using namespace libm2k::cli;

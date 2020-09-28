@@ -24,8 +24,8 @@
 
 
 #include <vector>
-#include <include/libm2k/analog/m2kanalogout.hpp>
-#include "tools/m2kcli/utils/command_out_generator.h"
+#include <libm2k/analog/m2kanalogout.hpp>
+#include "utils/command_out_generator.h"
 
 class AnalogOutGenerator : virtual public CommandOutGenerator {
 protected:

@@ -23,7 +23,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
-#include "tools/m2kcli/utils/validator.h"
+#include "utils/validator.h"
 
 AnalogOutCSVRaw::AnalogOutCSVRaw(libm2k::analog::M2kAnalogOut *analogOut, unsigned int bufferSize, std::vector<unsigned int> &channels,
 				 bool cyclic) : AnalogOutGenerator(analogOut, bufferSize, channels, cyclic)

@@ -23,11 +23,11 @@
 #include <thread>
 #include <chrono>
 #include "analog_out.h"
-#include <tools/m2kcli/utils/command_out_generator.h>
-#include <tools/m2kcli/commands/analog/generation_controller/analog_out_binary_raw.h>
-#include <tools/m2kcli/commands/analog/generation_controller/analog_out_binary.h>
-#include "tools/m2kcli/commands/analog/generation_controller/analog_out_csv.h"
-#include "tools/m2kcli/commands/analog/generation_controller/analog_out_csv_raw.h"
+#include <utils/command_out_generator.h>
+#include <commands/analog/generation_controller/analog_out_binary_raw.h>
+#include "commands/analog/generation_controller/analog_out_binary.h"
+#include "commands/analog/generation_controller/analog_out_csv.h"
+#include "commands/analog/generation_controller/analog_out_csv_raw.h"
 
 using namespace libm2k::cli;
 

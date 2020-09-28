@@ -26,7 +26,7 @@
 #include <vector>
 #include <getopt.h>
 #include <libm2k/m2k.hpp>
-#include "tools/m2kcli/utils/validator.h"
+#include "utils/validator.h"
 
 namespace libm2k {
 namespace cli {

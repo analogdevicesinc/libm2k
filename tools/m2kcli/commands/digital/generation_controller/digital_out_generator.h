@@ -24,8 +24,8 @@
 
 
 #include <vector>
-#include <tools/m2kcli/utils/command_out_generator.h>
-#include <include/libm2k/digital/m2kdigital.hpp>
+#include <libm2k/digital/m2kdigital.hpp>
+#include "utils/command_out_generator.h"
 
 class DigitalOutGenerator : virtual public CommandOutGenerator {
 protected:
