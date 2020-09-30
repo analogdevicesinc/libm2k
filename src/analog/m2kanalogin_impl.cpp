@@ -231,7 +231,9 @@ libm2k::M2kHardwareTrigger *M2kAnalogInImpl::getTrigger()
 
 void M2kAnalogInImpl::startAcquisition(unsigned int nb_samples)
 {
+	handleChannelsEnableState(true);
 	m_m2k_adc->initializeBuffer(nb_samples);
+	handleChannelsEnableState(false);
 }
 
 void M2kAnalogInImpl::stopAcquisition()
