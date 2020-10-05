@@ -40,6 +40,22 @@ if (MSVC)
 	add_definitions("/wd4250 /wd4251 /wd4275")
 endif()
 
+if(NOT MSVC)
+	target_compile_options(${PROJECT_NAME}
+			PRIVATE
+			-Wall
+			-Wextra)
+	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		target_compile_options(${PROJECT_NAME}
+				PRIVATE
+				-Wreturn-stack-address)
+	elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+		target_compile_options(${PROJECT_NAME}
+				PRIVATE
+				-Wreturn-local-addr)
+	endif()
+endif()
+
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         $<INSTALL_INTERFACE:include>
