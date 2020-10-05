@@ -66,6 +66,12 @@ include_directories(
 
 add_library(${CSHARP_WRAPPER_DLL} SHARED ${SRC_WRAPPER_FILE})
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+	target_compile_options(${CSHARP_WRAPPER_DLL}
+			PRIVATE
+			-Wno-maybe-uninitialized)
+endif()
+
 target_include_directories(${CSHARP_WRAPPER_DLL} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 #Link the required dependencies
