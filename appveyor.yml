@@ -15,7 +15,7 @@ environment:
     CHERE_INVOKING: 1
 
 cache:
-  - C:\projects\libm2k\deps\glog -> CI\appveyor\install_glog.bat
+  - C:\glog -> CI\appveyor\install_glog.bat
 
 install:
     # Download libiio
@@ -48,6 +48,7 @@ install:
 
 build_script:
     # Download glog
+    - cd c:\
     - C:\projects\libm2k\CI\appveyor\install_glog.bat "Release" "x64"
     - C:\projects\libm2k\CI\appveyor\install_glog.bat "Release" "Win32
 

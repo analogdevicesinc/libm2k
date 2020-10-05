@@ -30,7 +30,7 @@
 #include <iostream>
 
 #ifndef UNUSED
-#define UNUSED
+#define UNUSED(VAR) (void)(VAR)
 #endif // UNUSED
 
 #if _EXCEPTIONS || defined(__cpp_exceptions)
@@ -114,7 +114,7 @@ private:
 	m2k_exception m2KException;
 };
 
-static void throw_exception(const m2k_exception &exception)
+static inline void throw_exception(const m2k_exception &exception)
 {
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	throw exception;

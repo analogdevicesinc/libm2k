@@ -31,7 +31,7 @@ void setInputChannel(unsigned int channelIndex, libm2k::digital::M2kDigital *m2K
 unsigned int getValidSampleRate(unsigned int frequency, unsigned int samplesPerCycle)
 {
 	unsigned int maxSampleRate = 100000000;
-	if (frequency >= maxSampleRate || frequency < 0) {
+	if (frequency >= maxSampleRate) {
 		return maxSampleRate;
 	}
 	unsigned int tempSampleRate = frequency * samplesPerCycle;

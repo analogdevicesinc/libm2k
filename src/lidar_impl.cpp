@@ -106,11 +106,11 @@ double LidarImpl::tilt_volts_to_raw_convert(double value, bool inverse) {
 }
 
 void LidarImpl::setApdBias(unsigned int bias) {
-	afe_dev->setLongValue(0, adp_bias_volts_to_raw_convert(bias, false), "raw", true);
+	afe_dev->setLongValue(0, static_cast<long long>(adp_bias_volts_to_raw_convert(bias, false)), "raw", true);
 }
 
 void LidarImpl::setTiltVoltage(unsigned int voltage) {
-	afe_dev->setLongValue(1, tilt_volts_to_raw_convert(voltage, false), "raw", true);
+	afe_dev->setLongValue(1, static_cast<long long>(tilt_volts_to_raw_convert(voltage, false)), "raw", true);
 }
 
 void LidarImpl::laserEnable() {

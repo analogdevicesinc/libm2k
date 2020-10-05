@@ -81,8 +81,18 @@ public:
 
 	std::pair<double, double> getHysteresisRange(ANALOG_IN_CHANNEL chn) override;
 
+	/**
+	 * The calibration offset is store in the same register with the vertical offset as a sum (CalibOff + VertOff)
+	 * The calibration offset is always represented as an integer raw value
+	 * The vertical offset is store as an integer raw value, but it can be converted to a voltage representation
+	 * There are several ways to set these coefficients
+	 * */
+	 // set the calibration offset - use the current vertical offset
 	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset);
+	// set both the calibration offset and the vertical offset (raw value)
 	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset, int vert_offset);
+	// set both the calibration offset and the vertical offset (value in volts)
+	void setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset, double vert_offset);
 
 	double setCalibscale(unsigned int index, double calibscale);
 	double getCalibscale(unsigned int index);
@@ -161,8 +171,8 @@ private:
 
 	double processSample(int16_t sample, unsigned int channel);
 
-	const int convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
-	const double convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset);
+	int convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
+	double convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset);
 };
 }
 }

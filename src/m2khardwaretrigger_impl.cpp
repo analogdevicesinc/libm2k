@@ -344,7 +344,7 @@ void M2kHardwareTriggerImpl::setAnalogLevel(unsigned int chnIdx, double v_level)
 		THROW_M2K_EXCEPTION("Channel index is out of range", libm2k::EXC_OUT_OF_RANGE);
 	}
 
-	int raw = (v_level + m_offset.at(chnIdx)) / m_scaling.at(chnIdx);
+	int raw = static_cast<int>((v_level + m_offset.at(chnIdx)) / m_scaling.at(chnIdx));
 	setAnalogLevelRaw(chnIdx, raw);
 }
 
@@ -364,7 +364,7 @@ void M2kHardwareTriggerImpl::setAnalogHysteresis(unsigned int chnIdx, double hys
 		THROW_M2K_EXCEPTION("Channel index is out of range", libm2k::EXC_OUT_OF_RANGE);
 	}
 
-	int hysteresis_raw = hysteresis / m_scaling.at(chnIdx);
+	int hysteresis_raw = static_cast<int>(hysteresis / m_scaling.at(chnIdx));
 	m_analog_channels[chnIdx]->setLongValue("trigger_hysteresis", static_cast<long long>(hysteresis_raw));
 }
 
@@ -428,7 +428,7 @@ M2K_TRIGGER_SOURCE_ANALOG M2kHardwareTriggerImpl::getAnalogSource()
 
 void M2kHardwareTriggerImpl::setAnalogSource(M2K_TRIGGER_SOURCE_ANALOG src)
 {
-	if (src >= m_trigger_source.size()) {
+	if (static_cast<unsigned int>(src) >= m_trigger_source.size()) {
 		THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
 				    "the provided analog source is not supported on "
 				    "the current board; Check the firmware version.", libm2k::EXC_INVALID_PARAMETER);

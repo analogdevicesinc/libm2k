@@ -101,11 +101,11 @@ private:
 	M2K_TRIGGER_MODE m_trigger1_mode;
 	M2K_TRIGGER_SOURCE_ANALOG m_trigger_src;
 	double adc_sampl_freq;
-	double adc_oversampl;
+	int adc_oversampl;
 	double dac_a_sampl_freq;
-	double dac_a_oversampl;
+	int dac_a_oversampl;
 	double dac_b_sampl_freq;
-	double dac_b_oversampl;
+	int dac_b_oversampl;
 
 	bool m_adc_calibrated;
 	bool m_dac_calibrated;

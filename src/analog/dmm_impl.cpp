@@ -33,6 +33,7 @@ using namespace libm2k::utils;
 
 DMMImpl::DMMImpl(struct iio_context *ctx, std::string dev, bool sync)
 {
+	UNUSED(sync);
 	m_device_in_list.push_back(new DeviceIn(ctx, dev));
 	m_dev_name = dev;
 	bool output = false;

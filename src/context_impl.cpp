@@ -36,6 +36,7 @@ using namespace libm2k::utils;
 
 ContextImpl::ContextImpl(std::string uri, struct iio_context *ctx, std::string name, bool sync)
 {
+	UNUSED(name);
 	m_context = ctx;
 	m_uri = uri;
 	m_sync = sync;

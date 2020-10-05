@@ -44,7 +44,7 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kDigital");
 	__try {
 		m_dev_generic = make_shared<DeviceGeneric>(ctx, logic_dev);
-	} __catch (exception_type &e) {
+	} __catch (exception_type&) {
 		m_dev_generic = nullptr;
 		THROW_M2K_EXCEPTION("M2K Digital: No generic digital device was found.", libm2k::EXC_INVALID_PARAMETER);
 	}
@@ -56,7 +56,7 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 	if (m_dev_name_write != "") {
 		__try {
 			m_dev_write = make_shared<DeviceOut>(ctx, m_dev_name_write);
-		} __catch (exception_type &e) {
+		} __catch (exception_type&) {
 			m_dev_write = nullptr;
 			THROW_M2K_EXCEPTION("M2K Digital: No device was found for writing", libm2k::EXC_INVALID_PARAMETER);
 		}
@@ -65,7 +65,7 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 	if (m_dev_name_read != "") {
 		__try {
 			m_dev_read = make_shared<DeviceIn>(ctx, m_dev_name_read);
-		} __catch (exception_type &e) {
+		} __catch (exception_type&) {
 			m_dev_read = nullptr;
 			THROW_M2K_EXCEPTION("M2K Digital: No device was found for reading", libm2k::EXC_INVALID_PARAMETER);
 		}
@@ -166,7 +166,7 @@ void M2kDigitalImpl::setDirection(unsigned int index, DIO_DIRECTION dir)
 
 void M2kDigitalImpl::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 {
-	if (index < m_dev_generic->getNbChannels(false)) {
+	if (static_cast<unsigned int>(index) < m_dev_generic->getNbChannels(false)) {
 		std::string dir_str = "";
 		if (dir == 0) {
 			dir_str = "in";
@@ -182,7 +182,7 @@ void M2kDigitalImpl::setDirection(DIO_CHANNEL index, DIO_DIRECTION dir)
 
 DIO_DIRECTION M2kDigitalImpl::getDirection(DIO_CHANNEL index)
 {
-	if (index >= m_dev_generic->getNbChannels(false)) {
+	if (static_cast<unsigned int>(index) >= m_dev_generic->getNbChannels(false)) {
 		THROW_M2K_EXCEPTION("M2kDigital: No such digital channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
@@ -195,11 +195,10 @@ DIO_DIRECTION M2kDigitalImpl::getDirection(DIO_CHANNEL index)
 
 void M2kDigitalImpl::setValueRaw(DIO_CHANNEL index, DIO_LEVEL level)
 {
-	if (index >= m_dev_generic->getNbChannels(false)) {
+	if (static_cast<unsigned int>(index) >= m_dev_generic->getNbChannels(false)) {
 		THROW_M2K_EXCEPTION("M2kDigital: No such digital channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	long long val = static_cast<long long>(level);
-	m_dev_generic->setDoubleValue(index, val, "raw");
+	m_dev_generic->setDoubleValue(index, static_cast<double>(level), "raw");
 }
 
 void M2kDigitalImpl::setValueRaw(unsigned int index, DIO_LEVEL level)
@@ -216,11 +215,10 @@ void M2kDigitalImpl::setValueRaw(DIO_CHANNEL index, bool level)
 
 DIO_LEVEL M2kDigitalImpl::getValueRaw(DIO_CHANNEL index)
 {
-	if (index >= m_dev_generic->getNbChannels(false)) {
+	if (static_cast<unsigned int>(index) >= m_dev_generic->getNbChannels(false)) {
 		THROW_M2K_EXCEPTION("M2kDigital: No such digital channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	long long val;
-	val = m_dev_generic->getDoubleValue(index, "raw");
+	auto val = m_dev_generic->getLongValue(index, "raw");
 	return static_cast<DIO_LEVEL>(val);
 }
 
@@ -320,7 +318,7 @@ void M2kDigitalImpl::enableChannel(unsigned int index, bool enable)
 
 void M2kDigitalImpl::enableChannel(DIO_CHANNEL index, bool enable)
 {
-	if (index < m_dev_write->getNbChannels(true)) {
+	if (static_cast<unsigned int>(index) < m_dev_write->getNbChannels(true)) {
 		m_dev_write->enableChannel(index, enable, true);
 		m_tx_channels_enabled.at(index) = enable;
 	} else {

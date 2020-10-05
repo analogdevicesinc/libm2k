@@ -142,7 +142,7 @@ void M2kAnalogInImpl::syncDevice()
 
 void M2kAnalogInImpl::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	m_adc_calib_gain.at(channel) = gain;
@@ -151,7 +151,7 @@ void M2kAnalogInImpl::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
 
 void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int raw_offset)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	const int rawVertOffset = m_adc_hw_offset_raw.at(channel) - m_adc_calib_offset.at(channel);
@@ -443,7 +443,7 @@ short M2kAnalogInImpl::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 	M2K_TRIGGER_MODE mode;
 	bool enabled;
 
-	if (ch >= getNbChannels()) {
+	if (static_cast<unsigned int>(ch) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 		return -1;
 	}
@@ -510,7 +510,7 @@ double M2kAnalogInImpl::getVoltage(ANALOG_IN_CHANNEL ch)
 	M2K_TRIGGER_MODE mode;
 	bool enabled;
 
-	if (ch >= getNbChannels()) {
+	if (static_cast<unsigned int>(ch) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 		return -1;
 	}
@@ -561,7 +561,7 @@ const double *M2kAnalogInImpl::getVoltageP()
 
 double M2kAnalogInImpl::getScalingFactor(ANALOG_IN_CHANNEL ch)
 {
-	if (ch >= getNbChannels()) {
+	if (static_cast<unsigned int>(ch) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	return (0.78 / ((1u << 11u) * 1.3 *
@@ -581,7 +581,7 @@ double M2kAnalogInImpl::getScalingFactor(unsigned int ch)
 
 std::pair<double, double> M2kAnalogInImpl::getHysteresisRange(ANALOG_IN_CHANNEL chn)
 {
-	if (chn >= getNbChannels()) {
+	if (static_cast<unsigned int>(chn) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	std::pair<double, double> m2k_range = getRangeLimits(getRange(chn));
@@ -592,7 +592,7 @@ void M2kAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 {
 	const char *str_gain_mode;
 
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	m_input_range[channel] = range;
@@ -609,7 +609,7 @@ void M2kAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 
 void M2kAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, double min, double max)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	if ((min >= HIGH_MIN) && (max <= HIGH_MAX)) {
@@ -621,7 +621,7 @@ void M2kAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, double min, double max
 
 M2K_RANGE M2kAnalogInImpl::getRange(ANALOG_IN_CHANNEL channel)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	return m_input_range[channel];
@@ -629,7 +629,7 @@ M2K_RANGE M2kAnalogInImpl::getRange(ANALOG_IN_CHANNEL channel)
 
 M2K_RANGE M2kAnalogInImpl::getRangeDevice(ANALOG_IN_CHANNEL channel)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	M2K_RANGE range = PLUS_MINUS_25V;
@@ -668,7 +668,7 @@ std::vector<std::pair<std::string, std::pair<double, double>>> M2kAnalogInImpl::
 
 void M2kAnalogInImpl::setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	int raw_vert_offset = convertVoltsToRawVerticalOffset(channel, vertOffset);
@@ -680,7 +680,7 @@ void M2kAnalogInImpl::setVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOf
 
 double M2kAnalogInImpl::getVerticalOffset(ANALOG_IN_CHANNEL channel)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	return m_adc_hw_vert_offset.at(channel);
@@ -774,9 +774,10 @@ std::vector<double> M2kAnalogInImpl::getAvailableSampleRates()
 		try {
 			auto value = std::stod(s);
 			return value;
-		} catch (std::exception &e) {
-			THROW_M2K_EXCEPTION("Can't determine available sampling frequencies.", libm2k::EXC_RUNTIME_ERROR);
-		}
+		} catch (std::exception&) {
+            THROW_M2K_EXCEPTION("Can't determine available sampling frequencies.", libm2k::EXC_RUNTIME_ERROR);
+            return {};
+        }
 	});
 	return values;
 }
@@ -802,9 +803,9 @@ void M2kAnalogInImpl::convertChannelHostFormat(unsigned int chn_idx, double *avg
 	m_m2k_adc->convertChannelHostFormat(chn_idx, avg, src, false);
 }
 
-const int M2kAnalogInImpl::convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset)
+int M2kAnalogInImpl::convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	double gain = 1.3;
@@ -813,9 +814,9 @@ const int M2kAnalogInImpl::convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL cha
         return static_cast<int>(vertOffset * (1u << 12u) * hw_range_gain * gain / 2.693 / vref);
 }
 
-const double M2kAnalogInImpl::convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset)
+double M2kAnalogInImpl::convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	double gain = 1.3;
@@ -826,7 +827,7 @@ const double M2kAnalogInImpl::convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL 
 
 int M2kAnalogInImpl::getRawVerticalOffset(ANALOG_IN_CHANNEL channel)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	return m_adc_hw_offset_raw.at(channel) - m_adc_calib_offset.at(channel);
@@ -834,7 +835,7 @@ int M2kAnalogInImpl::getRawVerticalOffset(ANALOG_IN_CHANNEL channel)
 
 void M2kAnalogInImpl::setRawVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	double vertOffset = convertRawToVoltsVerticalOffset(channel, rawVertOffset);
@@ -846,7 +847,7 @@ void M2kAnalogInImpl::setRawVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVer
 
 void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset, int vert_offset)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	double vertOffset = convertRawToVoltsVerticalOffset(channel, vert_offset);
@@ -864,15 +865,34 @@ void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_off
 	m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
 }
 
+void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_offset, double vert_offset)
+{
+    if (static_cast<unsigned int>(channel) >= getNbChannels()) {
+        THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
+    }
+    m_adc_hw_vert_offset.at(channel) = vert_offset;
+
+    if (m_calibbias_available) {
+        m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, calib_offset, "calibbias", false);
+    } else {
+        m_adc_calib_offset.at(channel) = calib_offset;
+    }
+
+    const int hw_offset_raw = convertVoltsToRaw(channel, vert_offset) + m_adc_calib_offset.at(channel);
+    m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
+
+    m_trigger->setCalibParameters(channel, getScalingFactor(channel), m_adc_hw_vert_offset.at(channel));
+}
+
 int M2kAnalogInImpl::getAdcCalibOffset(ANALOG_IN_CHANNEL channel)
 {
-	if (channel >= getNbChannels()) {
+	if (static_cast<unsigned int>(channel) >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	if (m_calibbias_available) {
 		return m_m2k_adc->getLongValue(channel, "calibbias", false);
 	} else {
 		auto adc_hw_offset = m_ad5625_dev->getLongValue(channel + 2, "raw", true);
-		return (adc_hw_offset - m_adc_hw_vert_offset.at(channel));
+		return (adc_hw_offset - convertVoltsToRawVerticalOffset(channel, m_adc_hw_vert_offset.at(channel)));
 	}
 }
