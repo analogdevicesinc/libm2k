@@ -249,6 +249,7 @@ void M2kAnalogInImpl::handleChannelsEnableState(bool before_refill)
 {
 	if (before_refill) {
 		bool anyChannelEnabled = false;
+		m_channels_enabled.clear();
 		for (unsigned int i = 0; i < getNbChannels(); i++) {
 			bool en  = isChannelEnabled(i);
 			m_channels_enabled.push_back(en);
