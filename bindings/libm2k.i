@@ -35,6 +35,8 @@
 %ignore getVoltageRawP;
 %rename(pushBytes) push(unsigned short*, unsigned int);
 
+%ignore buildLoggingMessage;
+
 #ifdef SWIGPYTHON
 %typemap(in) short * {
 	if (PyBytes_Check($input))

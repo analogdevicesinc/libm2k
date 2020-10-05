@@ -32,15 +32,15 @@
 #define LIBM2K_ATTRIBUTE_READ "read"
 
 namespace libm2k {
-    static std::string buildLoggingMessage(const std::vector<const char *> &info, const std::string &message)
-    {
-        std::stringstream ss;
-        for (auto val : info) {
-            ss << "[" << val << "]";
+        static const inline std::string buildLoggingMessage(const std::vector<const char *> &info, const std::string &message)
+        {
+                std::stringstream ss;
+                for (auto val : info) {
+                    ss << "[" << val << "]";
+                }
+                ss << " " << message;
+                return ss.str();
         }
-        ss << " " << message;
-        return ss.str();
-    }
 }
 
 #ifdef LIBM2K_ENABLE_LOG
