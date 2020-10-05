@@ -215,7 +215,7 @@ double M2kPowerSupplyImpl::getCalibrationCoefficient(std::string key)
 
 void M2kPowerSupplyImpl::enableAll(bool en)
 {
-
+	UNUSED(en);
 }
 
 double M2kPowerSupplyImpl::readChannel(unsigned int idx)

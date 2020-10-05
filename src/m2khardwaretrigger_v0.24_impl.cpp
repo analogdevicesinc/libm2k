@@ -71,6 +71,7 @@ typedef std::pair<Channel *, std::string> channel_pair;
 M2kHardwareTriggerV024Impl::M2kHardwareTriggerV024Impl(struct iio_context *ctx, bool init) :
 	M2kHardwareTriggerImpl(ctx, "m2k-adc-trigger")
 {
+	UNUSED(init);
 }
 
 M2kHardwareTriggerV024Impl::~M2kHardwareTriggerV024Impl()
@@ -97,6 +98,7 @@ void M2kHardwareTriggerV024Impl::setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELE
 
 void M2kHardwareTrigger::setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT output_select)
 {
+	UNUSED(output_select);
 	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
 			    "the analog external output is not configurable on "
 			    "the current board; Check the firmware version.",
@@ -169,6 +171,7 @@ void M2kHardwareTriggerV024Impl::setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL ext
 
 void M2kHardwareTrigger::setDigitalSource(M2K_TRIGGER_SOURCE_DIGITAL external_src)
 {
+	UNUSED(external_src);
 	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
 			    "the digital external source is not configurable on "
 			    "the current board; Check the firmware version.",

@@ -52,6 +52,7 @@ std::shared_ptr<DeviceIn> GenericAnalogInImpl::getAdcDevice(unsigned int index)
 
 double GenericAnalogInImpl::processSample(int16_t sample, unsigned int channel)
 {
+	UNUSED(channel);
 	return sample;
 }
 
@@ -96,8 +97,10 @@ std::vector<double> GenericAnalogInImpl::getAvailableSampleRates()
 		try {
 			auto value = std::stod(s);
 			return value;
-		} catch (std::exception &e) {
+		} catch (std::exception&) {
 			THROW_M2K_EXCEPTION("Can't determine available sampling frequencies.", libm2k::EXC_RUNTIME_ERROR);
+			return {};
+
 		}
 	});
 	return values;
@@ -114,8 +117,9 @@ std::vector<double> GenericAnalogInImpl::getAvailableSampleRates(unsigned int ch
 		try {
 			auto value = std::stod(s);
 			return value;
-		} catch (std::exception &e) {
+		} catch (std::exception&) {
 			THROW_M2K_EXCEPTION("Can't determine available sampling frequencies.", libm2k::EXC_RUNTIME_ERROR);
+			return {};
 		}
 	});
 	return values;

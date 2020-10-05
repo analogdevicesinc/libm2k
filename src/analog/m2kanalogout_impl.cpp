@@ -595,8 +595,9 @@ std::vector<double> M2kAnalogOutImpl::getAvailableSampleRates(unsigned int chnId
 		try {
 			auto value = std::stod(s);
 			return value;
-		} catch (std::exception &e) {
+		} catch (std::exception&) {
 			THROW_M2K_EXCEPTION("Can't determine available sampling frequencies.", libm2k::EXC_RUNTIME_ERROR);
+			return {};
 		}
 	});
 	return values;

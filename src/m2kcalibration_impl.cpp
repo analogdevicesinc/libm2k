@@ -209,7 +209,7 @@ bool M2kCalibrationImpl::calibrateADCoffset()
 	// Allow some time for the voltage to settle
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-	const unsigned int num_samples = 1e5;
+	const unsigned int num_samples = 100000u;
 	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 	m_m2k_adc->stopAcquisition();
 
@@ -217,8 +217,8 @@ bool M2kCalibrationImpl::calibrateADCoffset()
 		return false;
 	}
 
-	int16_t ch0_avg = Utils::average(ch_data.at(0).data(), num_samples);
-	int16_t ch1_avg = Utils::average(ch_data.at(1).data(), num_samples);
+	int16_t ch0_avg = static_cast<int16_t>(Utils::average(ch_data.at(0).data(), num_samples));
+	int16_t ch1_avg = static_cast<int16_t>(Utils::average(ch_data.at(1).data(), num_samples));
 
 	// Convert from raw format to signed raw
 	int16_t tmp;
@@ -246,7 +246,7 @@ bool M2kCalibrationImpl::calibrateADCgain()
 {
 	int16_t tmp;
 	double vref1 = 0.46172;
-	const unsigned int num_samples = 15e4;
+	const unsigned int num_samples = 150000u;
 	double avg0, avg1;
 	bool calibrated = false;
 	std::vector<std::vector<double>> ch_data = {};
@@ -267,13 +267,13 @@ bool M2kCalibrationImpl::calibrateADCgain()
 	avg0 = Utils::average(ch_data.at(0).data(), num_samples);
 	avg1 = Utils::average(ch_data.at(1).data(), num_samples);
 
-	tmp = avg0;
+	tmp = static_cast<int16_t>(avg0);
 	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_1, &avg0, &tmp);
-	tmp = avg1;
+	tmp = static_cast<int16_t >(avg1);
 	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_2, &avg1, &tmp);
 
-	avg0 = m_m2k_adc->convRawToVolts(avg0, 1, 1);
-	avg1 = m_m2k_adc->convRawToVolts(avg1, 1, 1);
+	avg0 = m_m2k_adc->convRawToVolts(static_cast<int>(avg0), 1, 1);
+	avg1 = m_m2k_adc->convRawToVolts(static_cast<int>(avg1), 1, 1);
 
 	m_adc_ch0_gain = vref1 / avg0;
 	m_adc_ch1_gain = vref1 / avg1;
@@ -421,8 +421,8 @@ bool M2kCalibrationImpl::fine_tune(size_t span, int16_t centerVal0, int16_t cent
 	unsigned int i, i0 = 0, i1 = 0;
 	bool ret = true;
 
-	offset0 = centerVal0 - span / 2;
-	offset1 = centerVal1 - span / 2;
+	offset0 = centerVal0 - static_cast<int16_t>(span) / 2;
+	offset1 = centerVal1 - static_cast<int16_t>(span) / 2;
 	for (i = 0; i < span + 1; i++) {
 		candidateOffsets0[i] = offset0;
 		candidateOffsets1[i] = offset1;
@@ -481,7 +481,7 @@ int M2kCalibrationImpl::getDacOffset(unsigned int channel)
 		THROW_M2K_EXCEPTION("No such DAC channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
-	double offset = m_ad5625_dev->getDoubleValue(channel, "raw", true);
+	int offset = m_ad5625_dev->getLongValue(channel, "raw", true);
 	if (channel == 0) {
 		m_dac_a_ch_offset = offset;
 	} else {
@@ -538,7 +538,7 @@ bool M2kCalibrationImpl::calibrateDACoffset()
 {
 	int16_t tmp;
 	bool calibrated = false;
-	const unsigned int num_samples = 1e5;
+	const unsigned int num_samples = 100000u;
 	std::vector<std::vector<double>> ch_data = {};
 
 	if (!m_initialized) {
@@ -582,8 +582,8 @@ bool M2kCalibrationImpl::calibrateDACoffset()
 		return false;
 	}
 
-	int16_t ch0_avg = Utils::average(ch_data.at(0).data(), num_samples);
-	int16_t ch1_avg = Utils::average(ch_data.at(1).data(), num_samples);
+	int16_t ch0_avg = static_cast<int16_t>(Utils::average(ch_data.at(0).data(), num_samples));
+	int16_t ch1_avg = static_cast<int16_t>(Utils::average(ch_data.at(1).data(), num_samples));
 
 	tmp = ch0_avg;
 	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);
@@ -645,7 +645,7 @@ bool M2kCalibrationImpl::calibrateDACgain()
 	// Allow some time for the voltage to settle
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-	const unsigned int num_samples = 15e4;
+	const unsigned int num_samples = 150000u;
 	ch_data = m_m2k_adc->getSamplesRaw(num_samples);
 	m_m2k_adc->stopAcquisition();
 
@@ -653,8 +653,8 @@ bool M2kCalibrationImpl::calibrateDACgain()
 		return false;
 	}
 
-	int16_t ch0_avg = Utils::average(ch_data.at(0).data(), num_samples);
-	int16_t ch1_avg = Utils::average(ch_data.at(1).data(), num_samples);
+	int16_t ch0_avg = static_cast<int16_t>(Utils::average(ch_data.at(0).data(), num_samples));
+	int16_t ch1_avg = static_cast<int16_t>(Utils::average(ch_data.at(1).data(), num_samples));
 
 	tmp = ch0_avg;
 	m_m2k_adc->convertChannelHostFormat(ANALOG_IN_CHANNEL_1, &ch0_avg, &tmp);

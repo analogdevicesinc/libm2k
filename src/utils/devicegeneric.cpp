@@ -73,7 +73,7 @@ DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name)
 		if (is_buffer_capable) {
                         __try {
                                 m_buffer = new Buffer(m_dev);
-                        } __catch (exception_type &e) {
+                        } __catch (exception_type &) {
                                 delete m_buffer;
                                 m_buffer = nullptr;
                         }
@@ -263,7 +263,7 @@ int DeviceGeneric::getLongValue(std::string attr)
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
 	}
 	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr.c_str(), LIBM2K_ATTRIBUTE_READ}, std::to_string(value)));
-	return value;
+	return static_cast<int>(value);
 }
 
 int DeviceGeneric::getLongValue(unsigned int chn_idx, std::string attr, bool output)
@@ -280,7 +280,7 @@ int DeviceGeneric::getLongValue(unsigned int chn_idx, std::string attr, bool out
 		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute for the selected channel", libm2k::EXC_INVALID_PARAMETER);
 	}
 
-	return chn->getLongValue(attr);
+	return  static_cast<int>(chn->getLongValue(attr));
 }
 
 int DeviceGeneric::getBufferLongValue(std::string attr)
@@ -296,10 +296,10 @@ int DeviceGeneric::getBufferLongValue(std::string attr)
 	}
 	LIBM2K_LOG(INFO,
                libm2k::buildLoggingMessage({m_dev_name, "buffer", attr.c_str(), LIBM2K_ATTRIBUTE_READ}, std::to_string(value)));
-	return value;
+	return  static_cast<int>(value);
 }
 
-int DeviceGeneric::setLongValue(int value, std::string attr)
+int DeviceGeneric::setLongValue(long long value, std::string attr)
 {
 	std::string dev_name = iio_device_get_name(m_dev);
 	if (ContextImpl::iioDevHasAttribute(m_dev, attr)) {
@@ -312,7 +312,7 @@ int DeviceGeneric::setLongValue(int value, std::string attr)
 	return getLongValue(attr);
 }
 
-int DeviceGeneric::setLongValue(unsigned int chn_idx, int value, std::string attr, bool output)
+int DeviceGeneric::setLongValue(unsigned int chn_idx, long long value, std::string attr, bool output)
 {
 	unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 	std::string dev_name = getName();
@@ -329,7 +329,7 @@ int DeviceGeneric::setLongValue(unsigned int chn_idx, int value, std::string att
 	}
 
 	chn->setLongValue(attr, value);
-	return chn->getLongValue(attr);
+	return  static_cast<int>(chn->getLongValue(attr));
 }
 
 int DeviceGeneric::setBufferLongValue(int value, std::string attr)
@@ -527,7 +527,7 @@ std::vector<std::string> DeviceGeneric::getAvailableAttributeValues(const string
 		std::istringstream iss(valuesAsString);
 		values = std::vector<std::string>(std::istream_iterator<std::string>{iss},
 						  std::istream_iterator<std::string>());
-	} __catch (exception_type &e) {
+	} __catch (exception_type&) {
 		values.push_back(getStringValue(attr));
 	}
 	return values;

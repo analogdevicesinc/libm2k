@@ -383,7 +383,7 @@ std::vector<std::string> Channel::getAvailableAttributeValues(const std::string 
 		std::istringstream iss(valuesAsString);
 		values = std::vector<std::string>(std::istream_iterator<std::string>{iss},
 						  std::istream_iterator<std::string>());
-	} __catch (exception_type &e) {
+	} __catch (exception_type&) {
 		values.push_back(getStringValue(attr));
 	}
 	return values;

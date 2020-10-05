@@ -156,7 +156,7 @@ void analyze_thread(M2kAnalogIn *ain, unsigned int channel) {
 	int samp_cnt = 0;		// count the samples between zero crossings
 	int prev_samp_cnt = 0;		// the previous count
 	int nb_crossings = 0;
-	double last_sample;
+	double last_sample = 0;
 	bool stable = true;
 
 
