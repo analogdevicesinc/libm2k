@@ -90,6 +90,16 @@ IF (NOT PYTHON_LINK)
 	ENDIF()
 ENDIF()
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	target_compile_options(_${PROJECT_NAME}
+			PRIVATE
+			-Wno-deprecated-declarations)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+	target_compile_options(_${PROJECT_NAME}
+			PRIVATE
+			-Wno-unused-but-set-variable)
+endif()
+
 target_include_directories(_${PROJECT_NAME} PRIVATE
 	${Python_INCLUDE_DIRS}
 	${CMAKE_SOURCE_DIR}/include)

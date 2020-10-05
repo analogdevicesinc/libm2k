@@ -36,6 +36,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE LIBM2K_EXPORTS)
 if (ENABLE_LOG)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC LIBM2K_ENABLE_LOG)
 endif()
+if (MSVC)
+	add_definitions("/wd4250 /wd4251 /wd4275")
+endif()
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
