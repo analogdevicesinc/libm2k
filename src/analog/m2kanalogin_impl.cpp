@@ -23,6 +23,7 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/logger.hpp>
 #include <algorithm>
+#include <cstring>
 #include "utils/channel.hpp"
 
 using namespace libm2k;
@@ -491,7 +492,9 @@ std::vector<short> M2kAnalogInImpl::getVoltageRaw()
 const short *M2kAnalogInImpl::getVoltageRawP()
 {
 	std::vector<short> avgs = getVoltageRaw();
-	return avgs.data();
+	auto *values = new short[avgs.size()];
+	std::memcpy(values, avgs.data(), avgs.size() * sizeof(short));
+	return values;
 }
 
 double M2kAnalogInImpl::getVoltage(unsigned int ch)
@@ -556,7 +559,9 @@ std::vector<double> M2kAnalogInImpl::getVoltage()
 const double *M2kAnalogInImpl::getVoltageP()
 {
 	std::vector<double> avgs = getVoltage();
-	return avgs.data();
+	auto *values = new double[avgs.size()];
+	std::memcpy(values, avgs.data(), avgs.size() * sizeof(double));
+	return values;
 }
 
 double M2kAnalogInImpl::getScalingFactor(ANALOG_IN_CHANNEL ch)
