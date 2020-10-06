@@ -50,12 +50,15 @@ cmake -DENABLE_PYTHON=off -DENABLE_CSHARP=off -DCMAKE_INSTALL_PREFIX="/opt/libm2
 1. `sudo` is required when installing the library only if the install prefix is a location where the user does not have rights to it.
 2. After installing you should run `ldconfig` to update the links/cache that the dynamic loader uses.
 
-#### Using libm2k with other CMake projects
+#### Consuming libm2k in a CMake Project
 To use libm2k in your own project, simply add this two lines to your projects CMakeLists.txt and your good to go:
 ```
 find_package(libm2k <version> REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE libm2k::libm2k)
 ```
+Compile definitions of libm2k will automatically be added to your target as needed.
+
+Example: if `ENABLE_LOG` is `on` your target will be aware of the compile definition `LIBM2K_ENABLE_LOG` 
 
 The prerequisite for this to work is to have libm2k installed in the system. If the path for libm2k is not in the default `PATH` you might need to add a `CMAKE_PREFIX_PATH` that points to libm2k when running the cmake command for your project.
 
