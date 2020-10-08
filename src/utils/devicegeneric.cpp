@@ -49,14 +49,8 @@ DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name)
 			THROW_M2K_EXCEPTION("Device: No such device", libm2k::EXC_INVALID_PARAMETER);
 		}
 		m_dev_name = iio_device_get_name(m_dev);
-		__try {
-			LIBM2K_LOG(INFO, "Testing if the device " + dev_name + " is buffer capable");
-			m_buffer = new Buffer(m_dev);
-		} __catch (exception_type &e) {
-			delete m_buffer;
-			m_buffer = nullptr;
-		}
 
+		bool is_buffer_capable = false;
 		unsigned int nb_channels = iio_device_get_channels_count(m_dev);
 		for (unsigned int i = 0; i < nb_channels; i++) {
 			Channel *chn = nullptr;
@@ -66,6 +60,9 @@ DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name)
 				chn = nullptr;
 				continue;
 			}
+			if (!is_buffer_capable && iio_channel_is_scan_element(chn->getChannel())) {
+			        is_buffer_capable = true;
+			}
 
 			if (chn->isOutput()) {
 				m_channel_list_out.push_back(chn);
@@ -73,6 +70,15 @@ DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name)
 				m_channel_list_in.push_back(chn);
 			}
 		}
+		if (is_buffer_capable) {
+                        __try {
+                                m_buffer = new Buffer(m_dev);
+                        } __catch (exception_type &e) {
+                                delete m_buffer;
+                                m_buffer = nullptr;
+                        }
+		}
+
 		std::sort(m_channel_list_out.begin(), m_channel_list_out.end(), [](Channel* lchn, Channel* rchn)
 		{
 			return Utils::compareNatural(lchn->getId(), rchn->getId());
