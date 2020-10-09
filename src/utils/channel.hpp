@@ -42,6 +42,8 @@ public:
 	unsigned int getIndex();
 	bool isOutput();
 	bool isEnabled();
+	unsigned int getNbAttributes();
+	std::string getAttributeName(unsigned int idx);
 	bool hasAttribute(std::string attr);
 	void write(struct iio_buffer* buffer, std::vector<short> const &data);
 	void write(struct iio_buffer* buffer, std::vector<unsigned short> const &data);

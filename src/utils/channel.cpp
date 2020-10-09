@@ -109,6 +109,16 @@ bool Channel::isEnabled()
 	return iio_channel_is_enabled(m_channel);
 }
 
+unsigned int Channel::getNbAttributes()
+{
+	return iio_channel_get_attrs_count(m_channel);
+}
+
+std::string Channel::getAttributeName(unsigned int idx)
+{
+	return iio_channel_get_attr(m_channel, idx);
+}
+
 bool Channel::hasAttribute(std::string attr)
 {
 	if (!m_channel) {
