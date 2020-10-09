@@ -166,6 +166,26 @@ string DeviceGeneric::getName()
 	return iio_device_get_name(m_dev);
 }
 
+unsigned int DeviceGeneric::getNbAttributes()
+{
+	return iio_device_get_attrs_count(m_dev);
+}
+
+unsigned int DeviceGeneric::getNbBufferAttributes()
+{
+	return iio_device_get_buffer_attrs_count(m_dev);
+}
+
+std::string DeviceGeneric::getAttributeName(unsigned int idx)
+{
+	return iio_device_get_attr(m_dev, idx);
+}
+
+std::string DeviceGeneric::getBufferAttributeName(unsigned int idx)
+{
+	return iio_device_get_buffer_attr(m_dev, idx);
+}
+
 double DeviceGeneric::getDoubleValue(std::string attr)
 {
 	double value = 0;
@@ -428,6 +448,18 @@ string DeviceGeneric::setStringValue(unsigned int chn_idx, string attr, string v
 	return chn->getStringValue(attr);
 }
 
+string DeviceGeneric::setBufferStringValue(string attr, string value)
+{
+	std::string dev_name = iio_device_get_name(m_dev);
+	if (ContextImpl::iioDevBufferHasAttribute(m_dev, attr)) {
+		iio_device_buffer_attr_write(m_dev, attr.c_str(), value.c_str());
+	} else {
+		THROW_M2K_EXCEPTION(dev_name + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
+	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, "buffer", attr.c_str(), LIBM2K_ATTRIBUTE_WRITE}, value));
+	return getBufferStringValue(attr);
+}
+
 string DeviceGeneric::getStringValue(string attr)
 {
 	char value[100];
@@ -462,6 +494,20 @@ string DeviceGeneric::getStringValue(unsigned int chn_idx, string attr, bool out
 	}
 
 	return chn->getStringValue(attr);
+}
+
+string DeviceGeneric::getBufferStringValue(string attr)
+{
+	char value[100];
+	if (ContextImpl::iioDevBufferHasAttribute(m_dev, attr)) {
+		iio_device_buffer_attr_read(m_dev, attr.c_str(),
+				     value, sizeof(value));
+	} else {
+		THROW_M2K_EXCEPTION(std::string(m_dev_name) + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
+
+	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, "buffer", attr.c_str(), LIBM2K_ATTRIBUTE_READ}, value));
+	return std::string(value);
 }
 
 std::vector<std::string> DeviceGeneric::getAvailableAttributeValues(const string &attr)

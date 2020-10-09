@@ -59,6 +59,10 @@ public:
 	virtual bool isChannelEnabled(unsigned int chnIdx, bool output);
 
 	virtual std::string getName();
+	virtual unsigned int getNbAttributes();
+	virtual unsigned int getNbBufferAttributes();
+	virtual std::string getAttributeName(unsigned int idx);
+	virtual std::string getBufferAttributeName(unsigned int idx);
 	virtual double getDoubleValue(std::string attr);
 	virtual double getDoubleValue(unsigned int, std::string attr, bool output=false);
 	virtual double setDoubleValue(double value, std::string attr);
@@ -79,8 +83,10 @@ public:
 	virtual std::string setStringValue(std::string attr, std::string value);
 	virtual std::string setStringValue(unsigned int chn, std::string attr,
 				   std::string value, bool output=false);
+	virtual std::string setBufferStringValue(std::string attr, std::string value);
 	virtual	std::string getStringValue(std::string attr);
 	virtual std::string getStringValue(unsigned int chn, std::string attr, bool output=false);
+	virtual	std::string getBufferStringValue(std::string attr);
 
 	std::vector<std::string> getAvailableAttributeValues(const std::string &attr);
 	std::vector<std::string> getAvailableAttributeValues(unsigned int chn_idx, const std::string &attr, bool output=false);
