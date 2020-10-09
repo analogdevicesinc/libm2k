@@ -136,7 +136,14 @@ public:
 	 * @brief Retrieve all the available devices
 	 * @return a list of strings containing all the devices
 	 */
-	virtual std::unordered_set<std::string> getAllDevices() = 0;
+	virtual std::unordered_set<std::string> getAllDevices() const = 0;
+
+
+	/**
+	 * @brief Log all the attributes
+	 * @note The logging system should be enabled
+	 */
+	virtual void logAllAttributes() const = 0;
 
 
 	/**

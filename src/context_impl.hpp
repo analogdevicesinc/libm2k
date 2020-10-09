@@ -70,12 +70,12 @@ public:
 	libm2k::analog::DMM* getDMM(std::string);
 	std::vector<libm2k::analog::DMM*> getAllDmm();
 
-
 	std::vector<std::string> getAvailableContextAttributes();
 	std::string getContextAttributeValue(std::string attr);
 	std::string getContextDescription();
 	std::string getSerialNumber();
-	std::unordered_set<std::string> getAllDevices();
+	std::unordered_set<std::string> getAllDevices() const;
+	void logAllAttributes() const override;
 
 	libm2k::context::M2k* toM2k();
 	libm2k::context::Generic* toGeneric();
