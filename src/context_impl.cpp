@@ -21,6 +21,7 @@
 
 #include "context_impl.hpp"
 #include "analog/dmm_impl.hpp"
+#include "utils/channel.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
 #include <libm2k/m2k.hpp>
@@ -210,7 +211,7 @@ bool ContextImpl::isIioDeviceBufferCapable(std::string dev_name)
 	}
 }
 
-std::unordered_set<std::string> ContextImpl::getAllDevices()
+std::unordered_set<std::string> ContextImpl::getAllDevices() const
 {
 
 	return Utils::getAllDevices(m_context);
@@ -226,6 +227,56 @@ void ContextImpl::scanAllDMM()
 			}
 		}
 	}
+}
+
+void ContextImpl::logAllAttributes() const
+{
+#ifdef LIBM2K_ENABLE_LOG
+        LIBM2K_LOG(INFO, "[BEGIN] LOG ALL");
+        const char *name, *value;
+	unsigned int attr_no = iio_context_get_attrs_count(m_context);
+	for (unsigned int i = 0; i < attr_no; i++) {
+		std::pair<std::string, std::string> pair;
+		int ret = iio_context_get_attr(m_context, i, &name, &value);
+		if (ret < 0) {
+			THROW_M2K_EXCEPTION("Device: Can't get context attribute " + std::to_string(i),
+					    libm2k::EXC_RUNTIME_ERROR, ret);
+		}
+		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({"context", name, LIBM2K_ATTRIBUTE_READ}, value));
+	}
+
+        auto devices = getAllDevices();
+        for (auto &dev_name : devices) {
+                DeviceGeneric dev(m_context, dev_name);
+                auto nb_out_channels = dev.getNbChannels(true);
+                auto nb_in_channels = dev.getNbChannels(false);
+                for (unsigned int i = 0; i < nb_out_channels; i++) {
+                        auto channel = dev.getChannel(i, true);
+                        for (unsigned int j = 0; j < channel->getNbAttributes(); j++) {
+                                auto attr_name =  channel->getAttributeName(j);
+                                auto attr_val = channel->getStringValue(attr_name);
+                        }
+                }
+                for (unsigned int i = 0; i < nb_in_channels; i++) {
+                        auto channel = dev.getChannel(i, false);
+                        for (unsigned int j = 0; j < channel->getNbAttributes(); j++) {
+                                auto attr_name =  channel->getAttributeName(j);
+                                auto attr_val = channel->getStringValue(attr_name);
+                        }
+                }
+                auto nb_dev_attrs = dev.getNbAttributes();
+                for(unsigned int i = 0; i < nb_dev_attrs; i++) {
+                        auto attr_name = dev.getAttributeName(i);
+                        auto attr_val = dev.getStringValue(attr_name);
+                }
+                auto nb_dev_buffer_attrs = dev.getNbBufferAttributes();
+                for(unsigned int i = 0; i < nb_dev_buffer_attrs; i++) {
+                        auto attr_name = dev.getBufferAttributeName(i);
+                        auto attr_val = dev.getBufferStringValue(attr_name);
+                }
+        }
+        LIBM2K_LOG(INFO, "[END] LOG ALL");
+#endif
 }
 
 DMM* ContextImpl::getDMM(std::string dev_name)
@@ -347,6 +398,7 @@ void ContextImpl::initializeContextAttributes()
 		if (ret < 0) {
 			THROW_M2K_EXCEPTION("Device: Can't get context attribute " + std::to_string(i), libm2k::EXC_RUNTIME_ERROR, ret);
 		}
+		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({"context", name, LIBM2K_ATTRIBUTE_READ}, value));
 		pair.first = std::string(name);
 		pair.second = std::string(value);
 		m_context_attributes.insert(pair);
