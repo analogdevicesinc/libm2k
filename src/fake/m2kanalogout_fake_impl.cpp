@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) 2019 Analog Devices Inc.
  *
  * This file is part of libm2k
@@ -36,6 +36,9 @@ using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std;
 
+
+std::vector<std::vector<double>> M2kFakeAnalogOutImpl::data_buffers_raw;
+
 M2kFakeAnalogOutImpl::M2kFakeAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs, bool sync)
 {
 	m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(0)));
@@ -61,6 +64,7 @@ M2kFakeAnalogOutImpl::M2kFakeAnalogOutImpl(iio_context *ctx, std::vector<std::st
 		m_samplerate.push_back(75E6);
 		m_nb_kernel_buffers.push_back(4);
 		m_max_samplerate.push_back(-1);
+		m_oversampling_ratio.push_back(1);
 	}
 
 	if (sync) {
@@ -109,19 +113,19 @@ void M2kFakeAnalogOutImpl::syncDevice()
 
 double M2kFakeAnalogOutImpl::getCalibscale(unsigned int index)
 {
-	return getDacDevice(index)->getDoubleValue("calibscale");
+	return 1;//getDacDevice(index)->getDoubleValue("calibscale");
 }
 
 double M2kFakeAnalogOutImpl::setCalibscale(unsigned int index, double calibscale)
 {
-	return getDacDevice(index)->setDoubleValue(calibscale, "calibscale");
+	return 1;//getDacDevice(index)->setDoubleValue(calibscale, "calibscale");
 }
 
 std::vector<int> M2kFakeAnalogOutImpl::getOversamplingRatio()
 {
 	std::vector<int> values = {};
-	for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
-		int val = m_dac_devices.at(i)->getLongValue("oversampling_ratio");
+	for (unsigned int i = 0; i < m_oversampling_ratio.size(); i++) {
+		int val = m_oversampling_ratio.at(i);//->getLongValue("oversampling_ratio");
 		values.push_back(val);
 	}
 	return values;
@@ -129,31 +133,32 @@ std::vector<int> M2kFakeAnalogOutImpl::getOversamplingRatio()
 
 int M2kFakeAnalogOutImpl::getOversamplingRatio(unsigned int chn_idx)
 {
-	return getDacDevice(chn_idx)->getLongValue("oversampling_ratio");
+	return m_oversampling_ratio.at(chn_idx);//getDacDevice(chn_idx)->getLongValue("oversampling_ratio");
 }
 
 std::vector<int> M2kFakeAnalogOutImpl::setOversamplingRatio(std::vector<int> oversampling_ratio)
 {
 	std::vector<int> values = {};
 	for (unsigned int i = 0; i < oversampling_ratio.size(); i++) {
-		int val = m_dac_devices.at(i)->setLongValue(oversampling_ratio.at(i),
-							    "oversampling_ratio");
-		values.push_back(val);
+		m_oversampling_ratio.at(i) = oversampling_ratio.at(i);//m_dac_devices.at(i)->setLongValue(oversampling_ratio.at(i),
+							   // "oversampling_ratio");
+		values.push_back(m_oversampling_ratio.at(i));
 	}
 	return values;
 }
 
 int M2kFakeAnalogOutImpl::setOversamplingRatio(unsigned int chn_idx, int oversampling_ratio)
 {
-	return getDacDevice(chn_idx)->setLongValue(oversampling_ratio,
-						   "oversampling_ratio");
+	m_oversampling_ratio.at(chn_idx) = oversampling_ratio;
+	return m_oversampling_ratio.at(chn_idx);//getDacDevice(chn_idx)->setLongValue(oversampling_ratio,
+		//				   "oversampling_ratio");
 }
 
 std::vector<double> M2kFakeAnalogOutImpl::getSampleRate()
 {
 	std::vector<double> values = {};
 	for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
-		double val = m_dac_devices.at(i)->getDoubleValue("sampling_frequency");
+		double val = m_samplerate.at(i);//m_dac_devices.at(i)->getDoubleValue("sampling_frequency");
 		values.push_back(val);
 	}
 	return values;
@@ -161,7 +166,7 @@ std::vector<double> M2kFakeAnalogOutImpl::getSampleRate()
 
 double M2kFakeAnalogOutImpl::getSampleRate(unsigned int chn_idx)
 {
-	return getDacDevice(chn_idx)->getDoubleValue("sampling_frequency");
+	return m_samplerate.at(chn_idx);//getDacDevice(chn_idx)->getDoubleValue("sampling_frequency");
 }
 
 std::vector<double> M2kFakeAnalogOutImpl::setSampleRate(std::vector<double> samplerates)
@@ -171,8 +176,8 @@ std::vector<double> M2kFakeAnalogOutImpl::setSampleRate(std::vector<double> samp
 	}
 	std::vector<double> values = {};
 	for (unsigned int i = 0; i < samplerates.size(); i++) {
-		m_samplerate.at(i) = m_dac_devices.at(i)->setDoubleValue(samplerates.at(i),
-									 "sampling_frequency");
+		m_samplerate.at(i) = samplerates.at(i);//m_dac_devices.at(i)->setDoubleValue(samplerates.at(i),
+							//		 "sampling_frequency");
 		values.push_back(m_samplerate.at(i));
 	}
 	return values;
@@ -183,7 +188,7 @@ double M2kFakeAnalogOutImpl::setSampleRate(unsigned int chn_idx, double samplera
 	if (chn_idx >= m_dac_devices.size()) {
 		THROW_M2K_EXCEPTION("Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	m_samplerate.at(chn_idx) = getDacDevice(chn_idx)->setDoubleValue(samplerate, "sampling_frequency");
+	m_samplerate.at(chn_idx) = samplerate;//getDacDevice(chn_idx)->setDoubleValue(samplerate, "sampling_frequency");
 	return m_samplerate.at(chn_idx);
 }
 
@@ -235,7 +240,7 @@ void M2kFakeAnalogOutImpl::setCyclic(bool en)
 
 void M2kFakeAnalogOutImpl::setCyclic(unsigned int chn, bool en)
 {
-	getDacDevice(chn)->setCyclic(en);
+	//getDacDevice(chn)->setCyclic(en);
 	m_cyclic.at(chn) = en;
 }
 
@@ -440,8 +445,8 @@ void M2kFakeAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 		unsigned int unusedBufferSpace, maxBufferSpace;
 		for (unsigned int  chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
-			m_dac_devices.at(chn)->initializeBuffer(size, false);
-			unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
+			//m_dac_devices.at(chn)->initializeBuffer(size, false);
+			unusedBufferSpace = 1;//m_dac_devices[chn]->getBufferLongValue("data_available");
 			maxBufferSpace = 2u * size * (m_nb_kernel_buffers.at(chn) - 1);
 			isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
 		}
@@ -456,11 +461,14 @@ void M2kFakeAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 	for (unsigned int chn = 0; chn < data.size(); chn++) {
 		size_t size = data.at(chn).size();
 		std::vector<short> raw_data_buffer = {};
+		std::vector<double> actual_data = {};
 		for (unsigned int i = 0; i < size; i++) {
-			//raw_data_buffer.push_back(convertVoltsToRaw(chn, data[chn][i]));
+			raw_data_buffer.push_back(convertVoltsToRaw(chn, data[chn][i]));
+			actual_data.push_back(data[chn][i]);
 		}
-		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
+		//m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
 		data_buffers.push_back(raw_data_buffer);
+		data_buffers_raw.push_back(actual_data);
 	}
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {

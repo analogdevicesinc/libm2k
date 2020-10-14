@@ -23,6 +23,9 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <algorithm>
 #include "utils/channel.hpp"
+#include "fake/m2kanalogout_fake_impl.hpp"
+
+#include <math.h>
 
 using namespace libm2k;
 using namespace libm2k::analog;
@@ -62,7 +65,7 @@ M2kFakeAnalogInImpl::M2kFakeAnalogInImpl(iio_context * ctx, std::string adc_dev,
 		m_adc_calib_offset.push_back(2048);
 		m_adc_calib_gain.push_back(1);
 		m_adc_hw_vert_offset.push_back(0);
-                m_adc_hw_offset_raw.push_back(2048);
+		m_adc_hw_offset_raw.push_back(2048);
 		m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
 	}
 
@@ -115,7 +118,7 @@ void M2kFakeAnalogInImpl::reset()
 
 void M2kFakeAnalogInImpl::syncDevice()
 {
-	m_samplerate = 100000000;//m_m2k_adc->getDoubleValue("sampling_frequency");
+	m_samplerate = getSampleRate();//100000000;//m_m2k_adc->getDoubleValue("sampling_frequency");
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		auto range = getRangeDevice(static_cast<ANALOG_IN_CHANNEL>(i));
 		m_input_range.at(i) = range;
@@ -124,7 +127,7 @@ void M2kFakeAnalogInImpl::syncDevice()
 		if (m_calibbias_available) {
 			m_adc_calib_offset.at(i) = 0;//m_m2k_adc->getLongValue(i, "calibbias", false);
 		} else {
-                        m_adc_calib_offset.at(i) = 2048;
+			m_adc_calib_offset.at(i) = 2048;
 		}
 		m_adc_hw_offset_raw.at(i) = 2048;//m_ad5625_dev->getLongValue(2 + i, "raw", true);
 		m_adc_hw_vert_offset.at(i) = convertRawToVoltsVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(i), m_adc_hw_offset_raw.at(i) - m_adc_calib_offset.at(i));
@@ -152,8 +155,8 @@ void M2kFakeAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int raw_o
 	const int rawVertOffset = m_adc_hw_offset_raw.at(channel) - m_adc_calib_offset.at(channel);
 	if (m_calibbias_available) {
 		m_adc_calib_offset.at(channel) = 0;//m_m2k_adc->setLongValue(channel, raw_offset, "calibbias", false);
-        } else {
-                m_adc_calib_offset.at(channel) = raw_offset;
+	} else {
+		m_adc_calib_offset.at(channel) = raw_offset;
 	}
 
 	int hw_offset_raw = rawVertOffset + m_adc_calib_offset.at(channel);
@@ -290,8 +293,19 @@ std::vector<std::vector<double>> M2kFakeAnalogInImpl::getSamples(unsigned int nb
 	m_samplerate = getSampleRate();
 	handleChannelsEnableState(true);
 
-	auto fp = std::bind(&M2kFakeAnalogInImpl::processSample, this, std::placeholders::_1, std::placeholders::_2);
-	auto samps = m_m2k_adc->getSamples(nb_samples, fp);
+	//auto fp = std::bind(&M2kFakeAnalogInImpl::processSample, this, std::placeholders::_1, std::placeholders::_2);
+	//auto samps = m_m2k_adc->getSamples(nb_samples, fp);
+	//auto buffer = M2kFakeAnalogOutImpl::data_buffers_raw.at(0);
+	std::vector<std::vector<double>> samps{{},{}};
+	std::vector<double> buff{};
+	for(unsigned int chn =0; chn < M2kFakeAnalogOutImpl::data_buffers_raw.size(); chn++ ){
+		for(unsigned int i=0;i<nb_samples;i+=M2kFakeAnalogOutImpl::data_buffers_raw.at(chn).size())
+			for(unsigned int j=0;j<M2kFakeAnalogOutImpl::data_buffers_raw.at(chn).size();j++)
+				buff.push_back(M2kFakeAnalogOutImpl::data_buffers_raw.at(chn)[j]);//buff.push_back(convertRawToVolts(chn,M2kFakeAnalogOutImpl::data_buffers_raw.at(chn)[j]));
+		samps.at(chn) = buff;
+
+	}
+
 
 	removeSamplesDisabledChannels(samps);
 	handleChannelsEnableState(false);
@@ -307,16 +321,16 @@ void M2kFakeAnalogInImpl::getSamples(std::vector<std::vector<double> > &data, un
 	m_samplerate = getSampleRate();
 	handleChannelsEnableState(true);
 
-	auto fp = std::bind(&M2kFakeAnalogInImpl::processSample, this, _1, _2);
-	m_m2k_adc->getSamples(data, nb_samples, fp);
-
-	removeSamplesDisabledChannels(data);
+	//auto fp = std::bind(&M2kFakeAnalogInImpl::processSample, this, _1, _2);
+	//m_m2k_adc->getSamples(data, nb_samples, fp);
+	//removeSamplesDisabledChannels(data);
 	handleChannelsEnableState(false);
 	m_need_processing = false;
 }
 
 string M2kFakeAnalogInImpl::getChannelName(unsigned int channel)
 {
+	//works
 	if (channel >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
@@ -330,6 +344,7 @@ string M2kFakeAnalogInImpl::getChannelName(unsigned int channel)
 
 double M2kFakeAnalogInImpl::getMaximumSamplerate()
 {
+	//works
 	if (m_max_samplerate < 0) {
 		auto values = getAvailableSampleRates();
 		m_max_samplerate = *(max_element(values.begin(), values.end()));
@@ -537,6 +552,7 @@ const double *M2kFakeAnalogInImpl::getVoltageP()
 
 double M2kFakeAnalogInImpl::getScalingFactor(ANALOG_IN_CHANNEL ch)
 {
+	//works
 	if (ch >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
@@ -547,7 +563,7 @@ double M2kFakeAnalogInImpl::getScalingFactor(ANALOG_IN_CHANNEL ch)
 }
 
 double M2kFakeAnalogInImpl::getScalingFactor(unsigned int ch)
-{
+{	//works
 	if (ch >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
@@ -557,6 +573,7 @@ double M2kFakeAnalogInImpl::getScalingFactor(unsigned int ch)
 
 std::pair<double, double> M2kFakeAnalogInImpl::getHysteresisRange(ANALOG_IN_CHANNEL chn)
 {
+	//works
 	if (chn >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
@@ -566,6 +583,7 @@ std::pair<double, double> M2kFakeAnalogInImpl::getHysteresisRange(ANALOG_IN_CHAN
 
 void M2kFakeAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 {
+	//implemented
 	const char *str_gain_mode;
 
 	if (channel >= getNbChannels()) {
@@ -585,6 +603,7 @@ void M2kFakeAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, M2K_RANGE range)
 
 void M2kFakeAnalogInImpl::setRange(ANALOG_IN_CHANNEL channel, double min, double max)
 {
+	//works
 	if (channel >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
@@ -600,7 +619,7 @@ M2K_RANGE M2kFakeAnalogInImpl::getRange(ANALOG_IN_CHANNEL channel)
 	if (channel >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	return m_input_range[channel];
+	return m_input_range.at(channel);
 }
 
 M2K_RANGE M2kFakeAnalogInImpl::getRangeDevice(ANALOG_IN_CHANNEL channel)
@@ -618,6 +637,7 @@ M2K_RANGE M2kFakeAnalogInImpl::getRangeDevice(ANALOG_IN_CHANNEL channel)
 
 std::pair<double, double> M2kFakeAnalogInImpl::getRangeLimits(M2K_RANGE range)
 {
+	//works
 	auto limits = std::pair<double, double>(HIGH_MIN, HIGH_MAX);
 	if (range == PLUS_MINUS_25V) {
 		limits.first = LOW_MIN;
@@ -628,6 +648,7 @@ std::pair<double, double> M2kFakeAnalogInImpl::getRangeLimits(M2K_RANGE range)
 
 std::vector<std::pair<std::string, std::pair<double, double>>> M2kFakeAnalogInImpl::getAvailableRanges()
 {
+	//works
 	std::vector<std::pair<std::string, std::pair <double, double>>> ranges;
 	std::pair<std::string, std::pair <double, double>> p;
 	p.first = "PLUS_MINUS_25V";
@@ -656,6 +677,7 @@ void M2kFakeAnalogInImpl::setVerticalOffset(ANALOG_IN_CHANNEL channel, double ve
 
 double M2kFakeAnalogInImpl::getVerticalOffset(ANALOG_IN_CHANNEL channel)
 {
+
 	if (channel >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
@@ -664,47 +686,57 @@ double M2kFakeAnalogInImpl::getVerticalOffset(ANALOG_IN_CHANNEL channel)
 
 int M2kFakeAnalogInImpl::getOversamplingRatio()
 {
-	return 1;//m_m2k_adc->getLongValue("oversampling_ratio");
+	//implemented
+	return m_oversamplingratio;//m_m2k_adc->getLongValue("oversampling_ratio");
 }
 
 int M2kFakeAnalogInImpl::getOversamplingRatio(unsigned int chn_idx)
 {
+	//implemented
 	if (chn_idx >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	return 1;// m_m2k_adc->getLongValue(chn_idx, "oversampling_ratio");
+	return m_oversamplingratio;// m_m2k_adc->getLongValue(chn_idx, "oversampling_ratio");
 }
 
 int M2kFakeAnalogInImpl::setOversamplingRatio(int oversampling_ratio)
 {
-	return 1;//m_m2k_adc->setLongValue(oversampling_ratio, "oversampling_ratio");
+	//implemented
+	m_oversamplingratio = oversampling_ratio;
+	return m_oversamplingratio;
+	//m_m2k_adc->setLongValue(oversampling_ratio, "oversampling_ratio");
 }
 
 int M2kFakeAnalogInImpl::setOversamplingRatio(unsigned int chn_idx, int oversampling_ratio)
 {
+	//implemented
 	if (chn_idx >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	return 1;//m_m2k_adc->setLongValue(chn_idx, oversampling_ratio, "oversampling_ratio");
+	m_oversamplingratio = oversampling_ratio;
+	return m_oversamplingratio;//m_m2k_adc->setLongValue(chn_idx, oversampling_ratio, "oversampling_ratio");
 }
 
 
 double M2kFakeAnalogInImpl::getSampleRate()
 {
-	return 100000000;//m_m2k_adc->getDoubleValue("sampling_frequency");
+	//implemented
+	return m_samplerate;//m_m2k_adc->getDoubleValue("sampling_frequency");
 }
 
 double M2kFakeAnalogInImpl::getSampleRate(unsigned int chn_idx)
 {
+	//implemented
 	if (chn_idx >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	return 100000000;//m_m2k_adc->getDoubleValue(chn_idx, "sampling_frequency");
+	return m_samplerate;//m_m2k_adc->getDoubleValue(chn_idx, "sampling_frequency");
 }
 
 double M2kFakeAnalogInImpl::setSampleRate(double samplerate)
 {
-	m_samplerate = 100000000;//m_m2k_adc->setLongValue((int)samplerate, "sampling_frequency");
+	//implemented
+	m_samplerate = samplerate;//100000000;//m_m2k_adc->setLongValue((int)samplerate, "sampling_frequency");
 	m_trigger->setCalibParameters(0, getScalingFactor(0), m_adc_hw_vert_offset.at(0));
 	m_trigger->setCalibParameters(1, getScalingFactor(1), m_adc_hw_vert_offset.at(1));
 	return m_samplerate;
@@ -712,16 +744,18 @@ double M2kFakeAnalogInImpl::setSampleRate(double samplerate)
 
 double M2kFakeAnalogInImpl::setSampleRate(unsigned int chn_idx, double samplerate)
 {
+	//implemented
 	if (chn_idx >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	m_samplerate = 100000000;//m_m2k_adc->setLongValue((int)samplerate, "sampling_frequency");
+	m_samplerate = samplerate;//m_m2k_adc->setLongValue((int)samplerate, "sampling_frequency");
 	m_trigger->setCalibParameters(chn_idx, getScalingFactor(chn_idx), m_adc_hw_vert_offset.at(chn_idx));
 	return m_samplerate;
 }
 
 double M2kFakeAnalogInImpl::getFilterCompensation(double samplerate)
 {
+	//works
 	double compensation = 0.0;
 	if(m_filter_compensation_table.find(samplerate) != m_filter_compensation_table.end()) {
 		compensation = m_filter_compensation_table.at(samplerate);
@@ -733,6 +767,7 @@ double M2kFakeAnalogInImpl::getFilterCompensation(double samplerate)
 
 double M2kFakeAnalogInImpl::getValueForRange(M2K_RANGE range)
 {
+	//works
 	if (range == PLUS_MINUS_25V) {
 		return 0.02017;
 	} else if (range == PLUS_MINUS_2_5V) {
@@ -758,18 +793,18 @@ void M2kFakeAnalogInImpl::setKernelBuffersCount(unsigned int count)
 }
 
 std::vector<double> M2kFakeAnalogInImpl::getAvailableSampleRates()
-{
-	std::vector<std::string> stringValues;
+{       //implemented
 	std::vector<double> values;
+	for(int i = 0; i <= 5 ; i++){
+			 values.push_back(pow(10,(i+3)));
+		}
 
-	stringValues.push_back("100000000"); //m_m2k_adc->getAvailableAttributeValues("sampling_frequency");
-	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
-		       [] (std::string &s) -> double { return std::stod(s); });
 	return values;
 }
 
 std::string M2kFakeAnalogInImpl::getName()
 {
+	//works
 	return m_m2k_adc->getName();
 }
 
@@ -797,7 +832,7 @@ const int M2kFakeAnalogInImpl::convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL
 	double gain = 1.3;
 	double vref = 1.2;
 	double hw_range_gain = getValueForRange(m_input_range.at(channel));
-        return static_cast<int>(vertOffset * (1u << 12u) * hw_range_gain * gain / 2.693 / vref);
+	return static_cast<int>(vertOffset * (1u << 12u) * hw_range_gain * gain / 2.693 / vref);
 }
 
 const double M2kFakeAnalogInImpl::convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset)
@@ -808,7 +843,7 @@ const double M2kFakeAnalogInImpl::convertRawToVoltsVerticalOffset(ANALOG_IN_CHAN
 	double gain = 1.3;
 	double vref = 1.2;
 	double hw_range_gain = getValueForRange(m_input_range.at(channel));
-        return rawVertOffset * 2.693 * vref / ((1u << 12u) * hw_range_gain * gain);
+	return rawVertOffset * 2.693 * vref / ((1u << 12u) * hw_range_gain * gain);
 }
 
 int M2kFakeAnalogInImpl::getRawVerticalOffset(ANALOG_IN_CHANNEL channel)
@@ -841,8 +876,8 @@ void M2kFakeAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib
 
 	if (m_calibbias_available) {
 		m_adc_calib_offset.at(channel) = 0;//m_m2k_adc->setLongValue(channel, calib_offset, "calibbias", false);
-        } else {
-                m_adc_calib_offset.at(channel) = calib_offset;
+	} else {
+		m_adc_calib_offset.at(channel) = calib_offset;
 	}
 
 	const int hw_offset_raw = vert_offset + m_adc_calib_offset.at(channel);

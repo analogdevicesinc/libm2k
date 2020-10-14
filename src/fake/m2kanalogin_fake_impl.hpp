@@ -135,6 +135,8 @@ private:
 	double m_max_samplerate;
 
 	double m_samplerate;
+	std::vector<string> m_gain;
+	int m_oversamplingratio;
 	libm2k::M2kHardwareTrigger *m_trigger;
 	std::vector<M2K_RANGE> m_input_range;
 

@@ -88,12 +88,16 @@ public:
 	std::string getChannelName(unsigned int channel);
 	double getMaximumSamplerate(unsigned int chn_idx) override;
 	void deinitialize();
+
+	static std::vector<std::vector<double>> data_buffers_raw;
+
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_max_samplerate;
 	std::vector<double> m_calib_vlsb;
 	std::vector<bool> m_cyclic;
 	std::vector<double> m_samplerate;
+	std::vector<int> m_oversampling_ratio;
 
 	std::map<double, double> m_filter_compensation_table;
 	std::vector<libm2k::utils::DeviceOut*> m_dac_devices;
@@ -101,6 +105,7 @@ private:
 	bool m_dma_start_sync_available;
 	bool m_dma_data_available;
 	std::vector<unsigned int> m_nb_kernel_buffers;
+
 
 	DeviceOut* getDacDevice(unsigned int chnIdx);
 	void syncDevice();
