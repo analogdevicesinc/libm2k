@@ -1,91 +1,108 @@
-
 import libm2k
 import unittest
 import HtmlTestRunner
-import logging
 import sys
-from m2k_analog_test import A_AnalogTests
-from m2k_powersupply_test import C_PowerSupplyTests
-from m2k_trigger_test import B_TriggerTests
-#from m2k_digital_test import DigitalTests
+import os
+import ps_functions
+import analog_functions
+import trig_functions
+from open_context import ctx
+from create_files import results_dir, results_file, results_file_path
+from m2k_analog_test import *
+from m2k_powersupply_test import *
+from m2k_trigger_test import *
+
+# from m2k_digital_test import DigitalTests
+
+global gen_reports, wait_for_input
+gen_reports = True
+wait_for_input = False
 
 
-from open_context_and_files import ctx, results_dir, open_context, calibrate, create_dir
+def no_reports():
+    if len(sys.argv) > 1 and "noreports" in sys.argv:
+        global gen_reports
+        gen_reports = False
+        ps_functions.gen_reports = False
+        trig_functions.gen_reports = False
+        analog_functions.gen_reports = False
+        path = os.path.dirname(os.path.realpath(results_dir))
+        dir_path = os.path.dirname(os.path.realpath(results_file_path))
+        results_file.close()
+        if os.path.isdir(dir_path):
+            os.remove(path + '/' + results_file_path)
+            os.rmdir(dir_path)
 
 
-logger = logging.getLogger()
-logger.level = logging.DEBUG
-logger.addHandler(logging.StreamHandler(sys.stdout))
+def wait_():
+    global wait_for_input
+    print(len(sys.argv))
+    if len(sys.argv) == 1 or sys.argv[1] == "noreports" or (len(sys.argv) > 3 and "C_PowerSupplyTests" in sys.argv):
+        wait_for_input = True
+    else:
+        wait_for_input = False
 
 
+no_reports()
+wait_()
+if __name__ == "__main__":
+    #  Main file where tests for all segments are called. The test classes are organized in a test suite.
+    #  To run specific tests, specify the class and the test(s) when running this script.
+    #  To run a specific class of tests, indicate said class(es) when running this script.
+    #  If you do not require reports to be generated, add "noreports" when running this script.
+    #  For instructions, run: --> main.py -h
+    #                       --> main.py --help
 
+    if len(sys.argv) > 1 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
+        print("\n====== Instructions ======\n")
+        print("To run all tests run: main.py\n ")
+        print("To run a specific class of tests run: main.py TestClass \n")
+        print("To run a specific test run: main.py TestClass.TestName \n")
+        print("To skip generating reports add <<no_reports>> when executing this script\n")
+        print("List of classes and tests: \n")
+        print("\n ===== class A_AnalogTests ===== \n")
+        print(" ===== tests ====== \n")
+        print("test_1_analog_objects\n"
+              "test_2_calibration\n"
+              "test_amplitude\n"
+              "test_analog_trigger_ch0\n"
+              "test_analog_trigger_ch1\n"
+              "test_cyclic_buffer\n"
+              "test_frequency\n"
+              "test_offset\n"
+              "test_oversampling_ratio\n"
+              "test_phase_difference_between_channels_in_degrees\n"
+              "test_phase_difference_between_channels_in_samples\n"
+              "test_shapes_ch0\n"
+              "test_shapes_ch1\n"
+              "test_voltmeter\n")
+        print("\n ===== class B_TriggerTests ===== \n")
+        print(" ===== tests ====== \n")
+        print("test_1_trigger_object\n"
+              "test_trigger_jitter_ch0\n"
+              "test_trigger_jitter_ch1\n")
+        print("\n ===== class C_PowerSupplyTests ===== \n")
+        print(" ===== tests ====== \n")
+        print("test_1_power_supply_object\n")
+        print("test_negative_power_supply\n")
+        print("test_positive_power_supply\n")
 
-def run_test_suite():
-    """ Test suite that contains all available tests.
-    When run it will create a HTML report of the tests, along with plot files and csv files with results
-    """
-    m2k_test_suite=unittest.TestSuite()
-    m2k_test_suite.addTest(A_AnalogTests())
-    m2k_test_suite.addTest(B_TriggerTests())
-    m2k_test_suite.addTest(C_PowerSupplyTests())
-    #m2k_test_suite.addTest(DigitalTests())
-    result= unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output=str(results_dir), report_title="ADALM2000 libm2k test results",report_name='M2K_test_results',open_in_browser=True, combine_reports=True))
-    m2k_test_suite.run(result)
-    return
+        exit()
+    elif len(sys.argv) > 1 and "noreports" in sys.argv:
+        print("\n Reports will not be generated \n")
+        for i in range(len(sys.argv)):
+            if sys.argv[i] == "noreports":
+                sys.argv.pop(i)
+                break
+        unittest.main(testRunner=unittest.TextTestRunner(), exit=False)
 
-def run_specific_tests_from_A_AnalogTests():
-    """Test suite for A_AnalogTests where the used can choose the desired test
-        Available Analog segment tests: test_amplitude, test_analog_trigger_ch0, test_analog_trigger_ch1, test_cyclic_buffer,test_frequency
-                                        test_offset, test_oversampling_ratio, test_phase_difference_between_channels_in_degrees,
-                                        test_phase_difference_between_channels_in_samples, test_shapes_ch0, test_shapes_ch1, test_voltmeter
-    """
-    suite = unittest.TestSuite()
-    suite.addTest(A_AnalogTests("test_1_analog_objects")) #test necessary to open the context and retrieve Analog Objects
-    suite.addTest(A_AnalogTests("test_2_calibration")) #test necessary to calibrate
-    suite.addTest(A_AnalogTests("add_test_name_here")) #add the name of the test between " "
-    #you can add many tests from the available ones using  the line above as example
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
-    return
+        libm2k.contextClose(ctx)
+        exit()
+    else:
 
-def run_specific_tests_from_B_TriggerTests():
-    """Test suite for B_TriggerTests where the used can choose the desired test
-        Available Trigger tests: test_trigger_jitter_ch0, test_trigger_jitter_ch1
-    """
-    suite = unittest.TestSuite()
-    suite.addTest(B_TriggerTests("test_1_trigger_object")) #test necessary to retrieve Trigger object
-    suite.addTest(B_TriggerTests("add_test_name_here")) #add the name of the test between " "
-    #you can add many tests from the available ones using the line above as example
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
-    return
-
-def run_specific_tests_from_C_PowerSupplyTests():
-    """Test suite for C_Power_SupplyTests where the used can choose the desired test
-        Available Power Supply tests: test_negative_power_supply, test_positive_power_supply
-    """
-    suite = unittest.TestSuite()
-    suite.addTest(C_PowerSupplyTests("test_1_power_supply_object")) #test necessary to retrieve the power supply object
-    suite.addTest(C_PowerSupplyTests("add_test_name_here")) #add the name of the test between " "
-    #you can add manytests from the available ones using  the line above as example
-
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
-    return
-
-
-
-if __name__ =="__main__":
-    """Main file where tests for all segments are called. The test classes are organized in a test suite.
-    To run specific tests, comment run_test_suite() line and uncomment run_specific_tests_from...()  line(s)
-
-    """
-    run_test_suite()
-
-    #run_specific_tests_from_A_AnalogTests()
-    #run_specific_tests_from_B_TriggerTests()
-    #run_specific_tests_from_C_PowerSupplyTests()
-
-
-
-libm2k.contextClose(ctx, True)
+        unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output=str(results_dir),
+                                                               report_title="ADALM2000 libm2k test results",
+                                                               report_name='M2K_test_results', open_in_browser=True,
+                                                               combine_reports=True))
+        libm2k.contextClose(ctx)
+        exit()

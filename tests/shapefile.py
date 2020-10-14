@@ -22,7 +22,7 @@ def shape_gen(n):
 
   
     #generate triangle
-    triangle=np.append( np.linspace(-1,1,int(n/2)),np.linspace(1,-1,int(n/2)))
+    triangle=np.append(np.linspace(-1,1,int(n/2)),np.linspace(1,-1,int(n/2)))
     
 
     #generate rising ramp

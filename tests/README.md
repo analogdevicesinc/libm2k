@@ -15,6 +15,7 @@ To build the documentation is necessary to install pdoc3 python package:
     pdoc --html ./
 
 In order to use the testing scripts, some packages are required:
+* logging
 * unittest
 * html-testRunner
 * numpy
@@ -26,4 +27,6 @@ In order to use the testing scripts, some packages are required:
 To run a single test from one of the test classes open cmd in the working directory and run:
     ```main.py TestClass.test_name```
  Ex: ```main.py A_AnalogTests.test_1_analog_objects```
-        
+To run tests without generating the report files, add the "noreports" option when running main.py .
+    ```python main.py noreports```
+ Ex: ```main.py A_AnalogTests.test_1_analog_objects noreports```
