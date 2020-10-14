@@ -9,6 +9,7 @@ def analog_in(ain):
     Arguments:
         ain  -- AnalogIn object
     """
+    ain.stopAcquisition()
     ain.enableChannel(libm2k.ANALOG_IN_CHANNEL_1,True)
     ain.enableChannel(libm2k.ANALOG_IN_CHANNEL_2,True)
     ain.setVerticalOffset(libm2k.ANALOG_IN_CHANNEL_1,0)
