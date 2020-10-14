@@ -63,6 +63,7 @@ def count_trigger_events(channel,buffers,delay, level, trig_cond, ain, test_sign
         elif(trig_cond==libm2k.FALLING_EDGE_ANALOG):
             if input_data[delay]>=level and input_data[delay+1]<level:
                 counter=counter+1
+    ain.stopAcquisition()
     return counter
 
 def create_test_signals():

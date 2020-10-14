@@ -864,6 +864,6 @@ def channels_diff_in_samples(trig, channel, aout, ain, file, csv_path):
         file.write('Samples difference: '+str(diff_osr)+'\n')
     save_data_to_csv(diff_in_samples0, csv_path+'diffSamples_ch0_trigSrc_'+str(channel)+'.csv')
     save_data_to_csv(diff_in_samples1, csv_path+'diffSamples_ch1_trigSrc_'+str(channel)+'.csv')
-    
+    ain.stopAcquisition()
     return  diff_adc_sr, adc_sr, dac_osr, freq
 
