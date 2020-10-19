@@ -539,6 +539,12 @@ bool M2kImpl::getLed()
 
 bool M2kImpl::isCalibrated()
 {
+	int diff = Utils::compareVersions(m_firmware_version, "v0.25");
+	if (diff <= 0) {
+		// for FW 0.25 and earlier we cannot conclude if the adc/dac was calibrated due to missing calibbias attribute
+		return m_calibration->getAdcCalibrated() && m_calibration->getDacCalibrated();
+	}
+
 	for (unsigned int i = 0; i < 2; i++) {
 		if (m_calibration->getAdcOffset(i) != defaultOffset || m_calibration->getDacOffset(i) != defaultOffset) {
 			return true;

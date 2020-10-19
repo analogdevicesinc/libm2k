@@ -50,6 +50,9 @@ public:
 	virtual double getAdcGain(unsigned int channel) = 0;
 	virtual double getDacGain(unsigned int channel) = 0;
 
+	virtual bool getAdcCalibrated() const = 0;
+	virtual bool getDacCalibrated() const = 0;
+
 
 	virtual bool resetCalibration() = 0;
 
