@@ -347,6 +347,16 @@ void M2kCalibrationImpl::setAdcGain(unsigned int chn, double gain)
 	}
 }
 
+bool M2kCalibrationImpl::getAdcCalibrated() const
+{
+	return m_adc_calibrated;
+}
+
+bool M2kCalibrationImpl::getDacCalibrated() const
+{
+	return m_dac_calibrated;
+}
+
 void M2kCalibrationImpl::updateDacCorrections()
 {
 	m_ad5625_dev->setDoubleValue(0, m_dac_a_ch_offset, "raw", true);

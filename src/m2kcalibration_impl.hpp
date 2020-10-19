@@ -74,6 +74,10 @@ public:
 	void setDacOffset(unsigned int chn, int offset);
 	void setAdcOffset(unsigned int chn, int offset);
 	void setAdcGain(unsigned int chn, double gain);
+
+	bool getAdcCalibrated() const override;
+	bool getDacCalibrated() const override;
+
 private:
 	bool m_cancel;
 
