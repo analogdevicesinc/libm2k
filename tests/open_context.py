@@ -62,18 +62,10 @@ def create_dir(timestamp):
     
     return results_dir
 
-
 #open context
 ctx, ain, aout, trig = open_context()
 calibration=calibrate(ctx)
 dig=ctx.getDigital()
 d_trig=dig.getTrigger()
 ps=ctx.getPowerSupply()
-
-timestamp=time.strftime("_%H-%M-%S_%Y-%m-%d")#reate timestamp
-results_dir=create_dir(timestamp) #create new directory 
-results_file=open(str(results_dir)+'/results_'+timestamp+'.txt','w') #create new file where the computed values can be found
-csv_path=str(results_dir)+'/csv_'
-results_file.write("\nADALM2000 Libm2k Tests- Result Values \n\n")
-
 
