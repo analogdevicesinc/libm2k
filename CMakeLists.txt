@@ -20,6 +20,10 @@
 
 cmake_minimum_required(VERSION 3.1.3)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.18.0")
 	# https://cmake.org/cmake/help/v3.18/policy/CMP0068.html
 	cmake_policy(SET CMP0068 NEW)
@@ -154,10 +158,11 @@ find_library(IIO_LIBRARIES NAMES iio libiio)
 find_path(IIO_INCLUDE_DIRS iio.h)
 
 #set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS}")
+set(LIBM2K_CXX_FLAGS "-pedantic")
 if (NOT WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBM2K_CXX_FLAGS}")
 
 #Add and build the source code subdirectory
 add_subdirectory(src)
