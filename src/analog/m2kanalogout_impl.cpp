@@ -51,16 +51,24 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 	m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 ) - 1));
 	m_calib_vlsb.push_back(10.0 / ((double)( 1 << 12 ) - 1));
 
-	m_filter_compensation_table[75E6] = 1.00;
+	m_filter_compensation_table[100E6] = 1.00;
+	m_filter_compensation_table[100E5] = 1.525879;
+	m_filter_compensation_table[100E4] = 1.164153;
+	m_filter_compensation_table[100E3] = 1.776357;
+	m_filter_compensation_table[100E2] = 1.355253;
+	m_filter_compensation_table[100E1] = 1.033976;
+
+	/*m_filter_compensation_table[75E6] = 1.00;
 	m_filter_compensation_table[75E5] = 1.525879;
 	m_filter_compensation_table[75E4] = 1.164153;
 	m_filter_compensation_table[75E3] = 1.776357;
 	m_filter_compensation_table[75E2] = 1.355253;
-	m_filter_compensation_table[75E1] = 1.033976;
+	m_filter_compensation_table[75E1] = 1.033976;*/
 
 	for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
 		m_cyclic.push_back(true);
-		m_samplerate.push_back(75E6);
+		//m_samplerate.push_back(75E6);
+		m_samplerate.push_back(100E6);
 		m_nb_kernel_buffers.push_back(4);
 		m_max_samplerate.push_back(-1);
 	}
@@ -94,10 +102,11 @@ void M2kAnalogOutImpl::reset()
 	stop();
 	setSyncedDma(false);
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
-		m_samplerate.at(i) = 75E6;
+		m_samplerate.at(i) = 100E6;//75E6;
 		m_cyclic.at(i) = true;
 		m_calib_vlsb.at(i) = 10.0 / ((double)( 1 << 12 ) - 1);
-		setSampleRate(i, 75E6);
+		//setSampleRate(i, 75E6);
+		setSampleRate(i, 100E6);
 		setOversamplingRatio(i, 1);
 		setKernelBuffersCount(i, 4);
 	}
