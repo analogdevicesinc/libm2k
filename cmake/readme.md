@@ -15,11 +15,11 @@ which will generate all the necessary recipes for building and installing. Usefu
 | \<option\> | value | default | description |
 | --------- | ----------- | ----------- | ----------- |
 | ENABLE_DOC | on/off | off | Generate doc using Doxygen |
-| BUILD_EXAMPLES | on/off | on | Build the default examples |
+| BUILD_EXAMPLES | on/off | off | Build the default examples |
 | ENABLE_LOG | on/off | off | Build libm2k with logging support |
 | ENABLE_EXCEPTIONS | on/off | on | Build with exception handling support |
 | ENABLE_PYTHON | on/off | on | Build the Python bindings |
-| ENABLE_CSHARP | on/off | on | Build the C# bindings |
+| ENABLE_CSHARP | on/off | off | Build the C# bindings |
 | ENABLE_TOOLS | on/off | off | Build the tools |
 | INSTALL_UDEV_RULES | on/off | on | Install udev rles for the M2K |
 | CMAKE_PREFIX_PATH | \<path\> | Empty | Specifies a path which will be used by the FIND_XXX() commands |

@@ -29,6 +29,8 @@ __build_libm2k() {
         -DENABLE_TOOLS=ON \
         -DENABLE_LOG=ON \
         -DPython_EXECUTABLE="$PY_PATH/python.exe" \
+        -DBUILD_EXAMPLES=ON \
+        -DENABLE_CSHARP=ON \
         ..
 	cmake --build . --config Release
 

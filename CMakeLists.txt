@@ -42,11 +42,11 @@ set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
 # generate docs by default
 option(ENABLE_DOC "Generate documentation with Doxygen" OFF)
-option(BUILD_EXAMPLES "Build the default examples" ON)
+option(BUILD_EXAMPLES "Build the default examples" OFF)
 option(ENABLE_LOG "Build with logging support" OFF)
 option(ENABLE_EXCEPTIONS "Build with exception handling support" ON)
 option(ENABLE_PYTHON "Build Python bindings" ON)
-option(ENABLE_CSHARP "Build C# bindings" ON)
+option(ENABLE_CSHARP "Build C# bindings" OFF)
 option(ENABLE_TOOLS "Build the tools" OFF)
 option(INSTALL_UDEV_RULES "Install udev rules for the M2K" ON)
 
