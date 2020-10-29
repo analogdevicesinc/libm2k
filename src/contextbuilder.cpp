@@ -189,14 +189,14 @@ Context* ContextBuilder::contextOpen(struct iio_context* ctx, const char* uri)
 	LIBM2K_LOG(INFO, "libiio version: " + to_string(ctx_major) + "." +
 			 to_string(ctx_minor));
 
-	std::string libusb_version = iio_context_get_attr_value(ctx, "usb,libusb");
-	if (!libusb_version.empty()) {
-		LIBM2K_LOG(INFO, "libusb version: " + libusb_version);
+	const char *libusb_version = iio_context_get_attr_value(ctx, "usb,libusb");
+	if (libusb_version != nullptr) {
+		LIBM2K_LOG(INFO, "libusb version: " + std::string(libusb_version));
 	}
 
-	std::string hw_fw_version = iio_context_get_attr_value(ctx, "fw_version");
-	if (!hw_fw_version.empty()) {
-		LIBM2K_LOG(INFO, "Firmware version: " + hw_fw_version);
+	const char *hw_fw_version = iio_context_get_attr_value(ctx, "fw_version");
+	if (hw_fw_version != nullptr) {
+		LIBM2K_LOG(INFO, "Firmware version: " + std::string(hw_fw_version));
 	}
 
 	for (Context* dev : s_connectedDevices) {
