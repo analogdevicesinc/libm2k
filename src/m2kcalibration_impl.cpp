@@ -92,6 +92,8 @@ bool M2kCalibrationImpl::isInitialized() const
 
 void M2kCalibrationImpl::setAdcInCalibMode()
 {
+	m_m2k_adc->setKernelBuffersCount(1);
+
 	// Make sure hardware triggers are disabled before calibrating
 	m_trigger0_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_1);
 	m_trigger1_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_2);
@@ -124,6 +126,8 @@ void M2kCalibrationImpl::setAdcInCalibMode()
 
 void M2kCalibrationImpl::setDacInCalibMode()
 {
+	m_m2k_dac->setKernelBuffersCount(0, 1);
+	m_m2k_dac->setKernelBuffersCount(1, 1);
 	dac_a_sampl_freq = m_m2k_dac->getSampleRate(0);
 	dac_a_oversampl = m_m2k_dac->getOversamplingRatio(0);
 	dac_b_sampl_freq = m_m2k_dac->getSampleRate(1);
@@ -141,6 +145,8 @@ void M2kCalibrationImpl::setDacInCalibMode()
 
 void M2kCalibrationImpl::restoreAdcFromCalibMode()
 {
+	m_m2k_adc->setKernelBuffersCount(4);
+
 	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, m_trigger0_mode);
 	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
 
@@ -160,6 +166,8 @@ void M2kCalibrationImpl::restoreAdcFromCalibMode()
 
 void M2kCalibrationImpl::restoreDacFromCalibMode()
 {
+	m_m2k_dac->setKernelBuffersCount(0, 4);
+	m_m2k_dac->setKernelBuffersCount(1, 4);
 	m_m2k_dac->setSampleRate(0, dac_a_sampl_freq);
 	m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
 	m_m2k_dac->setSampleRate(1, dac_b_sampl_freq);
@@ -423,9 +431,21 @@ bool M2kCalibrationImpl::fine_tune(size_t span, int16_t centerVal0, int16_t cent
 
 	offset0 = centerVal0 - static_cast<int16_t>(span) / 2;
 	offset1 = centerVal1 - static_cast<int16_t>(span) / 2;
+	candidateOffsets0[0] = offset0;
+	candidateOffsets1[0] = offset1;
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), offset0);
+	m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), offset1);
+	offset0++;
+	offset1++;
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(5));
+	m_m2k_adc->startAcquisition(num_samples);
+
 	for (i = 0; i < span + 1; i++) {
-		candidateOffsets0[i] = offset0;
-		candidateOffsets1[i] = offset1;
+		if (i < span) {
+			candidateOffsets0[i + 1] = offset0;
+			candidateOffsets1[i + 1] = offset1;
+		}
 		m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(0), offset0);
 		m_m2k_adc->setAdcCalibOffset(static_cast<ANALOG_IN_CHANNEL>(1), offset1);
 		offset0++;
@@ -434,8 +454,15 @@ bool M2kCalibrationImpl::fine_tune(size_t span, int16_t centerVal0, int16_t cent
 		// Allow some time for the voltage to settle
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
+		/* Do not be confused by the position of this getSamples.
+		* This will get data configured by the previous "setAdcCalibOffset",
+		* not by the latest one.
+		* This helps to reduce the calibration time by aprox. 1s, by not stopping
+		* to clean the buffer after each acquisition.
+		* Once we run "getSamplesRaw" and read data from the buffer, it will
+		* be refilled instantly using the latest offset written on the board.
+		* */
 		ch_data = m_m2k_adc->getSamplesRaw(num_samples);
-		m_m2k_adc->stopAcquisition();
 
 		if (ch_data.size() == 0) {
 			goto out_cleanup;
@@ -444,6 +471,8 @@ bool M2kCalibrationImpl::fine_tune(size_t span, int16_t centerVal0, int16_t cent
 		averagesCh0[i] = std::abs(Utils::average(ch_data.at(0).data(), num_samples));
 		averagesCh1[i] = std::abs(Utils::average(ch_data.at(1).data(), num_samples));
 	}
+
+	m_m2k_adc->stopAcquisition();
 
 	minAvg0 = std::abs(averagesCh0[0]);
 	minAvg1 = std::abs(averagesCh1[0]);
