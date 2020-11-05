@@ -75,6 +75,7 @@ public:
 	bool isChannelEnabled(unsigned int chnIdx) override;
 
 	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count) override;
+	unsigned int getKernelBuffersCount(unsigned int chnIdx) const override;
 
 	short convertVoltsToRaw(unsigned int channel, double voltage) override;
 	double convertRawToVolts(unsigned int channel, short raw) override;
@@ -88,6 +89,8 @@ public:
 	std::string getChannelName(unsigned int channel) override;
 	double getMaximumSamplerate(unsigned int chn_idx) override;
 	void deinitialize();
+
+	void loadNbKernelBuffers();
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_max_samplerate;

@@ -112,6 +112,10 @@ private:
 	bool m_initialized;
 	int m_calibration_mode;
 
+	unsigned int m_adc_kernel_buffers;
+	unsigned int m_dac_a_kernel_buffers;
+	unsigned int m_dac_b_kernel_buffers;
+
 	std::vector<bool> m_adc_channels_enabled;
 	std::vector<bool> m_dac_channels_enabled;
 	double m_dac_default_vlsb;

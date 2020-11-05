@@ -392,6 +392,13 @@ public:
 	 */
 	virtual void setKernelBuffersCount(unsigned int chnIdx, unsigned int count) = 0;
 
+	/**
+	 * @brief Get the number of kernel buffers
+	 * @param chnIdx The index corresponding to the channel
+	 * @return the number of previously set kernel buffers (saved in this session)
+	 */
+	virtual unsigned int getKernelBuffersCount(unsigned int chnIdx) const = 0;
+
 
 	/**
 	 * @brief Convert the volts value of a sample into raw

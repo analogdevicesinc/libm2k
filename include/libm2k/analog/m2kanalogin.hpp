@@ -418,6 +418,12 @@ public:
 	 */
 	virtual void setKernelBuffersCount(unsigned int count) = 0;
 
+	/**
+	 * @brief Get the number of kernel buffers
+	 * @return the number of previously set kernel buffers (saved in this session)
+	 */
+	virtual unsigned int getKernelBuffersCount() const = 0;
+
 
 	/**
 	* @brief Get the hardware trigger handler

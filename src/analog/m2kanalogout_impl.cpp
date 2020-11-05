@@ -112,6 +112,27 @@ void M2kAnalogOutImpl::syncDevice()
 	LIBM2K_LOG(INFO, "[END] M2kAnalogOut sync");
 }
 
+void M2kAnalogOutImpl::loadNbKernelBuffers()
+{
+	if (m_dma_data_available) {
+		const unsigned int buffersize = 16;
+		for (unsigned int  chn = 0; chn < m_dac_devices.size(); chn++) {
+			auto ch_en = isChannelEnabled(chn);
+			getDacDevice(chn)->enableChannel(0, true, true);
+			getDacDevice(chn)->initializeBuffer(buffersize, false);
+			auto sampleSize = getDacDevice(chn)->getSampleSize();
+			auto unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
+			m_nb_kernel_buffers[chn] = (unusedBufferSpace / buffersize) / sampleSize + 1;
+			getDacDevice(chn)->stop();
+			getDacDevice(chn)->enableChannel(0, ch_en, true);
+		}
+	} else {
+		for (unsigned int  chn = 0; chn < m_dac_devices.size(); chn++) {
+			m_nb_kernel_buffers[chn] = 4;
+		}
+	}
+}
+
 double M2kAnalogOutImpl::getCalibscale(unsigned int index)
 {
 	return getDacDevice(index)->getDoubleValue("calibscale");
@@ -610,6 +631,14 @@ void M2kAnalogOutImpl::setKernelBuffersCount(unsigned int chnIdx, unsigned int c
 	}
 	m_dac_devices[chnIdx]->setKernelBuffersCount(count);
 	m_nb_kernel_buffers[chnIdx] = count;
+}
+
+unsigned int M2kAnalogOutImpl::getKernelBuffersCount(unsigned int chnIdx) const
+{
+	if (chnIdx >= m_dac_devices.size()) {
+		THROW_M2K_EXCEPTION("Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);
+	}
+	return m_nb_kernel_buffers[chnIdx];
 }
 
 struct IIO_OBJECTS M2kAnalogOutImpl::getIioObjects()

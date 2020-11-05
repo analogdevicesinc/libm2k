@@ -59,6 +59,7 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	// calibbias attribute is only available in firmware versions newer than 0.26
 	m_calibbias_available = m_m2k_adc->getChannel(ANALOG_IN_CHANNEL_1, false)->hasAttribute("calibbias");
 	m_samplerate = 1E8;
+	m_nb_kernel_buffers = 4;
 
 	for (unsigned int i = 0; i < getNbChannels(); i++) {
 		m_input_range.push_back(PLUS_MINUS_25V);
@@ -68,6 +69,9 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
                 m_adc_hw_offset_raw.push_back(2048);
 		m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
 	}
+
+	// data_available attribute exists only in firmware versions newer than 0.23
+	m_data_available = m_m2k_adc->hasBufferAttribute("data_available");
 
 	if (sync) {
 		syncDevice();
@@ -139,6 +143,22 @@ void M2kAnalogInImpl::syncDevice()
 		m_trigger->setCalibParameters(i, getScalingFactor(i), m_adc_hw_vert_offset.at(i));
 	}
 	LIBM2K_LOG(INFO, "[END] M2kAnalogIn Sync");
+}
+
+void M2kAnalogInImpl::loadNbKernelBuffers()
+{
+	if (m_data_available) {
+		const unsigned int buffersize = 16;
+		handleChannelsEnableState(true);
+		m_m2k_adc->initializeBuffer(buffersize);
+		auto sampleSize = m_m2k_adc->getSampleSize();
+		auto availableBufferSpace = m_m2k_adc->getBufferLongValue("data_available");
+		m_nb_kernel_buffers = (availableBufferSpace / buffersize) / sampleSize;
+		handleChannelsEnableState(false);
+		m_m2k_adc->flushBuffer();
+	} else {
+		m_nb_kernel_buffers = 4;
+	}
 }
 
 void M2kAnalogInImpl::setAdcCalibGain(ANALOG_IN_CHANNEL channel, double gain)
@@ -766,6 +786,12 @@ void M2kAnalogInImpl::cancelAcquisition()
 void M2kAnalogInImpl::setKernelBuffersCount(unsigned int count)
 {
 	m_m2k_adc->setKernelBuffersCount(count);
+	m_nb_kernel_buffers = count;
+}
+
+unsigned int M2kAnalogInImpl::getKernelBuffersCount() const
+{
+	return m_nb_kernel_buffers;
 }
 
 std::vector<double> M2kAnalogInImpl::getAvailableSampleRates()
