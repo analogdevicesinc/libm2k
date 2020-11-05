@@ -621,8 +621,9 @@ void DeviceGeneric::setKernelBuffersCount(unsigned int count)
 	if (!m_dev) {
 		THROW_M2K_EXCEPTION("Device: no such device", libm2k::EXC_OUT_OF_RANGE);
 	}
-	if (iio_device_set_kernel_buffers_count(m_dev, count) != 0) {
-		THROW_M2K_EXCEPTION("Device: Cannot set the number of kernel buffers", libm2k::EXC_RUNTIME_ERROR);
+	int ret = iio_device_set_kernel_buffers_count(m_dev, count);
+	if (ret != 0) {
+		THROW_M2K_EXCEPTION("Device: Cannot set the number of kernel buffers", libm2k::EXC_RUNTIME_ERROR, ret);
 	}
 	const char *deviceName = iio_device_get_name(m_dev);
 	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({deviceName}, "Set kernel buffers count: " + std::to_string(count)));
@@ -675,4 +676,12 @@ bool DeviceGeneric::hasGlobalAttribute(string attr)
 bool DeviceGeneric::hasBufferAttribute(string attr)
 {
 	return ContextImpl::iioDevBufferHasAttribute(m_dev, attr);
+}
+
+ssize_t DeviceGeneric::getSampleSize()
+{
+	if (!m_dev) {
+		THROW_M2K_EXCEPTION("Device: No available device", libm2k::EXC_INVALID_PARAMETER);
+	}
+	return iio_device_get_sample_size(m_dev);
 }

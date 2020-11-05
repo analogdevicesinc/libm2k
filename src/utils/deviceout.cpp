@@ -133,8 +133,9 @@ void DeviceOut::stop()
 void DeviceOut::setKernelBuffersCount(unsigned int count)
 {
 	if (m_dev) {
-		if (iio_device_set_kernel_buffers_count(m_dev, count) != 0) {
-			THROW_M2K_EXCEPTION("Device: Cannot set the number of kernel buffers", libm2k::EXC_RUNTIME_ERROR);
+		int ret = iio_device_set_kernel_buffers_count(m_dev, count);
+		if (ret != 0) {
+			THROW_M2K_EXCEPTION("Device: Cannot set the number of kernel buffers", libm2k::EXC_RUNTIME_ERROR, ret);
 		}
 		const char *deviceName = iio_device_get_name(m_dev);
 		LIBM2K_LOG(INFO,

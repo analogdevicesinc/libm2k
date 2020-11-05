@@ -122,6 +122,7 @@ public:
 	void convertChannelHostFormat(unsigned int chn_idx, double *avg, int16_t *src);
 
 	void setKernelBuffersCount(unsigned int count) override;
+	unsigned int getKernelBuffersCount() const override;
 
 	libm2k::M2kHardwareTrigger* getTrigger() override;
 	struct IIO_OBJECTS getIioObjects() override;
@@ -135,6 +136,7 @@ public:
 
 	void deinitialize();
 	bool hasCalibbias();
+	void loadNbKernelBuffers();
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
@@ -153,6 +155,8 @@ private:
 	std::vector<double> m_adc_hw_vert_offset;
 	std::map<double, double> m_filter_compensation_table;
 	std::vector<bool> m_channels_enabled;
+	unsigned int m_nb_kernel_buffers;
+	bool m_data_available;
 
 	void syncDevice();
 

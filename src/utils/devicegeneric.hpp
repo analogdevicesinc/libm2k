@@ -108,6 +108,7 @@ public:
 	virtual bool hasGlobalAttribute(std::string attr);
 	virtual bool hasBufferAttribute(std::string attr);
 
+	virtual ssize_t getSampleSize();
 protected:
 	struct iio_context *m_context;
 	struct iio_device *m_dev;
