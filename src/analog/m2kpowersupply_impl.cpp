@@ -24,6 +24,7 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/logger.hpp>
 #include "utils/channel.hpp"
+#include <libm2k/utils/utils.hpp>
 #include <iio.h>
 
 using namespace libm2k::analog;
@@ -194,7 +195,8 @@ void M2kPowerSupplyImpl::loadCalibrationCoefficients()
 		__try {
 			auto pair = m_generic_device->getContextAttr(i);
 			calib_pair.first = std::string(pair.first.c_str() + 4);
-			calib_pair.second = std::stod(pair.second);
+			calib_pair.second = Utils::safeStod(pair.second);
+
 			m_calib_coefficients.push_back(calib_pair);
 		} __catch (exception_type &) {
 			continue;

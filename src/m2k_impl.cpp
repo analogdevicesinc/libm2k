@@ -559,24 +559,24 @@ bool M2kImpl::hasContextCalibration()
 	auto it = splitValues.begin();
 	while (it != splitValues.end()) {
 		try {
-			temperature = std::stod(*it);
+			temperature = Utils::safeStod(*it);
 			auto parameters = std::make_shared<struct CALIBRATION_PARAMETERS>();
 			it = std::next(it);
 			parameters->adc_offset_ch_1 = std::stoi(*it);
 			it = std::next(it);
 			parameters->adc_offset_ch_2 = std::stoi(*it);
 			it = std::next(it);
-			parameters->adc_gain_ch_1 = std::stod(*it);
+			parameters->adc_gain_ch_1 = Utils::safeStod(*it);
 			it = std::next(it);
-			parameters->adc_gain_ch_2 = std::stod(*it);
+			parameters->adc_gain_ch_2 = Utils::safeStod(*it);
 			it = std::next(it);
 			parameters->dac_a_offset = std::stoi(*it);
 			it = std::next(it);
 			parameters->dac_b_offset = std::stoi(*it);
 			it = std::next(it);
-			parameters->dac_a_gain = std::stod(*it);
+			parameters->dac_a_gain = Utils::safeStod(*it);
 			it = std::next(it);
-			parameters->dac_b_gain = std::stod(*it);
+			parameters->dac_b_gain = Utils::safeStod(*it);
 			it = std::next(it);
 
 			m_calibration_lut.insert({temperature, parameters});

@@ -71,6 +71,7 @@ namespace utils {
 		static std::vector<std::string> split(std::string, std::string);
 		static int compareVersions(std::string v1, std::string v2);
 		static bool compareNatural(const std::string &a, const std::string &b);
+		static double safeStod(const std::string& to_convert);
 	private:
 		static std::string parseIniSection(std::string line);
 		static std::pair<std::string, std::vector<std::string>>

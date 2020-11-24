@@ -28,9 +28,9 @@
 #include <algorithm>
 #include <thread>
 #include <chrono>
-#include <iostream>
 #include <cctype>
 #include <sstream>
+#include <locale>
 
 using namespace std;
 using namespace libm2k::utils;
@@ -282,4 +282,13 @@ bool Utils::compareNatural(const std::string& a, const std::string& b){
 	std::getline(string_stream_a, a_new);
 	std::getline(string_stream_b, b_new);
 	return (compareNatural(a_new, b_new));
+}
+
+double Utils::safeStod(const std::string& to_convert)
+{
+	double converted_value = 0.0;
+	std::istringstream in_s(to_convert);
+	in_s.imbue(std::locale("C"));
+	in_s >> converted_value;
+	return converted_value;
 }
