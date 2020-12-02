@@ -44,9 +44,12 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kDigital");
 	__try {
 		m_dev_generic = make_shared<DeviceGeneric>(ctx, logic_dev);
+	} __catch (m2k_exception &e) {
+		m_dev_generic = nullptr;
+		THROW_M2K_EXCEPTION("M2K Digital: No generic digital device was found", libm2k::EXC_INVALID_PARAMETER, e.iioCode());
 	} __catch (exception_type&) {
 		m_dev_generic = nullptr;
-		THROW_M2K_EXCEPTION("M2K Digital: No generic digital device was found.", libm2k::EXC_INVALID_PARAMETER);
+		THROW_M2K_EXCEPTION("M2K Digital: No generic digital device was found", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	m_trigger = trigger;
@@ -56,6 +59,9 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 	if (m_dev_name_write != "") {
 		__try {
 			m_dev_write = make_shared<DeviceOut>(ctx, m_dev_name_write);
+		} __catch (m2k_exception &e) {
+			m_dev_generic = nullptr;
+			THROW_M2K_EXCEPTION("M2K Digital: No device was found for writing", libm2k::EXC_INVALID_PARAMETER, e.iioCode());
 		} __catch (exception_type&) {
 			m_dev_write = nullptr;
 			THROW_M2K_EXCEPTION("M2K Digital: No device was found for writing", libm2k::EXC_INVALID_PARAMETER);
@@ -65,6 +71,9 @@ M2kDigitalImpl::M2kDigitalImpl(struct iio_context *ctx, std::string logic_dev, b
 	if (m_dev_name_read != "") {
 		__try {
 			m_dev_read = make_shared<DeviceIn>(ctx, m_dev_name_read);
+		} __catch (m2k_exception &e) {
+			m_dev_generic = nullptr;
+			THROW_M2K_EXCEPTION("M2K Digital: No device was found for reading", libm2k::EXC_INVALID_PARAMETER, e.iioCode());
 		} __catch (exception_type&) {
 			m_dev_read = nullptr;
 			THROW_M2K_EXCEPTION("M2K Digital: No device was found for reading", libm2k::EXC_INVALID_PARAMETER);
@@ -277,7 +286,9 @@ std::vector<unsigned short> M2kDigitalImpl::getSamples(unsigned int nb_samples)
 		nb_samples = ((nb_samples + 3) / 4) * 4;
 		LIBM2K_LOG(INFO, "[END] M2kDigital getSamples");
 		return m_dev_read->getSamplesShort(nb_samples);
-
+	} __catch (m2k_exception &e) {
+		THROW_M2K_EXCEPTION("M2K Digital: " + string(e.what()), libm2k::EXC_INVALID_PARAMETER, e.iioCode());
+		return std::vector<unsigned short>();
 	} __catch (exception_type &e) {
 		THROW_M2K_EXCEPTION("M2K Digital: " + string(e.what()), libm2k::EXC_INVALID_PARAMETER);
 		return std::vector<unsigned short>();
@@ -299,7 +310,9 @@ const unsigned short* M2kDigitalImpl::getSamplesP(unsigned int nb_samples)
 		nb_samples = ((nb_samples + 3) / 4) * 4;
 		LIBM2K_LOG(INFO, "[END] M2kDigital getSamplesP");
 		return m_dev_read->getSamplesP(nb_samples);
-
+	} __catch (m2k_exception &e) {
+		THROW_M2K_EXCEPTION("M2K Digital: " + string(e.what()), libm2k::EXC_INVALID_PARAMETER, e.iioCode());
+		return nullptr;
 	} __catch (exception_type &e) {
 		THROW_M2K_EXCEPTION("M2K Digital: " + string(e.what()), libm2k::EXC_INVALID_PARAMETER);
 		return nullptr;
