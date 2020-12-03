@@ -689,3 +689,43 @@ double M2kAnalogOutImpl::getMaximumSamplerate(unsigned int chn_idx)
 	}
 	return m_max_samplerate[chn_idx];
 }
+//Last Sample Hold
+void M2kAnalogOutImpl::setDacDataSelect(unsigned int index, string val)
+{
+	auto chn = getDacDevice(index)->getChannel(0, true);
+	auto attr = chn->hasAttribute("dac_data_sel");
+	if(attr){
+		chn->setStringValue("dac_data_sel",val);
+	}
+}
+string M2kAnalogOutImpl::getDacDataSelect(unsigned int index)
+{
+	auto chn = getDacDevice(index)->getChannel(0,true);
+	auto attr = chn->hasAttribute("dac_data_sel");
+	if(attr)
+		return chn->getStringValue("dac_data_sel");
+	else
+		return "No";
+}
+string M2kAnalogOutImpl::getDataSelectAvailable(unsigned int index)
+{
+	auto chn = getDacDevice(index)->getChannel(0,true);
+	return chn->getStringValue("dac_data_sel_available");
+}
+bool M2kAnalogOutImpl::getDacSyncStop(unsigned int index)
+{
+	//return getDacDevice(index)->getBoolValue("dac_sync_stop");
+	return m_dac_devices.at(index)->getBoolValue("dac_sync_stop");
+}
+bool M2kAnalogOutImpl::setDacSyncStop(unsigned int index, bool value)
+{
+	return getDacDevice(index)->setBoolValue(value,"dac_sync_stop");
+}
+bool M2kAnalogOutImpl::getLastSampleHold(unsigned int index)
+{
+	return getDacDevice(index)->getBoolValue("last_sample_hold");
+}
+bool M2kAnalogOutImpl::setLastSampleHold(unsigned int index, bool value)
+{
+	return getDacDevice(index)->setBoolValue(value, "last_sample_hold");
+}

@@ -142,6 +142,34 @@ public:
 	/**
 	* @private
 	*/
+	virtual std::string getDacDataSelect(unsigned int index) = 0;
+	/**
+	* @private
+	*/
+	virtual void setDacDataSelect(unsigned int index, std::string val) = 0;
+	/**
+	* @private
+	*/
+	virtual std::string getDataSelectAvailable(unsigned int index) = 0;
+	/**
+	* @private
+	*/
+	virtual bool getDacSyncStop(unsigned int index) = 0;
+	/**
+	* @private
+	*/
+	virtual bool setDacSyncStop(unsigned int index, bool value) = 0;
+	/**
+	* @private
+	*/
+	virtual bool getLastSampleHold(unsigned int index) = 0;
+	/**
+	* @private
+	*/
+	virtual bool setLastSampleHold(unsigned int index, bool value) = 0;
+	/**
+	* @private
+	*/
 	virtual void setSyncedDma(bool en, int chn = -1) = 0;
 
 	/**
