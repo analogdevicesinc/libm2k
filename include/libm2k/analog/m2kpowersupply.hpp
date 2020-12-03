@@ -74,9 +74,12 @@ public:
 	* @brief Retrieve the value of a given channel
 	*
 	* @param chn The index corresponding to the channel
+	* @param calibrated Read values are converted using the calibration
+	* coefficients from the IIO context by default; This boolean flag
+	* specifies whether the coefficients should be used.
 	* @return double The voltage transmitted by the given channel
 	*/
-	virtual double readChannel(unsigned int chn) = 0;
+	virtual double readChannel(unsigned int chn, bool calibrated = true) = 0;
 
 
 	/**
@@ -84,8 +87,11 @@ public:
 	*
 	* @param chn The index corresponding to the channel
 	* @param value The voltage (up to 5V)
+	* @param calibrated Written values are converted using the calibration
+	* coefficients from the IIO context by default; This boolean flag
+	* specifies whether the coefficients should be used.
 	*/
-	virtual void pushChannel(unsigned int chn, double value) = 0;
+	virtual void pushChannel(unsigned int chn, double value, bool calibrated = true) = 0;
 
 
 	/**
