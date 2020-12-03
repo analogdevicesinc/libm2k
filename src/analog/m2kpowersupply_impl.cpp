@@ -218,24 +218,26 @@ void M2kPowerSupplyImpl::enableAll(bool en)
 	UNUSED(en);
 }
 
-double M2kPowerSupplyImpl::readChannel(unsigned int idx)
+double M2kPowerSupplyImpl::readChannel(unsigned int idx, bool calibrated)
 {
 	LIBM2K_LOG(INFO, "[BEGIN] M2kPowerSupply readChannel");
 	double val = 0;
-	double offset = 0;
-	double gain = 0;
+	double offset = 0.0;
+	double gain = 1.0;
 	double value = 0;
 
 	if (idx >= m_read_channel_idx.size()) {
 		THROW_M2K_EXCEPTION("M2k PowerSupply: No such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
-	if (idx == 0) {
-		offset = getCalibrationCoefficient("offset_pos_dac");
-		gain = getCalibrationCoefficient("gain_pos_dac");
-	} else {
-		offset = getCalibrationCoefficient("offset_neg_dac");
-		gain = getCalibrationCoefficient("gain_neg_dac");
+	if (calibrated) {
+		if (idx == 0) {
+			offset = getCalibrationCoefficient("offset_pos_dac");
+			gain = getCalibrationCoefficient("gain_pos_dac");
+		} else {
+			offset = getCalibrationCoefficient("offset_neg_dac");
+			gain = getCalibrationCoefficient("gain_neg_dac");
+		}
 	}
 
 	//voltage2 and v1
@@ -247,11 +249,11 @@ double M2kPowerSupplyImpl::readChannel(unsigned int idx)
 	return value;
 }
 
-void M2kPowerSupplyImpl::pushChannel(unsigned int chnIdx, double value)
+void M2kPowerSupplyImpl::pushChannel(unsigned int chnIdx, double value, bool calibrated)
 {
 	LIBM2K_LOG(INFO, "[BEGIN] M2kPowerSupply pushChannel");
-	double offset = 0;
-	double gain = 0;
+	double offset = 0.0;
+	double gain = 1.0;
 	double val;
 
 	if (chnIdx >= m_write_channel_idx.size()) {
@@ -262,12 +264,14 @@ void M2kPowerSupplyImpl::pushChannel(unsigned int chnIdx, double value)
 		THROW_M2K_EXCEPTION("M2K power supplies are limited to 5V", libm2k::EXC_INVALID_PARAMETER);
 	}
 
-	if (chnIdx == 0) {
-		offset = getCalibrationCoefficient("offset_pos_dac");
-		gain = getCalibrationCoefficient("gain_pos_dac");
-	} else {
-		offset = getCalibrationCoefficient("offset_neg_dac");
-		gain = getCalibrationCoefficient("gain_neg_dac");
+	if (calibrated) {
+		if (chnIdx == 0) {
+			offset = getCalibrationCoefficient("offset_pos_dac");
+			gain = getCalibrationCoefficient("gain_pos_dac");
+		} else {
+			offset = getCalibrationCoefficient("offset_neg_dac");
+			gain = getCalibrationCoefficient("gain_neg_dac");
+		}
 	}
 
 	val = (value * gain + offset) * m_write_coefficients.at(chnIdx);
