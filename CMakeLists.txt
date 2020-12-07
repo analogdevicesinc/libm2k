@@ -47,6 +47,7 @@ option(ENABLE_LOG "Build with logging support" OFF)
 option(ENABLE_EXCEPTIONS "Build with exception handling support" ON)
 option(ENABLE_PYTHON "Build Python bindings" ON)
 option(ENABLE_CSHARP "Build C# bindings" OFF)
+option(ENABLE_LABVIEW "Build LabVIEW bindings" OFF)
 option(ENABLE_TOOLS "Build the tools" OFF)
 option(INSTALL_UDEV_RULES "Install udev rules for the M2K" ON)
 
@@ -192,6 +193,12 @@ endif()
 if (ENABLE_CSHARP AND SWIG_FOUND)
 	message("---- Building C# bindings")
 	add_subdirectory(bindings/csharp)
+endif()
+
+#Add and build LabVIEW wrapper bindings
+if (ENABLE_LABVIEW)
+	message("---- Building LabVIEW bindings")
+	add_subdirectory(bindings/labview)
 endif()
 
 #Add and build the examples
