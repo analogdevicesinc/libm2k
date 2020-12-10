@@ -44,6 +44,14 @@ public:
 
 	M2K_TRIGGER_CONDITION_DIGITAL getDigitalOutCondition() const override;
 
+	void setAnalogOutSource(M2K_TRIGGER_OUT_SOURCE src) override;
+
+	M2K_TRIGGER_OUT_SOURCE getAnalogOutSource() const override;
+
+	void setAnalogOutCondition(M2K_TRIGGER_CONDITION_DIGITAL cond) override;
+
+	M2K_TRIGGER_CONDITION_DIGITAL getAnalogOutCondition() const override;
+
 protected:
 	void setTriggerOutSource(M2K_TRIGGER_OUT_SOURCE src, const std::shared_ptr<libm2k::utils::DeviceOut>& device);
 	M2K_TRIGGER_OUT_SOURCE getTriggerOutSource(const std::shared_ptr<libm2k::utils::DeviceOut>& device) const;
@@ -51,6 +59,7 @@ protected:
 	M2K_TRIGGER_CONDITION_DIGITAL getTriggerOutCondition(const std::shared_ptr<libm2k::utils::DeviceOut>& device) const;
 
 	std::shared_ptr<libm2k::utils::DeviceOut> m_digital_trigger_device;
+	std::shared_ptr<libm2k::utils::DeviceOut> m_analog_trigger_device;
 
 	static std::vector<std::string> m_trigger_source;
 	static std::vector<std::string> m_trigger_cond;
