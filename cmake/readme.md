@@ -20,6 +20,7 @@ which will generate all the necessary recipes for building and installing. Usefu
 | ENABLE_EXCEPTIONS | on/off | on | Build with exception handling support |
 | ENABLE_PYTHON | on/off | on | Build the Python bindings |
 | ENABLE_CSHARP | on/off | off | Build the C# bindings |
+| ENABLE_LABVIEW | on/off | off | Build the LabVIEW bindings |
 | ENABLE_TOOLS | on/off | off | Build the tools |
 | INSTALL_UDEV_RULES | on/off | on | Install udev rles for the M2K |
 | CMAKE_PREFIX_PATH | \<path\> | Empty | Specifies a path which will be used by the FIND_XXX() commands |
