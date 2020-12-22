@@ -84,6 +84,9 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output)
                                                                       " samples)"));
 		LIBM2K_LOG_IF(WARNING, size % 4 != 0 || size < 16,
                       libm2k::buildLoggingMessage({m_dev_name}, "Incorrect number of samples"));
+
+		LIBM2K_LOG_IF(WARNING, output && cyclic && size < 1024,
+                      libm2k::buildLoggingMessage({m_dev_name}, "Cyclic buffer too small. The length of the buffer should be greater than 1024"));
 	}
 }
 
