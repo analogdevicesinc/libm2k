@@ -1,4 +1,4 @@
-#!/bin/sh -xe
+#!/bin/sh -e
 
 TRAVIS_BUILD_DIR=${TRAVIS_BUILD_DIR:-'./'}
 
@@ -41,10 +41,11 @@ ensure_command_exists sudo
 
 . ${TRAVIS_BUILD_DIR}/build/lib.sh
 
+INSIDE_DOCKER_TRAVIS_CI_ENV="$INSIDE_DOCKER_TRAVIS_CI_ENV PACKAGE_TO_INSTALL PYTHON PIP"
+
 if [ -z "${LDIST}" -a -f "build/.LDIST" ] ; then
 	export LDIST="-$(cat build/.LDIST)"
 fi
 if [ -z "${LDIST}" ] || [ "$LDIST" = "DO_NOT_DEPLOY" ] ; then
 	export LDIST="-$(get_ldist)"
 fi
-

@@ -1,8 +1,11 @@
-#!/bin/sh -xe
+#!/bin/sh -e
 
-if [ "x${COVERITY_SCAN_PROJECT_NAME}" != "x" ] ; then exit 0; fi
+TOP_DIR=$(pwd)
 
-cd $TRAVIS_BUILD_DIR/build
+mkdir -p build
+mkdir -p build_tar
+
+cd build
 cmake -DOSX_PACKAGE=ON -DENABLE_TOOLS=ON -DENABLE_PYTHON=ON -DENABLE_CSHARP=ON -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON ..
 make
 ls
@@ -10,7 +13,7 @@ ls
 python3 setup.py sdist bdist_wheel
 ls dist
 
-cd $TRAVIS_BUILD_DIR/build_tar
+cd ${TOP_DIR}/build_tar
 cmake -DOSX_PACKAGE=OFF -DENABLE_PACKAGING=ON -DENABLE_PYTHON=ON -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON ..
 make && make package
 ls

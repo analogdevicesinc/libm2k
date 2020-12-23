@@ -1,6 +1,6 @@
-#!/bin/sh -xe
+#!/bin/sh -e
 
-if [ "x${COVERITY_SCAN_PROJECT_NAME}" != "x" ] ; then exit 0; fi
+TOP_DIR=$(pwd)
 
 . CI/travis/lib.sh
 
@@ -13,8 +13,8 @@ handle_default() {
 	sudo python3 setup.py --command-packages=stdeb.command sdist_dsc
 	cd "$(find . -type d -name "debian" | head -n 1)"
 	sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc
-	cp ../../*.deb ${TRAVIS_BUILD_DIR}/build/
-	cd ${TRAVIS_BUILD_DIR}/build/
+	cp ../../*.deb ${TOP_DIR}/build/
+	cd ${TOP_DIR}/build/
 	#remove the tar.gz for bindings
 	sudo rm *.tar.gz
 
@@ -32,14 +32,8 @@ handle_centos() {
 	cd ..
 }
 
-handle_centos_docker() {
-	run_docker_script inside_docker.sh \
-		"centos:centos${OS_VERSION}" "centos"
-}
-
-handle_ubuntu_docker() {
-	run_docker_script inside_docker.sh \
-		"ubuntu:${OS_VERSION}"
+handle_generic_docker() {
+	run_docker_script inside_docker.sh
 }
 
 handle_doxygen() {
@@ -51,10 +45,18 @@ handle_doxygen() {
 	./CI/travis/doxygen.sh
 }
 
-LIBNAME="$1"
-OS_TYPE=${2:-default}
-OS_VERSION="$3"
+handle_ubuntu() {
+	handle_default
+}
 
-handle_${OS_TYPE}
+handle_debian() {
+	handle_default
+}
 
+handle_generic_docker() {
+	run_docker_script inside_docker.sh
+}
 
+setup_build_type_env_vars
+
+handle_${BUILD_TYPE}
