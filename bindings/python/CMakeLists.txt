@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.5")
+if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.5")
 	# Check CMake Policy added in v3.13 regarding the SWIG generated target name
 	# https://cmake.org/cmake/help/v3.14/policy/CMP0078.html
 	cmake_policy(SET CMP0078 OLD)
@@ -8,7 +8,7 @@ endif()
 set(SWIG_OUTPUT_NAME libm2k)
 
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14.7")
+if(NOT ${CMAKE_VERSION} VERSION_LESS "3.14.7")
 	# Check CMake Policy added in v3.14 regarding the SWIG_MODULE_NAME flag
 	# https://cmake.org/cmake/help/v3.14/policy/CMP0086.html
 	cmake_policy(SET CMP0086 NEW)
@@ -65,7 +65,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set_property(SOURCE ../${PROJECT_NAME}.i PROPERTY SWIG_MODULE_NAME "libm2k")
 
-SWIG_ADD_LIBRARY(${SWIG_OUTPUT_NAME} TYPE MODULE LANGUAGE python OUTPUT_DIR ${CMAKE_BINARY_DIR} OUTFILE_DIR ${CMAKE_BINARY_DIR} SOURCES ../${PROJECT_NAME}.i)
+if(${CMAKE_VERSION} VERSION_LESS "3.8.2")
+	swig_add_module(${SWIG_OUTPUT_NAME} python ../${PROJECT_NAME}.i)
+else()
+	SWIG_ADD_LIBRARY(${SWIG_OUTPUT_NAME} TYPE MODULE LANGUAGE python OUTPUT_DIR ${CMAKE_BINARY_DIR} OUTFILE_DIR ${CMAKE_BINARY_DIR} SOURCES ../${PROJECT_NAME}.i)
+endif()
 
 if (SWIG_MODULE_libm2k_REAL_NAME)
 	set(SWIG_OUTPUT_NAME ${SWIG_MODULE_libm2k_REAL_NAME})
