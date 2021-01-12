@@ -2,6 +2,7 @@ variables:
   libiioPipelineId: 9
   PYTHON: python
   PIP: pip
+  AnalogDevices_OpenSource_GUID: '02a28b00-b3c8-4fdf-af9c-c2460499147f'
 
 trigger:
 - main
@@ -52,7 +53,7 @@ jobs:
     displayName: 'Get libiio artifacts'
     inputs:
       source: 'specific'
-      project: '$(System.TeamProjectId)'
+      project: '$(AnalogDevices_OpenSource_GUID)'
       pipeline: $(libiioPipelineId)
       artifact: '$(artifactName)'
       runVersion: 'latestFromBranch'
@@ -101,7 +102,7 @@ jobs:
     displayName: 'Get libiio artifacts'
     inputs:
       source: 'specific'
-      project: '$(System.TeamProjectId)'
+      project: '$(AnalogDevices_OpenSource_GUID)'
       pipeline: $(libiioPipelineId)
       artifact: '$(artifactName)'
       runVersion: 'latestFromBranch'
