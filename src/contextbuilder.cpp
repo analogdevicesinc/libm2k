@@ -55,6 +55,8 @@ std::map<ContextTypes, std::string> ContextBuilder::m_dev_name_map = {
 	{Other, "Generic"}
 };
 
+bool ContextBuilder::m_disable_logging = true;
+
 ContextBuilder::ContextBuilder()
 {
 }
@@ -144,6 +146,9 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 
 Context* ContextBuilder::contextOpen(const char *uri)
 {
+	if (m_disable_logging) {
+		enableLogging(false);
+	}
 	LIBM2K_LOG(INFO, "libm2k version: " + getVersion());
 
 	for (Context* dev : s_connectedDevices) {
@@ -181,6 +186,9 @@ Context* ContextBuilder::contextOpen(const char *uri)
 
 Context* ContextBuilder::contextOpen(struct iio_context* ctx, const char* uri)
 {
+    if (m_disable_logging) {
+        enableLogging(false);
+    }
 	LIBM2K_LOG(INFO, "libm2k version: " + getVersion());
 
 	char ctx_git_tag[8];
@@ -300,6 +308,23 @@ std::string ContextBuilder::getVersion()
 		"-g" + std::string(PROJECT_VERSION_GIT);
 }
 
+void ContextBuilder::enableLogging(bool enable)
+{
+#ifdef LIBM2K_ENABLE_LOG
+    if (enable) {
+		FLAGS_minloglevel = 0;
+		m_disable_logging = false;
+	} else {
+		FLAGS_minloglevel = 3;
+		m_disable_logging = true;
+	}
+#else
+    if (enable) {
+		std::cout << "libm2k built without logging support\n";
+    }
+#endif
+}
+
 ContextTypes ContextBuilder::identifyContext(iio_context *ctx)
 {
 	ContextTypes type = Other;
@@ -365,4 +390,9 @@ void libm2k::context::contextCloseAll()
 std::string libm2k::context::getVersion()
 {
 	return ContextBuilder::getVersion();
+}
+
+void libm2k::context::enableLogging(bool enable)
+{
+	return ContextBuilder::enableLogging(enable);
 }
