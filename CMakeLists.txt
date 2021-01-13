@@ -89,6 +89,7 @@ set(LIBM2K_VERSION_FULL v${PROJECT_VERSION} - ${LIBM2K_VERSION_GIT})
 
 if (ENABLE_LOG)
 	FIND_PACKAGE(glog REQUIRED)
+	message("---- Building with logging support(glog).")
 endif()
 
 #Enable or disable exception handling

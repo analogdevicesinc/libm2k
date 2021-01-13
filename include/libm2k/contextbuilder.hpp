@@ -96,6 +96,12 @@ public:
 	static void contextCloseAll();
 
 	static std::string getVersion();
+
+	/**
+	* @private
+	*/
+	static void enableLogging(bool enable);
+
 private:
 	static std::map<ContextTypes, std::vector<std::string>> m_dev_map;
 	static std::map<ContextTypes, std::string> m_dev_name_map;
@@ -105,6 +111,7 @@ private:
 		std::string uri,
 		struct iio_context *ctx,
 		bool sync);
+	static bool m_disable_logging;
 
 };
 
@@ -200,6 +207,13 @@ LIBM2K_API void contextCloseAll();
  * @return a string containing the libm2k version
  */
 LIBM2K_API std::string getVersion();
+
+
+/**
+ * @brief Enable/disable the logging system
+ * @param enable If true enable, otherwise disable
+ */
+LIBM2K_API void enableLogging(bool enable);
 
 
 /**
