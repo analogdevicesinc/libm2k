@@ -107,10 +107,10 @@ Source: "C:\libiio-win32\libserialport-0.dll"; DestDir: "{sys}"; Tasks: install_
 Source: "C:\libiio-win64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
 Source: "C:\projects\libm2k\build-win32\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode; Flags: replacesameversion
-Source: "C:\projects\libm2k\build-win32\libm2k-sharp-cxx-wrap.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode; Flags: replacesameversion
+Source: "C:\projects\libm2k\build-win32\libm2k-sharp-cxx-wrap.dll"; DestDir: "{sys}"; Check: not Is64BitInstallMode; Flags: replacesameversion
 
 Source: "C:\projects\libm2k\build-win64\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode; Flags: replacesameversion
-Source: "C:\projects\libm2k\build-win64\libm2k-sharp-cxx-wrap.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode; Flags: replacesameversion
+Source: "C:\projects\libm2k\build-win64\libm2k-sharp-cxx-wrap.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
 
 Source: "C:\projects\libm2k\build-win32\libm2k_lv.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion; Tasks: install_labview_wrapper;
 Source: "C:\projects\libm2k\build-win64\libm2k_lv.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion; Tasks: install_labview_wrapper;
