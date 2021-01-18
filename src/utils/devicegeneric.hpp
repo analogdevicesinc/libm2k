@@ -109,6 +109,7 @@ public:
 	virtual bool hasBufferAttribute(std::string attr);
 
 	virtual ssize_t getSampleSize();
+	virtual unsigned int getNbSamples() const;
 protected:
 	struct iio_context *m_context;
 	struct iio_device *m_dev;

@@ -555,6 +555,11 @@ void Buffer::setCyclic(bool enable)
 	m_cyclic = enable;
 }
 
+unsigned int Buffer::getNbSamples() const
+{
+	return m_last_nb_samples;
+}
+
 struct iio_buffer* Buffer::getBuffer()
 {
 	return m_buffer;

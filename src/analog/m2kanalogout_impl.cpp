@@ -597,7 +597,20 @@ bool M2kAnalogOutImpl::isChannelEnabled(unsigned int chnIdx)
 	return getDacDevice(chnIdx)->isChannelEnabled(0, true);
 }
 
-DeviceOut* M2kAnalogOutImpl::getDacDevice(unsigned int chnIdx)
+bool M2kAnalogOutImpl::isPushDone(unsigned int chnIdx) const
+{
+	bool isBufferEmpty = true;
+	if (m_dma_data_available) {
+		unsigned int unusedBufferSpace, maxBufferSpace;
+		unsigned int bufferSize = getDacDevice(chnIdx)->getNbSamples();
+		unusedBufferSpace = getDacDevice(chnIdx)->getBufferLongValue("data_available");
+		maxBufferSpace = 2u * bufferSize * (m_nb_kernel_buffers.at(chnIdx) - 1);
+		isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
+	}
+	return isBufferEmpty;
+}
+
+DeviceOut* M2kAnalogOutImpl::getDacDevice(unsigned int chnIdx) const
 {
 	if (chnIdx >= m_dac_devices.size()) {
 		THROW_M2K_EXCEPTION("Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);

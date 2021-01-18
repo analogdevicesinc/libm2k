@@ -394,6 +394,21 @@ public:
 
 
 	/**
+	 * @brief Check if the generation of the signal (only for non-cyclic buffer) is done
+	 * @param chnIdx The index corresponding to the channel
+	 * @return True if the push process is done, false otherwise
+	 *
+	 * @note This function takes the number of kernel buffers into consideration.
+	 * @note If a new session is started without unplugging the board and the number of kernel buffers was modified in the previous session
+	 * @note (default value = 4) a DAC calibration must be performed before calling isPushDone in order to compute the
+	 * @note current number of kernel buffers or call again the function setKernelBuffersCount.
+	 *
+	 * @note Available only in firmware versions newer than 0.23.
+	 */
+	virtual bool isPushDone(unsigned int chnIdx) const = 0;
+
+
+	/**
 	 * @brief Set the kernel buffers to a specific value
 	 * @param chnIdx The index corresponding to the channel
 	 * @param count the number of kernel buffers
