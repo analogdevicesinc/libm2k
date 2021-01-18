@@ -81,9 +81,14 @@ target_link_libraries(${PROJECT_NAME}
 		${IIO_LIBRARIES}
 		)
 if (ENABLE_LOG)
+	target_include_directories(${PROJECT_NAME}
+		PUBLIC
+		${GLOG_INCLUDE_DIRS}
+		)
+
 	target_link_libraries(${PROJECT_NAME}
 			PUBLIC
-			glog::glog
+			${GLOG_LIBRARIES}
 			)
 endif()
 
