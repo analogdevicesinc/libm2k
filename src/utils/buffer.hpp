@@ -71,6 +71,7 @@ public:
 	void setCyclic(bool enable);
 	void cancelBuffer();
 	void flushBuffer();
+	unsigned int getNbSamples() const;
 
 	struct iio_buffer* getBuffer();
 private:

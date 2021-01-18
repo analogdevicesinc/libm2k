@@ -685,3 +685,11 @@ ssize_t DeviceGeneric::getSampleSize()
 	}
 	return iio_device_get_sample_size(m_dev);
 }
+
+unsigned int DeviceGeneric::getNbSamples() const
+{
+	if (m_buffer) {
+		return m_buffer->getNbSamples();
+	}
+	return 0;
+}

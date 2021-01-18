@@ -73,6 +73,7 @@ public:
 
 	void enableChannel(unsigned int chnIdx, bool enable) override;
 	bool isChannelEnabled(unsigned int chnIdx) override;
+	bool isPushDone(unsigned int chnIdx) const override;
 
 	void setKernelBuffersCount(unsigned int chnIdx, unsigned int count) override;
 	unsigned int getKernelBuffersCount(unsigned int chnIdx) const override;
@@ -105,7 +106,7 @@ private:
 	bool m_dma_data_available;
 	std::vector<unsigned int> m_nb_kernel_buffers;
 
-	DeviceOut* getDacDevice(unsigned int chnIdx);
+	DeviceOut* getDacDevice(unsigned int chnIdx) const;
 	void syncDevice();
 	double convRawToVolts(short raw, double vlsb, double filterCompensation);
 };
