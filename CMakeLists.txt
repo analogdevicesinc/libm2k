@@ -88,7 +88,9 @@ endif()
 set(LIBM2K_VERSION_FULL v${PROJECT_VERSION} - ${LIBM2K_VERSION_GIT})
 
 if (ENABLE_LOG)
-	FIND_PACKAGE(glog REQUIRED)
+	find_library(GLOG_LIBRARIES NAMES glog)
+	find_path(GLOG_INCLUDE_DIRS glog/logging.h)
+	set(GLOG_INCLUDE_DIRS "${GLOG_INCLUDE_DIRS};${GLOG_INCLUDE_DIRS}/../src")
 	message("---- Building with logging support(glog).")
 endif()
 
