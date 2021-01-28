@@ -117,6 +117,11 @@ jobs:
       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
       contents: '$(Agent.BuildDirectory)/s/build/?(*.pkg)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/build_tar/'
+      contents: '$(Agent.BuildDirectory)/s/build_tar/?(*.tar.gz)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
