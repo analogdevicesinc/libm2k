@@ -9,6 +9,8 @@ trigger:
 - master
 - staging/*
 - 20*
+- v*.*.*
+- ci-*
 
 pr:
 - main
