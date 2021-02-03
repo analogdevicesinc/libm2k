@@ -35,7 +35,7 @@
 
 #if _EXCEPTIONS || defined(__cpp_exceptions)
 	#define exception_type std::exception
-	#if defined(_MSC_VER) || (__APPLE__)
+	#if defined(_MSC_VER) || (__APPLE__) || (__ANDROID__)
 		#define __try      try
 		#define __catch(X) catch(X)
 	#endif
