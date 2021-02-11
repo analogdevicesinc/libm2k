@@ -253,7 +253,9 @@ int Utils::compareVersions(std::string v1, std::string v2)
 }
 
 bool Utils::compareNatural(const std::string& a, const std::string& b){
-	if (a.empty()) {
+	if (a == b) {
+		return (a < b);
+	} else if (a.empty()) {
 		return true;
 	} else if (b.empty()) {
 		return false;
