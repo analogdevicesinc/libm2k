@@ -88,10 +88,17 @@ endif()
 set(LIBM2K_VERSION_FULL v${PROJECT_VERSION} - ${LIBM2K_VERSION_GIT})
 
 if (ENABLE_LOG)
-	find_library(GLOG_LIBRARIES NAMES glog)
-	find_path(GLOG_INCLUDE_DIRS glog/logging.h)
-	set(GLOG_INCLUDE_DIRS "${GLOG_INCLUDE_DIRS};${GLOG_INCLUDE_DIRS}/../src")
-	message("---- Building with logging support(glog).")
+	find_package(glog)
+	if (NOT TARGET glog::glog)
+		find_library(GLOG_LIBRARIES NAMES glog)
+		find_path(GLOG_INCLUDE_DIRS glog/logging.h)
+		add_library(glog::glog SHARED IMPORTED)
+		set_target_properties(glog::glog
+				PROPERTIES
+				INTERFACE_INCLUDE_DIRECTORIES ${GLOG_INCLUDE_DIRS}
+				IMPORTED_LOCATION ${GLOG_LIBRARIES})
+	endif()
+	message(STATUS "Building with logging support(glog).")
 endif()
 
 #Enable or disable exception handling
