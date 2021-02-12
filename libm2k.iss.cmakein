@@ -106,8 +106,8 @@ Source: "C:\libiio-win64\libusb-1.0.dll"; DestDir: "{sys}"; Check: Is64BitInstal
 Source: "C:\libiio-win32\libserialport-0.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
 Source: "C:\libiio-win64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
-Source: "C:\glog\build_0_3_5-win32\Release\glog.dll"; DestDir: "{sys}"; Tasks: install_glog; Flags: 32bit
-Source: "C:\glog\build_0_3_5-win64\Release\glog.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_glog;
+Source: "C:\glog\build_0_4_0-Win32\Release\glog.dll"; DestDir: "{sys}"; Tasks: install_glog; Flags: 32bit
+Source: "C:\glog\build_0_4_0-x64\Release\glog.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_glog;
 
 Source: "C:\projects\libm2k\build-win32\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode; Flags: replacesameversion
 Source: "C:\projects\libm2k\build-win32\libm2k-sharp-cxx-wrap.dll"; DestDir: "{sys}"; Check: not Is64BitInstallMode; Flags: replacesameversion

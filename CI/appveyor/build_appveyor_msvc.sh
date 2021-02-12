@@ -28,8 +28,6 @@ __build_libm2k() {
         -DSWIG_VERSION="4.0.0" \
         -DENABLE_TOOLS=ON \
         -DENABLE_LOG=ON \
-        -DGLOG_LIBRARIES:FILEPATH=/c/glog/build_0_3_5-"$PLATFORM"/Release/glog.lib \
-        -DGLOG_INCLUDE_DIRS:PATH=/c/glog/build_0_3_5-"$PLATFORM" \
         -DPython_EXECUTABLE="$PY_PATH/python.exe" \
         -DBUILD_EXAMPLES=ON \
         -DENABLE_CSHARP=ON \
