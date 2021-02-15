@@ -100,7 +100,8 @@ namespace std {
 	%template(VectorD) vector<double>;
 	%template(VectorStr) vector<string>;
 	%template(VectorVectorD) vector< vector<double> >;
-	%template(VectorVectorS) vector< vector<int> >;
+	%template(VectorVectorS) vector< vector<short> >;
+	%template(VectorVectorI) vector< vector<int> >;
 	%template(VectorVectorUS) vector< vector<unsigned short> >;
 	%template(PairDD) std::pair<double, double>;
 	%template(VectorPairDD) std::vector<std::pair<std::string, std::pair <double, double>>>;
