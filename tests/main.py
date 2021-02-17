@@ -19,6 +19,7 @@ gen_reports = True
 wait_for_input = False
 
 
+
 def no_reports():
     if len(sys.argv) > 1 and "noreports" in sys.argv:
         global gen_reports

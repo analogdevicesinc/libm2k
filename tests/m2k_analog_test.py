@@ -2,6 +2,7 @@ import sys
 import unittest
 import libm2k
 from shapefile import shape_gen, ref_shape_gen, shape_name
+
 from analog_functions import test_amplitude, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, test_voltmeter_functionality
 from analog_functions import cyclic_buffer_test, set_samplerates_for_shapetest, set_trig_for_cyclicbuffer_test
 from analog_functions import compare_in_out_frequency, test_oversampling_ratio, channels_diff_in_samples, test_timeout
@@ -237,7 +238,6 @@ class A_AnalogTests(unittest.TestCase):
         osr_test = (test_oversampling_ratio(libm2k.ANALOG_IN_CHANNEL_1, ain, aout, trig),
                     test_oversampling_ratio(libm2k.ANALOG_IN_CHANNEL_2, ain, aout, trig))
         for i in range(2):
-
             with self.subTest(msg='Test different oversampling ratio values for ain on ch' + str(i)):
                 self.assertEqual(osr_test[i], 1, 'oversampling on channel' + str(i))
 
@@ -261,5 +261,7 @@ class A_AnalogTests(unittest.TestCase):
                 with self.subTest(msg='No timeout'):
                         self.assertEqual(data,True, 'Data was not acquired correct')
 
+            with self.subTest(msg='Test different oversampling ratio values for ain on ch' + str(i)):
+                self.assertEqual(osr_test[i], 1, 'oversampling on channel' + str(i))
 
 
