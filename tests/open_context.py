@@ -16,7 +16,6 @@ def calibrate(ctx):
     adc_calib=ctx.calibrateADC()
     #DAC
     dac_calib=ctx.calibrateDAC()
-    ctx.setTimeout(5000)
     return (adc_calib, dac_calib)
 
 def open_context():
@@ -63,7 +62,9 @@ def create_dir(timestamp):
     return results_dir
 
 #open context
-ctx, ain, aout, trig = open_context()
+ctx_timeout=5000 #initial value of the timeout
+ctx, ain, aout, trig = open_context()#open context
+ctx.setTimeout(ctx_timeout)#set ctx timeout
 calibration=calibrate(ctx)
 dig=ctx.getDigital()
 d_trig=dig.getTrigger()

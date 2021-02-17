@@ -1,57 +1,58 @@
 import libm2k
 import unittest
 import HtmlTestRunner
-import logging
 import sys
 import os
+import ps_functions
+import analog_functions
+import trig_functions
+from open_context import ctx
+from create_files import results_dir, results_file, results_file_path
 from m2k_analog_test import *
 from m2k_powersupply_test import *
 from m2k_trigger_test import *
+
 # from m2k_digital_test import DigitalTests
-
-
-from open_context import ctx  # results_dir, open_context, calibrate, create_dir
-from create_files import results_dir, results_file, results_file_path
 
 global gen_reports, wait_for_input
 gen_reports = True
 wait_for_input = False
-logger = logging.getLogger()
-logger.level = logging.DEBUG
-logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
 def no_reports():
     if len(sys.argv) > 1 and "noreports" in sys.argv:
         global gen_reports
         gen_reports = False
+        ps_functions.gen_reports = False
+        trig_functions.gen_reports = False
+        analog_functions.gen_reports = False
         path = os.path.dirname(os.path.realpath(results_dir))
         dir_path = os.path.dirname(os.path.realpath(results_file_path))
         results_file.close()
-        print(dir_path)
         if os.path.isdir(dir_path):
             os.remove(path + '/' + results_file_path)
-            print(dir_path)
             os.rmdir(dir_path)
 
 
 def wait_():
-    if len(sys.argv) == 1 or sys.argv[1] == "noreports":
-        global wait_for_input
+    global wait_for_input
+    print(len(sys.argv))
+    if len(sys.argv) == 1 or sys.argv[1] == "noreports" or (len(sys.argv) > 3 and "C_PowerSupplyTests" in sys.argv):
         wait_for_input = True
+    else:
+        wait_for_input = False
 
 
 no_reports()
 wait_()
 if __name__ == "__main__":
-    """Main file where tests for all segments are called. The test classes are organized in a test suite.
-    To run specific tests, specify the class and the test(s) when running this script. 
-    To run a specific class of tests, indicate said class(es) when running this script.
-    If you do not require reports to be generated
-    For instructions, run: --> main.py -h
-                           --> main.py --help
+    #  Main file where tests for all segments are called. The test classes are organized in a test suite.
+    #  To run specific tests, specify the class and the test(s) when running this script.
+    #  To run a specific class of tests, indicate said class(es) when running this script.
+    #  If you do not require reports to be generated, add "noreports" when running this script.
+    #  For instructions, run: --> main.py -h
+    #                       --> main.py --help
 
-    """
     if len(sys.argv) > 1 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
         print("\n====== Instructions ======\n")
         print("To run all tests run: main.py\n ")

@@ -3,8 +3,7 @@ import numpy as np
 import time
 from open_context import ain, ctx
 import random
-import main
-
+gen_reports = True
 
 
 def config_for_ps_test(ps, ain):
@@ -32,7 +31,7 @@ def ps_test_positive(ps, ain):
     Returns:
         pos_supply-- Vector that  holds 1 if the  voltage value read on the channel equals the voltage sent
     """
-    if main.gen_reports:
+    if gen_reports:
         from create_files import results_file, open_files_and_dirs
         if results_file is None:
             file, dir, csv = open_files_and_dirs()
@@ -60,7 +59,7 @@ def ps_test_positive(ps, ain):
             pos_supply = np.append(pos_supply, 0)
         voltage = voltage + random.uniform(0.4, 0.5)  # add a random value to the previous voltage value
 
-    if main.gen_reports:
+    if gen_reports:
         write_file(file, read_voltage_values, sent_voltage_values, positive)
     return pos_supply
 
@@ -73,7 +72,7 @@ def ps_test_negative(ps, ain):
     Returns:
         neg_supply-- Vector that  holds 1 if the  voltage value read on the channel equals the voltage sent
     """
-    if main.gen_reports:
+    if gen_reports:
         from create_files import results_file, open_files_and_dirs
         if results_file is None:
             file, dir, csv = open_files_and_dirs()
@@ -100,7 +99,7 @@ def ps_test_negative(ps, ain):
             neg_supply = np.append(neg_supply, 0)
         voltage = voltage - random.uniform(0.4, 0.5)  # subtract a random value from the previous voltage value
 
-    if main.gen_reports:
+    if gen_reports:
         write_file(file, read_voltage_values, sent_voltage_values, positive)
 
     return neg_supply

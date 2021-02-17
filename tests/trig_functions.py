@@ -1,17 +1,16 @@
 import libm2k
 import reset_def_values as reset
-# from analog_functions import *  # set_trig, save_data_to_csv
 import analog_functions
-import main
 import numpy as np
 from pandas import DataFrame
 from open_context import ain, aout, trig, ctx
-import logging
+
+gen_reports = True
 
 
 def trigger_jitter(buffers, trig, channel, signal, trig_cond, ain, aout):
 
-    if main.gen_reports:
+    if gen_reports:
         from create_files import results_file, open_files_and_dirs
         if results_file is None:
             file, dir, csv = open_files_and_dirs()
@@ -48,7 +47,7 @@ def trigger_jitter(buffers, trig, channel, signal, trig_cond, ain, aout):
             data_string.append("Frequency: " + str(max_dac_samplerate / len(test_signal[l])))
             data_string.append(str(counter) + " Trigger events in " + str(buffers) + " buffers")
 
-    if main.gen_reports:
+    if gen_reports:
         write_file(file, channel, data_string)
 
     return trigs_counted, adc_sr, nr_samples, max_dac_samplerate

@@ -1,10 +1,11 @@
 import unittest
 from open_context import ain, aout, ctx, trig
 import reset_def_values as reset
-import logging
 import sys
 import libm2k
 from trig_functions import *  # trigger_jitter
+import logger
+
 
 
 class B_TriggerTests(unittest.TestCase):
@@ -14,7 +15,8 @@ class B_TriggerTests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         # print on the terminal some info
-        logging.getLogger().info("\n\n Trigger\n")
+        log = logger.myLogger()
+        log.info("\n\n Trigger\n")
 
     def test_1_trigger_object(self):
         """Verifies if the Trigger object was successfully retrieved

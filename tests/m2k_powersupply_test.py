@@ -1,8 +1,9 @@
 import unittest
+import sys
 from open_context import ain, aout, ctx, ps
 import reset_def_values as reset
 from ps_functions import ps_test_negative, ps_test_positive, config_for_ps_test
-import logging
+import logger
 import main
 
 
@@ -12,16 +13,21 @@ class C_PowerSupplyTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        # wait for user to make appropriate connections
         # print on the terminal some info
-        logging.getLogger().info("\n\nPower Supplies\n")
-        logging.getLogger().info("Connections:\n")
-        logging.getLogger().info("V+ ====> 1+")
-        logging.getLogger().info("V- ====> 2+")
-        logging.getLogger().info("GND ===> 1-")
-        logging.getLogger().info("GND ===> 2-\n")
+
+        log = logger.myLogger()
+        log.info("Power Supply\n"
+                    "Connections:\n"
+                    "V+ ====> 1+\n"
+                    "V- ====> 2+\n"
+                    "GND ===> 1-\n"
+                    "GND ===> 2-\n")
+
         if main.wait_for_input:
-            logging.getLogger().info("When you've made the connections, press enter.\n")
-            input()  # wait for user input
+            log.info("When you've made the connections, press enter.\n")
+            input()
+
 
     def test_1_power_supply_object(self):
         """Verifies if the Power Supply object was succesfully retrieved from the context
