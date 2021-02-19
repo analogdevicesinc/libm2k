@@ -111,7 +111,7 @@ static void writeByte(struct i2c_desc *desc, std::vector<unsigned short> &buffer
 		//encode data
 		for (unsigned int j = 0; j < samplesPerHalfBit; ++j) {
 			unsigned short sample = 0;
-			if (clockPolarity) {
+			if ((clockPolarity && j != 0) || (!clockPolarity && j==0)) {
 				setBit(sample, m2KI2CDesc->scl);
 			}
 			if (getBit(byte, 7 - (i / 2))) {
