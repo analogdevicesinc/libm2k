@@ -42,38 +42,38 @@ public:
 		       libm2k::analog::M2kAnalogOut* analogOut);
 	virtual ~M2kCalibrationImpl();
 
-	bool initialize();
-	bool isInitialized() const;
+	bool initialize() override;
+	bool isInitialized() const override;
 
 	void setAdcInCalibMode();
 	void setDacInCalibMode();
 	void restoreAdcFromCalibMode();
 	void restoreDacFromCalibMode();
 
-	bool calibrateAll();
-	bool calibrateADC();
+	bool calibrateAll() override;
+	bool calibrateADC() override;
 	bool calibrateADCoffset();
 	bool calibrateADCgain();
-	bool calibrateDAC();
+	bool calibrateDAC() override;
 	bool calibrateDACoffset();
 	bool calibrateDACgain();
-	void cancelCalibration();
+	void cancelCalibration() override;
 
-	int getAdcOffset(unsigned int channel);
-	int getDacOffset(unsigned int channel);
-	double getAdcGain(unsigned int channel);
-	double getDacGain(unsigned int channel);
+	int getAdcOffset(unsigned int channel) override;
+	int getDacOffset(unsigned int channel) override;
+	double getAdcGain(unsigned int channel) override;
+	double getDacGain(unsigned int channel) override;
 
-	bool resetCalibration();
+	bool resetCalibration() override;
 	void updateAdcCorrections();
 	void updateDacCorrections();
 
 	bool setCalibrationMode(int);
 
-	void setDacGain(unsigned int chn, double gain);
-	void setDacOffset(unsigned int chn, int offset);
-	void setAdcOffset(unsigned int chn, int offset);
-	void setAdcGain(unsigned int chn, double gain);
+	void setDacGain(unsigned int chn, double gain) override;
+	void setDacOffset(unsigned int chn, int offset) override;
+	void setAdcOffset(unsigned int chn, int offset) override;
+	void setAdcGain(unsigned int chn, double gain) override;
 
 	bool getAdcCalibrated() const override;
 	bool getDacCalibrated() const override;
