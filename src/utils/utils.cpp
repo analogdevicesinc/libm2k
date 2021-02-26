@@ -235,21 +235,35 @@ int Utils::compareVersions(std::string v1, std::string v2)
 	while ((v1.find(".") != std::string::npos) ||
 			(v2.find(".") != std::string::npos)) {
 		if (v1.find(".") != std::string::npos) {
-			v1.erase(v1.find("."), 1);
+			v1.erase(v1.begin(), v1.begin()+v1.find("."));
+			v1.erase(v1.find("."),1);
 		}
 		if (v2.find(".") != std::string::npos) {
+		    v2.erase(v2.begin(), v2.begin()+v2.find("."));
 			v2.erase(v2.find("."), 1);
 		}
-	}
-	if (v1.size() < v2.size()) {
-		std::string surplus("0", (v2.size() - v1.size()));
-		v1.append(surplus);
-	} else if (v2.size() < v1.size()) {
-		std::string surplus("0", (v1.size() - v2.size()));
-		v2.append(surplus);
-	}
 
-	return v1.compare(v2);
+	}
+	bool v1_inc = false, v2_inc = false;
+	if(v1.find("-dirty") != std::string::npos) {
+	    v1.erase(v1.find("-dirty"), std::string::npos);
+	    v1_inc = true;
+	}
+	if(v2.find("-dirty") != std::string::npos) {
+	    v2.erase(v2.find("-dirty"), std::string::npos);
+	    v2_inc = true;
+	}
+	std::stringstream s1(v1), s2(v2);
+	int x1 = 0, x2 = 0;
+	s1 >> x1;
+	s2 >> x2;
+	if(v1_inc){
+	    x1++;
+	}
+	if(v2_inc){
+	    x2++;
+	}
+	return x1-x2;
 }
 
 bool Utils::compareNatural(const std::string& a, const std::string& b){
