@@ -469,6 +469,10 @@ public:
 	 * @return double - the value of the maximum samplerate
 	 */
 	virtual double getMaximumSamplerate(unsigned int chn_idx) = 0;
+	virtual void setDacSyncStop(unsigned int index, bool value) = 0;
+	virtual bool getDacSyncStop(unsigned int index) = 0;
+	virtual void setLastSampleHold(unsigned int index, bool value) = 0;
+	virtual bool getLastSampleHold(unsigned int index) = 0;
 };
 }
 }

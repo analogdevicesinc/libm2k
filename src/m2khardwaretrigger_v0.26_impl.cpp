@@ -22,6 +22,7 @@
 #include "m2khardwaretrigger_v0.26_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include <algorithm>
+#include <string>
 
 
 const std::string libm2k::M2kHardwareTriggerV026Impl::m_source_attr = "trigger_src";
@@ -125,6 +126,20 @@ libm2k::M2K_TRIGGER_CONDITION_DIGITAL libm2k::M2kHardwareTriggerV026Impl::getAna
 	return getTriggerOutCondition(m_analog_trigger_device);
 }
 
+void libm2k::M2kHardwareTriggerV026Impl::setAnalogOutStartOnTrigger(bool value)
+{
+	m_analog_trigger_device->setBoolValue(value, "start_on_trigger");
+}
+void libm2k::M2kHardwareTriggerV026Impl::setAnalogOutStopOnTrigger(bool value)
+{
+	m_analog_trigger_device->setBoolValue(value, "stop_on_trigger");
+}
+
+void libm2k::M2kHardwareTriggerV026Impl::resetAnalogOutTriggerAfterBuffer(bool value)
+{
+	m_analog_trigger_device->setBoolValue(value, "rearme_after_buffer");
+}
+
 void libm2k::M2kHardwareTriggerV026Impl::setTriggerOutSource(libm2k::M2K_TRIGGER_OUT_SOURCE src,
 							    const std::shared_ptr<libm2k::utils::DeviceOut>& device)
 {
@@ -178,3 +193,4 @@ libm2k::M2kHardwareTriggerV026Impl::getTriggerOutCondition(const std::shared_ptr
 
 	return static_cast<libm2k::M2K_TRIGGER_CONDITION_DIGITAL>(it - m_trigger_cond.begin());
 }
+

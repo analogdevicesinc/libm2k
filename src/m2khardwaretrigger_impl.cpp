@@ -618,3 +618,34 @@ M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTriggerImpl::getAnalogOutCondition() co
 	THROW_M2K_EXCEPTION("Invalid firmware version. Minimum required version: v0.26", libm2k::EXC_INVALID_FIRMWARE_VERSION);
 	return NO_TRIGGER_DIGITAL;
 }
+
+void M2kHardwareTriggerImpl::setTOtoInput()
+{
+	THROW_M2K_EXCEPTION("Invalid firmware version. Minimum required version: v0.26", libm2k::EXC_INVALID_FIRMWARE_VERSION);
+}
+
+void M2kHardwareTriggerImpl::setTOtoOutput()
+{
+	THROW_M2K_EXCEPTION("Invalid firmware version. Minimum required version: v0.26", libm2k::EXC_INVALID_FIRMWARE_VERSION);
+}
+
+void M2kHardwareTriggerImpl::setAnalogOutStartOnTrigger(bool value)
+{
+	UNUSED(value);
+	THROW_M2K_EXCEPTION("Invalid firmware version. Minimum required version: v0.26", libm2k::EXC_INVALID_FIRMWARE_VERSION );
+
+}
+
+void M2kHardwareTriggerImpl::setAnalogOutStopOnTrigger(bool value)
+{
+	UNUSED(value);
+	THROW_M2K_EXCEPTION("Invalid firmware version. Minimum required version: v0.26", libm2k::EXC_INVALID_FIRMWARE_VERSION );
+
+}
+
+void M2kHardwareTriggerImpl::resetAnalogOutTriggerAfterBuffer(bool value)
+{
+	UNUSED(value);
+	THROW_M2K_EXCEPTION("Invalid firmware version. Minimum required version: v0.26", libm2k::EXC_INVALID_FIRMWARE_VERSION );
+
+}

@@ -52,6 +52,12 @@ public:
 
 	M2K_TRIGGER_CONDITION_DIGITAL getAnalogOutCondition() const override;
 
+	void setAnalogOutStartOnTrigger(bool value) override;
+
+	void setAnalogOutStopOnTrigger(bool value) override;
+
+	void resetAnalogOutTriggerAfterBuffer(bool value) override;
+
 protected:
 	void setTriggerOutSource(M2K_TRIGGER_OUT_SOURCE src, const std::shared_ptr<libm2k::utils::DeviceOut>& device);
 	M2K_TRIGGER_OUT_SOURCE getTriggerOutSource(const std::shared_ptr<libm2k::utils::DeviceOut>& device) const;

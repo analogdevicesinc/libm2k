@@ -488,6 +488,11 @@ public:
 	 * @return the trigger condition
 	 */
 	virtual M2K_TRIGGER_CONDITION_DIGITAL getAnalogOutCondition() const = 0;
+	virtual void setTOtoInput() = 0;
+	virtual void setTOtoOutput() = 0;
+	virtual void setAnalogOutStartOnTrigger(bool value) = 0;
+	virtual void setAnalogOutStopOnTrigger(bool value) = 0;
+	virtual void resetAnalogOutTriggerAfterBuffer(bool value) = 0;
 };
 }
 

@@ -61,6 +61,9 @@ public:
 	struct SETTINGS *getCurrentHwSettings();
 	void setHwTriggerSettings(struct SETTINGS *settings);
 
+	void setTOtoInput();
+	void setTOtoOutput();
+
 private:
 	static std::vector<std::string> m_digital_out_select;
 	static std::vector<std::string> m_digital_out_direction;

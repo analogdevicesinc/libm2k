@@ -254,3 +254,11 @@ void M2kHardwareTriggerV024Impl::setHwTriggerSettings(struct SETTINGS *settings)
 		setAnalogDelay(settings->delay);
 	}
 }
+void M2kHardwareTriggerV024Impl::setTOtoInput()
+{
+	m_logic_channels.at(1)->setStringValue("out_direction", m_digital_out_direction.at(0));
+}
+void M2kHardwareTriggerV024Impl::setTOtoOutput()
+{
+	m_logic_channels.at(1)->setStringValue("out_direction", m_digital_out_direction.at(1));
+}

@@ -92,6 +92,11 @@ public:
 	void deinitialize();
 
 	void loadNbKernelBuffers();
+
+	void setDacSyncStop(unsigned int index, bool value);
+	bool getDacSyncStop(unsigned int index);
+	void setLastSampleHold(unsigned int index, bool value);
+	bool getLastSampleHold(unsigned int index);
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_max_samplerate;

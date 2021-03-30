@@ -115,6 +115,11 @@ public:
 	M2K_TRIGGER_OUT_SOURCE getAnalogOutSource() const override;
 	void setAnalogOutCondition(M2K_TRIGGER_CONDITION_DIGITAL cond) override;
 	M2K_TRIGGER_CONDITION_DIGITAL getAnalogOutCondition() const override;
+	void setTOtoInput() override;
+	void setTOtoOutput() override;
+	void setAnalogOutStartOnTrigger(bool value) override;
+	void setAnalogOutStopOnTrigger(bool value) override;
+	void resetAnalogOutTriggerAfterBuffer(bool value) override;
 
 protected:
 	struct iio_device *m_trigger_device;
