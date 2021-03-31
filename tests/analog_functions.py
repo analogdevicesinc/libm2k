@@ -13,6 +13,7 @@ import random
 import sys
 import reset_def_values as reset
 from open_context import ctx_timeout, ctx
+from create_files import results_file, results_dir, csv
 #dicts that will be saved to csv files
 shape_csv_vals={}
 ampl_csv_vals={}

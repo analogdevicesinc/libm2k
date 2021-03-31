@@ -255,13 +255,11 @@ class A_AnalogTests(unittest.TestCase):
                 data=True
 
             if t_occ==True:
-                with self.subTest(msg='Timeout occured'):
-                        self.assertEqual(data,True, 'Data was not acquired correct after timeout')
+                with self.subTest(msg='Timeout occurred'):
+                        self.assertEqual(data,True, 'Data was not acquired correctly after timeout')
             else:
                 with self.subTest(msg='No timeout'):
-                        self.assertEqual(data,True, 'Data was not acquired correct')
+                        self.assertEqual(data,True, 'Data was not acquired correctly')
 
-            with self.subTest(msg='Test different oversampling ratio values for ain on ch' + str(i)):
-                self.assertEqual(osr_test[i], 1, 'oversampling on channel' + str(i))
 
 
