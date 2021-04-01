@@ -702,3 +702,19 @@ double M2kAnalogOutImpl::getMaximumSamplerate(unsigned int chn_idx)
 	}
 	return m_max_samplerate[chn_idx];
 }
+void M2kAnalogOutImpl::setLastSampleHold(unsigned int index, bool value)
+{
+	m_dac_devices[index]->setBoolValue(value, "last_sample_hold");
+}
+bool M2kAnalogOutImpl::getLastSampleHold(unsigned int index)
+{
+	return m_dac_devices[index]->getBoolValue("last_sample_hold");
+}
+void M2kAnalogOutImpl::setDacSyncStop(unsigned int index, bool value)
+{
+	m_dac_devices[index]->setBoolValue(value, "dac_sync_stop");
+}
+bool M2kAnalogOutImpl::getDacSyncStop(unsigned int index)
+{
+	return m_dac_devices[index]->getBoolValue("dac_sync_stop");
+}
