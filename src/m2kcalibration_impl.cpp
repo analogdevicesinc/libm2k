@@ -92,7 +92,6 @@ bool M2kCalibrationImpl::isInitialized() const
 
 void M2kCalibrationImpl::setAdcInCalibMode()
 {
-	bool ok = false;
 	// Make sure hardware triggers are disabled before calibrating
 	m_trigger0_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_1);
 	m_trigger1_mode = m_m2k_trigger->getAnalogMode(ANALOG_IN_CHANNEL_2);
@@ -125,21 +124,17 @@ void M2kCalibrationImpl::setAdcInCalibMode()
 	m_m2k_adc->loadNbKernelBuffers();
 	m_adc_kernel_buffers = m_m2k_adc->getKernelBuffersCount();
 
-	while (!ok) {
-		try {
-			m_m2k_adc->setKernelBuffersCount(1);
-			ok = true;
-		} catch (m2k_exception &e) {
-			if (e.iioCode() != -EBUSY) {
-				THROW_M2K_EXCEPTION(e.what(), e.type(), e.iioCode());
-			}
+	try {
+		m_m2k_adc->setKernelBuffersCount(1);
+	} catch (m2k_exception &e) {
+		if (e.iioCode() != -EBUSY) {
+			THROW_M2K_EXCEPTION(e.what(), e.type(), e.iioCode());
 		}
 	}
 }
 
 void M2kCalibrationImpl::setDacInCalibMode()
 {
-	bool ok = false;
 	dac_a_sampl_freq = m_m2k_dac->getSampleRate(0);
 	dac_a_oversampl = m_m2k_dac->getOversamplingRatio(0);
 	dac_b_sampl_freq = m_m2k_dac->getSampleRate(1);
@@ -157,22 +152,25 @@ void M2kCalibrationImpl::setDacInCalibMode()
 	m_m2k_dac->loadNbKernelBuffers();
 	m_dac_a_kernel_buffers = m_m2k_dac->getKernelBuffersCount(0);
 	m_dac_b_kernel_buffers = m_m2k_dac->getKernelBuffersCount(1);
-	while (!ok) {
-		try {
-			m_m2k_dac->setKernelBuffersCount(0, 1);
-			m_m2k_dac->setKernelBuffersCount(1, 1);
-			ok = true;
-		} catch (m2k_exception &e) {
-			if (e.iioCode() != -EBUSY) {
-				THROW_M2K_EXCEPTION(e.what(), e.type(), e.iioCode());
-			}
+	try {
+		m_m2k_dac->setKernelBuffersCount(0, 1);
+		m_m2k_dac->setKernelBuffersCount(1, 1);
+	} catch (m2k_exception &e) {
+		if (e.iioCode() != -EBUSY) {
+			THROW_M2K_EXCEPTION(e.what(), e.type(), e.iioCode());
 		}
 	}
 }
 
 void M2kCalibrationImpl::restoreAdcFromCalibMode()
 {
-	m_m2k_adc->setKernelBuffersCount(m_adc_kernel_buffers);
+	try {
+		m_m2k_adc->setKernelBuffersCount(m_adc_kernel_buffers);
+	} catch (m2k_exception &e) {
+		if (e.iioCode() != -EBUSY) {
+			THROW_M2K_EXCEPTION(e.what(), e.type(), e.iioCode());
+		}
+	}
 
 	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_1, m_trigger0_mode);
 	m_m2k_trigger->setAnalogMode(ANALOG_IN_CHANNEL_2, m_trigger1_mode);
@@ -193,8 +191,14 @@ void M2kCalibrationImpl::restoreAdcFromCalibMode()
 
 void M2kCalibrationImpl::restoreDacFromCalibMode()
 {
-	m_m2k_dac->setKernelBuffersCount(0, m_dac_a_kernel_buffers);
-	m_m2k_dac->setKernelBuffersCount(1, m_dac_b_kernel_buffers);
+	try {
+		m_m2k_dac->setKernelBuffersCount(0, m_dac_a_kernel_buffers);
+		m_m2k_dac->setKernelBuffersCount(1, m_dac_b_kernel_buffers);
+	} catch (m2k_exception &e) {
+		if (e.iioCode() != -EBUSY) {
+			THROW_M2K_EXCEPTION(e.what(), e.type(), e.iioCode());
+		}
+	}
 	m_m2k_dac->setSampleRate(0, dac_a_sampl_freq);
 	m_m2k_dac->setOversamplingRatio(0, dac_a_oversampl);
 	m_m2k_dac->setSampleRate(1, dac_b_sampl_freq);

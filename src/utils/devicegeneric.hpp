@@ -117,6 +117,7 @@ protected:
 	std::vector<Channel*> m_channel_list_out;
 	Buffer* m_buffer;
 	const char *m_dev_name;
+	static int MAX_RETRIES;
 };
 }
 }

@@ -132,8 +132,16 @@ void DeviceOut::stop()
 
 void DeviceOut::setKernelBuffersCount(unsigned int count)
 {
+	int retry = 0;
+	int ret = 0;
 	if (m_dev) {
-		int ret = iio_device_set_kernel_buffers_count(m_dev, count);
+		while (retry < DeviceGeneric::MAX_RETRIES) {
+			ret = iio_device_set_kernel_buffers_count(m_dev, count);
+			if (ret == 0) {
+				break;
+			}
+			retry++;
+		}
 		if (ret != 0) {
 			THROW_M2K_EXCEPTION("Device: Cannot set the number of kernel buffers", libm2k::EXC_RUNTIME_ERROR, ret);
 		}
