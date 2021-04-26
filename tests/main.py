@@ -6,11 +6,13 @@ import os
 import ps_functions
 import analog_functions
 import trig_functions
+import digital_functions
 from open_context import ctx
 from create_files import results_dir, results_file, results_file_path
 from m2k_analog_test import *
 from m2k_powersupply_test import *
 from m2k_trigger_test import *
+from m2k_digital_test import *
 
 # from m2k_digital_test import DigitalTests
 
@@ -20,12 +22,13 @@ wait_for_input = False
 
 
 def no_reports():
-    if len(sys.argv) > 1 and "noreports" in sys.argv:
+    if len(sys.argv) > 1 and "nofiles" in sys.argv:
         global gen_reports
         gen_reports = False
         ps_functions.gen_reports = False
         trig_functions.gen_reports = False
         analog_functions.gen_reports = False
+        digital_functions.gen_reports = False
         path = os.path.dirname(os.path.realpath(results_dir))
         dir_path = os.path.dirname(os.path.realpath(results_file_path))
         results_file.close()
@@ -37,7 +40,7 @@ def no_reports():
 def wait_():
     global wait_for_input
     print(len(sys.argv))
-    if len(sys.argv) == 1 or sys.argv[1] == "noreports" or (len(sys.argv) > 3 and "C_PowerSupplyTests" in sys.argv):
+    if len(sys.argv) == 1 or sys.argv[1] == "nofiles" or (len(sys.argv) > 3 and "C_PowerSupplyTests" in sys.argv):
         wait_for_input = True
     else:
         wait_for_input = False
@@ -49,7 +52,7 @@ if __name__ == "__main__":
     #  Main file where tests for all segments are called. The test classes are organized in a test suite.
     #  To run specific tests, specify the class and the test(s) when running this script.
     #  To run a specific class of tests, indicate said class(es) when running this script.
-    #  If you do not require reports to be generated, add "noreports" when running this script.
+    #  If you do not require reports to be generated, add "nofiles" when running this script.
     #  For instructions, run: --> main.py -h
     #                       --> main.py --help
 
@@ -86,12 +89,19 @@ if __name__ == "__main__":
         print("test_1_power_supply_object\n")
         print("test_negative_power_supply\n")
         print("test_positive_power_supply\n")
+        print("\n ===== class D_DigitalTests ===== \n")
+        print(" ===== tests ====== \n")
+        print("test_digital_objects\n")
+        print("test_state_digital_channels\n")
+        print("test_digital_output_channels\n")
+        print("test_trig_conditions\n")
+        print("test_cyclic_buffer\n")
 
         exit()
-    elif len(sys.argv) > 1 and "noreports" in sys.argv:
+    elif len(sys.argv) > 1 and "nofiles" in sys.argv:
         print("\n Reports will not be generated \n")
         for i in range(len(sys.argv)):
-            if sys.argv[i] == "noreports":
+            if sys.argv[i] == "nofiles":
                 sys.argv.pop(i)
                 break
         unittest.main(testRunner=unittest.TextTestRunner(), exit=False)
