@@ -18,16 +18,15 @@ class C_PowerSupplyTests(unittest.TestCase):
 
         log = logger.myLogger()
         log.info("Power Supply\n"
-                    "Connections:\n"
-                    "V+ ====> 1+\n"
-                    "V- ====> 2+\n"
-                    "GND ===> 1-\n"
-                    "GND ===> 2-\n")
+                 "Connections:\n"
+                 "V+ ====> 1+\n"
+                 "V- ====> 2+\n"
+                 "GND ===> 1-\n"
+                 "GND ===> 2-\n")
 
         if main.wait_for_input:
             log.info("When you've made the connections, press enter.\n")
             input()
-
 
     def test_1_power_supply_object(self):
         """Verifies if the Power Supply object was succesfully retrieved from the context
