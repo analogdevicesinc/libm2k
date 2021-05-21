@@ -1,4 +1,6 @@
 #define MsvcLib "msvcp140.dll"
+#define MsvcRuntime "vcruntime140.dll"
+#define MsvcrLib "msvcr120.dll"
 
 [Setup]
 AppId={{0B97BC46-2BA1-4931-88F2-61E84FC7EFEF}
@@ -73,6 +75,15 @@ begin
   end;
  end;
 
+function isMsvcrInstalled(): Boolean;
+begin
+  Result := True;
+
+  if not FileExists(ExpandConstant('{sys}\{#MsvcrLib}')) then begin
+    Result := False;
+  end;
+ end;
+
  
 [Files]
 Source: "C:\projects\libm2k\build-win64\dist\libm2k-py*-win64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
@@ -83,6 +94,12 @@ Source: "C:\projects\libm2k\build-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is
 
 Source: "C:\projects\libm2k\build-win32\{#MsvcLib}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
 Source: "C:\projects\libm2k\build-win64\{#MsvcLib}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
+
+Source: "C:\projects\libm2k\build-win32\{#MsvcRuntime}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
+Source: "C:\projects\libm2k\build-win64\{#MsvcRuntime}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
+
+Source: "C:\projects\libm2k\build-win32\{#MsvcrLib}"; DestDir: "{sys}"; Check: not isMsvcrInstalled; Flags: onlyifdoesntexist 32bit
+Source: "C:\projects\libm2k\build-win64\{#MsvcrLib}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcrInstalled); Flags: onlyifdoesntexist
 
 ;Source: "C:\projects\libm2k\build-win32\*.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode
 ;Source: "C:\projects\libm2k\build-win64\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode
