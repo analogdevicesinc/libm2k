@@ -113,29 +113,29 @@ int main(int argc, char **argv)
 		}
 
 		if (std::string(argv[1]) == "analog-in") {
-			libm2k::cli::AnalogIn analogIn(argc, argv);
-			command = &analogIn;
+			auto *analogIn = new libm2k::cli::AnalogIn(argc, argv);
+			command = analogIn;
 		} else if (std::string(argv[1]) == "analog-out") {
-			libm2k::cli::AnalogOut analogOut(argc, argv);
-			command = &analogOut;
+			auto *analogOut = new libm2k::cli::AnalogOut(argc, argv);
+			command = analogOut;
 		} else if (std::string(argv[1]) == "digital") {
-			libm2k::cli::Digital digital(argc, argv);
-			command = &digital;
+			auto *digital = new libm2k::cli::Digital(argc, argv);
+			command = digital;
 		} else if (std::string(argv[1]) == "power-supply") {
-			libm2k::cli::PowerSupply powerSupply(argc, argv);
-			command = &powerSupply;
+			auto *powerSupply = new libm2k::cli::PowerSupply(argc, argv);
+			command = powerSupply;
 		} else if (std::string(argv[1]) == "spi") {
-			libm2k::cli::Spi spi(argc, argv);
-			command = &spi;
+			auto *spi = new libm2k::cli::Spi(argc, argv);
+			command = spi;
 		} else if (std::string(argv[1]) == "i2c") {
-			libm2k::cli::I2c i2c(argc, argv);
-			command = &i2c;
+			auto *i2c = new libm2k::cli::I2c(argc, argv);
+			command = i2c;
 		} else if (std::string(argv[1]) == "uart") {
-			libm2k::cli::Uart uart(argc, argv);
-			command = &uart;
+			auto *uart = new libm2k::cli::Uart(argc, argv);
+			command = uart;
 		} else if (std::string(argv[1]) == "uart-terminal") {
-			libm2k::cli::UartTerminal uartTerminal(argc, argv);
-			command = &uartTerminal;
+			auto *uartTerminal = new libm2k::cli::UartTerminal(argc, argv);
+			command = uartTerminal;
 		} else {
 			throw std::runtime_error("m2kcli: '" + std::string(argv[1]) +
 						 "' is not a m2kcli command. See 'm2kcli --help'.\n");
@@ -171,12 +171,14 @@ int main(int argc, char **argv)
 	if (command->getContext() != nullptr) {
 		libm2k::context::contextClose(command->getContext(), false);
 	}
+	delete command;
 	return 0;
 }
 
 void destroy(int sigNumber)
 {
 	libm2k::context::contextClose(command->getContext(), false);
+	delete command;
 	std::cout << std::endl;
 	exit(sigNumber);
 }
