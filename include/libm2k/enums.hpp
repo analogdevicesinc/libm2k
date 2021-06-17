@@ -177,6 +177,19 @@ namespace libm2k {
 
 
 	/**
+	* @enum M2K_TRIGGER_OUT_SOURCE
+	* @brief Select the triggering source for a DeviceOut
+	*/
+	enum M2K_TRIGGER_OUT_SOURCE {
+		SRC_OUT_NONE = 0, ///< SRC_OUT_NONE - no trigger events
+		SRC_OUT_TRIGGER_IN = 1, ///< SRC_OUT_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the Output interface
+		SRC_OUT_TRIGGER_OUT = 2, ///< SRC_OUT_TRIGGER_OUT - trigger events on the TO(trigger out) pin trigger the Output interface
+		SRC_OUT_ANALOG_IN = 3, ///< SRC_OUT_ANALOG_IN  - trigger events on the AnalogIn interface trigger the Output interface
+		SRC_OUT_DIGITAL_IN = 4, ///< SRC_OUT_DIGITAL_IN - trigger events on the DigitalIn interface trigger the Output interface
+	};
+
+
+	/**
 	* @struct SETTINGS
 	* @brief Triggering system
 	*

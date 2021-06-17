@@ -26,6 +26,7 @@
 #include <digital/m2kdigital_impl.hpp>
 #include "m2khardwaretrigger_impl.hpp"
 #include "m2khardwaretrigger_v0.24_impl.hpp"
+#include "m2khardwaretrigger_v0.26_impl.hpp"
 #include "m2kcalibration_impl.hpp"
 #include <libm2k/analog/dmm.hpp>
 #include "utils/channel.hpp"
@@ -69,11 +70,16 @@ M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync)
 
 	m_firmware_version = getFirmwareVersion();
 
-	int diff = Utils::compareVersions(m_firmware_version, "v0.24");
-	if (diff < 0) {	//m_firmware_version < 0.24
+	int diff_v024 = Utils::compareVersions(m_firmware_version, "v0.24");
+	if (diff_v024 < 0) {	//m_firmware_version < 0.24
 		m_trigger = new M2kHardwareTriggerImpl(ctx);
 	} else {
-		m_trigger = new M2kHardwareTriggerV024Impl(ctx);
+        int diff_v026 = Utils::compareVersions(m_firmware_version, "v0.26");
+        if (diff_v026 < 0) { // firmware version 0.24, 0.25
+            m_trigger = new M2kHardwareTriggerV024Impl(ctx);
+        } else { //firmware version >=  0.26
+            m_trigger = new M2kHardwareTriggerV026Impl(ctx);
+        }
 	}
 
 	if (!m_trigger) {

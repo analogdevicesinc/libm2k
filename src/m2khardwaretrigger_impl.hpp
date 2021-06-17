@@ -107,6 +107,15 @@ public:
 	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(DIO_CHANNEL chn);
 	void setDigitalCondition(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION_DIGITAL cond);
 
+	void setDigitalOutSource(M2K_TRIGGER_OUT_SOURCE src) override;
+	M2K_TRIGGER_OUT_SOURCE getDigitalOutSource() const override;
+	void setDigitalOutCondition(M2K_TRIGGER_CONDITION_DIGITAL cond) override;
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalOutCondition() const override;
+	void setAnalogOutSource(M2K_TRIGGER_OUT_SOURCE src) override;
+	M2K_TRIGGER_OUT_SOURCE getAnalogOutSource() const override;
+	void setAnalogOutCondition(M2K_TRIGGER_CONDITION_DIGITAL cond) override;
+	M2K_TRIGGER_CONDITION_DIGITAL getAnalogOutCondition() const override;
+
 protected:
 	struct iio_device *m_trigger_device;
 	std::vector<Channel *> m_analog_channels;

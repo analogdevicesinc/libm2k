@@ -404,6 +404,90 @@ public:
 	 * @note Only available from firmware v0.24.
 	 */
 	virtual M2K_TRIGGER_SOURCE_DIGITAL getDigitalSource() const;
+
+
+	/**
+	 * @brief Select which interface triggers the DigitalOut.
+	 * @param src: of type M2K_TRIGGER_OUT_SOURCE:\n
+	 * 	SRC_OUT_NONE - no trigger events
+	 * 	SRC_OUT_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalOut interface;\n
+	 * 	SRC_OUT_TRIGGER_OUT - trigger events on the TO(trigger out) pin trigger the DigitalOut interface;\n
+	 * 	SRC_OUT_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalOut interface;\n
+	 * 	SRC_OUT_DIGITAL_IN - trigger events on the DigitalIn interface trigger the DigitalOut interface;\n
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual void setDigitalOutSource(M2K_TRIGGER_OUT_SOURCE src) = 0;
+
+
+	/**
+	 * @brief Retrieve the source of the DigitalOut interface trigger event.
+	 * @return M2K_TRIGGER_OUT_SOURCE :\n
+	 *	SRC_OUT_NONE;\n
+	 *	SRC_OUT_TRIGGER_IN;\n
+	 *	SRC_OUT_TRIGGER_OUT;\n
+	 *	SRC_OUT_ANALOG_IN;\n
+	 *	SRC_OUT_DIGITAL_IN;\n
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual M2K_TRIGGER_OUT_SOURCE getDigitalOutSource() const = 0;
+
+
+	/**
+	 * @brief Set the trigger condition for the TI/TO in order to trigger the DigitalOut interface
+	 * @param cond the specific trigger condition
+	 *
+	 * @note to have any effect the digital out source must be set to TI or TO
+	 */
+	virtual void setDigitalOutCondition(M2K_TRIGGER_CONDITION_DIGITAL cond) = 0;
+
+
+	/**
+	 * @brief Get the trigger condition of the TI/TO pins that triggers the DigitalOut interface
+	 * @return the trigger condition
+	 */
+	virtual M2K_TRIGGER_CONDITION_DIGITAL getDigitalOutCondition() const = 0;
+
+
+	/**
+	 * @brief Select which interface triggers the AnalogOut.
+	 * @param src: of type M2K_TRIGGER_OUT_SOURCE:\n
+	 * 	SRC_OUT_NONE - no trigger events
+	 * 	SRC_OUT_TRIGGER_IN - trigger events on the TI(trigger in) pin trigger the DigitalOut interface;\n
+	 * 	SRC_OUT_TRIGGER_OUT - trigger events on the TO(trigger out) pin trigger the DigitalOut interface;\n
+	 * 	SRC_OUT_ANALOG_IN - trigger events on the AnalogIn interface trigger the DigitalOut interface;\n
+	 * 	SRC_OUT_DIGITAL_IN - trigger events on the DigitalIn interface trigger the DigitalOut interface;\n
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual void setAnalogOutSource(M2K_TRIGGER_OUT_SOURCE src) = 0;
+
+
+	/**
+	 * @brief Retrieve the source of the AnalogOut interface trigger event.
+	 * @return M2K_TRIGGER_OUT_SOURCE :\n
+	 *	SRC_OUT_NONE;\n
+	 *	SRC_OUT_TRIGGER_IN;\n
+	 *	SRC_OUT_TRIGGER_OUT;\n
+	 *	SRC_OUT_ANALOG_IN;\n
+	 *	SRC_OUT_DIGITAL_IN;\n
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual M2K_TRIGGER_OUT_SOURCE getAnalogOutSource() const = 0;
+
+
+	/**
+	 * @brief Set the trigger condition for the TI/TO in order to trigger the AnalogOut interface
+	 * @param cond the specific trigger condition
+	 *
+	 * @note to have any effect the digital out source must be set to TI or TO
+	 */
+	virtual void setAnalogOutCondition(M2K_TRIGGER_CONDITION_DIGITAL cond) = 0;
+
+
+	/**
+	 * @brief Get the trigger condition of the TI/TO pins that triggers the AnalogOut interface
+	 * @return the trigger condition
+	 */
+	virtual M2K_TRIGGER_CONDITION_DIGITAL getAnalogOutCondition() const = 0;
 };
 }
 
