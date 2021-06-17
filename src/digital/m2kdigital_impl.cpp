@@ -502,14 +502,27 @@ void M2kDigitalImpl::setExternalClocksource(bool external)
 		else
 			m_dev_generic->setStringValue("clocksource", "internal");
 	}
+	else
+		THROW_M2K_EXCEPTION("M2kDigital: "
+				    "The clock source cannot be configure on "
+				    "the current board; Check the firmware version.",
+				    libm2k::EXC_INVALID_FIRMWARE_VERSION);
 
 }
 
-std::string M2kDigitalImpl::getClocksource()
+bool M2kDigitalImpl::isClocksourceExternal()
 {
 	if(m_dev_generic->hasGlobalAttribute("clocksource")){
-		return m_dev_generic->getStringValue("clocksource");
+		if(m_dev_generic->getStringValue("clocksource") == "external")
+			return true;
+		else
+			return false;
 	}
+	else
+		THROW_M2K_EXCEPTION("M2kDigital: "
+				    "There is no clocksource attribute on "
+				    "the current board; Check the firmware version.",
+				    libm2k::EXC_INVALID_FIRMWARE_VERSION);
 
 }
 

@@ -72,7 +72,7 @@ aout.push(clock_ch, buffer)
 
 dig.reset()
 dig.setExternalClocksource(True)
-print("Clocksource set to "+dig.getClocksource())
+print("Clocksource external --> "+str(dig.isClocksourceExternal()))
 dig.setCyclic(True)
 dig.setSampleRateIn(digital_sampling_frequency)
 dig.setDirection(clock_ch, libm2k.DIO_INPUT)
