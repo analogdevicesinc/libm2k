@@ -434,11 +434,12 @@ public:
 
 	/**
 	 * @brief Get the current clocksource
-	 * @return a string of the clocksource
+	 * @return True if clocksource is set to external
+	 *
 	 *
 	 * @note Only available from firmware v0.26.
 	 */
-	virtual std::string getClocksource() = 0;
+	virtual bool isClocksourceExternal() = 0;
 };
 }
 }
