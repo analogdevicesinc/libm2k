@@ -496,33 +496,35 @@ void M2kDigitalImpl::resetRateMux()
 
 void M2kDigitalImpl::setExternalClocksource(bool external)
 {
-	if(m_dev_generic->hasGlobalAttribute("clocksource")){
-		if(external)
+	if (m_dev_generic->hasGlobalAttribute("clocksource")) {
+		if (external) {
 			m_dev_generic->setStringValue("clocksource", "external");
-		else
+		} else {
 			m_dev_generic->setStringValue("clocksource", "internal");
-	}
-	else
+		}
+	} else {
 		THROW_M2K_EXCEPTION("M2kDigital: "
 				    "The clock source cannot be configure on "
 				    "the current board; Check the firmware version.",
 				    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	}
 
 }
 
 bool M2kDigitalImpl::isClocksourceExternal()
 {
-	if(m_dev_generic->hasGlobalAttribute("clocksource")){
-		if(m_dev_generic->getStringValue("clocksource") == "external")
+	if (m_dev_generic->hasGlobalAttribute("clocksource")) {
+		if (m_dev_generic->getStringValue("clocksource") == "external") {
 			return true;
-		else
+		} else {
 			return false;
-	}
-	else
+		}
+	} else {
 		THROW_M2K_EXCEPTION("M2kDigital: "
 				    "There is no clocksource attribute on "
 				    "the current board; Check the firmware version.",
 				    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	}
 
 }
 
