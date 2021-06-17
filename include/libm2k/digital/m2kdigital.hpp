@@ -423,6 +423,22 @@ public:
 	 */
 	virtual void resetRateMux() = 0;
 
+	/**
+	 * @brief Set the clocksource
+	 * @param external - True to set source to external
+	 *		   - False to set source to internal
+	 *
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual void setExternalClocksource(bool external) = 0;
+
+	/**
+	 * @brief Get the current clocksource
+	 * @return a string of the clocksource
+	 *
+	 * @note Only available from firmware v0.26.
+	 */
+	virtual std::string getClocksource() = 0;
 };
 }
 }

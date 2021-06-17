@@ -102,6 +102,8 @@ public:
 	bool hasRateMux();
 	void setRateMux() override;
 	void resetRateMux() override;
+	void setExternalClocksource(bool external) override;
+	std::string getClocksource() override;
 private:
 	bool m_cyclic;
 	std::shared_ptr<libm2k::utils::DeviceIn> m_dev_read;

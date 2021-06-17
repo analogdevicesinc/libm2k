@@ -493,3 +493,23 @@ void M2kDigitalImpl::resetRateMux()
 {
 	m_dev_read->setStringValue("rate_mux", "logic_analyzer");
 }
+
+void M2kDigitalImpl::setExternalClocksource(bool external)
+{
+	if(m_dev_generic->hasGlobalAttribute("clocksource")){
+		if(external)
+			m_dev_generic->setStringValue("clocksource", "external");
+		else
+			m_dev_generic->setStringValue("clocksource", "internal");
+	}
+
+}
+
+std::string M2kDigitalImpl::getClocksource()
+{
+	if(m_dev_generic->hasGlobalAttribute("clocksource")){
+		return m_dev_generic->getStringValue("clocksource");
+	}
+
+}
+
