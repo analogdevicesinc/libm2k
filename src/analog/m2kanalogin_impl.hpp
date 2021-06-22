@@ -45,8 +45,9 @@ public:
 	std::vector<std::vector<double>> getSamples(unsigned int nb_samples) override;
 	std::vector<std::vector<double>> getSamplesRaw(unsigned int nb_samples) override;
 
-	const double* getSamplesInterleaved(unsigned int nb_samples) override;
-	const short* getSamplesRawInterleaved(unsigned int nb_samples) override;
+	const double* getSamplesInterleaved(unsigned int nb_samples_per_channel) override;
+	const short* getSamplesRawInterleaved(unsigned int nb_samples_per_channel) override;
+
 	const double* getSamplesInterleaved_matlab(unsigned int nb_samples) override;
 	const short* getSamplesRawInterleaved_matlab(unsigned int nb_samples) override;
 
