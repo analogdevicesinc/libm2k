@@ -396,9 +396,9 @@ bool M2kAnalogInImpl::hasCalibbias()
 	return m_calibbias_available;
 }
 
-const double* M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples)
+const double* M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples_per_channel)
 {
-	return this->getSamplesInterleaved(nb_samples, true);
+	return this->getSamplesInterleaved(nb_samples_per_channel, true);
 }
 
 const double *M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples, bool processed)
@@ -421,12 +421,12 @@ const double *M2kAnalogInImpl::getSamplesInterleaved(unsigned int nb_samples, bo
 	return samps;
 }
 
-const short *M2kAnalogInImpl::getSamplesRawInterleaved(unsigned int nb_samples)
+const short *M2kAnalogInImpl::getSamplesRawInterleaved(unsigned int nb_samples_per_channel)
 {
 	LIBM2K_LOG(INFO, "[BEGIN] M2kAnalogIn getSamplesRawInterleaved");
 	m_samplerate = getSampleRate();
 	handleChannelsEnableState(true);
-	auto samps = m_m2k_adc->getSamplesRawInterleaved(nb_samples);
+	auto samps = m_m2k_adc->getSamplesRawInterleaved(nb_samples_per_channel);
 	handleChannelsEnableState(false);
 	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getSamplesRawInterleaved");
 	return samps;

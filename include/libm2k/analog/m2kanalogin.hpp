@@ -107,7 +107,7 @@ public:
 	* @note Due to a hardware limitation, the number of samples must
 	* be a multiple of 4 and greater than 16.
 	*/
-	virtual const double* getSamplesInterleaved(unsigned int nb_samples) = 0;
+	virtual const double* getSamplesInterleaved(unsigned int nb_samples_per_channel) = 0;
 
 
 	/**
@@ -122,7 +122,8 @@ public:
 	* @note Due to a hardware limitation, the number of samples must
 	* be a multiple of 4 and greater than 16.
 	*/
-	virtual const short* getSamplesRawInterleaved(unsigned int nb_samples) = 0;
+	virtual const short* getSamplesRawInterleaved(unsigned int nb_samples_per_channel) = 0;
+
 
 	/**
 	* @brief Retrieve a specific number of samples from both channels
