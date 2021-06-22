@@ -432,6 +432,16 @@ const short *M2kAnalogInImpl::getSamplesRawInterleaved(unsigned int nb_samples)
 	return samps;
 }
 
+const double *M2kAnalogInImpl::getSamplesInterleaved_matlab(unsigned int nb_samples)
+{
+	return this->getSamplesInterleaved(nb_samples / getNbChannels(), true);
+}
+
+const short *M2kAnalogInImpl::getSamplesRawInterleaved_matlab(unsigned int nb_samples)
+{
+	return this->getSamplesRawInterleaved(nb_samples / getNbChannels());
+}
+
 double M2kAnalogInImpl::processSample(int16_t sample, unsigned int channel)
 {
 	if (channel >= getNbChannels()) {

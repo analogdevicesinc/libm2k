@@ -47,6 +47,8 @@ public:
 
 	const double* getSamplesInterleaved(unsigned int nb_samples) override;
 	const short* getSamplesRawInterleaved(unsigned int nb_samples) override;
+	const double* getSamplesInterleaved_matlab(unsigned int nb_samples) override;
+	const short* getSamplesRawInterleaved_matlab(unsigned int nb_samples) override;
 
 	short getVoltageRaw(unsigned int ch) override;
 	double getVoltage(unsigned int ch) override;
