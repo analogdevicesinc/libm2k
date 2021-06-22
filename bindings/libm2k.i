@@ -33,6 +33,8 @@
 %ignore pushBytes;
 %ignore getVoltageP;
 %ignore getVoltageRawP;
+%ignore getSamplesRawInterleaved_matlab;
+%ignore getSamplesInterleaved_matlab;
 %rename(pushBytes) push(unsigned short*, unsigned int);
 
 %ignore buildLoggingMessage;

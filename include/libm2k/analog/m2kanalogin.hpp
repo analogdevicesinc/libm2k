@@ -124,6 +124,39 @@ public:
 	*/
 	virtual const short* getSamplesRawInterleaved(unsigned int nb_samples) = 0;
 
+	/**
+	* @brief Retrieve a specific number of samples from both channels
+	*
+	* @param nb_samples The number of samples that will be retrieved
+	* @return A pointer to the interleaved samples
+	*
+	* @note MATLAB specific API wrapper
+	* @note Before the acquisition, both channels will be automatically enabled
+	* @note The data array will contain samples from both channels
+	* @note The data array will contain nb_samples/2 for each channel
+	* @note After the acquisition is finished, the channels will return to their initial state
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
+	*/
+	virtual const double* getSamplesInterleaved_matlab(unsigned int nb_samples) = 0;
+
+
+	/**
+	* @brief Retrieve a specific number of raw samples from both channels
+	*
+	* @param nb_samples The number of samples that will be retrieved
+	* @return A pointer to the interleaved raw samples
+	*
+	* @note MATLAB specific API wrapper
+	* @note Before the acquisition, both channels will be automatically enabled
+	* @note The data array will contain samples from both channels
+	* @note The data array will contain nb_samples/2 for each channel
+	* @note After the acquisition is finished, the channels will return to their initial state
+	* @note Due to a hardware limitation, the number of samples must
+	* be a multiple of 4 and greater than 16.
+	*/
+	virtual const short* getSamplesRawInterleaved_matlab(unsigned int nb_samples) = 0;
+
 
 	/**
 	* @brief Retrieve the average raw value of the given channel
