@@ -304,8 +304,11 @@ void ContextBuilder::contextCloseAll()
 
 std::string ContextBuilder::getVersion()
 {
-	return "v" + std::string(PROJECT_VERSION) +
-		"-g" + std::string(PROJECT_VERSION_GIT);
+        if (std::string(PROJECT_VERSION_GIT).empty())
+                return "v" + std::string(PROJECT_VERSION);
+        else
+	        return "v" + std::string(PROJECT_VERSION) +
+		       "-g" + std::string(PROJECT_VERSION_GIT);
 }
 
 void ContextBuilder::enableLogging(bool enable)
