@@ -524,6 +524,7 @@ bool M2kDigitalImpl::isClocksourceExternal()
 				    "There is no clocksource attribute on "
 				    "the current board; Check the firmware version.",
 				    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+		return false;
 	}
 
 }
