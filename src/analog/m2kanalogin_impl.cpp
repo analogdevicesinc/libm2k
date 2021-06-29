@@ -477,6 +477,7 @@ short M2kAnalogInImpl::getVoltageRaw(ANALOG_IN_CHANNEL ch)
 
 	auto samps = getSamples(num_samples, false);
 	double avg = Utils::average(samps.at(ch).data(), num_samples);
+	stopAcquisition();
 
 	m_trigger->setAnalogMode(ch, mode);
 	enableChannel(ch, enabled);
@@ -505,6 +506,7 @@ std::vector<short> M2kAnalogInImpl::getVoltageRaw()
 		m_trigger->setAnalogMode(i, modes.at(i));
 		enableChannel(i, enabled.at(i));
 	}
+	stopAcquisition();
 	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getVoltageRaw");
 	return avgs;
 }
@@ -545,6 +547,7 @@ double M2kAnalogInImpl::getVoltage(ANALOG_IN_CHANNEL ch)
 
 	auto samps = getSamples(num_samples, true);
 	double avg = Utils::average(samps.at(ch).data(), num_samples);
+	stopAcquisition();
 
 	m_trigger->setAnalogMode(ch, mode);
 	enableChannel(ch, enabled);
@@ -572,6 +575,7 @@ std::vector<double> M2kAnalogInImpl::getVoltage()
 		m_trigger->setAnalogMode(i, modes.at(i));
 		enableChannel(i, enabled.at(i));
 	}
+	stopAcquisition();
 	LIBM2K_LOG(INFO, "[END] M2kAnalogIn getVoltage");
 	return avgs;
 }
