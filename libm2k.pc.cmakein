@@ -5,8 +5,5 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 
 Name: libm2k
 Description: Library for interfacing ADALM2000 devices
-Version: @VERSION@
-
-Requires:
-Libs: -L${libdir} -lm2k
+Libs: -L${libdir} -lstdc++ -lm2k
 Cflags: -I${includedir}
