@@ -27,7 +27,7 @@ else()
 endif()
 
 #Create the libm2k library
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME}
 			${SRC_LIST}
 			${HEADERS_LIST}
 			${DEVICES})
