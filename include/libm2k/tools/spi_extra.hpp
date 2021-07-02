@@ -37,6 +37,14 @@ typedef enum bit_numbering {
 } bit_numbering;
 
 /**
+ * @brief SPI CS polarity
+ */
+typedef enum cs_polarity {
+	ACTIVE_LOW = 0,
+	ACTIVE_HIGH = 1
+} cs_polarity;
+
+/**
  * @brief SPI extra initial structure specific for ADALM2000
  */
 typedef struct m2k_spi_init {
@@ -44,6 +52,7 @@ typedef struct m2k_spi_init {
 	uint8_t mosi;
 	uint8_t miso;
 	enum bit_numbering bit_numbering;
+	enum cs_polarity cs_polarity;
 	libm2k::context::M2k *context;
 } m2k_spi_init;
 
@@ -55,6 +64,7 @@ typedef struct m2k_spi_desc {
 	uint8_t mosi;
 	uint8_t miso;
 	enum bit_numbering bit_numbering;
+	enum cs_polarity cs_polarity;
 	libm2k::context::M2k *context;
 	libm2k::digital::M2kDigital *digital;
 	unsigned int sample_rate;

@@ -82,6 +82,7 @@ int main()
 	m2KSpiInit.mosi = 2;
 	m2KSpiInit.miso = 7; //dummy value - miso is not used in this example
 	m2KSpiInit.bit_numbering = MSB;
+	m2KSpiInit.cs_polarity = ACTIVE_LOW;
 	m2KSpiInit.context = context;
 
 	spi_init_param spiInitParam;
