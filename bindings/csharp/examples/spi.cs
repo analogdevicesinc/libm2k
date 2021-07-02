@@ -76,6 +76,7 @@ namespace examples
             m2kSpiInit.mosi = 2;
             m2kSpiInit.miso = 7; //dummy value - miso is not used in this example
             m2kSpiInit.bit_numbering = bit_numbering.MSB;
+            m2kSpiInit.cs_polarity = cs_polarity.ACTIVE_LOW;
             m2kSpiInit.context = context;
 
             var spiInitParam = new spi_init_param();
