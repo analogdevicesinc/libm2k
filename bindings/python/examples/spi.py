@@ -49,6 +49,7 @@ def main():
     m2k_spi_init.mosi = 2
     m2k_spi_init.miso = 7  # dummy value - miso is not used in this example
     m2k_spi_init.bit_numbering = libm2k.MSB
+    m2k_spi_init.cs_polarity = libm2k.ACTIVE_LOW
     m2k_spi_init.context = context
 
     spi_init_param = libm2k.spi_init_param()

@@ -57,6 +57,11 @@ static std::vector<unsigned short> createBuffer(struct spi_desc *desc,
 		for (unsigned int j = 0; j < samplesPerHalfBit; ++j) {
 			unsigned short sample = 0;
 
+			//set cs polarity
+			if (m2KSpiDesc->cs_polarity == ACTIVE_HIGH) {
+				setBit(sample, desc->chip_select);
+			}
+
 			//set clock polarity
 			if (clockPolarity) {
 				setBit(sample, m2KSpiDesc->clock);
@@ -86,9 +91,16 @@ static std::vector<unsigned short> createBuffer(struct spi_desc *desc,
 	//set clock to idle state
 	for (unsigned int j = 0; j < samplesPerHalfBit; ++j) {
 		unsigned short sample = 0;
+
+		//set cs polarity
+		if (m2KSpiDesc->cs_polarity == ACTIVE_HIGH) {
+			setBit(sample, desc->chip_select);
+		}
+
 		if (clockPolarity) {
 			setBit(sample, m2KSpiDesc->clock);
 		}
+
 		if (phase) {
 			//set mosi bit
 			if (getBit(data[dataIndex], cnt)) {
@@ -101,7 +113,11 @@ static std::vector<unsigned short> createBuffer(struct spi_desc *desc,
 	//set cs to idle state
 	for (unsigned int j = 0; j < samplesPerHalfBit; ++j) {
 		unsigned short sample = 0;
-		setBit(sample, desc->chip_select);
+
+		if (m2KSpiDesc->cs_polarity == ACTIVE_LOW) {
+			setBit(sample, desc->chip_select);
+		}
+
 		if (clockPolarity) {
 			setBit(sample, m2KSpiDesc->clock);
 		}
@@ -173,7 +189,12 @@ static void read(struct spi_desc *desc,
 
 	//set the trigger on CS
 	libm2k::M2kHardwareTrigger *trigger = m2KSpiDesc->digital->getTrigger();
-	trigger->setDigitalCondition(desc->chip_select, libm2k::FALLING_EDGE_DIGITAL);
+
+	if (m2KSpiDesc->cs_polarity == ACTIVE_HIGH) {
+		trigger->setDigitalCondition(desc->chip_select, libm2k::RISING_EDGE_DIGITAL);
+	} else {
+		trigger->setDigitalCondition(desc->chip_select, libm2k::FALLING_EDGE_DIGITAL);
+	}
 
 	//capture samples
 	std::vector<unsigned short> samples = m2KSpiDesc->digital->getSamples((bytes_number + 1) * samplesPerBit * 8);
@@ -272,6 +293,7 @@ int32_t spi_init_write_only(struct spi_desc **desc,
 		m2KSpiDesc->clock = m2KSpiInit->clock;
 		m2KSpiDesc->mosi = m2KSpiInit->mosi;
 		m2KSpiDesc->bit_numbering = m2KSpiInit->bit_numbering;
+		m2KSpiDesc->cs_polarity = m2KSpiInit->cs_polarity;
 		m2KSpiDesc->context = m2KSpiInit->context;
 		m2KSpiDesc->digital = m2KSpiDesc->context->getDigital();
 		m2KSpiDesc->sample_rate = sampleRate;
@@ -291,7 +313,12 @@ int32_t spi_init_write_only(struct spi_desc **desc,
 		m2KSpiDesc->digital->setCyclic(false);
 
 		//set the state of CS and CLK to idle
-		m2KSpiDesc->digital->setValueRaw(spiDesc->chip_select, libm2k::digital::HIGH);
+		if (m2KSpiDesc->cs_polarity == ACTIVE_HIGH) {
+			m2KSpiDesc->digital->setValueRaw(spiDesc->chip_select, libm2k::digital::LOW);
+		} else {
+			m2KSpiDesc->digital->setValueRaw(spiDesc->chip_select, libm2k::digital::HIGH);
+		}
+
 		if (spiDesc->mode & SPI_CPOL) {
 			m2KSpiDesc->digital->setValueRaw(m2KSpiDesc->clock, libm2k::digital::HIGH);
 		} else {

@@ -60,9 +60,10 @@ void Spi::handleInit()
 {
 	std::map<std::string, std::string> arguments = Validator::validate(getArguments());
 	if (!(arguments.count("clk") && arguments.count("mosi") && arguments.count("frequency")
-	      && arguments.count("cs") && arguments.count("mode") && arguments.count("bit_numbering"))) {
+	      && arguments.count("cs") && arguments.count("mode") && arguments.count("bit_numbering")
+	      && arguments.count("cs_polarity"))) {
 		throw std::runtime_error(
-			"Expecting: frequency=<value> clk=<value> mosi=<index> cs=<index> mode=<value> bit_numbering=<value>\n");
+			"Expecting: frequency=<value> clk=<value> mosi=<index> cs=<index> mode=<value> bit_numbering=<value> cs_polarity=<value>\n");
 	}
 
 	int frequency;
@@ -83,6 +84,9 @@ void Spi::handleInit()
 	std::string bitNumbering;
 	Validator::validate(arguments["bit_numbering"], "bit_numbering", bitNumbering);
 
+	bool cs_polarity;
+	Validator::validate(arguments["cs_polarity"], "cs_polarity", cs_polarity);
+
 	int miso = 0xFF;
 	if (arguments.count("miso")) {
 		writeOnly = false;
@@ -102,6 +106,7 @@ void Spi::handleInit()
 		throw std::runtime_error("Invalid bit numbering: '" + std::string(bitNumbering) + "'.\n");
 	}
 
+	m2KSpiInit.cs_polarity = static_cast<enum cs_polarity>(cs_polarity);
 	spi_init_param spiInitParam;
 	spiInitParam.max_speed_hz = frequency;
 	spiInitParam.mode = static_cast<spi_mode>(mode);
