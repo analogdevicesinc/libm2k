@@ -82,6 +82,7 @@ void AnalogIn::handleCalibration()
 {
 	std::cout << "Calibrating . . .";
 	std::cout.flush();
+	context->setTimeout(5000);
 	bool calibration = context->calibrateADC();
 	if (calibration) {
 		std::cout << "\rCalibration done.\n";
