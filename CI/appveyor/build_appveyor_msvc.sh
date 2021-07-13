@@ -3,6 +3,8 @@
 set -e
 MCS_EXECUTABLE_PATH="C:\Windows\Microsoft.NET\Framework\v4.0.30319"
 OLD_PATH="$PATH"
+DEST_LIBIIO="/c/libiio"
+TOP_DIR="/c/projects/libm2k"
 
 __build_libm2k() {
 	local PLATFORM="$1"
@@ -12,16 +14,16 @@ __build_libm2k() {
 	local PLAT_NAME="${5:-$PLATFORM}"
 
 	# Create the official build directory for this platform
-	mkdir -p "/c/projects/libm2k/build-$PLATFORM/dist"
+	mkdir -p "${TOP_DIR}/build-$PLATFORM/dist"
 
 	# Create and clear up the temporary build directory for this platform
-	rm -rf "/c/projects/libm2k/tmp-build-$PLATFORM"
-	mkdir -p "/c/projects/libm2k/tmp-build-$PLATFORM"
+	rm -rf "${TOP_DIR}/tmp-build-$PLATFORM"
+	mkdir -p "${TOP_DIR}/tmp-build-$PLATFORM"
 	export PATH="$PY_PATH;$PY_PATH/libs;$OLD_PATH"
-	cd /c/projects/libm2k/tmp-build-"$PLATFORM"
+	cd ${TOP_DIR}/tmp-build-"$PLATFORM"
 	cmake -G "$GENERATOR" \
-        -DIIO_LIBRARIES:FILEPATH=/c/libiio-"$PLATFORM"/libiio.lib \
-        -DIIO_INCLUDE_DIRS:PATH=/c/libiio-"$PLATFORM" \
+	-DIIO_LIBRARIES:FILEPATH="$DEST_LIBIIO"-"$PLATFORM"/libiio.lib \
+	-DIIO_INCLUDE_DIRS:PATH="$DEST_LIBIIO"-"$PLATFORM" \
         -DCMAKE_CONFIGURATION_TYPES=RELEASE \
         -DSWIG_DIR=/c/swig/Lib \
         -DSWIG_EXECUTABLE=/c/swig/swig.exe \
@@ -31,22 +33,22 @@ __build_libm2k() {
         -DPython_EXECUTABLE="$PY_PATH/python.exe" \
         -DBUILD_EXAMPLES=ON \
         -DENABLE_CSHARP=ON \
-	 -DENABLE_LABVIEW=ON \
+	-DENABLE_LABVIEW=ON \
         ..
 	cmake --build . --config Release
 
 	"$PY_PATH/python.exe" -m pip install --user --upgrade setuptools wheel
 	SETUPTOOLS_USE_DISTUTILS=stdlib "$PY_PATH/python.exe" setup.py bdist_wininst
 	"$PY_PATH/python.exe" setup.py sdist bdist_wheel --plat-name "$PLAT_NAME" --python-tag py"$PY_VERSION"
-    cp dist/libm2k-*.exe "/c/projects/libm2k/build-$PLATFORM/dist/libm2k-py$PY_VERSION-$PLATFORM.exe"
-	cp dist/libm2k-*.whl "/c/projects/libm2k/build-$PLATFORM/dist/"
+	cp dist/libm2k-*.exe "${TOP_DIR}/build-$PLATFORM/dist/libm2k-py$PY_VERSION-$PLATFORM.exe"
+	cp dist/libm2k-*.whl "${TOP_DIR}/build-$PLATFORM/dist/"
 }
 
 __mv_to_build_dir() {
 	local PLATFORM="$1"
 
-	DST_FOLDER="/c/projects/libm2k/build-$PLATFORM/"
-	cd "/c/projects/libm2k/tmp-build-$PLATFORM"
+	DST_FOLDER="${TOP_DIR}/build-$PLATFORM/"
+	cd "${TOP_DIR}/tmp-build-$PLATFORM"
 	cp *.dll $DST_FOLDER
 	cp *.exe $DST_FOLDER
 	cp *.lib $DST_FOLDER

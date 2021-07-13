@@ -18,22 +18,14 @@ cache:
   - C:\glog -> CI\appveyor\install_glog.bat
 
 install:
-    # Download libiio
+    #Download libiio deps
+    - echo "Downloading deps..."
     - cd c:\
-    - appveyor DownloadFile https://ci.appveyor.com/api/projects/analogdevicesinc/libiio/artifacts/libiio.zip?branch=master
-    - 7z x libiio*.zip > nul
-    - mkdir libiio-win64
-    - mkdir libiio-win32
-    - mkdir libiio-mingw-win64
-    - mkdir libiio-mingw-win32
-    - mv libiio-*/MS64/* libiio-win64/
-    - cp libiio-*/include/* libiio-win64/
-    - mv libiio-*/MS32/* libiio-win32/
-    - cp libiio-*/include/* libiio-win32/
-    - mv libiio-*/MinGW32/* libiio-mingw-win32/
-    - cp libiio-*/include/* libiio-mingw-win32/
-    - mv libiio-*/MinGW64/* libiio-mingw-win64/
-    - cp libiio-*/include/* libiio-mingw-win64/
+    - appveyor DownloadFile http://swdownloads.analog.com/cse/build/libiio-win-deps.zip
+    - 7z x -y "c:\libiio-win-deps.zip"
+
+    # Build and install libiio
+    - bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
 
     # Download SWIG
     - cd c:\
@@ -56,6 +48,10 @@ build_script:
     #Create the installer
     - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT\msvcp140.dll" c:\projects\libm2k\build-win32
     - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\msvcp140.dll" c:\projects\libm2k\build-win64
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT\vcruntime140.dll" c:\projects\libm2k\build-win32
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\vcruntime140.dll" c:\projects\libm2k\build-win64
+    - copy "c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x86\Microsoft.VC120.CRT\msvcr120.dll" c:\projects\libm2k\build-win32
+    - copy "c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x64\Microsoft.VC120.CRT\msvcr120.dll" c:\projects\libm2k\build-win64
     - ISCC c:\projects\libm2k\build-win64\libm2k.iss
     - appveyor PushArtifact C:\libm2k-system-setup.exe
 
@@ -70,12 +66,12 @@ build_script:
     - copy build-win32\libm2k-sharp.dll c:\libm2k-win32\
     - copy build-win32\libm2k-sharp-cxx-wrap.dll c:\libm2k-win32\
     - copy build-win32\*.exe c:\libm2k-win32\
+    - copy build-win32\msvc*.dll c:\libm2k-win32\
+    - copy build-win32\vcruntime*.dll c:\libm2k-win32\
     - copy build-win32\dist\*.exe c:\libm2k-win32\dist\
     - copy build-win32\dist\*.whl c:\libm2k-win32\dist\
     - copy c:\libiio-win32\*.dll c:\libm2k-win32\
     - copy c:\glog\build_0_4_0-Win32\Release\glog.dll c:\libm2k-win32\
-    #- $Fullname = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\*\x86" -Filter msvcp140.dll -Recurse |  %{echo $_.FullName}
-    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT\msvcp140.dll" c:\libm2k-win32\
     - 7z a "c:\libm2k-win32.zip" c:\libm2k-win32
     - ps: Get-ChildItem c:\libm2k-win32\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     - appveyor PushArtifact c:\libm2k-win32.zip
@@ -88,12 +84,13 @@ build_script:
     - copy build-win64\libm2k-sharp.dll c:\libm2k-win64\
     - copy build-win64\libm2k-sharp-cxx-wrap.dll c:\libm2k-win64\
     - copy build-win64\*.exe c:\libm2k-win64\
+    - copy build-win64\msvc*.dll c:\libm2k-win64\
+    - copy build-win64\vcruntime*.dll c:\libm2k-win64\
     - copy build-win64\dist\*.exe c:\libm2k-win64\dist\
     - copy build-win64\dist\*.whl c:\libm2k-win64\dist\
     - copy c:\libiio-win64\*.dll c:\libm2k-win64\
     - copy c:\glog\build_0_4_0-x64\Release\glog.dll c:\libm2k-win64\
-    #- $Fullname = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\*\x64" -Filter msvcp140.dll -Recurse |  %{echo $_.FullName}
-    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\msvcp140.dll" c:\libm2k-win64\
+
     - 7z a "c:\libm2k-win64.zip" c:\libm2k-win64
     - ps: Get-ChildItem c:\libm2k-win64\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     - appveyor PushArtifact c:\libm2k-win64.zip
