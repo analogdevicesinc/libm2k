@@ -45,15 +45,11 @@ public:
 	unsigned int getNbAttributes();
 	std::string getAttributeName(unsigned int idx);
 	bool hasAttribute(std::string attr);
-	void write(struct iio_buffer* buffer, std::vector<short> const &data);
-	void write(struct iio_buffer* buffer, std::vector<unsigned short> const &data);
-	void write(struct iio_buffer* buffer, std::vector<double> const &data);
-	void write(struct iio_buffer* buffer, double *data, unsigned int nb_samples);
-	void write(struct iio_buffer* buffer, short *data, unsigned int nb_samples);
-	void write(struct iio_buffer* buffer, unsigned short *data, unsigned int nb_samples);
 
 	void convert(int16_t *avg, int16_t *src);
 	void convert(double *avg, int16_t *src);
+
+	void convertInverse(void *dst, const void* src);
 
 	void setDoubleValue(std::string attr, double val);
 	double getDoubleValue(std::string attr);
@@ -73,8 +69,11 @@ public:
 	uintptr_t getFirst(struct iio_buffer* buffer);
 	void *getFirstVoid(iio_buffer *buffer);
 
+	unsigned int getChannelDataFormat();
+
 	bool isValid();
 	struct iio_channel* getChannel();
+	void write(iio_buffer *buffer, const void *data, unsigned int nb_samples);
 private:
 	struct iio_device *m_device;
 	struct iio_channel *m_channel;

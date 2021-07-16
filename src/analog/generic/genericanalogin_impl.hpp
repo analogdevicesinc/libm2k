@@ -35,9 +35,6 @@ public:
 	GenericAnalogInImpl(struct iio_context* ctx, std::string adc_dev);
 	virtual ~GenericAnalogInImpl();
 
-	const double* getSamplesInterleaved(unsigned int nb_samples);
-	const short* getSamplesRawInterleaved(unsigned int nb_samples);
-
 	double getSampleRate();
 	double getSampleRate(unsigned int);
 	double setSampleRate(double sampleRate);
@@ -45,9 +42,13 @@ public:
 	std::vector<double> getAvailableSampleRates();
 	std::vector<double> getAvailableSampleRates(unsigned int chn_idx);
 
+	const double* getSamplesInterleaved(unsigned int nb_samples);
+	const short* getSamplesRawInterleaved(unsigned int nb_samples);
+
 	void enableChannel(unsigned int index, bool enable);
+	bool isChannelEnabled(unsigned int chnIdx);
 	void setKernelBuffersCount(unsigned int count);
-	std::string getDeviceName();
+	std::string getName();
 
 	struct IIO_OBJECTS getIioObjects();
 	unsigned int getNbChannels();
@@ -55,9 +56,6 @@ public:
 	double getMaximumSamplerate(unsigned int chn_idx);
 private:
 	std::vector<std::shared_ptr<libm2k::utils::DeviceIn>> m_devices_in;
-	std::string m_dev_name;
-	unsigned int m_nb_channels;
-	bool m_cyclic;
 	std::shared_ptr<libm2k::utils::DeviceIn> getAdcDevice(unsigned int index);
 	static double processSample(int16_t sample, unsigned int channel);
 };

@@ -21,9 +21,7 @@
 
 #include "buffer.hpp"
 #include "channel.hpp"
-#include <libm2k/m2kexceptions.hpp>
 #include <libm2k/logger.hpp>
-#include <libm2k/utils/utils.hpp>
 
 #include <iostream>
 #include <memory>
@@ -99,55 +97,9 @@ void Buffer::setChannels(std::vector<Channel*> channels)
 	m_channel_list = channels;
 }
 
-void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
-	  bool cyclic, bool multiplex)
+void Buffer::pushInterleaved(const void *data, unsigned int nb_samples_per_channel, bool cyclic, bool multiplex)
 {
-	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
-		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	/* If the data vector is empty, then it means we want
-	 * to remove what was pushed earlier to the device, so
-	 * we destroy the buffer */
-	if (nb_samples == 0) {
-		return;
-	}
-
-	initializeBuffer(nb_samples, cyclic, true);
-
-	if (channel < m_channel_list.size() ) {
-		if (!multiplex) {
-			m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
-		} else {
-			short *p_dat;
-			int i = 0;
-
-			for (p_dat = (short *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
-			     (unsigned short*)p_dat++, i++) {
-				*p_dat = data[i];
-			}
-
-		}
-		ssize_t ret = iio_buffer_push(m_buffer);
-		if (ret < 0) {
-			destroy();
-			// timeout error code
-			if (ret == -ETIMEDOUT) {
-				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
-			}
-			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
-		}
-		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer pushed"));
-	} else {
-		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
-	}
-}
-
-//push on a certain channel
-void Buffer::push(std::vector<short> const &data, unsigned int channel,
-	  bool cyclic, bool multiplex)
-{
-	size_t size = data.size();
+	size_t size = nb_samples_per_channel * m_channel_list.size();
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
 		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
@@ -155,52 +107,52 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 	/* If the data vector is empty, then it means we want
 	* to remove what was pushed earlier to the device, so
 	* we destroy the buffer */
-	if (data.size() == 0) {
+	if (size == 0) {
 		return;
 	}
-
 	initializeBuffer(size, cyclic, true);
 
-	if (channel < m_channel_list.size() ) {
+	// TODO: can iio_data_format be different for 2 channels in the same iio_buffer?
+	unsigned int sample_length = m_channel_list.at(0)->getChannelDataFormat();
+	uintptr_t dst_ptr;
+	uintptr_t src_ptr = (uintptr_t) data;
+	uintptr_t end = src_ptr + size * sample_length;
+	uintptr_t buf_end = (uintptr_t) iio_buffer_end(m_buffer);
+	ptrdiff_t buf_step = iio_buffer_step(m_buffer);
+
+	for (dst_ptr = (uintptr_t) iio_buffer_start(m_buffer);
+	     dst_ptr < buf_end && src_ptr + sample_length <= end;
+	     dst_ptr += buf_step, src_ptr += sample_length) {
 		if (!multiplex) {
-			m_channel_list.at(channel)->write(m_buffer, data);
+			m_channel_list.at(0)->convertInverse((void *)dst_ptr, (const void*)src_ptr);
 		} else {
-			short *p_dat;
-			int i = 0;
-
-			for (p_dat = (short *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
-			     (short*)p_dat++, i++) {
-				*p_dat = data[i];
-			}
-
+			memcpy((void*)dst_ptr, (void*)src_ptr, sample_length);
 		}
-		ssize_t ret = iio_buffer_push(m_buffer);
-		if (ret < 0) {
-			destroy();
-			// timeout error code
-			if (ret == -ETIMEDOUT) {
-				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
-			}
-			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
-		}
-		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer pushed"));
-	} else {
-		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
 	}
+
+	ssize_t ret = iio_buffer_push(m_buffer);
+	if (ret < 0) {
+		destroy();
+		// timeout error code
+		if (ret == -ETIMEDOUT) {
+			THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
+		}
+		THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
+	}
+	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer pushed"));
 }
 
-void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
-	  bool cyclic, bool multiplex)
+void Buffer::push(const void *data, unsigned int channel, unsigned int nb_samples, bool cyclic, bool multiplex)
 {
-	size_t size = data.size();
+	size_t size = nb_samples;//data.size();
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
 		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
 
 	/* If the data vector is empty, then it means we want
-	 * to remove what was pushed earlier to the device, so
-	 * we destroy the buffer */
-	if (data.size() == 0) {
+	* to remove what was pushed earlier to the device, so
+	* we destroy the buffer */
+	if (size == 0) {
 		return;
 	}
 
@@ -208,128 +160,22 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 
 	if (channel < m_channel_list.size() ) {
 		if (!multiplex) {
-			m_channel_list.at(channel)->write(m_buffer, data);
+			m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
 		} else {
-			unsigned short *p_dat;
-			int i = 0;
+			unsigned int sample_length = m_channel_list.at(0)->getChannelDataFormat();
+			uintptr_t dst_ptr;
+			uintptr_t src_ptr = (uintptr_t) data;
+			uintptr_t end = src_ptr + size * sample_length;
+			uintptr_t buf_end = (uintptr_t) iio_buffer_end(m_buffer);
+			ptrdiff_t buf_step = iio_buffer_step(m_buffer);
 
-			for (p_dat = (unsigned short *)iio_buffer_start(m_buffer); (p_dat < iio_buffer_end(m_buffer));
-			     (unsigned short*)p_dat++, i++) {
-				*p_dat = data[i];
+			for (dst_ptr = (uintptr_t) iio_buffer_start(m_buffer);
+			     dst_ptr < buf_end && src_ptr + sample_length <= end;
+			     dst_ptr += buf_step, src_ptr += sample_length) {
+				memcpy((void*)dst_ptr, (void*)src_ptr, sample_length);
 			}
-
 		}
-		ssize_t ret = iio_buffer_push(m_buffer);
-		if (ret < 0) {
-			destroy();
-			// timeout error code
-			if (ret == -ETIMEDOUT) {
-				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
-			}
-			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
-		}
-		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer pushed"));
-	} else {
-		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
 
-	}
-}
-
-void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
-{
-	size_t size = data.size();
-	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	/* If the data vector is empty, then it means we want
-	 * to remove what was pushed earlier to the device, so
-	 * we destroy the buffer */
-	if (data.size() == 0) {
-		return;
-	}
-
-	initializeBuffer(size, cyclic, true);
-
-	if (channel < m_channel_list.size() ) {
-		m_channel_list.at(channel)->write(m_buffer, data);
-		ssize_t ret = iio_buffer_push(m_buffer);
-		if (ret < 0) {
-			destroy();
-			// timeout error code
-			if (ret == -ETIMEDOUT) {
-				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
-			}
-			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
-		}
-		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer pushed"));
-	} else {
-		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
-	}
-}
-
-void Buffer::push(std::vector<std::vector<short>> const &data)
-{
-	size_t data_ch_nb = data.size();
-
-	if (data_ch_nb > m_channel_list.size()) {
-		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_OUT_OF_RANGE);
-	}
-
-	for (unsigned int i = 0; i < data_ch_nb; i++) {
-		push(data.at(i), i);
-	}
-}
-
-void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
-{
-	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	/* If the data vector is empty, then it means we want
-	 * to remove what was pushed earlier to the device, so
-	 * we destroy the buffer */
-	if (nb_samples == 0) {
-		return;
-	}
-
-	initializeBuffer(nb_samples, cyclic, true);
-
-	if (channel < m_channel_list.size() ) {
-		m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
-		ssize_t ret = iio_buffer_push(m_buffer);
-		if (ret < 0) {
-			destroy();
-			// timeout error code
-			if (ret == -ETIMEDOUT) {
-				THROW_M2K_EXCEPTION("Buffer: Push timeout occurred", libm2k::EXC_TIMEOUT, ret);
-			}
-			THROW_M2K_EXCEPTION("Buffer: Cannot push TX buffer", libm2k::EXC_RUNTIME_ERROR, ret);
-		}
-		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer pushed"));
-	} else {
-		THROW_M2K_EXCEPTION("Buffer: Please setup channels before pushing data", libm2k::EXC_INVALID_PARAMETER);
-	}
-}
-
-void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
-{
-	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
-		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	/* If the data vector is empty, then it means we want
-	 * to remove what was pushed earlier to the device, so
-	 * we destroy the buffer */
-	if (nb_samples == 0) {
-		return;
-	}
-
-	initializeBuffer(nb_samples, cyclic, true);
-
-	if (channel < m_channel_list.size() ) {
-		m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
 		ssize_t ret = iio_buffer_push(m_buffer);
 		if (ret < 0) {
 			destroy();

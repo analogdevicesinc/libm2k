@@ -244,7 +244,7 @@ void M2kDigitalImpl::push(std::vector<unsigned short> const &data)
 	if (!anyChannelEnabled(DIO_OUTPUT)) {
 		THROW_M2K_EXCEPTION("M2kDigital: No TX channel enabled.", libm2k::EXC_INVALID_PARAMETER);
 	}
-	m_dev_write->push(data, 0, getCyclic(), true);
+	m_dev_write->push((const void*)data.data(), 0, data.size(), getCyclic(), true);
 	LIBM2K_LOG(INFO, "[END] M2kDigital push");
 }
 
@@ -254,7 +254,7 @@ void M2kDigitalImpl::push(unsigned short *data, unsigned int nb_samples)
 	if (!anyChannelEnabled(DIO_OUTPUT)) {
 		THROW_M2K_EXCEPTION("M2kDigital: No TX channel enabled.", libm2k::EXC_INVALID_PARAMETER);
 	}
-	m_dev_write->push(data, 0, nb_samples, getCyclic(), true);
+	m_dev_write->push((const void*)data, 0, nb_samples, getCyclic(), true);
 	LIBM2K_LOG(INFO, "[END] M2kDigital push");
 }
 

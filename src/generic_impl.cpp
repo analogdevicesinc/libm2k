@@ -89,7 +89,7 @@ GenericAnalogIn* GenericImpl::getAnalogIn(unsigned int index)
 GenericAnalogIn* GenericImpl::getAnalogIn(std::string dev_name)
 {
 	for (GenericAnalogIn* d : m_instancesAnalogIn) {
-		if (d->getDeviceName() == dev_name) {
+		if (d->getName() == dev_name) {
 			return d;
 		}
 	}

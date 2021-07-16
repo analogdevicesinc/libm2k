@@ -30,6 +30,9 @@
 #include <libm2k/m2kglobal.hpp>
 #include "devicegeneric.hpp"
 #include <libm2k/enums.hpp>
+#include "utils/buffer.hpp"
+#include "utils/channel.hpp"
+#include <libm2k/m2kexceptions.hpp>
 
 using namespace std;
 
@@ -45,22 +48,28 @@ public:
 	~DeviceOut();
 
 	void initializeBuffer(unsigned int size, bool cyclic);
-	void push(std::vector<short> const &data, unsigned int channel,
-		bool cyclic = true, bool multiplex = false);
-	void push(std::vector<unsigned short> const &data, unsigned int channel,
-		bool cyclic = true, bool multiplex = false);
-	void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
-		  bool cyclic = true, bool multiplex = false);
-	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true);
-	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
-	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
 	void stop();
 	void cancelBuffer();
 	void setKernelBuffersCount(unsigned int count);
 	struct IIO_OBJECTS getIioObjects();
 
+	unsigned int getNbBufferedChannels();
+	unsigned int getNbDdsChannels();
+	void enableBufferedChannel(unsigned int chnIdx, bool enable);
+	void enableDdsChannel(unsigned int chnIdx, bool enable);
+	bool isBufferedChannelEnabled(unsigned int chnIdx);
+	bool isDdsChannelEnabled(unsigned int chnIdx);
+
+	void push(const void *data, unsigned int channel, unsigned int nb_samples,
+			bool cyclic = true, bool multiplex = false);
+
+	void pushInterleaved(const void *data, unsigned int nb_samples_per_channel,
+			     bool cyclic = true, bool multiplex = false);
+
 private:
 	std::vector<Channel*> m_channel_list;
+	std::vector<Channel*> m_buffered_channel_list;
+	std::vector<Channel*> m_dds_channel_list;
 };
 }
 }

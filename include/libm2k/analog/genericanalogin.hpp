@@ -46,8 +46,9 @@ public:
 	virtual double getMaximumSamplerate(unsigned int chn_idx) = 0;
 
 	virtual void enableChannel(unsigned int index, bool enable) = 0;
+	virtual bool isChannelEnabled(unsigned int chnIdx) = 0;
 	virtual void setKernelBuffersCount(unsigned int count) = 0;
-	virtual std::string getDeviceName() = 0;
+	virtual std::string getName() = 0;
 
 	virtual struct IIO_OBJECTS getIioObjects() = 0;
 	virtual unsigned int getNbChannels() = 0;

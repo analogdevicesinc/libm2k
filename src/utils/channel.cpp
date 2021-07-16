@@ -25,6 +25,7 @@
 #include <libm2k/utils/utils.hpp>
 #include <sstream>
 #include <iterator>
+#include <cstdio>
 
 using namespace libm2k;
 using namespace libm2k::utils;
@@ -156,92 +157,33 @@ void* Channel::getFirstVoid(iio_buffer *buffer)
 	return iio_buffer_first(buffer, m_channel);
 }
 
-void Channel::write(struct iio_buffer* buffer, std::vector<short> const &data)
+unsigned int Channel::getChannelDataFormat()
 {
-	if (!m_channel) {
-		THROW_M2K_EXCEPTION("Channel: Cannot find associated channel", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	size_t size = data.size();
-	size_t ret = iio_channel_write(m_channel, buffer, data.data(),
-				       size * sizeof(short));
-
-	if (ret == 0) {
-		THROW_M2K_EXCEPTION("Channel: could not write; result is 0 bytes", libm2k::EXC_INVALID_PARAMETER);
-	}
+	return iio_channel_get_data_format(m_channel)->length / 8;
 }
 
-void Channel::write(struct iio_buffer* buffer, std::vector<unsigned short> const &data)
+void Channel::write(struct iio_buffer* buffer, const void *data, unsigned int nb_samples)
 {
 	if (!m_channel) {
 		THROW_M2K_EXCEPTION("Channel: Cannot find associated channel", libm2k::EXC_INVALID_PARAMETER);
 	}
 
-	size_t size = data.size();
-	size_t ret = iio_channel_write(m_channel, buffer, data.data(),
-				       size * sizeof(unsigned short));
+	int i = 0;
 
-	if (ret == 0) {
-		THROW_M2K_EXCEPTION("Channel: could not write; result is 0 bytes", libm2k::EXC_INVALID_PARAMETER);
-	}
-}
+	unsigned int sample_length = iio_channel_get_data_format(m_channel)->length / 8;
+	uintptr_t dst_ptr, src_ptr = (uintptr_t) data, end = src_ptr + nb_samples * sample_length;
+		uintptr_t buf_end = (uintptr_t) iio_buffer_end(buffer);
+		ptrdiff_t buf_step = iio_buffer_step(buffer);
 
-void Channel::write(struct iio_buffer* buffer, std::vector<double> const &data)
-{
-	if (!m_channel) {
-		THROW_M2K_EXCEPTION("Channel: Cannot find associated channel", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	size_t size = data.size();
-	size_t ret = iio_channel_write(m_channel, buffer, data.data(),
-				       size * sizeof(double));
-
-	if (ret == 0) {
-		THROW_M2K_EXCEPTION("Channel: could not write; result is 0 bytes", libm2k::EXC_INVALID_PARAMETER);
-
-	}
-}
-
-void Channel::write(struct iio_buffer* buffer, double *data, unsigned int nb_samples)
-{
-	if (!m_channel) {
-		THROW_M2K_EXCEPTION("Channel: Cannot find associated channel", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	size_t ret = iio_channel_write(m_channel, buffer, data,
-				       nb_samples * sizeof(double));
-
-	if (ret == 0) {
-		THROW_M2K_EXCEPTION("Channel: could not write; result is 0 bytes", libm2k::EXC_INVALID_PARAMETER);
-	}
-}
-
-void Channel::write(struct iio_buffer* buffer, short *data, unsigned int nb_samples)
-{
-	if (!m_channel) {
-		THROW_M2K_EXCEPTION("Channel: Cannot find associated channel", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	size_t ret = iio_channel_write(m_channel, buffer, data,
-				       nb_samples * sizeof(short));
-
-	if (ret == 0) {
-		THROW_M2K_EXCEPTION("Channel: could not write; result is 0 bytes", libm2k::EXC_INVALID_PARAMETER);
-	}
-}
-
-void Channel::write(struct iio_buffer* buffer, unsigned short *data, unsigned int nb_samples)
-{
-	if (!m_channel) {
-		THROW_M2K_EXCEPTION("Channel: Cannot find associated channel", libm2k::EXC_INVALID_PARAMETER);
-	}
-
-	size_t ret = iio_channel_write(m_channel, buffer, data,
-				       nb_samples * sizeof(unsigned short));
-
-	if (ret == 0) {
-		THROW_M2K_EXCEPTION("Channel: could not write; result is 0 bytes", libm2k::EXC_INVALID_PARAMETER);
-	}
+		for (dst_ptr = (uintptr_t) iio_buffer_first(buffer, m_channel);
+				dst_ptr < buf_end && src_ptr + sample_length <= end;
+		     dst_ptr += buf_step, src_ptr += sample_length) {
+			iio_channel_convert_inverse(m_channel,
+					(void *) dst_ptr, (const void *) src_ptr);
+		}
+//	if (ret == 0) {
+//		THROW_M2K_EXCEPTION("Channel: could not write; result is 0 bytes", libm2k::EXC_INVALID_PARAMETER);
+//	}
 }
 
 void Channel::convert(int16_t *avg, int16_t *src)
@@ -258,6 +200,14 @@ void Channel::convert(double *avg, int16_t *src)
 		THROW_M2K_EXCEPTION("Channel: Cannot find associated channel", libm2k::EXC_INVALID_PARAMETER);
 	}
 	iio_channel_convert(m_channel, (void *)avg, (const void *)src);
+}
+
+void Channel::convertInverse(void *dst, const void* src)
+{
+	if (!m_channel) {
+		THROW_M2K_EXCEPTION("Channel: Cannot find associated channel", libm2k::EXC_INVALID_PARAMETER);
+	}
+	iio_channel_convert_inverse(m_channel, dst, src);
 }
 
 double Channel::getDoubleValue(std::string attr)

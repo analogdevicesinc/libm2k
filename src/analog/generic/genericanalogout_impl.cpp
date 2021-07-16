@@ -20,6 +20,7 @@
  */
 
 #include "utils/deviceout.hpp"
+#include <utils/channel.hpp>
 #include "genericanalogout_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/utils/utils.hpp>
@@ -92,49 +93,61 @@ std::vector<double> GenericAnalogOutImpl::getAvailableSampleRates()
 	return values;
 }
 
+std::vector<double> GenericAnalogOutImpl::getAvailableSampleRates(unsigned int chn_idx)
+{
+	std::vector<std::string> stringValues;
+	std::vector<double> values;
+
+	stringValues = getDacDevice(0)->getAvailableAttributeValues(chn_idx, "sampling_frequency");
+	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
+		       [] (std::string &s) -> double {
+		try {
+			auto value = std::stod(s);
+			return value;
+		} catch (std::exception&) {
+			THROW_M2K_EXCEPTION("Can't determine available sampling frequencies.", libm2k::EXC_RUNTIME_ERROR);
+			return {};
+		}
+	});
+	return values;
+}
+
 void GenericAnalogOutImpl::setCyclic(bool en)
 {
-	for (unsigned int i = 0; i < m_devices_out.size(); i++) {
-		m_cyclic.at(i) = en;
-		getDacDevice(i)->setCyclic(en);
-	}
+	m_cyclic.at(0) = en;
+	getDacDevice(0)->setCyclic(en);
 }
 
-void GenericAnalogOutImpl::setCyclic(unsigned int chn, bool en)
+bool GenericAnalogOutImpl::getCyclic()
 {
-	if (chn >= m_devices_out.size()) {
-		THROW_M2K_EXCEPTION("Generic Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);
-	}
-	m_cyclic.at(chn) = en;
+	return m_cyclic.at(0);
 }
 
-bool GenericAnalogOutImpl::getCyclic(unsigned int chn)
+void GenericAnalogOutImpl::pushRaw(unsigned int chn_idx, const void* data, unsigned int nb_samples)
 {
-	if (chn >=  m_devices_out.size()) {
-		THROW_M2K_EXCEPTION("Generic Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);
-	}
-	return m_cyclic.at(chn);
+	getDacDevice(0)->push(data, chn_idx, nb_samples, getCyclic(), true);
 }
 
-void GenericAnalogOutImpl::pushRaw(unsigned int chn_idx, short *data, unsigned int nb_samples)
+void GenericAnalogOutImpl::pushRawInterleaved(const void* data, unsigned int nb_samples_per_chn)
 {
-	getDacDevice(0)->push(data, chn_idx, nb_samples, getCyclic(chn_idx));
+	getDacDevice(0)->pushInterleaved(data, nb_samples_per_chn, true);
 }
 
-void GenericAnalogOutImpl::push(unsigned int chn_idx, double *data, unsigned int nb_samples)
+int8_t* GenericAnalogOutImpl::convertVoltsToRaw(double voltage, double scale, int offset)
 {
-	getDacDevice(0)->push(data, chn_idx, nb_samples, getCyclic(chn_idx));
+	voltage = voltage * scale + offset;
+
 }
 
-void GenericAnalogOutImpl::pushRaw(unsigned int chn_idx, std::vector<short> const &data)
-{
-	getDacDevice(0)->push(data, chn_idx, getCyclic(chn_idx));
-}
+//void GenericAnalogOutImpl::pushRaw(unsigned int chn_idx, short *data, unsigned int nb_samples)
+//{
+//	getDacDevice(0)->push(data, chn_idx, nb_samples, getCyclic());
+//}
 
-void GenericAnalogOutImpl::push(unsigned int chn_idx, std::vector<double> const &data)
-{
-	getDacDevice(0)->push(data, chn_idx, getCyclic(chn_idx));
-}
+//void GenericAnalogOutImpl::pushRaw(unsigned int chn_idx, std::vector<short> const &data)
+//{
+//	getDacDevice(0)->push(data, chn_idx, getCyclic(), true);
+//}
 
 void GenericAnalogOutImpl::stop()
 {
@@ -146,12 +159,54 @@ string GenericAnalogOutImpl::getName()
 	return getDacDevice(0)->getName();
 }
 
-void GenericAnalogOutImpl::enableChannel(unsigned int chnIdx, bool enable)
+libm2k::IIO_OBJECTS GenericAnalogOutImpl::getIioObjects()
 {
-	getDacDevice(0)->enableChannel(chnIdx, enable, true);
+	return getDacDevice(0)->getIioObjects();
 }
 
-bool GenericAnalogOutImpl::isChannelEnabled(unsigned int chnIdx)
+unsigned int GenericAnalogOutImpl::getNbBufferedChannels()
 {
-	return getDacDevice(0)->isChannelEnabled(chnIdx, true);
+	return getDacDevice(0)->getNbBufferedChannels();
+}
+
+unsigned int GenericAnalogOutImpl::getNbDdsChannels()
+{
+	return getDacDevice(0)->getNbDdsChannels();
+}
+
+double GenericAnalogOutImpl::getMaximumSamplerate()
+{
+	auto values = getAvailableSampleRates();
+	return *(max_element(values.begin(), values.end()));
+}
+
+double GenericAnalogOutImpl::getMaximumSamplerate(unsigned int chn_idx)
+{
+	auto values = getAvailableSampleRates(chn_idx);
+	return *(max_element(values.begin(), values.end()));
+}
+
+void GenericAnalogOutImpl::enableBufferedChannel(unsigned int chnIdx, bool enable)
+{
+	getDacDevice(0)->enableBufferedChannel(chnIdx, enable);
+}
+
+void GenericAnalogOutImpl::enableDdsChannel(unsigned int chnIdx, bool enable)
+{
+	getDacDevice(0)->enableDdsChannel(chnIdx, enable);
+}
+
+bool GenericAnalogOutImpl::isBufferedChannelEnabled(unsigned int chnIdx)
+{
+	return getDacDevice(0)->isBufferedChannelEnabled(chnIdx);
+}
+
+bool GenericAnalogOutImpl::isDdsChannelEnabled(unsigned int chnIdx)
+{
+	return getDacDevice(0)->isDdsChannelEnabled(chnIdx);
+}
+
+void GenericAnalogOutImpl::setKernelBuffersCount(unsigned int count)
+{
+	getDacDevice(0)->setKernelBuffersCount(count);
 }

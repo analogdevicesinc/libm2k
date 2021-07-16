@@ -32,7 +32,6 @@ using namespace libm2k::utils;
 
 GenericAnalogInImpl::GenericAnalogInImpl(iio_context *ctx, std::string adc_dev)
 {
-	m_dev_name = adc_dev;
 	m_devices_in.push_back(make_shared<DeviceIn>(ctx, adc_dev));
 }
 
@@ -126,9 +125,9 @@ std::vector<double> GenericAnalogInImpl::getAvailableSampleRates(unsigned int ch
 }
 
 
-string GenericAnalogInImpl::getDeviceName()
+string GenericAnalogInImpl::getName()
 {
-	return m_dev_name;
+	return getAdcDevice(0)->getName();
 }
 
 libm2k::IIO_OBJECTS GenericAnalogInImpl::getIioObjects()
@@ -156,6 +155,11 @@ double GenericAnalogInImpl::getMaximumSamplerate(unsigned int chn_idx)
 void GenericAnalogInImpl::enableChannel(unsigned int index, bool enable)
 {
 	getAdcDevice(0)->enableChannel(index, enable, false);
+}
+
+bool GenericAnalogInImpl::isChannelEnabled(unsigned int chnIdx)
+{
+	return getAdcDevice(0)->isChannelEnabled(chnIdx, false);
 }
 
 void GenericAnalogInImpl::setKernelBuffersCount(unsigned int count)

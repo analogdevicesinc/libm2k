@@ -20,14 +20,14 @@
  */
 
 #include "deviceout.hpp"
-#include "utils/buffer.hpp"
-#include "utils/channel.hpp"
+
 #include <libm2k/utils/utils.hpp>
-#include <libm2k/m2kexceptions.hpp>
 #include <libm2k/logger.hpp>
 #include <libm2k/context.hpp>
 #include <algorithm>
 #include <cstring>
+
+#include <iostream>
 
 using namespace std;
 using namespace libm2k;
@@ -40,11 +40,23 @@ DeviceOut::DeviceOut(struct iio_context* context, std::string dev_name) :
 	DeviceGeneric(context, dev_name)
 {
 	m_channel_list = m_channel_list_out;
+	for (Channel *chn : m_channel_list) {
+		if (chn->hasAttribute("scale") &&
+				chn->hasAttribute("raw") &&
+				chn->hasAttribute("phase") &&
+				chn->hasAttribute("frequency")) {
+			m_dds_channel_list.push_back(chn);
+		} else {
+			m_buffered_channel_list.push_back(chn);
+		}
+	}
 }
 
 DeviceOut::~DeviceOut()
 {
 	m_channel_list.clear();
+	m_dds_channel_list.clear();
+	m_buffered_channel_list.clear();
 }
 
 void DeviceOut::initializeBuffer(unsigned int size, bool cyclic)
@@ -55,72 +67,12 @@ void DeviceOut::initializeBuffer(unsigned int size, bool cyclic)
 	m_buffer->initializeBuffer(size, cyclic, true);
 }
 
-void DeviceOut::push(std::vector<short> const &data, unsigned int channel,
-		     bool cyclic, bool multiplex)
-{
-	if (!m_buffer) {
-		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
-	}
-	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, cyclic, multiplex);
-}
-
-
 void DeviceOut::cancelBuffer()
 {
 	if (!m_buffer) {
 		THROW_M2K_EXCEPTION("Device: not buffer capable", libm2k::EXC_INVALID_PARAMETER);
 	}
 	m_buffer->cancelBuffer();
-}
-
-
-void DeviceOut::push(std::vector<unsigned short> const &data, unsigned int channel,
-		     bool cyclic, bool multiplex)
-{
-	if (!m_buffer) {
-		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
-	}
-	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, cyclic, multiplex);
-}
-
-
-void DeviceOut::push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
-		     bool cyclic, bool multiplex)
-{
-	if (!m_buffer) {
-		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
-	}
-	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, nb_samples, cyclic, multiplex);
-}
-
-void DeviceOut::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
-{
-	if (!m_buffer) {
-		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
-	}
-	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, cyclic);
-}
-
-void DeviceOut::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
-{
-	if (!m_buffer) {
-		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
-	}
-	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, nb_samples, cyclic);
-}
-
-void DeviceOut::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
-{
-	if (!m_buffer) {
-		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
-	}
-	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, nb_samples, cyclic);
 }
 
 void DeviceOut::stop()
@@ -154,4 +106,67 @@ struct libm2k::IIO_OBJECTS DeviceOut::getIioObjects()
 	iio_object.devices.push_back(m_dev);
 	iio_object.context = m_context;
 	return iio_object;
+}
+
+unsigned int DeviceOut::getNbBufferedChannels()
+{
+	return m_buffered_channel_list.size();
+}
+
+unsigned int DeviceOut::getNbDdsChannels()
+{
+	return m_dds_channel_list.size();
+}
+
+void DeviceOut::enableBufferedChannel(unsigned int chnIdx, bool enable)
+{
+	if (chnIdx >= getNbBufferedChannels()) {
+		THROW_M2K_EXCEPTION("No buffered channel for this index.", libm2k::EXC_OUT_OF_RANGE);
+	}
+	m_buffered_channel_list.at(chnIdx)->enableChannel(enable);
+}
+
+void DeviceOut::enableDdsChannel(unsigned int chnIdx, bool enable)
+{
+	if (chnIdx >= getNbDdsChannels()) {
+		THROW_M2K_EXCEPTION("No buffered channel for this index.", libm2k::EXC_OUT_OF_RANGE);
+	}
+	m_dds_channel_list.at(chnIdx)->enableChannel(enable);
+}
+
+bool DeviceOut::isBufferedChannelEnabled(unsigned int chnIdx)
+{
+	if (chnIdx >= getNbBufferedChannels()) {
+		THROW_M2K_EXCEPTION("No buffered channel for this index.", libm2k::EXC_OUT_OF_RANGE);
+		return false;
+	}
+	return m_buffered_channel_list.at(chnIdx)->isEnabled();
+}
+
+bool DeviceOut::isDdsChannelEnabled(unsigned int chnIdx)
+{
+	if (chnIdx >= getNbDdsChannels()) {
+		THROW_M2K_EXCEPTION("No buffered channel for this index.", libm2k::EXC_OUT_OF_RANGE);
+		return false;
+	}
+	return m_dds_channel_list.at(chnIdx)->isEnabled();
+}
+
+void DeviceOut::push(const void *data, unsigned int channel, unsigned int nb_samples,
+		bool cyclic, bool multiplex)
+{
+	if (!m_buffer) {
+		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
+	}
+	m_buffer->setChannels(m_buffered_channel_list);
+	m_buffer->push(data, channel, nb_samples, cyclic, multiplex);
+}
+
+void DeviceOut::pushInterleaved(const void *data, unsigned int nb_samples_per_channel, bool cyclic, bool multiplex)
+{
+	if (!m_buffer) {
+		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
+	}
+	m_buffer->setChannels(m_buffered_channel_list);
+	m_buffer->pushInterleaved(data, nb_samples_per_channel, cyclic, multiplex);
 }

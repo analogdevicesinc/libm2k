@@ -44,23 +44,31 @@ public:
 	double setSampleRate(double sampleRate);
 	double setSampleRate(unsigned int chn_idx, double sampleRate);
 	std::vector<double> getAvailableSampleRates();
+	std::vector<double> getAvailableSampleRates(unsigned int chn_idx);
 
 	void setCyclic(bool en);
-	void setCyclic(unsigned int chn, bool en);
-	bool getCyclic(unsigned int chn);
+	bool getCyclic();
 
-	void push(unsigned int chn_idx, std::vector<double> const &data);
-	void pushRaw(unsigned int chn_idx, std::vector<short> const &data);
+	void pushRaw(unsigned int chn_idx, const void* data, unsigned int nb_samples);
+	void pushRawInterleaved(const void* data, unsigned int nb_samples_per_chn);
 
-	void push(unsigned int chn_idx, double *data, unsigned int nb_samples);
-	void pushRaw(unsigned int chn_idx, short *data, unsigned int nb_samples);
+	int8_t* convertVoltsToRaw(double voltage, double scale, int offset);
 
 	void stop();
 
+	void setKernelBuffersCount(unsigned int count);
 	std::string getName();
-	void enableChannel(unsigned int chnIdx, bool enable);
-	bool isChannelEnabled(unsigned int chnIdx);
 
+	struct IIO_OBJECTS getIioObjects();
+	unsigned int getNbBufferedChannels();
+	unsigned int getNbDdsChannels();
+	double getMaximumSamplerate();
+	double getMaximumSamplerate(unsigned int chn_idx);
+
+	void enableBufferedChannel(unsigned int chnIdx, bool enable);
+	void enableDdsChannel(unsigned int chnIdx, bool enable);
+	bool isBufferedChannelEnabled(unsigned int chnIdx);
+	bool isDdsChannelEnabled(unsigned int chnIdx);
 private:
 	std::vector<bool> m_cyclic;
 	std::vector<std::shared_ptr<libm2k::utils::DeviceOut>> m_devices_out;

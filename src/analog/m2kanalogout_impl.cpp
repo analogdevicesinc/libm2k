@@ -325,8 +325,7 @@ void M2kAnalogOutImpl::pushRawBytes(unsigned int chnIdx, short *data, unsigned i
 		THROW_M2K_EXCEPTION("Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 
-	m_dac_devices.at(chnIdx)->push(data, 0, nb_samples, getCyclic(chnIdx));
-
+	m_dac_devices.at(chnIdx)->push((const void *)data, 0, nb_samples, getCyclic(chnIdx));
 	setSyncedDma(false, chnIdx);
 }
 
@@ -348,7 +347,7 @@ void M2kAnalogOutImpl::pushBytes(unsigned int chnIdx, double *data, unsigned int
 	for (unsigned int i = 0; i < nb_samples; i++) {
 		raw_data_buffer.push_back(convertVoltsToRaw(chnIdx, data[i]));
 	}
-	m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
+	m_dac_devices.at(chnIdx)->push((const void *)(raw_data_buffer.data()), 0, raw_data_buffer.size(), getCyclic(chnIdx));
 }
 
 
@@ -388,7 +387,7 @@ void M2kAnalogOutImpl::pushRaw(std::vector<std::vector<short>> const &data)
 	for (unsigned int chn = 0; chn < data.size(); chn++) {
 		size_t size = data.at(chn).size();
 		std::vector<short> raw_data_buffer(data.at(chn).data(), data.at(chn).data() + size);
-		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
+		m_dac_devices.at(chn)->push((const void *)raw_data_buffer.data(), 0, raw_data_buffer.size(), getCyclic(chn));
 	}
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
@@ -437,7 +436,7 @@ void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels,
 		for (unsigned int i = 0, off = 0; i < (bufferSize); i++, off += nb_channels) {
 			raw_data_buffer.push_back(data[chn + off]);
 		}
-		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
+		m_dac_devices.at(chn)->push((const void*)raw_data_buffer.data(), 0, raw_data_buffer.size(), getCyclic(chn));
 	}
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
@@ -490,7 +489,7 @@ void M2kAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 		for (unsigned int i = 0; i < size; i++) {
 			raw_data_buffer.push_back(convertVoltsToRaw(chn, data[chn][i]));
 		}
-		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
+		m_dac_devices.at(chn)->push((const void *)(raw_data_buffer.data()), 0, raw_data_buffer.size(), getCyclic(chn));
 		data_buffers.push_back(raw_data_buffer);
 	}
 
@@ -539,7 +538,7 @@ void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, u
 		for (unsigned int i = 0, off = 0; i < (bufferSize); i++, off += nb_channels) {
 			raw_data_buffer.push_back(convertVoltsToRaw(chn, data[chn + off]));
 		}
-		m_dac_devices.at(chn)->push(raw_data_buffer, 0, getCyclic(chn));
+		m_dac_devices.at(chn)->push((const void*)raw_data_buffer.data(), 0, raw_data_buffer.size(), getCyclic(chn));
 		data_buffers.push_back(raw_data_buffer);
 	}
 

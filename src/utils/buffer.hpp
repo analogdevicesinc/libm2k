@@ -28,6 +28,8 @@
 #include <memory>
 #include <functional>
 #include <libm2k/m2kglobal.hpp>
+#include <libm2k/m2kexceptions.hpp>
+#include <libm2k/utils/utils.hpp>
 
 namespace libm2k {
 namespace utils {
@@ -40,17 +42,7 @@ public:
 	~Buffer();
 
 	void initializeBuffer(unsigned int size, bool cyclic, bool output);
-	void push(std::vector<short> const &data, unsigned int channel = 0,
-		bool cyclic = true, bool multiplex = false);
-	void push(std::vector<unsigned short> const &data, unsigned int channel = 0,
-		bool cyclic = true, bool multiplex = false);
-	void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
-		  bool cyclic = true, bool multiplex = false);
-	void push(std::vector<double> const &data, unsigned int channel = 0, bool cyclic = true);
-	void push(std::vector<std::vector<short>> const &data);
-
-	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
-	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
+	void pushInterleaved(const void *data, unsigned int nb_samples_per_channel, bool cyclic = true, bool multiplex = false);
 
 	void setChannels(std::vector<Channel*> channels);
 	std::vector<unsigned short> getSamples(unsigned int nb_samples);
@@ -72,6 +64,9 @@ public:
 	void cancelBuffer();
 	void flushBuffer();
 	unsigned int getNbSamples() const;
+
+	void push(const void *data, unsigned int channel, unsigned int nb_samples,
+		  bool cyclic = true, bool multiplex = false);
 
 	struct iio_buffer* getBuffer();
 private:
