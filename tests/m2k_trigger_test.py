@@ -18,7 +18,6 @@ class B_TriggerTests(unittest.TestCase):
         log = logger.myLogger()
         log.info("\n\n Trigger\n")
 
-
     def test_1_trigger_object(self):
         """Verifies if the Trigger object was successfully retrieved
         """

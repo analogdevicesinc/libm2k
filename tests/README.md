@@ -15,5 +15,5 @@ To run a single test from one of the test classes open cmd in the working direct
     ```main.py TestClass.test_name```
  Ex: ```main.py A_AnalogTests.test_1_analog_objects```
 To run tests without generating the report files, add the "nofiles" option when running main.py .
-    ```python main.py noreports```
+    ```python main.py nofiles```
  Ex: ```main.py A_AnalogTests.test_1_analog_objects nofiles```

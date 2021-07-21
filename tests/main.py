@@ -21,7 +21,6 @@ gen_reports = True
 wait_for_input = False
 
 
-
 def no_reports():
     if len(sys.argv) > 1 and "nofiles" in sys.argv:
         global gen_reports
@@ -97,7 +96,6 @@ if __name__ == "__main__":
         print("test_digital_output_channels\n")
         print("test_trig_conditions\n")
         print("test_cyclic_buffer\n")
-
 
         exit()
     elif len(sys.argv) > 1 and "nofiles" in sys.argv:
