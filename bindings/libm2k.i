@@ -152,7 +152,7 @@ namespace std {
 	typedef std::vector<libm2k::M2K_TRIGGER_CONDITION_ANALOG> M2kConditionAnalog;
 	typedef std::vector<libm2k::M2K_TRIGGER_CONDITION_DIGITAL> M2kConditionDigital;
 	typedef std::vector<libm2k::M2K_TRIGGER_MODE> M2kModes;
-	typedef std::vector<struct libm2k::CONTEXT_INFO*> VectorCtxInfo;
+	typedef std::vector<libm2k::CONTEXT_INFO*> VectorCtxInfo;
 %}
 
 #ifdef COMMUNICATION
@@ -273,10 +273,10 @@ namespace std {
 %template(M2kConditionAnalog) std::vector<libm2k::M2K_TRIGGER_CONDITION_ANALOG>;
 %template(M2kConditionDigital) std::vector<libm2k::M2K_TRIGGER_CONDITION_DIGITAL>;
 %template(M2kModes) std::vector<libm2k::M2K_TRIGGER_MODE>;
-%template(VectorCtxInfo) std::vector<struct libm2k::CONTEXT_INFO*>;
+%template(VectorCtxInfo) std::vector<libm2k::CONTEXT_INFO*>;
 
 #ifdef SWIGPYTHON
-	%template(IioBuffers) std::vector<struct iio_buffer*>;
-	%template(IioChannels) std::vector<struct iio_channel*>;
-	%template(IioDevices) std::vector<struct iio_device*>;
+	%template(IioBuffers) std::vector<iio_buffer*>;
+	%template(IioChannels) std::vector<iio_channel*>;
+	%template(IioDevices) std::vector<iio_device*>;
 #endif
