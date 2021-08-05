@@ -61,11 +61,8 @@ def set_digital_trigger(dig):
 
 
 def check_digital_channels_state(dig, channel):
-    dig.cancelBufferOut()
-    dig.cancelAcquisition()
-    dig.stopAcquisition()
+
     dig.reset()
-    dig_reset(dig)
     # enable channel under test
     dig.setDirection(channel, libm2k.DIO_OUTPUT)
     dig.enableChannel(channel, True)

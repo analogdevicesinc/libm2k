@@ -232,6 +232,7 @@ def test_shape(channel, out_data, ref_data, ain, aout, trig, ch_ratio, shapename
     delay = 0
 
     for i in range(len(out_data)):
+        ctx.setTimeout(5000)
         set_trig_for_signalshape_test(i, channel, trig, delay)
         n = round(len(out_data[i]) / ch_ratio)
         aout.push(channel, out_data[i])
@@ -542,6 +543,7 @@ def test_offset(out_data, n, ain, aout, trig, channel):
     data_string.append("Offset values set:")
     data_string.append(str(offset))
     for i in offset:
+        ctx.setTimeout(5000)
         set_trig(trig, channel, 0, libm2k.FALLING_EDGE_ANALOG, i + 0.1)
         sum = 0
         o_buffer = i + out_data  # add the output data to the offset value
