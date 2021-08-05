@@ -115,6 +115,7 @@ void M2kDigitalImpl::reset()
 {
 	cancelAcquisition();
 	cancelBufferOut();
+	stopBufferOut();
 	for (unsigned int i = 0; i < m_dev_generic->getNbChannels(false); i++) {
 		/* Disable all the TX channels */
 
