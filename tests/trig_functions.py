@@ -70,6 +70,7 @@ def count_trigger_events(channel, buffers, delay, level, trig_cond, ain, test_si
     """
     counter = 0
     aout.push(channel, test_signal)
+    ctx.setTimeout(5000)
     for i in range(buffers):
         try:
             input_data = ain.getSamples(delay * 2)[channel]
