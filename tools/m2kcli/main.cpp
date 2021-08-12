@@ -29,33 +29,35 @@
 #include "commands/communication/i2c.h"
 #include "commands/communication/uart.h"
 #include "commands/communication/uart_terminal.h"
+#include "commands/context/context.h"
 #include <libm2k/contextbuilder.hpp>
 #include <csignal>
 #include <thread>
 
 static const char *const helpMessage = "Usage:\n"
-				       "m2kcli [-h | --help] [-v | --version]\n"
-				       "       <command> [<args>]\n"
-				       "\n"
-				       "Control the ADALM2000\n"
-				       "\n"
-				       "Optional arguments:\n"
-				       "  -h, --help            show this help message and exit\n"
-				       "  -v, --version         show the libm2k version and exit\n"
-				       "  -s, --scan            retrieve all available USB URIs\n"
-				       "  -i, --identify <uri>  identify the m2k based on its URI\n"
-				       "\n"
-				       "Commands:\n"
-				       "  These commands represent the components of the ADALM2000\n"
-				       "\n"
-				       "    analog-in           control the analogical input component\n"
-				       "    analog-out          control the analogical output component\n"
-				       "    digital             control the digital component\n"
-				       "    power-supply        control the power supply\n"
-				       "    spi			control the functionality of spi\n"
-				       "    i2c			control the functionality of i2c\n"
-				       "    uart		control the functionality of uart\n"
-				       "    uart-terminal	control the functionality of uart streaming\n";
+                                       "m2kcli [-h | --help] [-v | --version]\n"
+                                       "       <command> [<args>]\n"
+                                       "\n"
+                                       "Control the ADALM2000\n"
+                                       "\n"
+                                       "Optional arguments:\n"
+                                       "  -h, --help            show this help message and exit\n"
+                                       "  -v, --version         show the libm2k version and exit\n"
+                                       "  -s, --scan            retrieve all available USB URIs\n"
+                                       "  -i, --identify <uri>  identify the m2k based on its URI\n"
+                                       "\n"
+                                       "Commands:\n"
+                                       "  These commands represent the components of the ADALM2000\n"
+                                       "\n"
+                                       "    context             control the context component\n"
+                                       "    analog-in           control the analogical input component\n"
+                                       "    analog-out          control the analogical output component\n"
+                                       "    digital             control the digital component\n"
+                                       "    power-supply        control the power supply\n"
+                                       "    spi			control the functionality of spi\n"
+                                       "    i2c			control the functionality of i2c\n"
+                                       "    uart		control the functionality of uart\n"
+                                       "    uart-terminal	control the functionality of uart streaming\n";
 
 libm2k::cli::Command *command;
 void destroy(int sigNumber);
@@ -112,34 +114,37 @@ int main(int argc, char **argv)
 			return 0;
 		}
 
-		if (std::string(argv[1]) == "analog-in") {
-			auto *analogIn = new libm2k::cli::AnalogIn(argc, argv);
-			command = analogIn;
-		} else if (std::string(argv[1]) == "analog-out") {
-			auto *analogOut = new libm2k::cli::AnalogOut(argc, argv);
-			command = analogOut;
-		} else if (std::string(argv[1]) == "digital") {
-			auto *digital = new libm2k::cli::Digital(argc, argv);
-			command = digital;
-		} else if (std::string(argv[1]) == "power-supply") {
-			auto *powerSupply = new libm2k::cli::PowerSupply(argc, argv);
-			command = powerSupply;
-		} else if (std::string(argv[1]) == "spi") {
-			auto *spi = new libm2k::cli::Spi(argc, argv);
-			command = spi;
-		} else if (std::string(argv[1]) == "i2c") {
-			auto *i2c = new libm2k::cli::I2c(argc, argv);
-			command = i2c;
-		} else if (std::string(argv[1]) == "uart") {
-			auto *uart = new libm2k::cli::Uart(argc, argv);
-			command = uart;
-		} else if (std::string(argv[1]) == "uart-terminal") {
-			auto *uartTerminal = new libm2k::cli::UartTerminal(argc, argv);
-			command = uartTerminal;
-		} else {
-			throw std::runtime_error("m2kcli: '" + std::string(argv[1]) +
-						 "' is not a m2kcli command. See 'm2kcli --help'.\n");
-		}
+                if (std::string(argv[1]) == "context") {
+                    auto *context = new libm2k::cli::Context(argc, argv);
+                    command = context;
+                } else if (std::string(argv[1]) == "analog-in") {
+                    auto *analogIn = new libm2k::cli::AnalogIn(argc, argv);
+                    command = analogIn;
+                } else if (std::string(argv[1]) == "analog-out") {
+                    auto *analogOut = new libm2k::cli::AnalogOut(argc, argv);
+                    command = analogOut;
+                } else if (std::string(argv[1]) == "digital") {
+                    auto *digital = new libm2k::cli::Digital(argc, argv);
+                    command = digital;
+                } else if (std::string(argv[1]) == "power-supply") {
+                    auto *powerSupply = new libm2k::cli::PowerSupply(argc, argv);
+                    command = powerSupply;
+                } else if (std::string(argv[1]) == "spi") {
+                    auto *spi = new libm2k::cli::Spi(argc, argv);
+                    command = spi;
+                } else if (std::string(argv[1]) == "i2c") {
+                    auto *i2c = new libm2k::cli::I2c(argc, argv);
+                    command = i2c;
+                } else if (std::string(argv[1]) == "uart") {
+                    auto *uart = new libm2k::cli::Uart(argc, argv);
+                    command = uart;
+                } else if (std::string(argv[1]) == "uart-terminal") {
+                    auto *uartTerminal = new libm2k::cli::UartTerminal(argc, argv);
+                    command = uartTerminal;
+                } else {
+                    throw std::runtime_error("m2kcli: '" + std::string(argv[1]) +
+                            "' is not a m2kcli command. See 'm2kcli --help'.\n");
+                }
 		quiet = command->parseArguments(output);
 	}
 	catch (std::runtime_error &e) {
