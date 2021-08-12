@@ -29,6 +29,7 @@
 #include "commands/communication/i2c.h"
 #include "commands/communication/uart.h"
 #include "commands/communication/uart_terminal.h"
+#include "commands/context/context.h"
 #include <libm2k/contextbuilder.hpp>
 #include <csignal>
 #include <thread>
@@ -48,6 +49,7 @@ static const char *const helpMessage = "Usage:\n"
 				       "Commands:\n"
 				       "  These commands represent the components of the ADALM2000\n"
 				       "\n"
+                       "    context             control the context component\n"
 				       "    analog-in           control the analogical input component\n"
 				       "    analog-out          control the analogical output component\n"
 				       "    digital             control the digital component\n"
@@ -111,8 +113,10 @@ int main(int argc, char **argv)
 			libm2k::context::contextClose(context, false);
 			return 0;
 		}
-
-		if (std::string(argv[1]) == "analog-in") {
+        if (std::string(argv[1]) == "context") {
+            libm2k::cli::Context Context(argc, argv);
+            command = &Context;
+        }else if (std::string(argv[1]) == "analog-in") {
 			libm2k::cli::AnalogIn analogIn(argc, argv);
 			command = &analogIn;
 		} else if (std::string(argv[1]) == "analog-out") {
