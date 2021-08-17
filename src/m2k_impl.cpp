@@ -52,7 +52,7 @@ M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync)
 	m_sync(sync)
 {
 	initialize();
-	setTimeout(UINT_MAX);
+	setTimeout(0);
 
 	for (auto ain : m_instancesAnalogIn) {
 		delete ain;
