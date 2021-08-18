@@ -3,6 +3,10 @@ variables:
   PYTHON: python
   PIP: pip
   AnalogDevices_OpenSource_GUID: '02a28b00-b3c8-4fdf-af9c-c2460499147f'
+  IS_PULL_REQUEST: ${{ eq('$(Build.Reason)', 'PullRequest') }}
+  BRANCH_NAME: $(Build.SourceBranchName)
+  REPO_SLUG: $(Build.Repository.Name)
+  CURRENT_COMMIT: $(Build.SourceVersion)
 
 trigger:
 - main
@@ -45,12 +49,19 @@ jobs:
         OS_VERSION: 'buster'
         artifactName: 'Linux-Debian-Buster-ARM64'
         PACKAGE_TO_INSTALL: 'build/*.deb'
+      deploy_doxygen:
+        imageName: 'ubuntu-latest'
+        OS_TYPE: 'doxygen'
+        OS_VERSION: focal
+        artifactName: 'Linux-Ubuntu-20.04-x86_64'
+        PACKAGE_TO_INSTALL: 'build/*.deb'
   pool:
     vmImage: $(imageName)
   steps:
   - checkout: self
     fetchDepth: 1
     clean: true
+    persistCredentials: true
   - task: DownloadPipelineArtifact@2
     displayName: 'Get libiio artifacts'
     inputs:
