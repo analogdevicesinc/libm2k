@@ -1,3 +1,5 @@
+![libm2k LabVIEW logo](/doc/img/libm2k-labview_logo.png)
+
 # libm2k : LabVIEW bindings
 
 #### Overview
