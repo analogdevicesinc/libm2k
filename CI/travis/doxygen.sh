@@ -1,12 +1,14 @@
 #!/bin/bash
 
+TOP_DIR=$(pwd)
+
 echo_red() { printf "\033[1;31m$*\033[m\n"; }
 echo_green() { printf "\033[1;32m$*\033[m\n"; }
 
 ############################################################################
 # Check if the documentation will be generated w/o warnings or errors
 ############################################################################
-pushd ${TRAVIS_BUILD_DIR}/build
+pushd ${TOP_DIR}/build
 (cd doc && ! make doc 2>&1 | grep -E "warning|error") || {
         echo_red "Documentation incomplete or errors in the generation of it have occured!"
         exit 1
@@ -18,30 +20,35 @@ echo_green "Documentation was generated successfully!"
 # If the current build is not a pull request and it is on master the 
 # documentation will be pushed to the gh-pages branch
 ############################################################################
-if [[ "${TRAVIS_PULL_REQUEST}" == "false" && "${TRAVIS_BRANCH}" == "master" ]]
+if [[ "${IS_PULL_REQUEST}" == "False" && "${BRANCH_NAME}" == "master" ]]
 then
-        pushd ${TRAVIS_BUILD_DIR}/build/doc
-        git clone https://github.com/${TRAVIS_REPO_SLUG} --depth 1 --branch=gh-pages doc/html &>/dev/null
+        echo_green "Running Github docs update on commit '$CURRENT_COMMIT'"
+        git config --global user.email "cse-ci-notifications@analog.com"
+        git config --global user.name "CSE-CI"
 
-        pushd doc/html
-        rm -rf *
-        popd
+        pushd ${TOP_DIR}
+        git fetch --depth 1 origin +refs/heads/gh-pages:gh-pages
+        git checkout gh-pages
 
-        cp -R doxygen_doc/html/* doc/html/
+        cp -R ${TOP_DIR}/build/doc/doxygen_doc/html/* ${TOP_DIR}
 
-        pushd doc/html
-        CURRENT_COMMIT=$(git log -1 --pretty=%B)
-        if [[ ${CURRENT_COMMIT:(-7)} != ${TRAVIS_COMMIT:0:7} ]]
+        sudo rm -rf ${TOP_DIR}/build
+        sudo rm -rf ${TOP_DIR}/doc
+
+        GH_CURRENT_COMMIT=$(git log -1 --pretty=%B)
+        if [[ ${GH_CURRENT_COMMIT:(-7)} != ${CURRENT_COMMIT:0:7} ]]
         then
                 git add --all .
-                git commit --allow-empty --amend -m "Update documentation to ${TRAVIS_COMMIT:0:7}"
-                git push https://${GITHUB_DOC_TOKEN}@github.com/${TRAVIS_REPO_SLUG} gh-pages -f &>/dev/null
-
-                echo_green "Documetation updated!"
+                git commit --allow-empty --amend -m "Update documentation to ${CURRENT_COMMIT:0:7}"
+                if [ -n "$GITHUB_DOC_TOKEN" ] ; then
+                        git push https://${GITHUB_DOC_TOKEN}@github.com/${REPO_SLUG} gh-pages -f
+                else
+                        git push origin gh-pages -f
+                fi
+                echo_green "Documentation updated!"
         else
                 echo_green "Documentation already up to date!"
         fi
-        popd
 else
         echo_green "Documentation will be updated when this commit gets on master!"
 fi

@@ -98,7 +98,7 @@ public:
 	/**
 	* @brief Retrieve a specific number of samples from each channel
 	*
-	* @param nb_samples The number of samples that will be retrieved
+	* @param nb_samples_per_channel The number of samples that will be retrieved
 	* @return A pointer to the interleaved samples
 	*
 	* @note Before the acquisition, both channels will be automatically enabled
@@ -113,7 +113,7 @@ public:
 	/**
 	* @brief Retrieve a specific number of raw samples from each channel
 	*
-	* @param nb_samples The number of samples that will be retrieved
+	* @param nb_samples_per_channel The number of samples that will be retrieved
 	* @return A pointer to the interleaved raw samples
 	*
 	* @note Before the acquisition, both channels will be automatically enabled

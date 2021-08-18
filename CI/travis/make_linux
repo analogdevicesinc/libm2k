@@ -40,7 +40,8 @@ handle_doxygen() {
 	mkdir -p build
 	cd build
 	cmake -DENABLE_PYTHON=ON -DENABLE_CSHARP=OFF -DENABLE_DOC=ON ..
-	make && sudo make install
+	make && make package && sudo make install
+	make doc
 	cd ..
 	./CI/travis/doxygen.sh
 }
