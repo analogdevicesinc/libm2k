@@ -1,5 +1,7 @@
 /** \mainpage
 
+ <img src="img/libm2k_logo.png" alt="libm2k_logo" width="1000"/>
+
  @tableofcontents
 
  @section license License
@@ -41,6 +43,9 @@
 
 
  @section python Python Bindings
+
+ <img src="img/libm2k-python_logo.png" alt="libm2k-python_logo" width="1000"/>
+
  In order to use libm2k in Python applications please check the [libm2k Python Bindings API]
 
 [libm2k Python Bindings API]: sphinx/build/html/index.html "libm2k Python Bindings API Sphinx"
