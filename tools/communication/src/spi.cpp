@@ -357,3 +357,25 @@ int32_t spi_write_only(struct spi_desc *desc,
 	}
 	return 0;
 }
+
+int32_t spi_write_and_read_samples(struct spi_desc *desc, std::vector<unsigned short> samples,
+	uint8_t *data, uint8_t bytes_number)
+{
+	try {
+		auto *m2KSpiDesc = (m2k_spi_desc *) desc->extra;
+		std::atomic<bool> acquisition_started(false);
+		std::thread thread_read(read, desc, std::ref(acquisition_started), data, bytes_number);
+
+		//make sure the reading thread is waiting
+		while (!acquisition_started.load()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+		}
+
+		m2KSpiDesc->digital->push(samples);
+		thread_read.join();
+	} catch (std::exception &e) {
+		std::cout << e.what();
+		return -1;
+	}
+	return 0;
+}

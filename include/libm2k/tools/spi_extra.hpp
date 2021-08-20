@@ -96,4 +96,10 @@ LIBM2K_API int32_t spi_write_only(struct spi_desc *desc,
  */
 LIBM2K_API std::vector<unsigned short> spi_create_buffer(struct spi_desc *desc, uint8_t *data, uint8_t bytes_number);
 
+/**
+ * @private
+ */
+LIBM2K_API int32_t spi_write_and_read_samples(struct spi_desc *desc, std::vector<unsigned short> samples,
+						uint8_t *data, uint8_t bytes_number);
+
 #endif //SPI_EXTRA_HPP
