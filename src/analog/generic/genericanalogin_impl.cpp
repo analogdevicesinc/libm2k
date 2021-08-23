@@ -23,6 +23,7 @@
 #include "genericanalogin_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include "libm2k/utils/utils.hpp"
+#include "utils/channel.hpp"
 #include <iio.h>
 #include <iostream>
 #include <algorithm>
@@ -91,7 +92,12 @@ std::vector<double> GenericAnalogInImpl::getAvailableSampleRates()
 	std::vector<std::string> stringValues;
 	std::vector<double> values;
 
-	stringValues = getAdcDevice(0)->getAvailableAttributeValues("sampling_frequency");
+	if (getAdcDevice(0)->hasGlobalAttribute("sampling_frequency")) {
+		stringValues = getAdcDevice(0)->getAvailableAttributeValues("sampling_frequency");
+	} else {
+		stringValues = getAdcDevice(0)->getChannel(0, false)->getAvailableAttributeValues("sampling_frequency");
+	}
+
 	std::transform(stringValues.begin(), stringValues.end(), std::back_inserter(values),
 		       [] (std::string &s) -> double {
 		try {
