@@ -5,7 +5,7 @@ import reset_def_values as reset
 from ps_functions import ps_test_negative, ps_test_positive, config_for_ps_test
 import logger
 import main
-
+from repeat_test import repeat
 
 class C_PowerSupplyTests(unittest.TestCase):
     """Class Where are defined all test methods for Positive PowerSupply and Negative PowerSupply
