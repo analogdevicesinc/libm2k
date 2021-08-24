@@ -1,4 +1,5 @@
 from scipy.stats import pearsonr
+from scipy.signal import find_peaks
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -14,6 +15,7 @@ import sys
 import reset_def_values as reset
 from open_context import ctx_timeout, ctx
 from create_files import results_file, results_dir, csv
+
 
 # dicts that will be saved to csv files
 shape_csv_vals = {}
@@ -43,9 +45,9 @@ def set_trig_for_signalshape_test(i,  channel, trig, delay):
     elif i == 2:
         set_trig(trig, channel, delay, libm2k.RISING_EDGE_ANALOG, -0.98)
     elif i == 3:
-        set_trig(trig, channel, 1, libm2k.RISING_EDGE_ANALOG, -1.1)
+        set_trig(trig, channel, 1, libm2k.RISING_EDGE_ANALOG, -0.98)
     elif i == 4:
-        set_trig(trig, channel, 1, libm2k.FALLING_EDGE_ANALOG, 1.1)
+        set_trig(trig, channel, 1, libm2k.FALLING_EDGE_ANALOG, 0.98)
 
     return
 
@@ -104,6 +106,15 @@ def set_trig(trig, channel, delay, cond=None, level=None):
     return
 
 
+def test_calibration(ctx):
+    # ADC
+    adc_calib = ctx.calibrateADC()
+    # DAC
+    dac_calib = ctx.calibrateDAC()
+
+    return adc_calib, dac_calib
+
+
 def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig):
     """Sends signals with different amplitudes and verify if the received data is as expected. The amplitude multiplier is defined locally.
         For each value of the amplitude multiplier is computed the maximum and the minimum value of the input signal.
@@ -132,6 +143,10 @@ def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig):
             csv_path = csv
     else:
         file = []
+
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
 
     test_name = "amplitude"
     data_string = []
@@ -166,14 +181,6 @@ def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig):
         # gen min values from each data buffer
         min_in = np.append(min_in, np.amin(input_data[channel]))
         min_ref = np.append(min_ref, np.amin(ref_data_ampl))
-        data_string.append("Maximum amplitude reference:")
-        data_string.append(str(max_ref))
-        data_string.append("Maximum amplitude computed:")
-        data_string.append(str(max_in))
-        data_string.append("Minimum amplitude reference:")
-        data_string.append(str(min_ref))
-        data_string.append("Minimum amplitude computed:")
-        data_string.append(str(min_in))
         if gen_reports:
             if channel == 0:
                 plot_to_file('Signal amplitudes channel 0', input_data[channel], dir_name, 'amplitudes_ch0.png')
@@ -188,10 +195,17 @@ def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig):
     # compute correlation of max values
     corr_amplitude_max, _ = pearsonr(max_in, max_ref)
     corr_amplitude_min, _ = pearsonr(min_in, min_ref)
+    data_string.append("Maximum amplitude reference:")
+    data_string.append(str(max_ref))
+    data_string.append("Maximum amplitude computed:")
+    data_string.append(str(max_in))
+    data_string.append("Minimum amplitude reference:")
+    data_string.append(str(min_ref))
+    data_string.append("Minimum amplitude computed:")
+    data_string.append(str(min_in))
     if gen_reports:
         write_file(file, test_name, channel, data_string)
     aout.stop(channel)
-    aout.enableChannel(channel, True)
     return corr_amplitude_max, corr_amplitude_min
 
 
@@ -222,6 +236,11 @@ def test_shape(channel, out_data, ref_data, ain, aout, trig, ch_ratio, shapename
             csv_path = csv
     else:
         file = []
+
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
+
     test_name = "shape"
     data_string = []
     # corr_shape_vect
@@ -264,7 +283,7 @@ def test_shape(channel, out_data, ref_data, ain, aout, trig, ch_ratio, shapename
     if gen_reports:
         write_file(file, test_name, channel, data_string)
     aout.stop(channel)
-    aout.enableChannel(channel, True)
+
 
     return corr_shape_vect, phase_diff_vect
 
@@ -293,6 +312,10 @@ def phase_diff_ch0_ch1(aout, ain, trig):
             csv_path = csv
     else:
         file = []
+
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
 
     test_name = "phase_diff"
     data_string = []
@@ -337,8 +360,7 @@ def phase_diff_ch0_ch1(aout, ain, trig):
         write_file(file, test_name, channel, data_string)
         save_data_to_csv(phasediff_csv, csv_path + 'ph_diff_channels.csv')
     aout.stop()
-    aout.enableChannel(0, True)
-    aout.enableChannel(1, True)
+
     return phase_diff_between_channels, adc_sr
 
 
@@ -366,6 +388,11 @@ def test_analog_trigger(channel, trig, aout, ain):
             csv_path = csv
     else:
         file = []
+
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
+
     test_name = "analog_trigger"
     data_string = []
     low = 0.10
@@ -504,7 +531,6 @@ def test_analog_trigger(channel, trig, aout, ain):
     if gen_reports:
         write_file(file, test_name, channel, data_string)
     aout.stop(channel)
-    aout.enableChannel(channel, True)
     return trig_test, condition_name
 
 
@@ -534,14 +560,19 @@ def test_offset(out_data, n, ain, aout, trig, channel):
     else:
         file = []
 
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
+
     test_name = "offset"
     data_string = []
     ain.setRange(channel, libm2k.PLUS_MINUS_25V)
-    offset = np.arange(-4, 4.5, 0.5)  # offset values between -5 and 5 with a step of 1V
+    offset = np.arange(-4, 4.5, 0.5)  # offset values between -5 and 5 with a step of 0.5V
     in_offset = np.array([])
 
     data_string.append("Offset values set:")
     data_string.append(str(offset))
+    data_string.append("Offset values computed:")
     for i in offset:
         ctx.setTimeout(5000)
         set_trig(trig, channel, 0, libm2k.FALLING_EDGE_ANALOG, i + 0.1)
@@ -559,8 +590,6 @@ def test_offset(out_data, n, ain, aout, trig, channel):
             sum = sum + s
         average = round(sum / n, 1)  # compute the average value of a period of the acquired signal
         in_offset = np.append(in_offset, average)  # put all the average values in a vector
-        data_string.append("Offset values computed:")
-        data_string.append(str(in_offset))
         if gen_reports:
             if channel == 0:
                 plot_to_file('Signal offset  on channel 0', input_data[channel], dir_name, 'offsets_ch0.png')
@@ -569,14 +598,14 @@ def test_offset(out_data, n, ain, aout, trig, channel):
 
             else:
                 plot_to_file('Signal offset  on channel 1', input_data[channel], dir_name, 'offsets_ch1.png')
-            # file.write("Offset values computed: \n" + str(in_offset) + "\n")
+
+    data_string.append(str(in_offset))
     if gen_reports:
         write_file(file, test_name, channel, data_string)
     corr_offset, _ = pearsonr(offset, in_offset)  # compare the original offset vector with the average values obtained
 
-            
     aout.stop(channel)
-    aout.enableChannel(channel, True)
+
     return corr_offset
 
 
@@ -603,6 +632,9 @@ def test_voltmeter_functionality(channel, ain, aout, ctx):
     else:
         file = []
 
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+
     test_name = "voltmeter"
     data_string = []
 
@@ -614,6 +646,7 @@ def test_voltmeter_functionality(channel, ain, aout, ctx):
     nb_samples = 4096 * 2  # number of samples to be sent
 
     # ctx.calibrateDAC()
+    aout.enableChannel(channel, True)
     for v_sent in voltage:
         if v_sent < 2.5:
             ain.setRange(channel, libm2k.PLUS_MINUS_2_5V)
@@ -633,7 +666,6 @@ def test_voltmeter_functionality(channel, ain, aout, ctx):
     if gen_reports:
         write_file(file, test_name, channel, data_string)
     aout.stop(channel)
-    aout.enableChannel(channel, True)
 
     return voltmeter_
 
@@ -656,7 +688,59 @@ def set_trig_for_cyclicbuffer_test(trig, delay):
     return
 
 
-def cyclic_buffer_test(aout, ain, channel, trig, ctx):
+def cyclic_buffer_test(aout, ain, channel, trig):
+    """Test if multiple buffers of data are sent and received when the cyclic buffer is set to true.
+
+    Arguments:
+        aout  -- AnalogOut object\n
+        ain  -- AnalogIn object \n
+        channel -- Analog channel under test\n
+        trig -- Trigger object \n
+
+    Returns:
+        cyclic_false -- Must be 1 if a single buffer was sent and succesfully recieved, 0 otherwise
+    """
+
+    if gen_reports:
+        from create_files import results_file, results_dir, csv, open_files_and_dirs
+        if results_file is None:
+            file, dir_name, csv_path = open_files_and_dirs()
+        else:
+            file = results_file
+            dir_name = results_dir
+            csv_path = csv
+    else:
+        file = []
+    dac_sr = 75000
+    adc_sr = 10000
+    min_periods = 3
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
+    aout.setCyclic(True)
+    ain.setSampleRate(adc_sr)
+    aout.setSampleRate(channel,dac_sr)
+    set_trig(trig, channel, 0, libm2k.FALLING_EDGE_ANALOG, 0.0)
+
+    out_samples = 4096
+    out_data = np.sin(np.linspace(-np.pi, np.pi, out_samples))
+
+    pool = ThreadPool(processes=1)  # start a paralel process
+
+    async_result = pool.apply_async(get_samples_notcyclic, args=[out_samples, ain, channel])
+    aout.push(channel, out_data)
+    return_val = async_result.get()  # get the data acquired in the parallel thread
+    peak_indices, peak_properties = find_peaks(return_val, height=0.97, width=5)
+
+    if len(peak_indices) >= min_periods:
+        cyclic_test = 1
+    else:
+        cyclic_test = 0
+
+    return cyclic_test
+
+
+def noncyclic_buffer_test(aout, ain, channel, trig, ctx):
     """Test if a single buffer of data is sent and received when the cyclic buffer is set to false.
     This function sets the trigger as needed for this operation then starts a parralel thread  where it waits for samples.
     The  buffer of samples returned by get_samples_not_cyclic() is compared with a reference buffer corresponding to the single buffer sent. 
@@ -684,6 +768,10 @@ def cyclic_buffer_test(aout, ain, channel, trig, ctx):
             csv_path = csv
     else:
         file = []
+
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
 
 
     # test the cyclic buffer condition
@@ -729,7 +817,6 @@ def cyclic_buffer_test(aout, ain, channel, trig, ctx):
             cyclic_csv_vals['Channel 1'] = return_val
             save_data_to_csv(cyclic_csv_vals, csv_path + 'cyclic_buffer.csv')
     aout.stop(channel)
-    aout.enableChannel(channel, True)
     aout.setCyclic(True)
     ctx.setTimeout(ctx_timeout)  # set the timeout to the initial value
     return cyclic_false
@@ -839,8 +926,6 @@ def compute_frequency(channel, ain, aout, trig):
     if gen_reports:
         write_file(file, test_name, channel, data_string)
 
-    aout.stop(channel)
-    aout.enableChannel(channel, True)
     return ofreqs, ifreqs
 
 
@@ -857,6 +942,11 @@ def compare_in_out_frequency(channel, ain, aout, trig):
     Returns:
         freq_test--Vector that holds 1 if the corresponding in and out frequencies are equal and 0 otherwise
     """
+
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
+
     freq_test = []  # create an array that will hold 1 if the frequencies are equal and 0 otherwise
     out_freq, in_freq = compute_frequency(channel, ain, aout, trig)  # compute input and output frequencies
     if len(out_freq) == len(in_freq):  # make sure that for each out freq there is a corresponding input freq
@@ -882,7 +972,6 @@ def compare_in_out_frequency(channel, ain, aout, trig):
                 else:
                     freq_test = np.append(freq_test, 0)
     aout.stop(channel)
-    aout.enableChannel(channel, True)
     return freq_test
 
 
@@ -911,25 +1000,27 @@ def test_oversampling_ratio(channel, ain, aout, trig):
     else:
         file = []
 
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
+
     test_name = "osr"
     data_string = []
 
     set_trig(trig, channel, 0, libm2k.FALLING_EDGE_ANALOG, 0.0)
-    osr = [random.randint(1, 3), random.randint(3, 7), random.randint(7, 11), random.randint(11, 15),
-           random.randint(16, 20), random.randint(20, 23)]  # some values for oversampling ratio
+    osr = [1, random.randint(3, 7), random.randint(7, 11), random.randint(11, 15),
+           random.randint(16, 20), random.randint(20, 23)]  # random.randint(1, 3)some values for oversampling ratio
     verify_osr = []
     adc_sr = 100000000
     dac_sr = 75000000
-    out_nr_samples = 1024  # a smaller number of sample so the zero rising edge crossing  is easier to detect
-    # test the cyclic buffer condition
-    ctx.setTimeout(100000000)
+    out_nr_samples = 512  # a smaller number of sample so the zero rising edge crossing  is easier to detect
 
     ain.setSampleRate(adc_sr)
     aout.setSampleRate(channel, dac_sr)
     ch_sampleratio = dac_sr / adc_sr  # ratio between dac sample rate and adc sample rate
-    in_nr_samples = round(out_nr_samples / ch_sampleratio)
+    in_nr_samples = round(out_nr_samples/ch_sampleratio) #round(out_nr_samples +(out_nr_samples%4))
     out_data = np.sin(np.linspace(-np.pi, np.pi, out_nr_samples))
-
+    data_string.append("Oversampling ratios set:\n" + str(osr))
     for j in osr:
         ain.setOversamplingRatio(j)
         aout.push(channel, out_data)
@@ -939,28 +1030,21 @@ def test_oversampling_ratio(channel, ain, aout, trig):
             print("Timeout ocurred")
         ain.stopAcquisition()
 
-        c = 0  # set the counter of rising edge zero crossings to 0
-        for i in range(len(input_data) - 1):
-            if input_data[i] >= 0 and input_data[i + 1] < 0:
-                # test if there is a zero crossing on the rising edge (middle of a sine period)
-                c = c + 1  # count how many periods of a sine wave are acqiured at the input
+        c, _ = find_peaks(input_data, height=0.97, distance=25, width=5)
         verify_osr = np.append(verify_osr,
-                               c)  # append the counted crossings for each oversampling ratio in the verify array
+                               len(c))  # append the counted crossings for each oversampling ratio in the verify array
         osr_csv_vals['Oversamplingratio:' + str(j) + ' ch' + str(channel)] = input_data
-
-        data_string.append("Oversampling ratios set:\n" + str(osr))
-        data_string.append("Oversampling ratios computed: \n" + str(verify_osr))
 
         if gen_reports:
             save_data_to_csv(osr_csv_vals, csv_path + 'ain_oversampling_ratio.csv')
-            write_file(file, test_name, channel, data_string)
-
+    if gen_reports:
+        write_file(file, test_name, channel, data_string)
+    data_string.append("Oversampling ratios computed: \n" + str(verify_osr))
     test_osr = 1
     for i in range(len(osr)):
         if osr[i] != verify_osr[i]:
             test_osr = 0
     aout.stop(channel)
-    aout.enableChannel(channel, True)
     return test_osr
 
 
@@ -1030,6 +1114,9 @@ def channels_diff_in_samples(trig, channel, aout, ain):
             csv_path = csv
     else:
         file = []
+    reset.analog_in(ain)
+    reset.analog_out(aout)  # /len(samples_diff1[i])
+    reset.trigger(trig)
 
     data_string = []
     test_name = "phase_dif_samples"
@@ -1073,7 +1160,7 @@ def channels_diff_in_samples(trig, channel, aout, ain):
                 if (input_data1[i] <= 0 and input_data1[i + 1] > 0) or (input_data1[i] >= 0 and input_data1[i + 1] < 0):
                     p1 = i  # position of trigger on channel 1
             diff_osr.append(p1 - p0)
-            # aout.stop()
+
         diff_adc_sr.append(diff_osr)
         data_string.append('ADC sample rate: ' + str(sr))
         data_string.append('DAC sample rate: ' + str(max_dac_samplerate))
@@ -1085,6 +1172,7 @@ def channels_diff_in_samples(trig, channel, aout, ain):
         write_file(file, test_name, channel, data_string)
         save_data_to_csv(diff_in_samples0, csv_path + 'diffSamples_ch0_trigSrc_' + str(channel) + '.csv')
         save_data_to_csv(diff_in_samples1, csv_path + 'diffSamples_ch1_trigSrc_' + str(channel) + '.csv')
+    aout.stop()
     return diff_adc_sr, adc_sr, dac_osr, freq
 
 
@@ -1129,6 +1217,10 @@ def test_timeout(ctx, ain, aout, trig, channel, dir_name, file, csv_path):
         average-- value of the computed average
         t_occ-- False by default, True if timeout occurred
     """
+    reset.analog_in(ain)
+    reset.analog_out(aout)
+    reset.trigger(trig)
+
     timeout_val = 2  # value of the timeout, small value so timeout occurrs during test
     t_occ = False
     in_samples = 4096
@@ -1174,6 +1266,5 @@ def test_timeout(ctx, ain, aout, trig, channel, dir_name, file, csv_path):
         timeout_csv_vals['Timeout: ' + str(t_occ) + ' ch1'] = input_data[channel]
         save_data_to_csv(timeout_csv_vals, csv_path + 'timeout.csv')
     plt.close()
-    aout.stop(channel)
-    aout.enableChannel(channel, True)
+    aout.stop()
     return offset, average, t_occ

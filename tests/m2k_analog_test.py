@@ -1,14 +1,17 @@
 import sys
 import unittest
 import libm2k
+
+
 from shapefile import shape_gen, ref_shape_gen, shape_name
 from analog_functions import test_amplitude, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, test_voltmeter_functionality
-from analog_functions import cyclic_buffer_test, set_samplerates_for_shapetest, set_trig_for_cyclicbuffer_test
-from analog_functions import compare_in_out_frequency, test_oversampling_ratio, channels_diff_in_samples, test_timeout
+from analog_functions import noncyclic_buffer_test, set_samplerates_for_shapetest, set_trig_for_cyclicbuffer_test, test_calibration
+from analog_functions import compare_in_out_frequency, test_oversampling_ratio, channels_diff_in_samples, test_timeout, cyclic_buffer_test
 import reset_def_values as reset
-from open_context import ctx, ain, aout, trig, calibration, create_dir
+from open_context import ctx, ain, aout, trig, create_dir
 from create_files import results_dir, csv, results_file
 import logger
+from repeat_test import repeat
 
 
 class A_AnalogTests(unittest.TestCase):
@@ -32,12 +35,13 @@ class A_AnalogTests(unittest.TestCase):
         """Verify through open_context() function if the analog objects AnalogIn, AnalogOut and Trigger were successfully retrieved.
     """
         with self.subTest(msg='test if AnalogIn, AnalogOut and Trigger objects were retrieved'):
-            self.assertIsNot((ain, aout, trig), (0, 0, 0), 'Analog objects: ain, aout, trig ')
+            self.assertIsNot((ain, aout, trig), (None, None, None), 'Analog objects: ain, aout, trig ')
 
     def test_2_calibration(self):
 
         """Verify trough calibrate(ctx) function if the ADC and the DAC were calibrated.
         """
+        calibration = test_calibration(ctx)
         with self.subTest(msg='Test if ADC and DAC were succesfully calibrated'):
             self.assertEqual(calibration, (True, True), 'Calibration failed')
 
@@ -45,9 +49,6 @@ class A_AnalogTests(unittest.TestCase):
         """Verifies that all the elements of a correlation vector  returned by test_shape() are greater than 0.85.
         A correlation coefficient greater 0.7 indicates that there is a strong positive linear relationship between two signals.
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
         out0_buffer_samples, out1_buffer_samples, ch0_sample_ratio, ch1_sample_ratio, in0_buffer_samples, in1_buffer_samples = set_samplerates_for_shapetest(
             ain, aout)
         shapename = shape_name()  # names of generated signals
@@ -66,9 +67,7 @@ class A_AnalogTests(unittest.TestCase):
     def test_shapes_ch1(self):
         """Verifies that all the elements of a correlation vector returned by test_shape()  are greater than 0.85.
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
+
         out0_buffer_samples, out1_buffer_samples, ch0_sample_ratio, ch1_sample_ratio, in0_buffer_samples, in1_buffer_samples = set_samplerates_for_shapetest(
             ain, aout)
         shapename = shape_name()  # names of generated signals
@@ -84,9 +83,6 @@ class A_AnalogTests(unittest.TestCase):
         """Verifies if a signal sent simultaneously on both analog channels is the same on both receive channels and there is no phase difference between them.
         The phase difference value is returned by phase_diff_ch0_ch1().
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
 
         phase_diff_between_channels, adc_sr = phase_diff_ch0_ch1(aout, ain, trig)
         for i in range(len(adc_sr)):
@@ -95,9 +91,7 @@ class A_AnalogTests(unittest.TestCase):
                                  'not in phase, ADC SR:' + str(phase_diff_between_channels[i]))
 
     def test_phase_difference_between_channels_in_samples(self):
-        reset.analog_in(ain)
-        reset.analog_out(aout)  # /len(samples_diff1[i])
-        reset.trigger(trig)
+
         samples_diff0, adc_sr, dac_osr, freq = channels_diff_in_samples(trig, libm2k.ANALOG_IN_CHANNEL_1, aout, ain)
         samples_diff1, adc_sr, dac_osr, freq = channels_diff_in_samples(trig, libm2k.ANALOG_IN_CHANNEL_2, aout, ain)
         for i in range(len(adc_sr)):
@@ -114,9 +108,7 @@ class A_AnalogTests(unittest.TestCase):
     def test_amplitude(self):
         """Verifies that all the elements of a vector that holds the amplitude coefficients are greater than 0.9. The vector is returned by test_amplitude()
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
+
         out0_buffer_samples, out1_buffer_samples, ch0_sample_ratio, ch1_sample_ratio, in0_buffer_samples, in1_buffer_samples = set_samplerates_for_shapetest(
             ain, aout)
         buffer0 = shape_gen(out0_buffer_samples)
@@ -135,9 +127,6 @@ class A_AnalogTests(unittest.TestCase):
     def test_offset(self):
         """Verifies that all the elements of a vector that holds the offset coefficients are greater than 0.9. The vector is returned by test_offset()
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
         out0_buffer_samples, out1_buffer_samples, ch0_sample_ratio, ch1_sample_ratio, in0_buffer_samples, in1_buffer_samples = set_samplerates_for_shapetest(
             ain, aout)
         buffer0 = shape_gen(out0_buffer_samples)
@@ -151,9 +140,7 @@ class A_AnalogTests(unittest.TestCase):
     def test_analog_trigger_ch0(self):
         """Verifies the analog trigger conditions on analog channel 0. The trigger conditions are set and verified in test_analog_trigger()
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
+
         trig_test0, condition_name = test_analog_trigger(libm2k.ANALOG_IN_CHANNEL_1, trig, aout, ain)
         reset.trigger(trig)
         for i in range(len(trig_test0)):
@@ -164,10 +151,7 @@ class A_AnalogTests(unittest.TestCase):
     def test_analog_trigger_ch1(self):
         """Verifies the analog trigger conditions on analog channel 1
         """
-        # analog trigger
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
+
         trig_test1, condition_name = test_analog_trigger(libm2k.ANALOG_IN_CHANNEL_2, trig, aout, ain)
         reset.trigger(trig)
         for i in range(len(trig_test1)):
@@ -178,9 +162,6 @@ class A_AnalogTests(unittest.TestCase):
     def test_voltmeter(self):
         """Verifies voltmeter functionality on analog channels. 
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
         # VOLTMETER
         voltmeter_ch0 = test_voltmeter_functionality(libm2k.ANALOG_IN_CHANNEL_1, ain, aout, ctx)
         voltmeter_ch1 = test_voltmeter_functionality(libm2k.ANALOG_IN_CHANNEL_2, ain, aout, ctx)
@@ -191,33 +172,38 @@ class A_AnalogTests(unittest.TestCase):
                 self.assertEqual(all(voltmeter_test[i]), True, 'voltmeter channel' + str(i))
 
     def test_cyclic_buffer(self):
+        """Verifies that multiple buffers are received when cyclic buffer is set to true.
+        cyclic_buffer_test() returns 1 if the operation was successful
+        """
+
+        cyclic_buffer_test_ch1 = cyclic_buffer_test(aout, ain, libm2k.ANALOG_IN_CHANNEL_1, trig)
+        cyclic_buffer_test_ch2 = cyclic_buffer_test(aout, ain, libm2k.ANALOG_IN_CHANNEL_2, trig)
+        cyclic_buffer = (cyclic_buffer_test_ch1, cyclic_buffer_test_ch2)
+
+        for i in range(2):
+            with self.subTest(
+                    msg='Test if multiple buffers are received when cyclic buffer is set to true on ch ' + str(i)):
+                self.assertEqual(cyclic_buffer[i], 1, "channel" + str(i))
+
+    def test_noncyclic_buffer(self):
         """Verifies if a single buffer is received when cyclic buffer is set to false.
         cyclic_buffer_test() returns 1 if the operation was successful
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
 
-        cyclic_buffer_test_ch1 = cyclic_buffer_test(aout, ain, libm2k.ANALOG_IN_CHANNEL_1, trig, ctx)
-        cyclic_buffer_test_ch2 = cyclic_buffer_test(aout, ain, libm2k.ANALOG_IN_CHANNEL_2, trig, ctx)
-        cyclic_buffer = (cyclic_buffer_test_ch1, cyclic_buffer_test_ch2)
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
+        non_cyclic_buffer_test_ch1 = noncyclic_buffer_test(aout, ain, libm2k.ANALOG_IN_CHANNEL_1, trig, ctx)
+        non_cyclic_buffer_test_ch2 = noncyclic_buffer_test(aout, ain, libm2k.ANALOG_IN_CHANNEL_2, trig, ctx)
+        non_cyclic_buffer = (non_cyclic_buffer_test_ch1, non_cyclic_buffer_test_ch2)
 
         for i in range(2):
             with self.subTest(
                     msg='Test if a single buffer is received when cyclic buffer is set to false on ch ' + str(i)):
-                self.assertEqual(cyclic_buffer[i], 1, "channel" + str(i))
+                self.assertEqual(non_cyclic_buffer[i], 1, "channel" + str(i))
 
     def test_frequency(self):
         """Verifies if a frequency sent on aout channels is the same on ain channels, for different values of the ADC and DAC sample rates.
         Frequencies are compared in compare_in_out_frequency().
         """
 
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
         frequency_test = [compare_in_out_frequency(libm2k.ANALOG_IN_CHANNEL_1, ain, aout, trig),
                           compare_in_out_frequency(libm2k.ANALOG_IN_CHANNEL_2, ain, aout, trig)]
         for i in range(2):
@@ -230,9 +216,6 @@ class A_AnalogTests(unittest.TestCase):
     def test_oversampling_ratio(self):
         """Verifies the effect of setting the oversampling ratio parameter for analog input
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
 
         osr_test = (test_oversampling_ratio(libm2k.ANALOG_IN_CHANNEL_1, ain, aout, trig),
                     test_oversampling_ratio(libm2k.ANALOG_IN_CHANNEL_2, ain, aout, trig))
@@ -241,13 +224,10 @@ class A_AnalogTests(unittest.TestCase):
             with self.subTest(msg='Test different oversampling ratio values for ain on ch' + str(i)):
                 self.assertEqual(osr_test[i], 1, 'oversampling on channel' + str(i))
 
-
     def test_timeout(self):
         """Verifies if there is data aqcuisition if trigger is reset after timeout occurs
         """
-        reset.analog_in(ain)
-        reset.analog_out(aout)
-        reset.trigger(trig)
+
         for i in range(2):
             data=False
             offset, average, t_occ=test_timeout(ctx,ain,aout,trig,i,results_dir, results_file, csv)

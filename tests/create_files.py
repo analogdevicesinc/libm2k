@@ -23,9 +23,9 @@ def create_dir(timestamp):
 
 def open_files_and_dirs():
     global timestamp
-    timestamp = time.strftime("_%H-%M-%S_%Y-%m-%d")  # create timestamp
+    timestamp = time.strftime("_%Y-%m-%d_%H-%M-%S")  # create timestamp
     results_dir = create_dir(timestamp)  # create new directory
-    results_file = open(str(results_dir) + '/results_' + timestamp + '.txt',
+    results_file = open(str(results_dir) + '/results' + timestamp + '.txt',
                         'w')  # create new file where the computed values can be found
     csv = str(results_dir) + '/csv_'
     results_file.write("\nADALM2000 Libm2k Tests- Result Values \n\n")

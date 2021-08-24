@@ -17,3 +17,9 @@ To run a single test from one of the test classes open cmd in the working direct
 To run tests without generating the report files, add the "nofiles" option when running main.py .
     ```python main.py nofiles```
  Ex: ```main.py A_AnalogTests.test_1_analog_objects nofiles```
+ 
+To repeat a test, add the @repeat(times) decorator before the test to be repeated.
+ 
+ Ex: <br>
+```    @repeat(50)``` <br>
+```    def test_2_calibration(self):```

@@ -5,7 +5,7 @@ import sys
 import libm2k
 from trig_functions import *  # trigger_jitter
 import logger
-
+from repeat_test import repeat
 
 
 class B_TriggerTests(unittest.TestCase):

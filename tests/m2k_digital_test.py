@@ -5,7 +5,7 @@ from digital_functions import dig_reset, set_digital_trigger, check_digital_chan
 from digital_functions import test_digital_cyclic_buffer
 from open_context import dig, d_trig
 import logger
-
+from repeat_test import repeat
 
 class D_DigitalTests(unittest.TestCase):
     """Class where are defined tests for the digital segment
