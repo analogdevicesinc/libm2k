@@ -43,7 +43,7 @@ bool Context::parseArguments(std::vector<std::pair<std::string, std::string>> &o
 
         int c, option_index = 0;
         bool quiet = false;
-        while ((c = getopt_long(argc, argv, "hqifILmstlupv",
+        while ((c = getopt_long(argc, argv, "hqafiLmstlupv",
                                 options, &option_index)) != -1) {
                 switch (c) {
                 case 'h':
@@ -52,13 +52,13 @@ bool Context::parseArguments(std::vector<std::pair<std::string, std::string>> &o
                 case 'q':
                     quiet = true;
                     break;
-                case 'i':
+                case 'a':
                     handleContextInfo(output);
                     break;
                 case 'f':
                     handleFirmware(output);
                     break;
-                case 'I':
+                case 'i':
                     handleIIO(output);
                     break;
                 case 'L':
@@ -101,21 +101,44 @@ void Context::handleContextInfo(std::vector<std::pair<std::string, std::string>>
                          iio.git_tag);
         addOutputMessage(output, ("Linux"),
                          context->getContextDescription());
-        addOutputMessage(output, ("Model"),
-                         context->getContextAttributeValue("hw_model"));
-        addOutputMessage(output, ("Product Name"),
-                         context->getContextAttributeValue("usb,product"));
         addOutputMessage(output, ("Serial"),
                          context->getSerialNumber());
         auto temp = dmm->readChannel("temp0");
         addOutputMessage(output, ("Temperature"),
                          std::to_string(temp.value));
-        addOutputMessage(output, ("Vendor"),
-                         context->getContextAttributeValue("usb,vendor"));
         addOutputMessage(output, ("uri"),
                          context->getUri());
-        addOutputMessage(output, ("usb,libusb"),
-                         context->getContextAttributeValue("usb,libusb"));
+	try {
+                addOutputMessage(output, ("Model"),
+                                context->getContextAttributeValue("hw_model"));
+        }
+        catch (...) {
+                addOutputMessage(output, ("Model"), "Attribute unavailable");
+        }
+        try {
+                addOutputMessage(output, ("usb,Product Name"),
+                                context->getContextAttributeValue("usb,product"));
+        }
+        catch (...) {
+
+                addOutputMessage(output, ("usb,Product Name"), "Attribute unavailable");
+        }
+ 	try {
+                addOutputMessage(output, ("usb,Vendor"),
+                                context->getContextAttributeValue("usb,vendor"));
+        }
+        catch (...) {
+
+                addOutputMessage(output, ("usb,Vendor"), "Attribute unavailable");
+        }
+	try {
+                addOutputMessage(output, ("usb,libusub"),
+                                context->getContextAttributeValue("usb,libusb"));
+        }
+        catch (...) {
+
+                addOutputMessage(output, ("usb,libusb"), "Attribute unavailable");
+        }
 }
 
 void Context::handleFirmware(std::vector<std::pair<std::string, std::string>> &output)
@@ -139,8 +162,13 @@ void Context::handleLinux(std::vector<std::pair<std::string, std::string>> &outp
 
 void Context::handleModel(std::vector<std::pair<std::string, std::string>> &output)
 {
-        addOutputMessage(output, ("Model"),
-                         context->getContextAttributeValue("hw_model"));
+	try {
+        	addOutputMessage(output, ("Model"),
+                         	context->getContextAttributeValue("hw_model"));
+	}
+	catch (...) {
+		throw std::runtime_error("Attribute unavailable\n");
+	}
 }
 
 void Context::handleSerial(std::vector<std::pair<std::string, std::string>> &output)
@@ -158,8 +186,13 @@ void  Context::handleTemperature(std::vector<std::pair<std::string, std::string>
 
 void Context::handleLibusb(std::vector<std::pair<std::string, std::string>> &output)
 {
-        addOutputMessage(output, ("usb,libusb"),
+        try {
+		addOutputMessage(output, ("usb,libusb"),
                          context->getContextAttributeValue("usb,libusb"));
+	}
+	catch (...) {
+		throw std::runtime_error("Attribute unavailable\n");
+	}
 }
 
 void Context::handleUri(std::vector<std::pair<std::string, std::string>> &output)
@@ -170,22 +203,32 @@ void Context::handleUri(std::vector<std::pair<std::string, std::string>> &output
 
 void Context::handleProduct(std::vector<std::pair<std::string, std::string>> &output)
 {
-        addOutputMessage(output, ("Product Name"),
+        try {
+		addOutputMessage(output, ("usb,Product Name"),
                          context->getContextAttributeValue("usb,product"));
+	}
+	catch (...) {
+		throw std::runtime_error("Attribute unavailable\n");
+	}
 }
 
 void Context::handleVendor(std::vector<std::pair<std::string, std::string>> &output)
 {
-        addOutputMessage(output, ("Vendor"),
+        try {
+		addOutputMessage(output, ("usb,Vendor"),
                          context->getContextAttributeValue("usb,vendor"));
+	}
+	catch (...) {
+		throw std::runtime_error("Attribute unavailable\n");
+	}
 }
 
 const struct option Context::options[] = {
         {"help",        no_argument,       nullptr, 'h'},
         {"quiet",       no_argument,       nullptr, 'q'},
-        {"info",        no_argument,       nullptr, 'i'},
+        {"all",         no_argument,       nullptr, 'a'},
         {"firmware",    no_argument,       nullptr, 'f'},
-        {"iio",         no_argument,       nullptr, 'I'},
+        {"iio",         no_argument,       nullptr, 'i'},
         {"linux",       no_argument,       nullptr, 'L'},
         {"serial",      no_argument,       nullptr, 's'},
         {"temperature", no_argument,       nullptr, 't'},
@@ -200,9 +243,9 @@ const char *const Context::helpMessage = "Usage:\n"
                                          "m2kcli context <uri>\n"
                                          "                 [-h | --help]\n"
                                          "                 [-q | --quiet]\n"
-                                         "                 [-i | --info]\n"
+                                         "                 [-a | --all]\n"
                                          "                 [-f | --firmware]\n"
-                                         "                 [-I | --iio]\n"
+                                         "                 [-i | --iio]\n"
                                          "                 [-L | --linux]\n"
                                          "                 [-s | --serial]\n"
                                          "                 [-t | --temperature]\n"
@@ -217,9 +260,9 @@ const char *const Context::helpMessage = "Usage:\n"
                                          "Optional arguments:\n"
                                          "  -h, --help            show this help message and exit\n"
                                          "  -q, --quiet           return result only\n"
-                                         "  -i, --info            show context information\n"
+                                         "  -a, --all             show all context attributes\n"
                                          "  -f, --firmware        show firmware version\n"
-                                         "  -I, --iio             show libiio version\n"
+                                         "  -i, --iio             show libiio version\n"
                                          "  -L, --linux           show linux version\n"
                                          "  -s, --serial          show serial number\n"
                                          "  -t, --temperature     show device temperature\n"
