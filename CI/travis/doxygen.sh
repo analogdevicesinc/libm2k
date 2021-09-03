@@ -35,6 +35,12 @@ then
         sudo rm -rf ${TOP_DIR}/build
         sudo rm -rf ${TOP_DIR}/doc
 
+	# Need to create a .nojekyll file to allow filenames starting with an underscore
+	# to be seen on the gh-pages site. Therefore creating an empty .nojekyll file.
+	if [ ! -f ".nojekyll" ] ; then
+		touch .nojekyll
+	fi
+
         GH_CURRENT_COMMIT=$(git log -1 --pretty=%B)
         if [[ ${GH_CURRENT_COMMIT:(-7)} != ${CURRENT_COMMIT:0:7} ]]
         then
