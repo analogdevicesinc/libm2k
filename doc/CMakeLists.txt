@@ -44,7 +44,7 @@ if(ENABLE_PYTHON)
 	    message(FATAL_ERROR "Sphinx not found!")
 	endif()
 
-	set(BINARY_SPHINX_DIR "${DOXY_WORKING_DIR}/html/sphinx")
+	set(BINARY_SPHINX_DIR "${DOXY_WORKING_DIR}/python/html/sphinx")
 	# configured documentation tools and intermediate build results
 	set(BINARY_BUILD_DIR "${BINARY_SPHINX_DIR}/build")
 	# Sphinx cache with pickled ReST documents

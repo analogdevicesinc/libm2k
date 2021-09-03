@@ -32,7 +32,6 @@ then
 
         cp -R ${TOP_DIR}/build/doc/doxygen_doc/html/* ${TOP_DIR}
 
-        sudo rm -rf ${TOP_DIR}/build
         sudo rm -rf ${TOP_DIR}/doc
 
 	# Need to create a .nojekyll file to allow filenames starting with an underscore
