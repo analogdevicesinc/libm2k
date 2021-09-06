@@ -48,7 +48,7 @@
 
  In order to use libm2k in Python applications please check the [libm2k Python Bindings API]
 
-[libm2k Python Bindings API]: ../python/html/sphinx/build/html/index.html "libm2k Python Bindings API Sphinx"
+[libm2k Python Bindings API]: ./python/html/sphinx/build/html/index.html "libm2k Python Bindings API Sphinx"
 
  @section example Example
  The following code shows a simple example on how to use libm2k together with the digital side of ADALM2000.

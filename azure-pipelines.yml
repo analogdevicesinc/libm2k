@@ -77,12 +77,13 @@ jobs:
   - script: ./CI/travis/make_linux
     displayName: "Build"
   - task: CopyFiles@2
+    condition: ne(variables['System.JobName'], 'deploy_doxygen')
     inputs:
       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
       contents: '$(Agent.BuildDirectory)/s/build/?(*.deb|*.rpm)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['System.JobName'], 'deploy_doxygen'))
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactName: '$(artifactName)'
