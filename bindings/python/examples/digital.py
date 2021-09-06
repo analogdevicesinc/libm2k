@@ -31,6 +31,7 @@ if ctx is None:
 	exit(1)
 
 dig=ctx.getDigital()
+dig.reset()
 
 dig.setSampleRateIn(10000)
 dig.setSampleRateOut(10000)

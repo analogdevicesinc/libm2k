@@ -32,6 +32,7 @@ if ctx is None:
 
 ctx.calibrateADC()
 ps=ctx.getPowerSupply()
+ps.reset()
 ps.enableChannel(0,True)
 ps.pushChannel(0,1.7)
 ain=ctx.getAnalogIn()

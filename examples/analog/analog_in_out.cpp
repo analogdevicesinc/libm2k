@@ -52,14 +52,18 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	ctx->calibrateADC();
-	ctx->calibrateDAC();
-
 	M2kAnalogIn *ain = ctx->getAnalogIn();
 	M2kAnalogOut *aout = ctx->getAnalogOut();
 #ifdef TRIGGERING
 	M2kHardwareTrigger *trig = ain->getTrigger();
 #endif
+
+	// Prevent bad initial config
+	ain->reset();
+	aout->reset();
+
+	ctx->calibrateADC();
+	ctx->calibrateDAC();
 
 	// Setup analog in
 	ain->enableChannel(0, true);

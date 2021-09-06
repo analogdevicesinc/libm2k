@@ -61,11 +61,15 @@ def main():
         print("Mixed Signal not available")
         exit(1)
 
-    context.calibrateDAC()
-
     analog_in = context.getAnalogIn()
     digital = context.getDigital()
     trigger = analog_in.getTrigger()
+
+    # Prevent bad initial config
+    analog_in.reset()
+    digital.reset()
+
+    context.calibrateDAC()
 
     analog_in.enableChannel(libm2k.CHANNEL_1, True)
     analog_in.enableChannel(libm2k.CHANNEL_2, True)

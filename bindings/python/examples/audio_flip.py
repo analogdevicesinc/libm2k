@@ -38,13 +38,18 @@ if ctx is None:
     print("Connection Error: No ADALM2000 device available/connected to your PC.")
     exit(1)
 
-ctx.calibrateADC()
-ctx.calibrateDAC()
-
 ain = ctx.getAnalogIn()
 aout = ctx.getAnalogOut()
 trig = ain.getTrigger()
 ps = ctx.getPowerSupply()
+
+# Prevent bad initial config for ADC and DAC
+ain.reset()
+aout.reset()
+ps.reset()
+
+ctx.calibrateADC()
+ctx.calibrateDAC()
 
 ps.enableChannel(0, True)  # Consider using for microphone power,
 ps.pushChannel(0, 4.0)  # unfortunately DC blocking cap takes forever to charge
