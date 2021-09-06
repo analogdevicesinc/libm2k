@@ -53,10 +53,15 @@ def generate_clock_signal(number_of_samples):
 # Context setup
 
 ctx = libm2k.m2kOpen()
-ctx.calibrateDAC()
-ctx.calibrateADC()
 aout = ctx.getAnalogOut()
 dig = ctx.getDigital()
+
+# Prevent bad initial config
+dig.reset()
+aout.reset()
+
+ctx.calibrateDAC()
+ctx.calibrateADC()
 
 # AnalogOut setup
 

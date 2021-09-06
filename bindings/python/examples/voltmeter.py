@@ -29,8 +29,12 @@ if ctx is None:
 	print("Connection Error: No ADALM2000 device available/connected to your PC.")
 	exit(1)
 
-ctx.calibrateADC()
 ain=ctx.getAnalogIn()
+
+# Prevent bad initial config
+ain.reset()
+
+ctx.calibrateADC()
 ain.enableChannel(channel,True)
 print(ain.getVoltage()[channel])
 

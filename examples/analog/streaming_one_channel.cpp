@@ -22,9 +22,12 @@ int main()
 		return 1;
 	}
 
-	context->calibrateDAC();
-
 	M2kAnalogOut *analogOut = context->getAnalogOut();
+
+	// Prevent bad initial config
+	analogOut->reset();
+
+	context->calibrateDAC();
 
 	analogOut->setKernelBuffersCount(0, buffersCount);
 	analogOut->setKernelBuffersCount(1, buffersCount);

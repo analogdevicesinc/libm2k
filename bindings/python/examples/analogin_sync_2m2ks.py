@@ -71,16 +71,30 @@ if ctx2 is None:
     print("Connection Error: No second ADALM2000 device available/connected to your PC.")
     exit(1)
 
-ctx.calibrateADC()
-ctx.calibrateDAC()
-ctx2.calibrateADC()
-ctx2.calibrateDAC()
-
 # Configure 1st context
 ain = ctx.getAnalogIn()
 aout = ctx.getAnalogOut()
 dig = ctx.getDigital()
 trig = ain.getTrigger()
+
+# Prevent bad initial config for ADC and DAC
+ain.reset()
+aout.reset()
+dig.reset()
+
+# Configure 2nd context
+ain2 = ctx2.getAnalogIn()
+dig2 = ctx2.getDigital()
+trig2 = dig2.getTrigger()
+
+# Prevent bad initial config for ADC and DAC
+ain2.reset()
+dig2.reset()
+
+ctx.calibrateADC()
+ctx.calibrateDAC()
+ctx2.calibrateADC()
+ctx2.calibrateDAC()
 
 if trig.hasExternalTriggerOut():
     trig.setAnalogExternalOutSelect(libm2k.SELECT_ANALOG_IN)  # Forward Analog trigger on TO pin
@@ -94,10 +108,6 @@ dig.setDirection(DIGITAL_CH, libm2k.DIO_OUTPUT)
 dig.enableChannel(DIGITAL_CH, True)
 dig.setValueRaw(DIGITAL_CH, libm2k.LOW)
 
-# Configure 2nd context
-ain2 = ctx2.getAnalogIn()
-dig2 = ctx2.getDigital()
-trig2 = dig2.getTrigger()
 ain2.enableChannel(0, True)
 ain2.enableChannel(1, True)
 ain2.setSampleRate(sampling_frequency_in)

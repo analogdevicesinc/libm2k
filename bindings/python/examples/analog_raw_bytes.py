@@ -20,12 +20,16 @@ if ctx is None:
 	print("Connection Error: No ADALM2000 device available/connected to your PC.")
 	exit(1)
 
-ctx.calibrateADC()
-ctx.calibrateDAC()
-
 ain=ctx.getAnalogIn()
 aout=ctx.getAnalogOut()
 trig=ain.getTrigger()
+
+# Prevent bad initial config for ADC and DAC
+ain.reset()
+aout.reset()
+
+ctx.calibrateADC()
+ctx.calibrateDAC()
 
 ain.enableChannel(0,True)
 ain.enableChannel(1,True)

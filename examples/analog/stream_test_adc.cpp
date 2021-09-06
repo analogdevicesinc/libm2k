@@ -316,12 +316,16 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ctx->calibrateADC();
-	ctx->calibrateDAC();
-
 	M2kAnalogIn *ain = ctx->getAnalogIn();
 	M2kAnalogOut *aout = ctx->getAnalogOut();
 	M2kHardwareTrigger *trig = ain->getTrigger();
+
+	// Prevent bad initial config
+	ain->reset();
+	aout->reset();
+
+	ctx->calibrateADC();
+	ctx->calibrateDAC();
 
 	/* Always use MAX_SR_IN, adjust the samplerate using oversampling_ratio (sr_divider) */
 	ain->setSampleRate(MAX_SAMPLE_RATE_IN);

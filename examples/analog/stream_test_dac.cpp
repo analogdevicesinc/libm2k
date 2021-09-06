@@ -158,9 +158,12 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ctx->calibrateDAC();
-
 	M2kAnalogOut *aout = ctx->getAnalogOut();
+
+	// Prevent bad initial config
+	aout->reset();
+
+	ctx->calibrateDAC();
 
 	aout->setSampleRate(0, MAX_SAMPLE_RATE_OUT);
 	aout->setSampleRate(1, MAX_SAMPLE_RATE_OUT);

@@ -72,6 +72,7 @@ ctx2.calibrateDAC()
 
 # Configure 1st M2K context
 dig = ctx.getDigital()
+dig.reset()
 dig.setDirection(DIGITAL_CH_TRIG, libm2k.DIO_OUTPUT)  # DIO pin which the digital interface
 dig.enableChannel(DIGITAL_CH_TRIG, False)
 dig.setValueRaw(DIGITAL_CH_TRIG, libm2k.LOW)
@@ -92,6 +93,7 @@ if trig.hasExternalTriggerOut():
 
 # Configure 2nd M2K context
 dig2 = ctx2.getDigital()
+dig2.reset()
 dig2.setDirection(DIGITAL_CH_TRIG, libm2k.DIO_INPUT)  # DIO pin on which the trigger signal is read
 dig2.enableChannel(DIGITAL_CH_TRIG, False)
 dig2.setDirection(DIGITAL_CH_READ, libm2k.DIO_INPUT)  # DIO pin on which the clock signal is read
