@@ -29,10 +29,14 @@ then
         pushd ${TOP_DIR}
         git fetch --depth 1 origin +refs/heads/gh-pages:gh-pages
         git checkout gh-pages
+        mkdir -p ${TOP_DIR}/python
 
         cp -R ${TOP_DIR}/build/doc/doxygen_doc/html/* ${TOP_DIR}
+        cp -R ${TOP_DIR}/build/doc/doxygen_doc/python/* ${TOP_DIR}/python
 
         sudo rm -rf ${TOP_DIR}/doc
+        sudo rm -rf ${TOP_DIR}/glog
+        sudo rm -rf ${TOP_DIR}/build
 
 	# Need to create a .nojekyll file to allow filenames starting with an underscore
 	# to be seen on the gh-pages site. Therefore creating an empty .nojekyll file.
