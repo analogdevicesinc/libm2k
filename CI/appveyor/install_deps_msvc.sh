@@ -42,7 +42,7 @@ __mv_to_build_dir() {
 
 git clone https://github.com/analogdevicesinc/libiio "$SRC_LIBIIO"
 cd "$SRC_LIBIIO"
-git checkout 52e6dc3
+git checkout 85bf9cd32138539252ed01c355cf766612cf47c9
 git submodule update --init
 
 
