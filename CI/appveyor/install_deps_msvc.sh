@@ -12,12 +12,13 @@ __build_libiio() {
 	local VERSION="$2"
 	local CONFIGURATION="$3"
 	local GENERATOR="$4"
+	local ARCH="$5"
 
 	# Create the build directory for this platform
 	mkdir -p "$SRC_LIBIIO/build-$PLATFORM"
 	cd "$SRC_LIBIIO/build-$PLATFORM"
 
-	cmake -G "$GENERATOR" -DCMAKE_CONFIGURATION_TYPES="$CONFIGURATION" -DENABLE_IPV6:BOOL=OFF -DCMAKE_SYSTEM_PREFIX_PATH="C:" -DCSHARP_BINDINGS:BOOL=OFF -DPYTHON_BINDINGS:BOOL=OFF -DLIBXML2_LIBRARIES="$DEPS_LIBIIO/$VERSION/libxml2.lib" -DLIBUSB_LIBRARIES="$DEPS_LIBIIO/$VERSION/libusb-1.0.lib" ..
+	cmake -G "$GENERATOR" -A "$ARCH" -DCMAKE_CONFIGURATION_TYPES="$CONFIGURATION" -DENABLE_IPV6:BOOL=OFF -DCMAKE_SYSTEM_PREFIX_PATH="C:" -DCSHARP_BINDINGS:BOOL=OFF -DPYTHON_BINDINGS:BOOL=OFF -DLIBXML2_LIBRARIES="$DEPS_LIBIIO/$VERSION/libxml2.lib" -DLIBUSB_LIBRARIES="$DEPS_LIBIIO/$VERSION/libusb-1.0.lib" ..
 	cmake --build . --config "$CONFIGURATION"
 
 	__mv_to_build_dir $PLATFORM $VERSION $CONFIGURATION
@@ -45,6 +46,14 @@ cd "$SRC_LIBIIO"
 git checkout 85bf9cd32138539252ed01c355cf766612cf47c9
 git submodule update --init
 
+if [[ "$APPVEYOR_BUILD_WORKER_IMAGE" == "Visual Studio 2015" ]]; then
+    generator="Visual Studio 14 2015"
+elif [[ "$APPVEYOR_BUILD_WORKER_IMAGE" == "Visual Studio 2017" ]]; then
+    generator="Visual Studio 15 2017"
+elif [[ "$APPVEYOR_BUILD_WORKER_IMAGE" == "Visual Studio 2019" ]]; then
+    generator="Visual Studio 16 2019"
+fi
 
-__build_libiio win64 64 RELEASE "Visual Studio 15 Win64"
-__build_libiio win32 32 RELEASE "Visual Studio 15"
+__build_libiio win64 64 Release "$generator" x64
+__build_libiio win32 32 Release "$generator" Win32
+

@@ -1,5 +1,5 @@
 image:
-  - Visual Studio 2017
+  - Visual Studio 2019
 
 #init:
 #  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
@@ -21,10 +21,10 @@ install:
     #Download libiio deps
     - echo "Downloading deps..."
     - cd c:\
-    - appveyor DownloadFile http://swdownloads.analog.com/cse/build/libiio-win-deps.zip
-    - 7z x -y "c:\libiio-win-deps.zip"
+    - appveyor DownloadFile http://swdownloads.analog.com/cse/build/libiio-win-deps-libusb1.0.24.zip
+    - 7z x -y "c:\libiio-win-deps-libusb1.0.24.zip"
 
-    # Build and install libiio
+     # Build and install libiio
     - bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
 
     # Download SWIG
@@ -46,12 +46,10 @@ build_script:
 
     - bash -c "/c/projects/libm2k/CI/appveyor/build_appveyor_msvc.sh"
     #Create the installer
-    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT\msvcp140.dll" c:\projects\libm2k\build-win32
-    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\msvcp140.dll" c:\projects\libm2k\build-win64
-    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT\vcruntime140.dll" c:\projects\libm2k\build-win32
-    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\vcruntime140.dll" c:\projects\libm2k\build-win64
-    - copy "c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x86\Microsoft.VC120.CRT\msvcr120.dll" c:\projects\libm2k\build-win32
-    - copy "c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x64\Microsoft.VC120.CRT\msvcr120.dll" c:\projects\libm2k\build-win64
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x86\Microsoft.VC142.CRT\msvcp140.dll" c:\projects\libm2k\build-win32
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\msvcp140.dll" c:\projects\libm2k\build-win64
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x86\Microsoft.VC142.CRT\vcruntime140.dll" c:\projects\libm2k\build-win32
+    - copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\vcruntime140.dll" c:\projects\libm2k\build-win64
     - ISCC c:\projects\libm2k\build-win64\libm2k.iss
     - appveyor PushArtifact C:\libm2k-system-setup.exe
 

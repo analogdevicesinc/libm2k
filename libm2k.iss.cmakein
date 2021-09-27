@@ -1,6 +1,5 @@
 #define MsvcLib "msvcp140.dll"
 #define MsvcRuntime "vcruntime140.dll"
-#define MsvcrLib "msvcr120.dll"
 
 [Setup]
 AppId={{0B97BC46-2BA1-4931-88F2-61E84FC7EFEF}
@@ -31,18 +30,13 @@ Name: "dutch"; MessagesFile: "compiler:Languages\Dutch.isl"
 Name: "finnish"; MessagesFile: "compiler:Languages\Finnish.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
-Name: "greek"; MessagesFile: "compiler:Languages\Greek.isl"
 Name: "hebrew"; MessagesFile: "compiler:Languages\Hebrew.isl"
-Name: "hungarian"; MessagesFile: "compiler:Languages\Hungarian.isl"
 Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
 Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 Name: "norwegian"; MessagesFile: "compiler:Languages\Norwegian.isl"
 Name: "polish"; MessagesFile: "compiler:Languages\Polish.isl"
 Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
-Name: "scottishgaelic"; MessagesFile: "compiler:Languages\ScottishGaelic.isl"
-Name: "serbiancyrillic"; MessagesFile: "compiler:Languages\SerbianCyrillic.isl"
-Name: "serbianlatin"; MessagesFile: "compiler:Languages\SerbianLatin.isl"
 Name: "slovenian"; MessagesFile: "compiler:Languages\Slovenian.isl"
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
@@ -74,16 +68,6 @@ begin
     Result := False;
   end;
  end;
-
-function isMsvcrInstalled(): Boolean;
-begin
-  Result := True;
-
-  if not FileExists(ExpandConstant('{sys}\{#MsvcrLib}')) then begin
-    Result := False;
-  end;
- end;
-
  
 [Files]
 Source: "C:\projects\libm2k\build-win64\dist\libm2k-py*-win64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
@@ -97,9 +81,6 @@ Source: "C:\projects\libm2k\build-win64\{#MsvcLib}"; DestDir: "{sys}"; Check: Is
 
 Source: "C:\projects\libm2k\build-win32\{#MsvcRuntime}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
 Source: "C:\projects\libm2k\build-win64\{#MsvcRuntime}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
-
-Source: "C:\projects\libm2k\build-win32\{#MsvcrLib}"; DestDir: "{sys}"; Check: not isMsvcrInstalled; Flags: onlyifdoesntexist 32bit
-Source: "C:\projects\libm2k\build-win64\{#MsvcrLib}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcrInstalled); Flags: onlyifdoesntexist
 
 ;Source: "C:\projects\libm2k\build-win32\*.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode
 ;Source: "C:\projects\libm2k\build-win64\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode
@@ -138,6 +119,7 @@ Source: "C:\projects\libm2k\build-win64\libm2k_lv.dll"; DestDir: "{sys}"; Check:
 [Tasks]
 Name: "install_python_bindings_37"; 				Description: "Install libm2k Python-3.7 bindings";
 Name: "install_python_bindings_38"; 				Description: "Install libm2k Python-3.8 bindings";
+Name: "install_python_bindings_39"; 				Description: "Install libm2k Python-3.9 bindings";
 Name: "install_libiio"; 						Description: "Install libiio"; 	Check: Not isIioInstalled;
 Name: "install_libiio_force"; 					Description: "Overwrite libiio ( libiio is already installed in your system. Overwrite? )"; Check: isIioInstalled;
 Name: "install_libm2k_tools";  					Description: "Install libm2k tools";
@@ -149,3 +131,5 @@ Filename: "{tmp}\libm2k-py37-win64.exe"; StatusMsg: "Installing Python bindings"
 Filename: "{tmp}\libm2k-py37-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_37; Flags: skipifsilent
 Filename: "{tmp}\libm2k-py38-win64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings_38; Flags: skipifsilent
 Filename: "{tmp}\libm2k-py38-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_38; Flags: skipifsilent
+Filename: "{tmp}\libm2k-py39-win64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings_39; Flags: skipifsilent
+Filename: "{tmp}\libm2k-py39-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_39; Flags: skipifsilent
