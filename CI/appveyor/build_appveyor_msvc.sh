@@ -11,7 +11,8 @@ __build_libm2k() {
 	local PY_VERSION="$2"
 	local PY_PATH="$3"
 	local GENERATOR="$4"
-	local PLAT_NAME="${5:-$PLATFORM}"
+	local ARCH="$5"
+	local PLAT_NAME="${6:-$PLATFORM}"
 
 	# Create the official build directory for this platform
 	mkdir -p "${TOP_DIR}/build-$PLATFORM/dist"
@@ -22,6 +23,7 @@ __build_libm2k() {
 	export PATH="$PY_PATH;$PY_PATH/libs;$OLD_PATH"
 	cd ${TOP_DIR}/tmp-build-"$PLATFORM"
 	cmake -G "$GENERATOR" \
+	-A "$ARCH" \
 	-DIIO_LIBRARIES:FILEPATH="$DEST_LIBIIO"-"$PLATFORM"/libiio.lib \
 	-DIIO_INCLUDE_DIRS:PATH="$DEST_LIBIIO"-"$PLATFORM" \
         -DCMAKE_CONFIGURATION_TYPES=RELEASE \
@@ -56,10 +58,20 @@ __mv_to_build_dir() {
 	cd ..
 }
 
-__build_libm2k win32 37 "/c/Python37" "Visual Studio 15"
-__build_libm2k win32 38 "/c/Python38" "Visual Studio 15"
+if [[ "$APPVEYOR_BUILD_WORKER_IMAGE" == "Visual Studio 2015" ]]; then
+    generator="Visual Studio 14 2015"
+elif [[ "$APPVEYOR_BUILD_WORKER_IMAGE" == "Visual Studio 2017" ]]; then
+    generator="Visual Studio 15 2017"
+elif [[ "$APPVEYOR_BUILD_WORKER_IMAGE" == "Visual Studio 2019" ]]; then
+    generator="Visual Studio 16 2019"
+fi
+
+__build_libm2k win32 37 "/c/Python37" "$generator" Win32
+__build_libm2k win32 38 "/c/Python38" "$generator" Win32
+__build_libm2k win32 39 "/c/Python39" "$generator" Win32
 __mv_to_build_dir win32
 
-__build_libm2k win64 37 "/c/Python37-x64" "Visual Studio 15 Win64" "win_amd64"
-__build_libm2k win64 38 "/c/Python38-x64" "Visual Studio 15 Win64" "win_amd64"
+__build_libm2k win64 37 "/c/Python37-x64" "$generator" x64 "win_amd64"
+__build_libm2k win64 38 "/c/Python38-x64" "$generator" x64 "win_amd64"
+__build_libm2k win64 39 "/c/Python39-x64" "$generator" x64 "win_amd64"
 __mv_to_build_dir win64
