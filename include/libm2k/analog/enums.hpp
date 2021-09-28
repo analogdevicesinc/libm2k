@@ -44,7 +44,8 @@ namespace analog {
 		std::string name; ///< The name of the channel
 		std::string id; ///< Channel's id
 		double value; ///< The measured value
-		std::string unit; ///< Unit of measurement
+		std::string unit_name; ///< Unit of measurement
+		std::string unit_symbol; ///< Unit symbol
 	};
 
 

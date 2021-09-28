@@ -92,6 +92,7 @@ DMM_READING DMMImpl::readChannel(std::string chn_name)
 	DMM_READING result;
 	double value = 0;
 	std::string key = "";
+	std::string key_symbol = "";
 	std::string id = getDevice(0)->getChannel(m_channel_id_list.at(chn_name), false)->getId();
 	std::string name = getDevice(0)->getChannel(m_channel_id_list.at(chn_name), false)->getName();
 	unsigned int index = m_channel_id_list.at(chn_name);
@@ -116,28 +117,39 @@ DMM_READING DMMImpl::readChannel(std::string chn_name)
 
 
 	if (chn_name.find("voltage") != std::string::npos) {
-		key = " Volts\n";
+		key = "Volt";
+		key_symbol = "V";
 		value = value / 1000;
 	} else if (chn_name.find("temp") != std::string::npos) {
-		key = " \xB0 C\n";
+		key = "Degree Celsius";
+		key_symbol = "°C";
 		value = value / 1000;
 	} else if (chn_name.find("current") != std::string::npos) {
-		key = " Milliampere\n";
+		key = "Ampere";
+		key_symbol = "A";
+		value = value / 1000;
 	} else if (chn_name.find("accel") != std::string::npos) {
-		key = " m/s²\n";
+		key =  "Metre per second squared";
+		key_symbol = "m/s²";
 	} else if (chn_name.find("anglvel") != std::string::npos) {
-		key = " rad/s\n";
+		key = "Radian per second";
+		key_symbol = "rad/s";
 	} else if (chn_name.find("pressure") != std::string::npos) {
-		key = " kPa\n";
+		key = "Pascal";
+		key_symbol = "Pa";
+		value = value * 1000;
 	} else if (chn_name.find("magn") != std::string::npos) {
-		key = " Gauss\n";
+		key = "Gauss";
+		key_symbol = "G";
 	} else {
-		key = " \n";
+		key = "";
+		key_symbol = "";
 	}
 
 	result.id = id;
 	result.name = name;
-	result.unit = key;
+	result.unit_name = key;
+	result.unit_symbol = key_symbol;
 	result.value = value;
 	return result;
 }
