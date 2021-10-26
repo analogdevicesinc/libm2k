@@ -9,6 +9,7 @@
 #include "analog/generic/genericanalogout_impl.hpp"
 #include <iio.h>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 using namespace libm2k::analog;
@@ -55,6 +56,11 @@ std::vector<std::string> GenericImpl::scanAllAnalogIn()
 			aIn_lst.push_back(dev);
 		}
 	}
+	std::sort(aIn_lst.begin(), aIn_lst.end(), [](const std::string& ldev, std::string& rdev)
+	{
+		return Utils::compareNatural(ldev, rdev);
+	});
+
 	return aIn_lst;
 }
 
@@ -69,6 +75,11 @@ std::vector<std::string> GenericImpl::scanAllAnalogOut()
 			aOut_lst.push_back(dev);
 		}
 	}
+	std::sort(aOut_lst.begin(), aOut_lst.end(), [](const std::string& ldev, std::string& rdev)
+	{
+		return Utils::compareNatural(ldev, rdev);
+	});
+
 	return aOut_lst;
 }
 

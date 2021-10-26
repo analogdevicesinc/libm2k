@@ -214,7 +214,6 @@ bool ContextImpl::isIioDeviceBufferCapable(std::string dev_name)
 
 std::unordered_set<std::string> ContextImpl::getAllDevices() const
 {
-
 	return Utils::getAllDevices(m_context);
 }
 
