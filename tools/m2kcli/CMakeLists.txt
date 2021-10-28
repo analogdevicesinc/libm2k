@@ -48,5 +48,12 @@ if (NOT WIN32)
 endif()
 
 if (NOT SKIP_INSTALL_ALL)
-    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-endif ()
+        if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	        install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${OSX_INSTALL_FRAMEWORKSDIR}/libm2k.framework/Tools)
+        else()
+		install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+        endif()
+endif()
+
+# Make the test targets available to the main CMakeLists.txt
+set(M2KCLI_TARGET ${PROJECT_NAME} PARENT_SCOPE)
