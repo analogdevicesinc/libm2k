@@ -69,9 +69,12 @@ fi
 __build_libm2k win32 37 "/c/Python37" "$generator" Win32
 __build_libm2k win32 38 "/c/Python38" "$generator" Win32
 __build_libm2k win32 39 "/c/Python39" "$generator" Win32
+__build_libm2k win32 310 "/c/Python310" "$generator" Win32
+
 __mv_to_build_dir win32
 
 __build_libm2k win64 37 "/c/Python37-x64" "$generator" x64 "win_amd64"
 __build_libm2k win64 38 "/c/Python38-x64" "$generator" x64 "win_amd64"
 __build_libm2k win64 39 "/c/Python39-x64" "$generator" x64 "win_amd64"
+__build_libm2k win64 310 "/c/Python310-x64" "$generator" x64 "win_amd64"
 __mv_to_build_dir win64
