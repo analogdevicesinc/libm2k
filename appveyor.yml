@@ -13,9 +13,10 @@ environment:
     MSYSTEM: MINGW64
     # Tell msys2 to inherit the current directory when starting the shell
     CHERE_INVOKING: 1
+    TWINE_USERNAME: __token__
 
-cache:
-  - C:\glog -> CI\appveyor\install_glog.bat
+#cache:
+  #- C:\glog -> CI\appveyor\install_glog.bat
 
 install:
     #Download libiio deps
@@ -56,6 +57,7 @@ build_script:
     # Create ZIPs
     - cd c:\projects\libm2k
     
+    - mkdir c:\wheelhouse
     - mkdir c:\libm2k-win32
     - mkdir c:\libm2k-win32\dist
     - xcopy include c:\libm2k-win32 /s /e /h
@@ -66,8 +68,9 @@ build_script:
     - copy build-win32\*.exe c:\libm2k-win32\
     - copy build-win32\msvc*.dll c:\libm2k-win32\
     - copy build-win32\vcruntime*.dll c:\libm2k-win32\
-    - copy build-win32\dist\*.exe c:\libm2k-win32\dist\
+    #- copy build-win32\dist\*.exe c:\libm2k-win32\dist\
     - copy build-win32\dist\*.whl c:\libm2k-win32\dist\
+    - copy build-win32\dist\*.whl c:\wheelhouse
     - copy c:\libiio-win32\*.dll c:\libm2k-win32\
     - copy c:\glog\build_0_4_0-Win32\Release\glog.dll c:\libm2k-win32\
     - 7z a "c:\libm2k-win32.zip" c:\libm2k-win32
@@ -84,14 +87,20 @@ build_script:
     - copy build-win64\*.exe c:\libm2k-win64\
     - copy build-win64\msvc*.dll c:\libm2k-win64\
     - copy build-win64\vcruntime*.dll c:\libm2k-win64\
-    - copy build-win64\dist\*.exe c:\libm2k-win64\dist\
+    #- copy build-win64\dist\*.exe c:\libm2k-win64\dist\
     - copy build-win64\dist\*.whl c:\libm2k-win64\dist\
+    - copy build-win64\dist\*.whl c:\wheelhouse
     - copy c:\libiio-win64\*.dll c:\libm2k-win64\
     - copy c:\glog\build_0_4_0-x64\Release\glog.dll c:\libm2k-win64\
-
     - 7z a "c:\libm2k-win64.zip" c:\libm2k-win64
     - ps: Get-ChildItem c:\libm2k-win64\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     - appveyor PushArtifact c:\libm2k-win64.zip
+
+    # push to testpypi only if this is a master build
+    # on releases push to mainline pypi
+    # on other branches, wheels will be available in the zip archive
+    - c:\Python310\python.exe -m pip install --upgrade twine
+    - c:\Python310\python.exe -m twine upload --repository testpypi c:\wheelhouse\*
 
 on_finish:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

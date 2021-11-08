@@ -70,8 +70,8 @@ begin
  end;
  
 [Files]
-Source: "C:\projects\libm2k\build-win64\dist\libm2k-py*-win64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-Source: "C:\projects\libm2k\build-win32\dist\libm2k-py*-win32.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+;Source: "C:\projects\libm2k\build-win64\dist\libm2k-py*-win64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+;Source: "C:\projects\libm2k\build-win32\dist\libm2k-py*-win32.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 Source: "C:\projects\libm2k\build-win32\libm2k.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion
 Source: "C:\projects\libm2k\build-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
@@ -117,9 +117,9 @@ Source: "C:\projects\libm2k\build-win32\libm2k_lv.dll"; DestDir: "{sys}"; Flags:
 Source: "C:\projects\libm2k\build-win64\libm2k_lv.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion; Tasks: install_labview_wrapper;
 
 [Tasks]
-Name: "install_python_bindings_37"; 				Description: "Install libm2k Python-3.7 bindings";
-Name: "install_python_bindings_38"; 				Description: "Install libm2k Python-3.8 bindings";
-Name: "install_python_bindings_39"; 				Description: "Install libm2k Python-3.9 bindings";
+;Name: "install_python_bindings_37"; 				Description: "Install libm2k Python-3.7 bindings";
+;Name: "install_python_bindings_38"; 				Description: "Install libm2k Python-3.8 bindings";
+;Name: "install_python_bindings_39"; 				Description: "Install libm2k Python-3.9 bindings";
 Name: "install_libiio"; 						Description: "Install libiio"; 	Check: Not isIioInstalled;
 Name: "install_libiio_force"; 					Description: "Overwrite libiio ( libiio is already installed in your system. Overwrite? )"; Check: isIioInstalled;
 Name: "install_libm2k_tools";  					Description: "Install libm2k tools";
@@ -127,9 +127,9 @@ Name: "install_labview_wrapper";  					Description: "Install wrapper for LabVIEW
 Name: "install_glog"; 						Description: "Install with logging support";
 
 [Run]
-Filename: "{tmp}\libm2k-py37-win64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings_37; Flags: skipifsilent
-Filename: "{tmp}\libm2k-py37-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_37; Flags: skipifsilent
-Filename: "{tmp}\libm2k-py38-win64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings_38; Flags: skipifsilent
-Filename: "{tmp}\libm2k-py38-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_38; Flags: skipifsilent
-Filename: "{tmp}\libm2k-py39-win64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings_39; Flags: skipifsilent
-Filename: "{tmp}\libm2k-py39-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_39; Flags: skipifsilent
+;Filename: "{tmp}\libm2k-py37-win64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings_37; Flags: skipifsilent
+;Filename: "{tmp}\libm2k-py37-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_37; Flags: skipifsilent
+;Filename: "{tmp}\libm2k-py38-win64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings_38; Flags: skipifsilent
+;Filename: "{tmp}\libm2k-py38-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_38; Flags: skipifsilent
+;Filename: "{tmp}\libm2k-py39-win64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings_39; Flags: skipifsilent
+;Filename: "{tmp}\libm2k-py39-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings_39; Flags: skipifsilent
