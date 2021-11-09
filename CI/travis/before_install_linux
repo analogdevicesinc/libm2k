@@ -60,7 +60,10 @@ handle_default() {
 	make
 	sudo make install
 
-	sudo pip3 install --upgrade pip stdeb argparse
+	cat /etc/os-release
+	lsb_release -a
+	sudo ${PYTHON} -m pip install --upgrade pip
+	sudo ${PYTHON} -m pip install --upgrade stdeb argparse twine cibuildwheel build virtualenv
 }
 
 handle_doxygen() {
@@ -87,8 +90,8 @@ handle_doxygen() {
 	handle_default
 	cd ${TOP_DIR}
 	#Also install Sphinx for Python bindings
-	sudo apt-get install python3-sphinx
-	sudo pip3 install --upgrade sphinx_rtd_theme
+	#sudo apt-get install python3-sphinx
+	sudo ${PYTHON} -m pip install --upgrade sphinx sphinx_rtd_theme
 }
 
 handle_ubuntu() {

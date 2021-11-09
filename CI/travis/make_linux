@@ -6,11 +6,16 @@ TOP_DIR=$(pwd)
 
 handle_default() {
 	mkdir -p build
+	mkdir -p build/wheelhouse
 	cd build
 
 	#create deb for bindings
 	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON .. && make
-	sudo python3 setup.py --command-packages=stdeb.command sdist_dsc
+	sudo ${PYTHON} setup.py --command-packages=stdeb.command sdist_dsc
+	uname -a
+	#cibuildwheel --platform linux --output-dir wheelhouse .
+	${PYTHON} -m build --wheel
+	cp dist/*.whl wheelhouse
 	cd "$(find . -type d -name "debian" | head -n 1)"
 	sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc
 	cp ../../*.deb ${TOP_DIR}/build/
