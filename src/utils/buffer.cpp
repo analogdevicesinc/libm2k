@@ -421,16 +421,18 @@ void Buffer::getSamples(std::vector<std::vector<double>> &data, unsigned int nb_
 		bool en  = chn->isEnabled();
 		channels_enabled.push_back(en);
 		std::vector<double> ch_data {};
+		ch_data.reserve(nb_samples);
 		data.push_back(ch_data);
 	}
 
 	unsigned int i;
 	unsigned int nb_channels = m_channel_list.size();
 
+
 	for (i = 0; i < nb_samples; i++) {
 		for (unsigned int ch = 0; ch < nb_channels; ch++) {
-			if (channels_enabled.at(ch)) {
-				data.at(ch).push_back(process(data_p[i * nb_channels + ch], ch));
+			if (channels_enabled[ch]) {
+				data[ch].push_back(process(data_p[i * nb_channels + ch], ch));
 			}
 		}
 	}
