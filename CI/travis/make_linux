@@ -11,10 +11,11 @@ handle_default() {
 
 	#create deb for bindings
 	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON .. && make
-	sudo ${PYTHON} setup.py --command-packages=stdeb.command sdist_dsc
-	uname -a
-	#cibuildwheel --platform linux --output-dir wheelhouse .
-	${PYTHON} -m build --wheel
+	cat setup.py
+
+	export COMPILE_BINDINGS=True
+	${PYTHON} -m build
+	export COMPILE_BINDINGS=False
 	cp dist/*.whl wheelhouse
 	cd "$(find . -type d -name "debian" | head -n 1)"
 	sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc

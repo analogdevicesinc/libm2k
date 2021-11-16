@@ -68,7 +68,6 @@ build_script:
     - copy build-win32\*.exe c:\libm2k-win32\
     - copy build-win32\msvc*.dll c:\libm2k-win32\
     - copy build-win32\vcruntime*.dll c:\libm2k-win32\
-    #- copy build-win32\dist\*.exe c:\libm2k-win32\dist\
     - copy build-win32\dist\*.whl c:\libm2k-win32\dist\
     - copy build-win32\dist\*.whl c:\wheelhouse
     - copy c:\libiio-win32\*.dll c:\libm2k-win32\
@@ -87,7 +86,6 @@ build_script:
     - copy build-win64\*.exe c:\libm2k-win64\
     - copy build-win64\msvc*.dll c:\libm2k-win64\
     - copy build-win64\vcruntime*.dll c:\libm2k-win64\
-    #- copy build-win64\dist\*.exe c:\libm2k-win64\dist\
     - copy build-win64\dist\*.whl c:\libm2k-win64\dist\
     - copy build-win64\dist\*.whl c:\wheelhouse
     - copy c:\libiio-win64\*.dll c:\libm2k-win64\

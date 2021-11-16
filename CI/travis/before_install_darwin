@@ -23,4 +23,4 @@ cmake ..
 make
 sudo make install
 
-pip3 install wheel
+pip3 install wheel twine build virtualenv

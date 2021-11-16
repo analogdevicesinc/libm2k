@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 2.8.7)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(EXTRA_COMPILE_FLAGS ${CMAKE_CXX_FLAGS})
+set(EXTRA_LINK_FLAGS "")
+
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.5")
 	# Check CMake Policy added in v3.13 regarding the SWIG generated target name
 	# https://cmake.org/cmake/help/v3.14/policy/CMP0078.html
@@ -7,12 +12,13 @@ if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.5")
 endif()
 set(SWIG_OUTPUT_NAME libm2k)
 
-
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.14.7")
 	# Check CMake Policy added in v3.14 regarding the SWIG_MODULE_NAME flag
 	# https://cmake.org/cmake/help/v3.14/policy/CMP0086.html
 	cmake_policy(SET CMP0086 NEW)
 endif()
+
+get_filename_component(IIO_LIBRARY_DIR ${IIO_LIBRARIES} DIRECTORY)
 
 if(${CMAKE_VERSION} VERSION_LESS "3.12.0")
 	if (NOT WIN32)
@@ -91,6 +97,7 @@ IF (NOT PYTHON_LINK)
 	IF (APPLE)
 		message("--- Using LD_SHARED " ${PY_LD_SHARED})
 		SET_TARGET_PROPERTIES(${SWIG_OUTPUT_NAME} PROPERTIES LINK_FLAGS "-flat_namespace -undefined dynamic_lookup")
+		set(EXTRA_LINK_FLAGS "${EXTRA_LINK_FLAGS} -flat_namespace -undefined dynamic_lookup")
 	ENDIF()
 ENDIF()
 
@@ -98,10 +105,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	target_compile_options(_${PROJECT_NAME}
 			PRIVATE
 			-Wno-deprecated-declarations)
+	set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -Wno-deprecated-declarations")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	target_compile_options(_${PROJECT_NAME}
 			PRIVATE
 			-Wno-unused-but-set-variable)
+	set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -Wno-unused-but-set-variable")
 endif()
 
 target_include_directories(_${PROJECT_NAME} PRIVATE
@@ -125,6 +134,7 @@ if(UNIX)
 			INSTALL_RPATH	"@loader_path")
 #		set_property(TARGET ${SWIG_MODULE_pyBar_REAL_NAME} APPEND PROPERTY
 #			LINK_FLAGS "-flat_namespace -undefined suppress")
+		set(EXTRA_LINK_FLAGS "${EXTRA_LINK_FLAGS} -flat_namespace -undefined suppress")
 	endif()
 endif()
 
@@ -135,8 +145,10 @@ endif()
 
 set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.cmakein)
 set(SETUP_PY ${CMAKE_BINARY_DIR}/setup.py)
-
 configure_file(${SETUP_PY_IN} ${SETUP_PY})
+
+configure_file(${CMAKE_SOURCE_DIR}/bindings/libm2k.i ${CMAKE_BINARY_DIR}/libm2k.i COPYONLY)
+
 add_custom_target(${PROJECT_NAME}py ALL DEPENDS _${PROJECT_NAME} WORKING_DIRECTORY
 	${CMAKE_BINARY_DIR} COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} build)
 

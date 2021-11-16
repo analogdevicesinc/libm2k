@@ -63,7 +63,7 @@ handle_default() {
 	cat /etc/os-release
 	lsb_release -a
 	sudo ${PYTHON} -m pip install --upgrade pip
-	sudo ${PYTHON} -m pip install --upgrade stdeb argparse twine cibuildwheel build virtualenv
+	sudo ${PYTHON} -m pip install --upgrade stdeb argparse twine build virtualenv
 }
 
 handle_doxygen() {

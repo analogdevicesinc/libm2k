@@ -87,14 +87,9 @@ jobs:
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactName: '$(artifactName)'
-  #- task: TwineAuthenticate@1
-  #  displayName: Twine Authenticate
-  #  inputs:
-      # In this case, name of the service connection is "pypitest".
-  #    pythonUploadServiceConnection: testpypi
   - task: UsePythonVersion@0
   - script: |
-      python -m pip install --upgrade pip twine cibuildwheel
+      python -m pip install --upgrade pip twine
       python -m twine upload --repository "testpypi" '$(Agent.BuildDirectory)/s/build/wheelhouse/*.whl'
     env:
       TWINE_USERNAME: '__token__'
@@ -153,3 +148,10 @@ jobs:
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactName: '$(artifactName)'
+  - task: UsePythonVersion@0
+  - script: |
+      python -m pip install --upgrade pip twine
+      python -m twine upload --repository "testpypi" '$(Agent.BuildDirectory)/s/build/wheelhouse/*.whl'
+    env:
+      TWINE_USERNAME: '__token__'
+      TWINE_PASSWORD: $(TWINE_PASSWORD)
