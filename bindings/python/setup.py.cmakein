@@ -4,10 +4,15 @@ import sys
 import re
 import os
 
-#with open("README.md", "r") as fh:
-#    long_description = fh.read()
 long_description=""
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 compile_bindings = os.getenv("COMPILE_BINDINGS")
+
+if sys.platform == "darwin":
+       libraries = []
+else:
+       libraries = ['${PROJECT_NAME}', 'libiio']
 
 if compile_bindings:
        print("NEW VERSION ===============")
@@ -38,10 +43,10 @@ if compile_bindings:
                      define_macros=[('HAS_CONSTEXPR', '1'),
                                    ('_EXCEPTIONS', '1'),
                                    ('_libm2k_EXPORTS', None)],
-                     extra_compile_args=['${EXTRA_COMPILE_FLAGS}'],
-                     extra_link_args=['${EXTRA_LINK_FLAGS}'],
+                     extra_compile_args=[${EXTRA_COMPILE_FLAGS}],
+                     extra_link_args=[${EXTRA_LINK_FLAGS}],
                      library_dirs=['${CMAKE_BINARY_DIR}', '${IIO_LIBRARY_DIR}'],
-                     libraries=['${PROJECT_NAME}', 'libiio'])],
+                     libraries=libraries)],
               py_modules = ["libm2k"],
       )
 else:

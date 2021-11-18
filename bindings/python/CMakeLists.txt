@@ -2,8 +2,12 @@ cmake_minimum_required(VERSION 2.8.7)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(EXTRA_COMPILE_FLAGS ${CMAKE_CXX_FLAGS})
-set(EXTRA_LINK_FLAGS "")
+string(REGEX MATCHALL "([^\ ]+\ |[^\ ]+$)" CMAKE_CXX_LIST "${CMAKE_CXX_FLAGS}")
+FOREACH(CXX_COMPILE_FLAG ${CMAKE_CXX_LIST})
+	string(REPLACE " " "" CXX_COMPILE_FLAG "${CXX_COMPILE_FLAG}")
+	set(EXTRA_COMPILE_FLAGS '${CXX_COMPILE_FLAG}',${EXTRA_COMPILE_FLAGS})
+ENDFOREACH()
+set(EXTRA_LINK_FLAGS '')
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.5")
 	# Check CMake Policy added in v3.13 regarding the SWIG generated target name
@@ -46,6 +50,7 @@ INCLUDE_DIRECTORIES(${Python_INCLUDE_DIRS}
 
 if(ENABLE_TOOLS)
 	set(CMAKE_SWIG_FLAGS -DCOMMUNICATION)
+	set(EXTRA_COMPILE_FLAGS '-DCOMMUNICATION',${EXTRA_COMPILE_FLAGS})
 else()
 	set(CMAKE_SWIG_FLAGS "")
 endif()
@@ -97,7 +102,7 @@ IF (NOT PYTHON_LINK)
 	IF (APPLE)
 		message("--- Using LD_SHARED " ${PY_LD_SHARED})
 		SET_TARGET_PROPERTIES(${SWIG_OUTPUT_NAME} PROPERTIES LINK_FLAGS "-flat_namespace -undefined dynamic_lookup")
-		set(EXTRA_LINK_FLAGS "${EXTRA_LINK_FLAGS} -flat_namespace -undefined dynamic_lookup")
+		set(EXTRA_LINK_FLAGS '-flat_namespace','-undefined','dynamic_lookup',${EXTRA_LINK_FLAGS})
 	ENDIF()
 ENDIF()
 
@@ -105,12 +110,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	target_compile_options(_${PROJECT_NAME}
 			PRIVATE
 			-Wno-deprecated-declarations)
-	set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -Wno-deprecated-declarations")
+	set(EXTRA_COMPILE_FLAGS '-Wno-deprecated-declarations',${EXTRA_COMPILE_FLAGS})
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	target_compile_options(_${PROJECT_NAME}
 			PRIVATE
 			-Wno-unused-but-set-variable)
-	set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -Wno-unused-but-set-variable")
+	set(EXTRA_COMPILE_FLAGS '-Wno-unused-but-set-variable',${EXTRA_COMPILE_FLAGS})
 endif()
 
 target_include_directories(_${PROJECT_NAME} PRIVATE
@@ -123,6 +128,9 @@ IF (PYTHON_LINK)
 	target_link_libraries(_${PROJECT_NAME} ${Python_LIBRARIES})
 ENDIF()
 
+string(REPLACE " " "','" CXX_COMPILE_FLAG "${CMAKE_SHARED_MODULE_CREATE_CXX_FLAGS}")
+set(EXTRA_LINK_FLAGS '${CXX_COMPILE_FLAG}',${EXTRA_LINK_FLAGS})
+
 set(PYTHON_EXECUTABLE_LIB_VERSION ${Python_EXECUTABLE})
 if(UNIX)
 	if(NOT APPLE)
@@ -134,7 +142,11 @@ if(UNIX)
 			INSTALL_RPATH	"@loader_path")
 #		set_property(TARGET ${SWIG_MODULE_pyBar_REAL_NAME} APPEND PROPERTY
 #			LINK_FLAGS "-flat_namespace -undefined suppress")
-		set(EXTRA_LINK_FLAGS "${EXTRA_LINK_FLAGS} -flat_namespace -undefined suppress")
+		set(EXTRA_LINK_FLAGS '-flat_namespace','-undefined','suppress',${EXTRA_LINK_FLAGS})
+		set(EXTRA_LINK_FLAGS '-F${IIO_LIBRARY_DIR}','-F${CMAKE_BINARY_DIR}/src',${EXTRA_LINK_FLAGS})
+		set(EXTRA_LINK_FLAGS '-framework','${PROJECT_NAME}',${EXTRA_LINK_FLAGS})
+		set(EXTRA_LINK_FLAGS '-framework','iio',${EXTRA_LINK_FLAGS})
+		set(EXTRA_LINK_FLAGS '-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}',${EXTRA_LINK_FLAGS})
 	endif()
 endif()
 
@@ -148,6 +160,7 @@ set(SETUP_PY ${CMAKE_BINARY_DIR}/setup.py)
 configure_file(${SETUP_PY_IN} ${SETUP_PY})
 
 configure_file(${CMAKE_SOURCE_DIR}/bindings/libm2k.i ${CMAKE_BINARY_DIR}/libm2k.i COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/bindings/python/README.md ${CMAKE_BINARY_DIR}/README.md COPYONLY)
 
 add_custom_target(${PROJECT_NAME}py ALL DEPENDS _${PROJECT_NAME} WORKING_DIRECTORY
 	${CMAKE_BINARY_DIR} COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} build)
