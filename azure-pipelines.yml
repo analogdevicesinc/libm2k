@@ -82,15 +82,21 @@ jobs:
       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
       contents: '$(Agent.BuildDirectory)/s/build/?(*.deb|*.rpm)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/build/'
+      contents: '$(Agent.BuildDirectory)/s/build/wheelhouse/?(*.whl)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['System.JobName'], 'deploy_doxygen'))
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactName: '$(artifactName)'
-  - task: UsePythonVersion@0
   - script: |
       python -m pip install --upgrade pip twine
       python -m twine upload --repository "testpypi" '$(Agent.BuildDirectory)/s/build/wheelhouse/*.whl'
+    displayName: "Upload to PyPI"
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['System.JobName'], 'deploy_doxygen'))
     env:
       TWINE_USERNAME: '__token__'
       TWINE_PASSWORD: $(TWINE_PASSWORD)
@@ -98,19 +104,12 @@ jobs:
 - job: macOSBuilds
   strategy:
     matrix:
-      macOS_10_14:
-        imageName: 'macOS-10.14'
-        artifactName: 'macOS-10.14'
       macOS_10_15:
         imageName: 'macOS-10.15'
         artifactName: 'macOS-10.15'
-# FIXME: uncomment after this is resolved:
-#        https://github.com/actions/virtual-environments/issues/2072
-# Mac OS X 11.0 is definitely a big thing (with their switch to ARM,
-# so we should be quick to have it)
-#      macOS_11_0:
-#        imageName: 'macOS-11.0'
-#        artifactName: 'macOS-11.0'
+      macOS_11:
+        imageName: 'macOS-11'
+        artifactName: 'macOS-11'
   pool:
     vmImage: $(imageName)
   variables:
@@ -133,10 +132,40 @@ jobs:
     displayName: "Install Dependencies"
   - script: ./CI/travis/make_darwin
     displayName: "Build"
+  - task: UsePythonVersion@0
+    displayName: "Use Python 3.7 bindings"
+    inputs:
+      versionSpec: '3.7' 
+  - script: ./CI/travis/build_wheels.sh
+    displayName: "Build Python 3.7 bindings"
+  - task: UsePythonVersion@0
+    displayName: "Use Python 3.8 bindings"
+    inputs:
+      versionSpec: '3.8' 
+  - script: ./CI/travis/build_wheels.sh
+    displayName: "Build Python 3.8 bindings"
+  - task: UsePythonVersion@0
+    displayName: "Use Python 3.9 bindings"
+    inputs:
+      versionSpec: '3.9' 
+  - script: ./CI/travis/build_wheels.sh
+    displayName: "Build Python 3.9 bindings"
+  - task: UsePythonVersion@0
+    displayName: "Use Python 3.10 bindings"
+    inputs:
+      versionSpec: '3.10' 
+  - script: ./CI/travis/build_wheels.sh
+    displayName: "Build Python 3.10 bindings"
+
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
       contents: '$(Agent.BuildDirectory)/s/build/?(*.pkg)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/build/'
+      contents: '$(Agent.BuildDirectory)/s/build/wheelhouse/?(*.whl)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: CopyFiles@2
     inputs:
@@ -148,10 +177,10 @@ jobs:
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactName: '$(artifactName)'
-  - task: UsePythonVersion@0
   - script: |
       python -m pip install --upgrade pip twine
       python -m twine upload --repository "testpypi" '$(Agent.BuildDirectory)/s/build/wheelhouse/*.whl'
+    displayName: "Upload to PyPI"
     env:
       TWINE_USERNAME: '__token__'
       TWINE_PASSWORD: $(TWINE_PASSWORD)

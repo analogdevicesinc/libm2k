@@ -3,7 +3,7 @@
 TOP_DIR=$(pwd)
 
 mkdir -p build
-mkdir -p build/wheelhouse
+#mkdir -p build/wheelhouse
 mkdir -p build_tar
 
 cd build
@@ -12,11 +12,11 @@ make
 ls
 cat setup.py
 
-export COMPILE_BINDINGS=True
-python3 -m build
-export COMPILE_BINDINGS=False
-ls dist
-cp dist/*.whl wheelhouse
+#export COMPILE_BINDINGS=True
+#python3 -m build
+#export COMPILE_BINDINGS=
+#ls dist
+#cp dist/*.whl wheelhouse
 
 cd ${TOP_DIR}/build_tar
 cmake -DOSX_PACKAGE=OFF -DENABLE_PACKAGING=ON -DENABLE_PYTHON=ON -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON ..

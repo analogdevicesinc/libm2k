@@ -10,19 +10,20 @@ handle_default() {
 	cd build
 
 	#create deb for bindings
-	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON .. && make
+	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON .. && make && sudo make install
 	cat setup.py
 
 	export COMPILE_BINDINGS=True
 	${PYTHON} -m build
-	export COMPILE_BINDINGS=False
+	export COMPILE_BINDINGS=
 	cp dist/*.whl wheelhouse
-	cd "$(find . -type d -name "debian" | head -n 1)"
-	sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc
-	cp ../../*.deb ${TOP_DIR}/build/
+
+	#cd "$(find . -type d -name "debian" | head -n 1)"
+	#sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc
+	#cp ../../*.deb ${TOP_DIR}/build/
 	cd ${TOP_DIR}/build/
 	#remove the tar.gz for bindings
-	sudo rm *.tar.gz
+	#sudo rm *.tar.gz
 
 	#create simple .deb without Python bindings
 	cmake -DENABLE_PACKAGING=ON -DDEB_DETECT_DEPENDENCIES=ON -DENABLE_PYTHON=OFF -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=ON -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_EXAMPLES=ON ..

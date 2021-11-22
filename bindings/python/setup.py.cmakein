@@ -5,17 +5,18 @@ import re
 import os
 
 long_description=""
-with open("README.md", "r") as fh:
+with open("${CMAKE_CURRENT_SOURCE_DIR}/README.md", "r") as fh:
     long_description = fh.read()
 compile_bindings = os.getenv("COMPILE_BINDINGS")
 
 if sys.platform == "darwin":
        libraries = []
+elif sys.platform == "linux":
+       libraries = ['m2k', 'iio']
 else:
        libraries = ['${PROJECT_NAME}', 'libiio']
 
 if compile_bindings:
-       print("NEW VERSION ===============")
        class CustomBuild(build):
               sub_commands = [
               ('build_ext', build.has_ext_modules),
@@ -30,6 +31,7 @@ if compile_bindings:
               maintainer_email = "Alexandra.Trifan@analog.com",
               description = """Python bindings for the C/C++ libm2k""",
               long_description = long_description,
+              long_description_content_type="text/markdown",
               url='https://github.com/analogdevicesinc/libm2k',
               python_requires=">=3.6",
               classifiers=[
@@ -50,13 +52,13 @@ if compile_bindings:
               py_modules = ["libm2k"],
       )
 else:
-        print("OLD VERSION ===============")
         setup (name = '${PROJECT_NAME}',
         version = '${PROJECT_VERSION}',
         maintainer = "Analog Devices, Inc",
         maintainer_email = "Alexandra.Trifan@analog.com",
         description = """Python bindings for the C/C++ libm2k""",
         long_description = long_description,
+        long_description_content_type="text/markdown",
         url='https://github.com/analogdevicesinc/libm2k',
         py_modules = ["${PROJECT_NAME}"],
         packages=[''],

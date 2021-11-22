@@ -9,11 +9,11 @@ TOP_DIR="/c/projects/libm2k"
 __build_python_wheel() {
 	local PLATFORM="$1"
 	local PY_PATH="$2"
-
+	export PATH="/c/swig/;/c/swig/Lib/;$OLD_PATH"
 	"$PY_PATH" -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
-	set COMPILE_BINDINGS=True
+	export COMPILE_BINDINGS=True
 	"$PY_PATH" -m build
-	set COMPILE_BINDINGS=False
+	export COMPILE_BINDINGS=
 	cp dist/libm2k*.whl "${TOP_DIR}/build-$PLATFORM/dist/"
 }
 
