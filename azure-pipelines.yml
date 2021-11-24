@@ -22,7 +22,11 @@ pr:
 - 20*
 
 parameters:
-  pythonVersions: ['3.7', '3.8', '3.9', '3.10']
+  - name: pythonVersions
+    type: string
+    values:
+      - '3.7'
+      - '3.8'
 
 jobs:
 - job: LinuxBuilds
