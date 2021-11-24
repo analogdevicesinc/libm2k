@@ -26,8 +26,6 @@ parameters:
     type: object
     default: 
       - py37: '3.7'
-    values:
-      - py37: '3.7'
       - py38: '3.8'
 
 jobs:
