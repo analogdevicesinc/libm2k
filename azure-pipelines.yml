@@ -23,7 +23,7 @@ pr:
 
 parameters:
   - name: pythonVersions
-    type: string
+    type: object
     default: 3.7
     values: 
     - 3.7
@@ -136,15 +136,15 @@ jobs:
       runVersion: 'latestFromBranch'
       runBranch: 'refs/heads/master'
       path: '$(Agent.BuildDirectory)/s/build/'
-  - script: ./CI/travis/before_install_darwin
-    displayName: "Install Dependencies"
-  - script: ./CI/travis/make_darwin
-    displayName: "Build"
+  #- script: ./CI/travis/before_install_darwin
+  #  displayName: "Install Dependencies"
+  #- script: ./CI/travis/make_darwin
+  #  displayName: "Build"
   - ${{ each pyVersion in parameters.pythonVersions }}:
     - task: UsePythonVersion@0
-      displayName: "Python  ${{ pyVersion }}"
+      displayName: "${{ pyVersion }}"
       inputs:
-        versionSpec: ${{ pyVersion }}
+        versionSpec: '${{ pyVersion }}'
     - script: ./CI/travis/build_wheels.sh
   - task: UsePythonVersion@0
     displayName: "Use Python 3.7 bindings"
