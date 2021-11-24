@@ -166,7 +166,7 @@ set(SETUP_PY ${CMAKE_BINARY_DIR}/setup.py)
 configure_file(${SETUP_PY_IN} ${SETUP_PY})
 
 configure_file(${CMAKE_SOURCE_DIR}/bindings/libm2k.i ${CMAKE_BINARY_DIR}/libm2k.i COPYONLY)
-#configure_file(${CMAKE_SOURCE_DIR}/bindings/python/README.md ${CMAKE_BINARY_DIR}/README.md COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/bindings/python/README.md ${CMAKE_BINARY_DIR}/README.md COPYONLY)
 
 add_custom_target(${PROJECT_NAME}py ALL DEPENDS _${PROJECT_NAME} WORKING_DIRECTORY
 	${CMAKE_BINARY_DIR} COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} build)

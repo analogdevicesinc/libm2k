@@ -13,10 +13,10 @@ handle_default() {
 	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON .. && make && sudo make install
 	cat setup.py
 
-	export COMPILE_BINDINGS=True
-	${PYTHON} -m build
-	export COMPILE_BINDINGS=
-	cp dist/*.whl wheelhouse
+	#export COMPILE_BINDINGS=True
+	#${PYTHON} -m build
+	#export COMPILE_BINDINGS=
+	#cp dist/*.whl wheelhouse
 
 	#cd "$(find . -type d -name "debian" | head -n 1)"
 	#sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc

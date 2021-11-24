@@ -25,8 +25,10 @@ parameters:
   - name: pythonVersions
     type: object
     default: 
-    - 3.7
+    - '3.10'
+    - 3.9
     - 3.8
+    - 3.7
 
 jobs:
 - job: LinuxBuilds
@@ -83,6 +85,23 @@ jobs:
     displayName: "Install Dependencies"
   - script: ./CI/travis/make_linux
     displayName: "Build"
+  - ${{ each pyVersion in parameters.pythonVersions }}:
+    - task: UsePythonVersion@0
+      condition: ne(variables['System.JobName'], 'deploy_doxygen')
+      displayName: Use Python ${{ pyVersion }}
+      inputs:
+        versionSpec: '${{ pyVersion }}'
+    - script: |
+            python3 --version
+            python3 -m pip install wheel twine build virtualenv
+            cd '$(Agent.BuildDirectory)/s/build/'
+            mkdir -p wheelhouse
+            export COMPILE_BINDINGS=True
+            python3 -m build
+            export COMPILE_BINDINGS=
+            cp dist/*.whl wheelhouse
+      displayName: Wheel Python ${{ pyVersion }}
+      condition: ne(variables['System.JobName'], 'deploy_doxygen')
   - task: CopyFiles@2
     condition: ne(variables['System.JobName'], 'deploy_doxygen')
     inputs:
@@ -135,41 +154,25 @@ jobs:
       runVersion: 'latestFromBranch'
       runBranch: 'refs/heads/master'
       path: '$(Agent.BuildDirectory)/s/build/'
-  #- script: ./CI/travis/before_install_darwin
-  #  displayName: "Install Dependencies"
-  #- script: ./CI/travis/make_darwin
-  #  displayName: "Build"
+  - script: ./CI/travis/before_install_darwin
+    displayName: "Install Dependencies"
+  - script: ./CI/travis/make_darwin
+    displayName: "Build"
   - ${{ each pyVersion in parameters.pythonVersions }}:
     - task: UsePythonVersion@0
-      displayName: Python ${{ pyVersion }}
+      displayName: Use Python ${{ pyVersion }}
       inputs:
         versionSpec: '${{ pyVersion }}'
-    - script: ./CI/travis/build_wheels.sh
-  - task: UsePythonVersion@0
-    displayName: "Use Python 3.7 bindings"
-    inputs:
-      versionSpec: '3.7' 
-  - script: ./CI/travis/build_wheels.sh
-    displayName: "Build Python 3.7 bindings"
-  - task: UsePythonVersion@0
-    displayName: "Use Python 3.8 bindings"
-    inputs:
-      versionSpec: '3.8' 
-  - script: ./CI/travis/build_wheels.sh
-    displayName: "Build Python 3.8 bindings"
-  - task: UsePythonVersion@0
-    displayName: "Use Python 3.9 bindings"
-    inputs:
-      versionSpec: '3.9' 
-  - script: ./CI/travis/build_wheels.sh
-    displayName: "Build Python 3.9 bindings"
-  - task: UsePythonVersion@0
-    displayName: "Use Python 3.10 bindings"
-    inputs:
-      versionSpec: '3.10' 
-  - script: ./CI/travis/build_wheels.sh
-    displayName: "Build Python 3.10 bindings"
-
+    - script: |
+            python3 --version
+            python3 -m pip install wheel twine build virtualenv
+            cd '$(Agent.BuildDirectory)/s/build/'
+            mkdir -p wheelhouse
+            export COMPILE_BINDINGS=True
+            python3 -m build
+            export COMPILE_BINDINGS=
+            cp dist/*.whl wheelhouse
+      displayName: Wheel Python ${{ pyVersion }}
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
