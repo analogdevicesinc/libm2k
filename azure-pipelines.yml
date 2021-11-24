@@ -23,10 +23,11 @@ pr:
 
 parameters:
   - name: pythonVersions
-    type: object
-    default: 
-      - py37: '3.7'
-      - py38: '3.8'
+    type: string
+    default: 3.7
+    values: 
+    - 3.7
+    - 3.8
 
 jobs:
 - job: LinuxBuilds
@@ -141,9 +142,9 @@ jobs:
     displayName: "Build"
   - ${{ each pyVersion in parameters.pythonVersions }}:
     - task: UsePythonVersion@0
-      displayName: "Python  ${{ pyVersion.value }}"
+      displayName: "Python  ${{ pyVersion }}"
       inputs:
-        versionSpec: ${{ pyVersion.value }}
+        versionSpec: ${{ pyVersion }}
     - script: ./CI/travis/build_wheels.sh
   - task: UsePythonVersion@0
     displayName: "Use Python 3.7 bindings"
