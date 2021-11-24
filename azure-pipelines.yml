@@ -23,7 +23,7 @@ pr:
 
 parameters:
   - name: pythonVersions
-    type: string
+    type: object
     default: '3.7'
     values:
       - '3.7'
