@@ -21,6 +21,9 @@ pr:
 - master
 - 20*
 
+parameters:
+  pythonVersions: ['3.7', '3.8', '3.9', '3.10']
+
 jobs:
 - job: LinuxBuilds
   strategy:
@@ -132,6 +135,12 @@ jobs:
     displayName: "Install Dependencies"
   - script: ./CI/travis/make_darwin
     displayName: "Build"
+  - ${{each pyVersion in parameters.pythonVersions}}:
+    - task: UsePythonVersion@0
+      displayName: "Python " pyVersion
+      inputs:
+        versionSpec: pyVersion
+    - script: ./CI/travis/build_wheels.sh
   - task: UsePythonVersion@0
     displayName: "Use Python 3.7 bindings"
     inputs:
