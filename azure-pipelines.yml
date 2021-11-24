@@ -140,9 +140,8 @@ jobs:
   #- script: ./CI/travis/make_darwin
   #  displayName: "Build"
   - ${{ each pyVersion in parameters.pythonVersions }}:
-    - script: echo ${{ pyVersion }}
     - task: UsePythonVersion@0
-      displayName: "${{ pyVersion }}"
+      displayName: Python ${{ pyVersion }}
       inputs:
         versionSpec: '${{ pyVersion }}'
     - script: ./CI/travis/build_wheels.sh
