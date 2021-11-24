@@ -24,8 +24,7 @@ pr:
 parameters:
   - name: pythonVersions
     type: object
-    default: 3.7
-    values: 
+    default: 
     - 3.7
     - 3.8
 
@@ -141,6 +140,7 @@ jobs:
   #- script: ./CI/travis/make_darwin
   #  displayName: "Build"
   - ${{ each pyVersion in parameters.pythonVersions }}:
+    - script: echo ${{ pyVersion }}
     - task: UsePythonVersion@0
       displayName: "${{ pyVersion }}"
       inputs:
