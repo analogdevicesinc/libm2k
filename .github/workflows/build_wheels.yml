@@ -1,0 +1,38 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+        python_version: ['3.9']
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python ${{ matrix.python_version }}
+        with:
+          python-version: ${{ matrix.python_version }}
+      - name: Copy setup.py file
+        shell: bash
+        run: |
+              mkdir ${{ github.workspace }}/build
+      - name: Install dependencies
+        run: |
+          bash ./.github/scripts/install_deps.sh
+      - name: Build libm2k
+        shell: bash
+        run: |
+              cd ${{ github.workspace }}/build
+              cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON ..
+      - name: Get some sample wheels
+        run: |
+          python -m pip install cibuildwheel
+          cibuildwheel --output-dir wheelhouse ${{ github.workspace }}/build
+        env:
+          CIBW_BEFORE_ALL: 'echo "Hello"'
+          CIBW_BUILD: 'cp39-manylinux_x86_64'
