@@ -6,6 +6,17 @@ OLD_PATH="$PATH"
 DEST_LIBIIO="/c/libiio"
 TOP_DIR="/c/projects/libm2k"
 
+__build_python_wheel() {
+	local PLATFORM="$1"
+	local PY_PATH="$2"
+	export PATH="/c/swig/;/c/swig/Lib/;$OLD_PATH"
+	"$PY_PATH" -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
+	export COMPILE_BINDINGS=True
+	"$PY_PATH" -m build
+	export COMPILE_BINDINGS=
+	cp dist/libm2k*.whl "${TOP_DIR}/build-$PLATFORM/dist/"
+}
+
 __build_libm2k() {
 	local PLATFORM="$1"
 	local PY_VERSION="$2"
@@ -39,11 +50,16 @@ __build_libm2k() {
         ..
 	cmake --build . --config Release
 
-	"$PY_PATH/python.exe" -m pip install --user --upgrade setuptools wheel
-	SETUPTOOLS_USE_DISTUTILS=stdlib "$PY_PATH/python.exe" setup.py bdist_wininst
-	"$PY_PATH/python.exe" setup.py sdist bdist_wheel --plat-name "$PLAT_NAME" --python-tag py"$PY_VERSION"
-	cp dist/libm2k-*.exe "${TOP_DIR}/build-$PLATFORM/dist/libm2k-py$PY_VERSION-$PLATFORM.exe"
-	cp dist/libm2k-*.whl "${TOP_DIR}/build-$PLATFORM/dist/"
+	cat setup.py
+
+	PY_SUFFIX=""
+	if [[ "$PLATFORM" == "win64" ]]; then
+		PY_SUFFIX="-x64"
+	fi
+	__build_python_wheel "$PLATFORM" "/c/Python37""$PY_SUFFIX""/python.exe"
+	__build_python_wheel "$PLATFORM" "/c/Python38""$PY_SUFFIX""/python.exe"
+	__build_python_wheel "$PLATFORM" "/c/Python39""$PY_SUFFIX""/python.exe"
+	__build_python_wheel "$PLATFORM" "/c/Python310""$PY_SUFFIX""/python.exe"
 }
 
 __mv_to_build_dir() {
@@ -66,12 +82,8 @@ elif [[ "$APPVEYOR_BUILD_WORKER_IMAGE" == "Visual Studio 2019" ]]; then
     generator="Visual Studio 16 2019"
 fi
 
-__build_libm2k win32 37 "/c/Python37" "$generator" Win32
-__build_libm2k win32 38 "/c/Python38" "$generator" Win32
-__build_libm2k win32 39 "/c/Python39" "$generator" Win32
+__build_libm2k win32 37 "/c/Python39" "$generator" Win32
 __mv_to_build_dir win32
 
-__build_libm2k win64 37 "/c/Python37-x64" "$generator" x64 "win_amd64"
-__build_libm2k win64 38 "/c/Python38-x64" "$generator" x64 "win_amd64"
-__build_libm2k win64 39 "/c/Python39-x64" "$generator" x64 "win_amd64"
+__build_libm2k win64 37 "/c/Python39-x64" "$generator" x64 "win_amd64"
 __mv_to_build_dir win64
