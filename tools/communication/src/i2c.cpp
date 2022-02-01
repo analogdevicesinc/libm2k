@@ -19,6 +19,7 @@
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2khardwaretrigger.hpp>
 #include <thread>
+#include <atomic>
 
 constexpr unsigned int samplesPerCycle = 4;
 constexpr uint8_t condition10BitAddressing = 0x1E;
@@ -186,6 +187,7 @@ static std::vector<unsigned short> createBuffer(struct i2c_desc *desc,
 }
 
 static void processSamples(struct i2c_desc *desc,
+			   std::atomic<bool> &acquisition_started,
 			   std::vector<i2c_data> *data,
 			   uint8_t bytesNumber)
 {
@@ -194,6 +196,10 @@ static void processSamples(struct i2c_desc *desc,
 	libm2k::M2kHardwareTrigger *trigger = m2KI2CDesc->digital->getTrigger();
 	trigger->setDigitalCondition(m2KI2CDesc->sda, libm2k::FALLING_EDGE_DIGITAL);
 	trigger->setDigitalDelay(-samplesPerCycle);
+
+	m2KI2CDesc->digital->startAcquisition((bytesNumber + 1) * 8 * samplesPerBit + bytesNumber *samplesPerBit);
+
+	acquisition_started = true;
 	std::vector<unsigned short> samples = m2KI2CDesc->digital->getSamples(
 		(bytesNumber + 1) * 8 * samplesPerBit + bytesNumber *samplesPerBit);
 
@@ -299,8 +305,15 @@ int32_t i2c_write(struct i2c_desc *desc,
 			totalNumberOfBytes += bytes_number + 1;
 		}
 		auto *i2c_data_vector = new std::vector<i2c_data>(totalNumberOfBytes);
-		std::thread thread_read(processSamples, desc, i2c_data_vector, totalNumberOfBytes);
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+		std::atomic<bool> acquisition_started(false);
+		std::thread thread_read(processSamples, desc, std::ref(acquisition_started), i2c_data_vector, totalNumberOfBytes);
+
+		//make sure the reading thread is waiting
+		while (!acquisition_started.load()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+		}
+
 		//create buffer
 		auto bufferOut = createBuffer(desc, data, bytes_number, option, false);
 		m2KI2CDesc->digital->push(bufferOut);
@@ -344,10 +357,17 @@ int32_t i2c_read(struct i2c_desc *desc,
 			totalNumberOfBytes += bytes_number + 1;
 		}
 		auto *i2c_data_vector = new std::vector<i2c_data>(totalNumberOfBytes);
-		std::thread thread_read(processSamples, desc, i2c_data_vector, totalNumberOfBytes);
+
+		std::atomic<bool> acquisition_started(false);
+		std::thread thread_read(processSamples, desc, std::ref(acquisition_started), i2c_data_vector, totalNumberOfBytes);
+
+		//make sure the reading thread is waiting
+		while (!acquisition_started.load()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+		}
+
 		//create buffer
 		auto bufferOut = createBuffer(desc, data, bytes_number, option, true);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		m2KI2CDesc->digital->push(bufferOut);
 		//process samples
 		thread_read.join();
