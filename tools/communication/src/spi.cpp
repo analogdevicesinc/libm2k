@@ -19,6 +19,7 @@
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2khardwaretrigger.hpp>
 #include <thread>
+#include <atomic>
 
 constexpr unsigned int samplesPerCycle = 4;
 
@@ -181,6 +182,7 @@ static void processSamples(struct spi_desc *desc,
 }
 
 static void read(struct spi_desc *desc,
+		 std::atomic<bool> &acquisition_started,
 		 uint8_t *data,
 		 uint8_t bytes_number)
 {
@@ -196,7 +198,10 @@ static void read(struct spi_desc *desc,
 		trigger->setDigitalCondition(desc->chip_select, libm2k::FALLING_EDGE_DIGITAL);
 	}
 
+	m2KSpiDesc->digital->startAcquisition((bytes_number + 1) * samplesPerBit * 8);
+
 	//capture samples
+	acquisition_started = true;
 	std::vector<unsigned short> samples = m2KSpiDesc->digital->getSamples((bytes_number + 1) * samplesPerBit * 8);
 
 	//process samples
@@ -259,10 +264,13 @@ int32_t spi_write_and_read(struct spi_desc *desc,
 	try {
 		auto *m2KSpiDesc = (m2k_spi_desc *) desc->extra;
 		//start reading - wait until buffer is pushed
-		std::thread thread_read(read, desc, data, bytes_number);
+		std::atomic<bool> acquisition_started(false);
+		std::thread thread_read(read, desc, std::ref(acquisition_started), data, bytes_number);
 
 		//make sure the reading thread is waiting
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		while (!acquisition_started.load()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+		}
 
 		std::vector<unsigned short> buffer = createBuffer(desc, data, bytes_number);
 		m2KSpiDesc->digital->push(buffer);
