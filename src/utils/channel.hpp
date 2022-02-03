@@ -75,6 +75,7 @@ public:
 
 	bool isValid();
 	struct iio_channel* getChannel();
+	iio_device* getDevice();
 private:
 	struct iio_device *m_device;
 	struct iio_channel *m_channel;

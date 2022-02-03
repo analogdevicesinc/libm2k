@@ -32,6 +32,14 @@
 namespace libm2k {
 namespace analog {
 
+
+struct dmm_info{
+	std::string key;
+	std::string key_symbol;
+	double value = 0;
+	double umScale = 1;
+};
+
 class DMMImpl : public DMM {
 public:
 	DMMImpl(struct iio_context *ctx, std::string dev, bool sync);
@@ -53,6 +61,9 @@ private:
 	std::string m_dev_name;
 	std::vector<libm2k::utils::DeviceIn*> m_device_in_list;
 	libm2k::utils::DeviceIn *getDevice(unsigned int index);
+	void generateDictionaries();
+	std::map<int,dmm_info> m_iioDevices;
+	std::map<int,dmm_info> m_hwmonDevices;
 };
 }
 }
