@@ -43,6 +43,8 @@ DMMImpl::DMMImpl(struct iio_context *ctx, std::string dev, bool sync)
 						 (getDevice(0)->getChannel(i, output)->getId(), i));
 		}
 	}
+
+	generateDictionaries();
 }
 
 DMMImpl::~DMMImpl()
@@ -66,6 +68,7 @@ DeviceIn* DMMImpl::getDevice(unsigned int index)
 	return m_device_in_list.at(index);
 }
 
+
 DMM_READING DMMImpl::readChannel(unsigned int index)
 {
 	std::string chn_name = "";
@@ -87,12 +90,67 @@ std::vector<std::string> DMMImpl::getAllChannels()
 	return ids;
 }
 
+void DMMImpl::generateDictionaries()
+{
+	m_hwmonDevices[hwmon_chan_type::HWMON_VOLTAGE].key = "Voltage";
+	m_hwmonDevices[hwmon_chan_type::HWMON_VOLTAGE].key_symbol = "V";
+	m_hwmonDevices[hwmon_chan_type::HWMON_VOLTAGE].umScale = 0.001;
+
+	m_hwmonDevices[hwmon_chan_type::HWMON_TEMP].key = "Degree Celsius";
+	m_hwmonDevices[hwmon_chan_type::HWMON_TEMP].key_symbol = "°C";
+	m_hwmonDevices[hwmon_chan_type::HWMON_TEMP].umScale = 0.001;
+
+	m_hwmonDevices[hwmon_chan_type::HWMON_CURRENT].key = "Ampere";
+	m_hwmonDevices[hwmon_chan_type::HWMON_CURRENT].key_symbol = "A";
+	m_hwmonDevices[hwmon_chan_type::HWMON_CURRENT].umScale = 0.001;
+
+	m_hwmonDevices[hwmon_chan_type::HWMON_POWER].key = "milliWatt";
+	m_hwmonDevices[hwmon_chan_type::HWMON_POWER].key_symbol = "mW";
+	m_hwmonDevices[hwmon_chan_type::HWMON_POWER].umScale = 0.001;
+
+	m_hwmonDevices[hwmon_chan_type::HWMON_ENERGY].key = "milliJoule";
+	m_hwmonDevices[hwmon_chan_type::HWMON_ENERGY].key_symbol = "mJ";
+	m_hwmonDevices[hwmon_chan_type::HWMON_ENERGY].umScale = 0.001;
+
+	m_hwmonDevices[hwmon_chan_type::HWMON_FAN].key = "Revolution/Min";
+	m_hwmonDevices[hwmon_chan_type::HWMON_FAN].key_symbol = "RPM";
+
+	m_hwmonDevices[hwmon_chan_type::HWMON_HUMIDITY].key = "milli-percent";
+	m_hwmonDevices[hwmon_chan_type::HWMON_HUMIDITY].key_symbol = "pcm";
+
+	m_iioDevices[iio_chan_type::IIO_VOLTAGE].key = "Voltage";
+	m_iioDevices[iio_chan_type::IIO_VOLTAGE].key_symbol = "V";
+	m_iioDevices[iio_chan_type::IIO_VOLTAGE].umScale = 0.001;
+
+	m_iioDevices[iio_chan_type::IIO_TEMP].key = "Degree Celsius";
+	m_iioDevices[iio_chan_type::IIO_TEMP].key_symbol = "°C";
+	m_iioDevices[iio_chan_type::IIO_TEMP].umScale = 0.001;
+
+	m_iioDevices[iio_chan_type::IIO_CURRENT].key = "Ampere";
+	m_iioDevices[iio_chan_type::IIO_CURRENT].key_symbol = "A";
+	m_iioDevices[iio_chan_type::IIO_CURRENT].umScale = 0.001;
+
+	m_iioDevices[iio_chan_type::IIO_PRESSURE].key = "Pascal";
+	m_iioDevices[iio_chan_type::IIO_PRESSURE].key_symbol = "Pa";
+	m_iioDevices[iio_chan_type::IIO_PRESSURE].umScale = 1000;
+
+	m_iioDevices[iio_chan_type::IIO_ACCEL].key = "Metre per second squared";
+	m_iioDevices[iio_chan_type::IIO_ACCEL].key_symbol = "m/s²";
+
+	m_iioDevices[iio_chan_type::IIO_ANGL_VEL].key = "Radian per second";
+	m_iioDevices[iio_chan_type::IIO_ACCEL].key_symbol = "rad/s";
+
+	m_iioDevices[iio_chan_type::IIO_MAGN].key = "Gauss";
+	m_iioDevices[iio_chan_type::IIO_MAGN].key_symbol = "Gs";
+
+}
+
 DMM_READING DMMImpl::readChannel(std::string chn_name)
 {
 	DMM_READING result;
 	double value = 0;
-	std::string key = "";
-	std::string key_symbol = "";
+	double offset = 0;
+	double scale = 1;
 	std::string id = getDevice(0)->getChannel(m_channel_id_list.at(chn_name), false)->getId();
 	std::string name = getDevice(0)->getChannel(m_channel_id_list.at(chn_name), false)->getName();
 	unsigned int index = m_channel_id_list.at(chn_name);
@@ -108,49 +166,44 @@ DMM_READING DMMImpl::readChannel(std::string chn_name)
 	}
 
 	if (channel->hasAttribute("offset")) {
-		value += channel->getDoubleValue("offset");
+		offset = channel->getDoubleValue("offset");
 	}
 
 	if (channel->hasAttribute("scale")) {
-		value *= channel->getDoubleValue("scale");
+		scale = channel->getDoubleValue("scale");
 	}
 
+	bool isHwmon = iio_device_is_hwmon(channel->getDevice());
 
-	if (chn_name.find("voltage") != std::string::npos) {
-		key = "Volt";
-		key_symbol = "V";
-		value = value / 1000;
-	} else if (chn_name.find("temp") != std::string::npos) {
-		key = "Degree Celsius";
-		key_symbol = "°C";
-		value = value / 1000;
-	} else if (chn_name.find("current") != std::string::npos) {
-		key = "Ampere";
-		key_symbol = "A";
-		value = value / 1000;
-	} else if (chn_name.find("accel") != std::string::npos) {
-		key =  "Metre per second squared";
-		key_symbol = "m/s²";
-	} else if (chn_name.find("anglvel") != std::string::npos) {
-		key = "Radian per second";
-		key_symbol = "rad/s";
-	} else if (chn_name.find("pressure") != std::string::npos) {
-		key = "Pascal";
-		key_symbol = "Pa";
-		value = value * 1000;
-	} else if (chn_name.find("magn") != std::string::npos) {
-		key = "Gauss";
-		key_symbol = "G";
+	dmm_info dmm;
+
+	if (isHwmon) {
+		int type = hwmon_channel_get_type(channel->getChannel());
+
+		if (type != hwmon_chan_type::HWMON_CHAN_TYPE_UNKNOWN) {
+			dmm = m_hwmonDevices[type];
+			dmm.value = (value + offset) * scale * dmm.umScale;
+		} else {
+			dmm.key = "";
+			dmm.key_symbol = "";
+		}
 	} else {
-		key = "";
-		key_symbol = "";
+		int type = iio_channel_get_type(channel->getChannel());
+
+		if (type != iio_chan_type::IIO_CHAN_TYPE_UNKNOWN) {
+			dmm = m_iioDevices[type];
+			dmm.value = (value + offset) * scale * dmm.umScale;
+		} else {
+			dmm.key = "";
+			dmm.key_symbol = "";
+		}
 	}
 
 	result.id = id;
 	result.name = name;
-	result.unit_name = key;
-	result.unit_symbol = key_symbol;
-	result.value = value;
+	result.unit_name = dmm.key;
+	result.unit_symbol = dmm.key_symbol;
+	result.value = dmm.value;
 	return result;
 }
 

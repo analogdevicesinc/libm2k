@@ -398,3 +398,8 @@ struct iio_channel* Channel::getChannel()
 {
 	return m_channel;
 }
+
+iio_device *Channel::getDevice()
+{
+	return  m_device;
+}

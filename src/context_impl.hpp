@@ -98,8 +98,11 @@ protected:
 
 	bool isIioDeviceBufferCapable(std::string dev_name);
 	std::vector<std::pair<std::string, std::string> > getIioDevByChannelAttrs(std::vector<std::string> attr_list);
+	std::vector<std::pair<std::string, std::string>> getHwmonDevices();
 	libm2k::utils::DEVICE_TYPE getIioDeviceType(std::string dev_name);
 	libm2k::utils::DEVICE_DIRECTION getIioDeviceDirection(std::string dev_name);
+
+
 private:
 	void initializeContextAttributes();
 

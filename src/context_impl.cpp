@@ -201,6 +201,32 @@ std::vector<std::pair<std::string, std::string>> ContextImpl::getIioDevByChannel
 	return dev_chn_list;
 }
 
+std::vector<std::pair<std::string, std::string>> ContextImpl::getHwmonDevices(){
+	iio_device* dev = nullptr;
+	iio_channel* chn = nullptr;
+	std::vector<std::pair<std::string, std::string>> dev_chn_list;
+	unsigned int nb_chn = 0;
+	unsigned int nb_dev = iio_context_get_devices_count(m_context);
+
+	for (unsigned int i_dev = 0; i_dev < nb_dev; i_dev++) {
+		dev = iio_context_get_device(m_context, i_dev);
+		nb_chn = iio_device_get_channels_count(dev);
+		for (unsigned int i_chn = 0; i_chn < nb_chn; i_chn++) {
+			chn = iio_device_get_channel(dev, i_chn);
+
+			/* Check if the current device has any valid channels*/
+			if (iio_device_is_hwmon(dev) &&  iioChannelHasAttribute(chn, "input")){
+				auto d_name = iio_device_get_name(dev);
+				auto c_name = std::string(iio_channel_get_id(chn));
+				if (!c_name.empty() && d_name) {
+					dev_chn_list.push_back(make_pair(std::string(d_name),c_name));
+				}
+			}
+		}
+	}
+	return dev_chn_list;
+}
+
 bool ContextImpl::isIioDeviceBufferCapable(std::string dev_name)
 {
 	unsigned int dev_count = iio_device_get_buffer_attrs_count(
@@ -220,6 +246,10 @@ std::unordered_set<std::string> ContextImpl::getAllDevices() const
 void ContextImpl::scanAllDMM()
 {
 	auto dev_list = getIioDevByChannelAttrs({"raw", "scale"});
+	// check if there are any dmm hwmon devices
+	auto dev_list_by_ch = getHwmonDevices();
+	dev_list.insert(dev_list.end(), dev_list_by_ch.begin(), dev_list_by_ch.end());
+
 	for (auto dev : dev_list) {
 		if (getIioDeviceDirection(dev.first) != OUTPUT) {
 			if (!getDMM(dev.first)) {
