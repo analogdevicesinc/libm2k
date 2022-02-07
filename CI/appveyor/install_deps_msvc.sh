@@ -43,7 +43,7 @@ __mv_to_build_dir() {
 
 git clone https://github.com/analogdevicesinc/libiio "$SRC_LIBIIO"
 cd "$SRC_LIBIIO"
-git checkout 85bf9cd32138539252ed01c355cf766612cf47c9
+git checkout 0939f127ca5fa431df6d88758796c0cb1590174f
 git submodule update --init
 
 if [[ "$APPVEYOR_BUILD_WORKER_IMAGE" == "Visual Studio 2015" ]]; then
