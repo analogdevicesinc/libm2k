@@ -35,7 +35,9 @@ namespace analog {
 class M2kAnalogInImpl : public M2kAnalogIn
 {
 public:
-        M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
+	static const unsigned int inNbOfChannels = 2;
+
+	M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
 	~M2kAnalogInImpl() override;
 
 	void reset() override;
@@ -118,6 +120,7 @@ public:
 	unsigned int getNbChannels() override;
 	std::string getName() override;
 
+	bool anyChannelEnabled();
 	void enableChannel(unsigned int chnIdx, bool enable) override;
 	bool isChannelEnabled(unsigned int chnIdx) override;
 
@@ -148,6 +151,9 @@ private:
 	double m_max_samplerate;
 
 	double m_samplerate;
+	double m_filter_compensation;
+	double m_input_range_coeficient[inNbOfChannels];
+
 	libm2k::M2kHardwareTrigger *m_trigger;
 	std::vector<M2K_RANGE> m_input_range;
 
