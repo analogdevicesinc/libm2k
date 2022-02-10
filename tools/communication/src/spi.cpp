@@ -127,7 +127,7 @@ std::vector<unsigned short> spi_create_buffer(struct spi_desc *desc,
 	return bufferOut;
 }
 
-static void processSamples(struct spi_desc *desc,
+void processSamples(struct spi_desc *desc,
 			   uint8_t *data,
 			   uint8_t bytesNumber,
 			   std::vector<unsigned short> &samples)
