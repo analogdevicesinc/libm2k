@@ -165,7 +165,8 @@ jobs:
       artifactName: '$(artifactName)'
   - script: |
       python -m pip install --upgrade pip twine
-      python -m twine upload --repository "testpypi" '$(Agent.BuildDirectory)/s/build/wheelhouse/*.whl'
+      cd '$(Agent.BuildDirectory)/s/build/wheelhouse/'
+      python -m twine upload --repository "testpypi" *.whl
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
     displayName: "Upload to PyPI"
     env:
