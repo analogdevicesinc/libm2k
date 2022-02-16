@@ -670,7 +670,7 @@ def test_voltmeter_functionality(channel, ain, aout, ctx):
     return voltmeter_
 
 
-def set_trig_for_cyclicbuffer_test(trig, delay):
+def set_trig_for_cyclicbuffer_test(trig, delay, level=0.0):
     """Sets the trigger for checking the cyclic buffer set to False
     
     Arguments:
@@ -680,8 +680,8 @@ def set_trig_for_cyclicbuffer_test(trig, delay):
     trig.setAnalogMode(libm2k.ANALOG_IN_CHANNEL_2, 1)
     trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_1, libm2k.LOW_LEVEL_ANALOG)
     trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_2, libm2k.LOW_LEVEL_ANALOG)
-    trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_1, 0)
-    trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_2, 0)
+    trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_1, level)
+    trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_2, level)
     trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_1, 0)  # value for hysteresis is set in raw
     trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_2, 0)  # 63 raw corersponds to 100mV
     trig.setAnalogDelay(-delay)
@@ -773,29 +773,29 @@ def noncyclic_buffer_test(aout, ain, channel, trig, ctx):
     reset.analog_out(aout)
     reset.trigger(trig)
 
-
     # test the cyclic buffer condition
     ctx.setTimeout(10000000)  # set large value of timeout so single buffer is captured
     aout.setCyclic(False)
-    ain.setSampleRate(10000)
-    aout.setSampleRate(channel, 75000)
+    ain.setSampleRate(1000000)
+    aout.setSampleRate(channel, 75000000)
     trig.setAnalogSource(channel)
     trig.setAnalogSourceChannel(channel)
     delay = 0
-    set_trig_for_cyclicbuffer_test(trig, delay)
-    out_samples = 4096 * 4
+    set_trig_for_cyclicbuffer_test(trig, delay, level=-0.25)
+    out_samples = 4096
     out_data = np.sin(np.linspace(-np.pi, np.pi, out_samples))
-    pool = ThreadPool(processes=1)  # start a paralel process
 
-    async_result = pool.apply_async(get_samples_notcyclic, args=[out_samples, ain, channel])
+    ain.startAcquisition(out_samples*4)
+
     aout.push(channel, out_data)
-    return_val = async_result.get()  # get the data acquired in the parallel thread
+
+    return_val = ain.getSamples(out_samples*4)[channel]
+    ain.stopAcquisition()
     ch_ratio = aout.getSampleRate(
         channel) / ain.getSampleRate()  # ratio between the samplerate on the output chanel and the input channel
     single_buffer_length = round(out_samples / ch_ratio)
     ref_data = (np.sin(np.linspace(-np.pi, np.pi,
                                    single_buffer_length)))  # generate a reference signal to be compared with the acquired signal
-
     corr, _ = pearsonr(ref_data, return_val[
                                  delay:single_buffer_length + delay])  # compute the correlation between the reference and the input data
     if corr > 0.9:
@@ -810,6 +810,8 @@ def noncyclic_buffer_test(aout, ain, channel, trig, ctx):
     if gen_reports:
         if channel == 0:
             plot_to_file('Cyclic buffer set to False, channel 0', return_val, dir_name, 'cyclic_buffer_plot_ch0.png')
+            plot_to_file('Cyclic buffer set to False, channel 0',return_val[
+                                 delay:single_buffer_length + delay] , dir_name, 'cyclic_buffer_plot_ch0_2.png')
             cyclic_csv_vals['Channel 0'] = return_val
             save_data_to_csv(cyclic_csv_vals, csv_path + 'cyclic_buffer.csv')
         else:
@@ -819,6 +821,7 @@ def noncyclic_buffer_test(aout, ain, channel, trig, ctx):
     aout.stop(channel)
     aout.setCyclic(True)
     ctx.setTimeout(ctx_timeout)  # set the timeout to the initial value
+
     return cyclic_false
 
 
