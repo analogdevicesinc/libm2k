@@ -977,17 +977,17 @@ def compare_in_out_frequency(channel, ain, aout, trig):
 
 def test_oversampling_ratio(channel, ain, aout, trig):
     """Sets different values for Ain oversampling ratios, sends a buffer at the output. From the corresponding input buffer, computes the oversampling ratio and compares it with the value previously set.
-    
-    Arguments:
-        channel -- Analog channel under test\n
-        ain  -- AnalogIn object \n
-        aout  -- AnalogOut object\n
-        trig -- Trigger object \n
-        file-- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
-    Returns:
-        test_osr -- Must be 1 if the computed oversampling ratio is equal with the set oversampling ratio and 0 otherwise
-    """
+
+        Arguments:
+            channel -- Analog channel under test\n
+            ain  -- AnalogIn object \n
+            aout  -- AnalogOut object\n
+            trig -- Trigger object \n
+            file-- Text file where are saved reference and computed values during the test\n
+            csv_path -- Path to the csv file where are saved the samples\n
+        Returns:
+            test_osr -- Must be 1 if the computed oversampling ratio is equal with the set oversampling ratio and 0 otherwise
+        """
 
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
@@ -1018,7 +1018,7 @@ def test_oversampling_ratio(channel, ain, aout, trig):
     ain.setSampleRate(adc_sr)
     aout.setSampleRate(channel, dac_sr)
     ch_sampleratio = dac_sr / adc_sr  # ratio between dac sample rate and adc sample rate
-    in_nr_samples = round(out_nr_samples/ch_sampleratio) #round(out_nr_samples +(out_nr_samples%4))
+    in_nr_samples = round(out_nr_samples / ch_sampleratio)  # round(out_nr_samples +(out_nr_samples%4))
     out_data = np.sin(np.linspace(-np.pi, np.pi, out_nr_samples))
     data_string.append("Oversampling ratios set:\n" + str(osr))
     for j in osr:
@@ -1030,16 +1030,23 @@ def test_oversampling_ratio(channel, ain, aout, trig):
             print("Timeout ocurred")
         ain.stopAcquisition()
 
-        c, _ = find_peaks(input_data, height=0.97, distance=25, width=5)
+        c = 0  # set the counter of rising edge zero crossings to 0
+        for i in range(10, len(input_data) - 10):
+            if round(input_data[i - 1], 3) <= 0 < round(input_data[i],
+                                                        3):  # test if there is a zero crossing on the rising edge (
+                # middle of a sine period)
+                c = c + 1  # count how many periods of a sine wave are acquired at the input
         verify_osr = np.append(verify_osr,
-                               len(c))  # append the counted crossings for each oversampling ratio in the verify array
+                               c)  # append the counted crossings for each oversampling ratio in the verify array
         osr_csv_vals['Oversamplingratio:' + str(j) + ' ch' + str(channel)] = input_data
+        save_data_to_csv(osr_csv_vals, csv_path + 'ain_oversampling_ratio.csv')
 
         if gen_reports:
             save_data_to_csv(osr_csv_vals, csv_path + 'ain_oversampling_ratio.csv')
+
+    data_string.append("Oversampling ratios computed: \n" + str(verify_osr))
     if gen_reports:
         write_file(file, test_name, channel, data_string)
-    data_string.append("Oversampling ratios computed: \n" + str(verify_osr))
     test_osr = 1
     for i in range(len(osr)):
         if osr[i] != verify_osr[i]:
