@@ -8,8 +8,7 @@ import main
 from repeat_test import repeat
 
 class C_PowerSupplyTests(unittest.TestCase):
-    """Class Where are defined all test methods for Positive PowerSupply and Negative PowerSupply
-    """
+    #  Class Where are defined all test methods for Positive PowerSupply and Negative PowerSupply
 
     @classmethod
     def setUpClass(self):
@@ -22,31 +21,30 @@ class C_PowerSupplyTests(unittest.TestCase):
                  "V+ ====> 1+\n"
                  "V- ====> 2+\n"
                  "GND ===> 1-\n"
-                 "GND ===> 2-\n")
+                 "GND ===> 2-\n"
+                 "If needed, press enter, when you've made the connections.")
 
         if main.wait_for_input:
-            log.info("When you've made the connections, press enter.\n")
             input()
 
     def test_1_power_supply_object(self):
-        """Verifies if the Power Supply object was succesfully retrieved from the context
-        """
+        # Verifies if the Power Supply object was successfully retrieved from the context
+
         reset.analog_in(ain)
         config_for_ps_test(ps, ain)
         with self.subTest(msg='Test if the Power Supply object was retrieved'):
             self.assertIsNotNone(ps, 'Power supply object was not retrieved')
 
     def test_positive_power_supply(self):
-        """Verifies
-         the Positive Power supply through ps_test_positive().
-        """
+        # Verifies the Positive Power supply through ps_test_positive().
+
         pos_supply = ps_test_positive(ps, ain)
         with self.subTest(msg='Test the positive Power Supply '):
             self.assertEqual(all(pos_supply), 1, 'positive power supply')
 
     def test_negative_power_supply(self):
-        """Verifies the Negative Power supply through ps_test_negative().
-        """
+        #  Verifies the Negative Power supply through ps_test_negative().
+
         neg_supply = ps_test_negative(ps, ain)
         with self.subTest(msg='Test the negative  Power Supply'):
             self.assertEqual(all(neg_supply), 1, 'negative power supply')

@@ -8,8 +8,7 @@ import logger
 from repeat_test import repeat
 
 class D_DigitalTests(unittest.TestCase):
-    """Class where are defined tests for the digital segment
-    """
+    #  Class where are defined tests for the digital segment
 
     @classmethod
     def setUpClass(self):

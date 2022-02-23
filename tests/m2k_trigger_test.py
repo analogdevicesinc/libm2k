@@ -9,8 +9,7 @@ from repeat_test import repeat
 
 
 class B_TriggerTests(unittest.TestCase):
-    """Class Where are defined all test methods for Trigger
-    """
+    #  Class Where are defined all test methods for Trigger
 
     @classmethod
     def setUpClass(self):
@@ -19,8 +18,8 @@ class B_TriggerTests(unittest.TestCase):
         log.info("\n\n Trigger\n")
 
     def test_1_trigger_object(self):
-        """Verifies if the Trigger object was successfully retrieved
-        """
+        #  Verifies if the Trigger object was successfully retrieved
+
         with self.subTest(msg='test if the Trigger object was retrieved'):
             self.assertIsNot(trig, 0, 'Trigger object')
 

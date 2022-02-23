@@ -7,13 +7,11 @@ import math
 
 # signals that will be sent to output buffer
 def shape_gen(n):
-    """Generates different signal shapes that will be sent to the output
-    
-    Arguments:
-        n  -- Number of samples in the output buffer
-    Returns:
-        shape -- list that contains arrays corresponding to each signal shape generated
-    """
+    # Generates different signal shapes that will be sent to the output
+    # Arguments:
+    #    n  -- Number of samples in the output buffer
+    # Returns:
+    #    shape -- list that contains arrays corresponding to each signal shape generated
 
     shape = [[]]
     # generate sine wave
@@ -37,13 +35,12 @@ def shape_gen(n):
 
 
 def ref_shape_gen(n):
-    """Generates reference shapes which will be compared with the input collected through ain
-    Arguments:
-        n -- Number of samples in the reference buffer
-    Returns:
-        ref_shape -- list that contains arrays corresponding to each reference  shape generated
-    """
-    #
+    # Generates reference shapes which will be compared with the input collected through ain
+    # Arguments:
+    #    n -- Number of samples in the reference buffer
+    # Returns:
+    #    ref_shape -- list that contains arrays corresponding to each reference  shape generated
+
     ref_shape = [[]]
     ref_sine = np.sin(np.linspace(-np.pi, np.pi, n))
     ref_square = np.append(np.linspace(-1, -1, int(n / 2)), np.linspace(1, 1, math.ceil(n / 2)))
@@ -56,9 +53,8 @@ def ref_shape_gen(n):
 
 
 def shape_name():
-    """
-    Returns:
-        shape_name-- Array that holds the names of the generated signal shapes in string form
-    """
+    # Returns:
+    #    shape_name-- Array that holds the names of the generated signal shapes in string form
+
     shape_name = ['Sine', 'Square', 'Triangle', 'Rising_ramp', 'Falling_ramp']
     return shape_name

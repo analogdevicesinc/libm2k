@@ -7,11 +7,11 @@ gen_reports = True
 
 
 def config_for_ps_test(ps, ain):
-    """Retrieve the Power supply object and enabe the power supply channels
-    Arguments:
-        ps-- Power Supply object
-        ain  -- AnalogIn object\n
-    """
+    # Retrieve the Power supply object and enabe the power supply channels
+    # Arguments:
+    #    ps-- Power Supply object
+    #    ain  -- AnalogIn object
+
     ctx.calibrateADC()
     # enable channels
     ps.enableChannel(libm2k.ANALOG_IN_CHANNEL_1, True)
@@ -24,13 +24,13 @@ def config_for_ps_test(ps, ain):
 
 
 def ps_test_positive(ps, ain):
-    """Tests the positive power supply
-    Arguments:
-        ps -- Power Supply object
-        ain -- AnalogIn object
-    Returns:
-        pos_supply-- Vector that  holds 1 if the  voltage value read on the channel equals the voltage sent
-    """
+    # Tests the positive power supply
+    # Arguments:
+    #    ps -- Power Supply object
+    #    ain -- AnalogIn object
+    # Returns:
+    #    pos_supply-- Vector that  holds 1 if the  voltage value read on the channel equals the voltage sent
+
     if gen_reports:
         from create_files import results_file, open_files_and_dirs
         if results_file is None:
@@ -53,7 +53,7 @@ def ps_test_positive(ps, ain):
         read_voltage = (ain.getVoltage()[libm2k.ANALOG_IN_CHANNEL_1])
         read_voltage_values = np.append(read_voltage_values, read_voltage)
         sent_voltage_values = np.append(sent_voltage_values, voltage)
-        if read_voltage >= (voltage - t) and read_voltage <= (voltage + t):
+        if (voltage - t) <= read_voltage <= (voltage + t):
             pos_supply = np.append(pos_supply, 1)
         else:
             pos_supply = np.append(pos_supply, 0)
@@ -65,13 +65,13 @@ def ps_test_positive(ps, ain):
 
 
 def ps_test_negative(ps, ain):
-    """Tests the negativepower supply
-    Arguments:
-        ps -- Power Supply object
-        ain -- AnalogIn object
-    Returns:
-        neg_supply-- Vector that  holds 1 if the  voltage value read on the channel equals the voltage sent
-    """
+    # Tests the negativepower supply
+    # Arguments:
+    #    ps -- Power Supply object
+    #    ain -- AnalogIn object
+    # Returns:
+    #    neg_supply-- Vector that  holds 1 if the  voltage value read on the channel equals the voltage sent
+
     if gen_reports:
         from create_files import results_file, open_files_and_dirs
         if results_file is None:
@@ -93,7 +93,7 @@ def ps_test_negative(ps, ain):
         read_voltage = (ain.getVoltage()[libm2k.ANALOG_IN_CHANNEL_2])
         read_voltage_values = np.append(read_voltage_values, read_voltage)
         sent_voltage_values = np.append(sent_voltage_values, voltage)
-        if (read_voltage <= (voltage + t) and read_voltage >= (voltage - t)):
+        if (voltage + t) >= read_voltage >= (voltage - t):
             neg_supply = np.append(neg_supply, 1)
         else:
             neg_supply = np.append(neg_supply, 0)

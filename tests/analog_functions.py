@@ -16,7 +16,6 @@ import reset_def_values as reset
 from open_context import ctx_timeout, ctx
 from create_files import results_file, results_dir, csv
 
-
 # dicts that will be saved to csv files
 shape_csv_vals = {}
 ampl_csv_vals = {}
@@ -29,15 +28,16 @@ osr_csv_vals = {}
 timeout_csv_vals = {}
 gen_reports = True
 
-def set_trig_for_signalshape_test(i,  channel, trig, delay):
-    """Set the trigger for verifying the signal shapes
-    
-    Arguments:
-        i  -- Number of the iteration, corresponds to the shape from: ['Sine','Square',  'Triangle','Rising_ramp','Falling_ramp']
-        channel  -- Analog channel under test\n
-        trig  -- Trigger object\n
-        delay  -- Trigger delay\n
-    """
+
+def set_trig_for_signalshape_test(i, channel, trig, delay):
+    # Set the trigger for verifying the signal shapes
+    # Arguments:
+    #    i  -- Number of the iteration, corresponds to the shape from:
+    #    ['Sine','Square',  'Triangle','Rising_ramp','Falling_ramp']
+    #    channel  -- Analog channel under test
+    #    trig  -- Trigger object
+    #    delay  -- Trigger delay
+
     if i == 0:
         set_trig(trig, channel, delay, libm2k.FALLING_EDGE_ANALOG, 0)
     elif i == 1:
@@ -53,19 +53,17 @@ def set_trig_for_signalshape_test(i,  channel, trig, delay):
 
 
 def set_samplerates_for_shapetest(ain, aout):
-    """Set the samplerates of DAC and ADC, and compute the number of samples in the input buffer
-
-    Arguments:
-        ain -- AnalogIn object\n
-        aout --AnalogOut object\n
-    Returns:
-        out0_buffer_samples -- nr of samples in the output buffer on ch0
-        out1_buffer_samples -- nr of samples in the output buffer on ch1
-        ch0_sample_ratio -- ratio between DAC and ADC samplerates on ch0
-        ch1_sample_ratio -- ratio between DAC and ADC samplerates on ch1
-        in0_buffer_samples -- nr of samples in the input buffer on ch0
-        in1_buffer_samples -- nr of samples in the input buffer on ch0
-    """
+    # Set the sample rates of DAC and ADC, and compute the number of samples in the input buffer
+    # Arguments:
+    #    ain -- AnalogIn object
+    #    aout --AnalogOut object
+    # Returns:
+    #    out0_buffer_samples -- nr of samples in the output buffer on ch0
+    #    out1_buffer_samples -- nr of samples in the output buffer on ch1
+    #    ch0_sample_ratio -- ratio between DAC and ADC samplerates on ch0
+    #    ch1_sample_ratio -- ratio between DAC and ADC samplerates on ch1
+    #    in0_buffer_samples -- nr of samples in the input buffer on ch0
+    #    in1_buffer_samples -- nr of samples in the input buffer on ch0
 
     adc_sample_rate = 1000000
     dac_a_sample_rate = 7500000
@@ -85,15 +83,15 @@ def set_samplerates_for_shapetest(ain, aout):
 
 
 def set_trig(trig, channel, delay, cond=None, level=None):
-    """Set analog trigger as needed for specific operations
-    Arguments:
-        trig  -- Trigger object\n
-        channel  -- Analog channel under test\n
-        delay  -- Delay value for the trigger\n
-    Keyword Arguments:
-        cond  -- Trigger condition (default: {None}) \n
-        level  -- Trigger level value  (default: {None})\n
-    """
+    # Set analog trigger as needed for specific operations
+    # Arguments:
+    #    trig  -- Trigger object
+    #    channel  -- Analog channel under test
+    #    delay  -- Delay value for the trigger
+    # Keyword Arguments:
+    #    cond  -- Trigger condition (default: {None})
+    #    level  -- Trigger level value  (default: {None})
+
     trig.setAnalogMode(channel, libm2k.ANALOG)  # set analog trigger
     trig.setAnalogHysteresis(channel, 0)
     trig.setAnalogSource(channel)
@@ -116,23 +114,25 @@ def test_calibration(ctx):
 
 
 def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig):
-    """Sends signals with different amplitudes and verify if the received data is as expected. The amplitude multiplier is defined locally.
-        For each value of the amplitude multiplier is computed the maximum and the minimum value of the input signal.
-    Arguments:
-        out_data -- Output data buffer\n
-        ref_data -- Reference data buffer that will be compared with the input data\n
-        n  -- Number of samples in the input buffer\n
-        ain  -- AnalogIn object\n
-        aout -- AnalogOut object\n
-        channel -- The analog input channel currently under test\n
-        trig -- Trigger object\n
-        file -- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
+    # Sends signals with different amplitudes and verify if the received data is as expected.
+    # The amplitude multiplier is defined locally.
+    # For each value of the amplitude multiplier is computed the maximum and the minimum value of the input signal.
+    # Arguments:
+    #    out_data -- Output data buffer
+    #    ref_data -- Reference data buffer that will be compared with the input data
+    #    n  -- Number of samples in the input buffer
+    #    ain  -- AnalogIn object
+    #    aout -- AnalogOut object
+    #    channel -- The analog input channel currently under test
+    #    trig -- Trigger object
+    #    file -- Text file where are saved reference and computed values during the test
+    #    csv_path -- Path to the csv file where are saved the samples
+    # Returns:
+    #    corr_amplitude_max -- correlation coefficient between the vector that holds the maximum amplitude values in the
+    #    input signal and the vector that holds the maximum amplitude values in the reference signal
+    #    corr_amplitude_min -- correlation coefficient between the vector that holds the minimum amplitude values in the
+    #    input signal and the vector that holds the maximum amplitude values in the reference signal
 
-    Returns:
-        corr_amplitude_max -- correlation coefficient between the vector that holds the maximum amplitude values in the input signal and the vector that holds the maximum amplitude values in the reference signal
-        corr_amplitude_min -- correlation coefficient between the vector that holds the minimum amplitude values in the input signal and the vector that holds the maximum amplitude values in the reference signal
-    """
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
         if results_file is None:
@@ -210,22 +210,25 @@ def test_amplitude(out_data, ref_data, n, ain, aout, channel, trig):
 
 
 def test_shape(channel, out_data, ref_data, ain, aout, trig, ch_ratio, shapename):
-    """Sends signal buffers created in shapefile.py  on analog channels. Reads the buffer and compares each result with reference buffers.
-    Waveforms: ['Sine','Square',  'Triangle','Rising_ramp','Falling_ramp']
-    Arguments:
-        channel  -- Analog channel under test\n
-        out_data  -- Output data buffer\n
-        ref_data  -- Reference data buffer\n
-        ain  -- AnalogIn object\n
-        aout  -- AnalogOut object\n
-        trig  -- Trigger object\n
-        ch_ratio  -- Ratio between DAC and ADC  samplerate\n
-        file -- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
-    Returns:
-        corr_shape_vect-- vector that holds the correlation coefficients between the input data and the reference data for each signal shape
-        phase_diff_vect-- vector that holds the phase difference between the input data and the reference data for each signal shape
-    """
+    # Sends signal buffers created in shapefile.py  on analog channels. Reads the buffer and compares each result with
+    # reference buffers.
+    # Waveforms: ['Sine','Square',  'Triangle','Rising_ramp','Falling_ramp']
+    # Arguments:
+    #    channel  -- Analog channel under test
+    #    out_data  -- Output data buffer
+    #    ref_data  -- Reference data buffer
+    #    ain  -- AnalogIn object
+    #    aout  -- AnalogOut object
+    #    trig  -- Trigger object
+    #    ch_ratio  -- Ratio between DAC and ADC  samplerate
+    #    file -- Text file where are saved reference and computed values during the test
+    #    csv_path -- Path to the csv file where are saved the samples
+    # Returns:
+    #    corr_shape_vect-- vector that holds the correlation coefficients between the input data and the reference data
+    #    for each signal shape
+    #    phase_diff_vect-- vector that holds the phase difference between the input data and the reference data for each
+    #    signal shape
+
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
         if results_file is None:
@@ -284,24 +287,23 @@ def test_shape(channel, out_data, ref_data, ain, aout, trig, ch_ratio, shapename
         write_file(file, test_name, channel, data_string)
     aout.stop(channel)
 
-
     return corr_shape_vect, phase_diff_vect
 
 
 def phase_diff_ch0_ch1(aout, ain, trig):
-    """Sends the same signal on both analog channel and computes the phase difference between the signal received on ch0 and the signal received on ch1
-    Arguments:
-        out_data  -- Output data buffer\n
-        n  --Nr of samples\n
-        aout  -- AnalogOut object\n
-        ain  -- AnalogIn object \n
-        trig  -- Trigger object \n
-        file -- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
-
-    Returns:
-        phase_diff_between_channels-- the phase difference between channels in degrees
-    """
+    # Sends the same signal on both analog channel and computes the phase difference between the signal received on ch0
+    # and the signal received on ch1
+    # Arguments:
+    #    out_data  -- Output data buffer
+    #    n  --Nr of samples
+    #    aout  -- AnalogOut object
+    #    ain  -- AnalogIn object
+    #    trig  -- Trigger object
+    #    file -- Text file where are saved reference and computed values during the test
+    #    csv_path -- Path to the csv file where are saved the samples
+    # Returns:
+    #    phase_diff_between_channels-- the phase difference between channels in degrees
+    #  
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
         if results_file is None:
@@ -365,19 +367,19 @@ def phase_diff_ch0_ch1(aout, ain, trig):
 
 
 def test_analog_trigger(channel, trig, aout, ain):
-    """Test the analog trigger conditions
-    Arguments:
-        channel  -- Analog channel under test\n
-        trig  -- Trigger object\n
-        ain  -- AnalogIn object \n
-        aout  -- AnalogOut object\n
-        dir_name -- Directory where the plot files are saved\n
-        file -- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
-    Returns:
-        trig_test -- Vector that holds 1 for each trigger condition fulfilled and 0 otherwise
-        condition_name-- Vector that holds names of the trigger conditions
-    """
+    # Test the analog trigger conditions
+    # Arguments:
+    #    channel  -- Analog channel under test
+    #    trig  -- Trigger object
+    #    ain  -- AnalogIn object
+    #    aout  -- AnalogOut object
+    #    dir_name -- Directory where the plot files are saved
+    #    file -- Text file where are saved reference and computed values during the test
+    #    csv_path -- Path to the csv file where are saved the samples
+    # Returns:
+    #    trig_test -- Vector that holds 1 for each trigger condition fulfilled and 0 otherwise
+    #    condition_name-- Vector that holds names of the trigger conditions
+
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
         if results_file is None:
@@ -416,7 +418,7 @@ def test_analog_trigger(channel, trig, aout, ain):
         if i == libm2k.RISING_EDGE_ANALOG:
             trig.setAnalogCondition(channel, i)
             trig.setAnalogLevel(channel, level)
-            # aout.push(channel, test_signal)
+
             try:
                 input_data = ain.getSamples(round(n / 4))[channel]
             except:
@@ -445,7 +447,7 @@ def test_analog_trigger(channel, trig, aout, ain):
         elif i == libm2k.FALLING_EDGE_ANALOG:
             trig.setAnalogCondition(channel, i)
             trig.setAnalogLevel(channel, level)
-            # aout.push(channel, test_signal)
+
             try:
                 input_data = ain.getSamples(round(n / 4))[channel]
             except:
@@ -475,7 +477,7 @@ def test_analog_trigger(channel, trig, aout, ain):
         elif i == libm2k.LOW_LEVEL_ANALOG:
             trig.setAnalogCondition(channel, i)
             trig.setAnalogLevel(channel, low)
-            # aout.push(channel, test_signal)
+
             try:
                 input_data = ain.getSamples(round(n / 4))[channel]
             except:
@@ -503,7 +505,7 @@ def test_analog_trigger(channel, trig, aout, ain):
         elif i == libm2k.HIGH_LEVEL_ANALOG:
             trig.setAnalogCondition(channel, i)
             trig.setAnalogLevel(channel, high)
-            # aout.push(channel, test_signal)
+
             try:
                 input_data = ain.getSamples(round(n / 4))[channel]
             except:
@@ -535,20 +537,21 @@ def test_analog_trigger(channel, trig, aout, ain):
 
 
 def test_offset(out_data, n, ain, aout, trig, channel):
-    """Sets different offsets to a signal and compares the offest of the received signal with the reference offset values defined locally
-    Arguments:
-        out_data  -- Output data buffer\n
-        n  --Nr of samples\n
-        ain  -- AnalogIn object \n
-        aout  -- AnalogOut object\n
-        trig -- Trigger object\n
-        channel -- Analog channel under test\n
-        dir_name -- Directory where the plot files are saved\n
-        file -- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
-    Returns
-        corr_offset -- Correlation coefficient between the computed offset vector and the defined offset vector 
-    """
+    # Sets different offsets to a signal and compares the offest of the received signal with the reference offset values
+    # defined locally
+    # Arguments:
+    #    out_data  -- Output data buffer
+    #    n  --Nr of samples
+    #    ain  -- AnalogIn object
+    #    aout  -- AnalogOut object
+    #    trig -- Trigger object
+    #    channel -- Analog channel under test
+    #    dir_name -- Directory where the plot files are saved
+    #    file -- Text file where are saved reference and computed values during the test
+    #    csv_path -- Path to the csv file where are saved the samples
+    # Returns
+    #    corr_offset -- Correlation coefficient between the computed offset vector and the defined offset vector
+
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
         if results_file is None:
@@ -610,16 +613,15 @@ def test_offset(out_data, n, ain, aout, trig, channel):
 
 
 def test_voltmeter_functionality(channel, ain, aout, ctx):
-    """Tests voltmeter functionality of analog input channels
-    Arguments:
-        channel -- Analog channel under test\n
-        ain  -- AnalogIn object \n
-        aout  -- AnalogOut object\n
-        ctx-- M2k context opened\n
-        file -- Text file where are saved reference and computed values during the test\n
-    Returns:
-        voltmeter_ -- Vector thet holds 1 if the read voltage is in specified range and 0 otherwise
-    """
+    # Tests voltmeter functionality of analog input channels
+    # Arguments:
+    #    channel -- Analog channel under test
+    #    ain  -- AnalogIn object
+    #    aout  -- AnalogOut object
+    #    ctx-- M2k context opened
+    #    file -- Text file where are saved reference and computed values during the test
+    # Returns:
+    #    voltmeter_ -- Vector thet holds 1 if the read voltage is in specified range and 0 otherwise
 
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
@@ -671,11 +673,10 @@ def test_voltmeter_functionality(channel, ain, aout, ctx):
 
 
 def set_trig_for_cyclicbuffer_test(trig, delay, level=0.0):
-    """Sets the trigger for checking the cyclic buffer set to False
-    
-    Arguments:
-        trig--Trigger object
-    """
+    #  Sets the trigger for checking the cyclic buffer set to False
+    # Arguments:
+    #    trig--Trigger object
+
     trig.setAnalogMode(libm2k.ANALOG_IN_CHANNEL_1, libm2k.ANALOG)
     trig.setAnalogMode(libm2k.ANALOG_IN_CHANNEL_2, 1)
     trig.setAnalogCondition(libm2k.ANALOG_IN_CHANNEL_1, libm2k.LOW_LEVEL_ANALOG)
@@ -683,23 +684,20 @@ def set_trig_for_cyclicbuffer_test(trig, delay, level=0.0):
     trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_1, level)
     trig.setAnalogLevel(libm2k.ANALOG_IN_CHANNEL_2, level)
     trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_1, 0)  # value for hysteresis is set in raw
-    trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_2, 0)  # 63 raw corersponds to 100mV
+    trig.setAnalogHysteresis(libm2k.ANALOG_IN_CHANNEL_2, 0)  # 63 raw corresponds to 100mV
     trig.setAnalogDelay(-delay)
     return
 
 
 def cyclic_buffer_test(aout, ain, channel, trig):
-    """Test if multiple buffers of data are sent and received when the cyclic buffer is set to true.
-
-    Arguments:
-        aout  -- AnalogOut object\n
-        ain  -- AnalogIn object \n
-        channel -- Analog channel under test\n
-        trig -- Trigger object \n
-
-    Returns:
-        cyclic_false -- Must be 1 if a single buffer was sent and succesfully recieved, 0 otherwise
-    """
+    # Test if multiple buffers of data are sent and received when the cyclic buffer is set to true.
+    # Arguments:
+    #    aout  -- AnalogOut object
+    #    ain  -- AnalogIn object
+    #    channel -- Analog channel under test
+    #    trig -- Trigger object
+    # Returns:
+    #    cyclic_false -- Must be 1 if a single buffer was sent and succesfully recieved, 0 otherwise
 
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
@@ -719,7 +717,7 @@ def cyclic_buffer_test(aout, ain, channel, trig):
     reset.trigger(trig)
     aout.setCyclic(True)
     ain.setSampleRate(adc_sr)
-    aout.setSampleRate(channel,dac_sr)
+    aout.setSampleRate(channel, dac_sr)
     set_trig(trig, channel, 0, libm2k.FALLING_EDGE_ANALOG, 0.0)
 
     out_samples = 4096
@@ -741,22 +739,20 @@ def cyclic_buffer_test(aout, ain, channel, trig):
 
 
 def noncyclic_buffer_test(aout, ain, channel, trig, ctx):
-    """Test if a single buffer of data is sent and received when the cyclic buffer is set to false.
-    This function sets the trigger as needed for this operation then starts a parralel thread  where it waits for samples.
-    The  buffer of samples returned by get_samples_not_cyclic() is compared with a reference buffer corresponding to the single buffer sent. 
-    After the length of a single buffer the signal must be 0.
-    
-    Arguments:
-        aout  -- AnalogOut object\n
-        ain  -- AnalogIn object \n
-        channel -- Analog channel under test\n
-        trig -- Trigger object \n
-        dir_name -- Directory where the plot files are saved\n
-        file -- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
-    Returns:
-        cyclic_false -- Must be 1 if a single buffer was sent and succesfully recieved, 0 otherwise
-    """
+    # Test if a single buffer of data is sent and received when the cyclic buffer is set to false.
+    # This function sets the trigger as needed for this operation then starts a parralel thread  where it waits for
+    # samples. The  buffer of samples returned by get_samples_not_cyclic() is compared with a reference buffer
+    # corresponding to the single buffer sent. After the length of a single buffer the signal must be 0.
+    # Arguments:
+    #    aout  -- AnalogOut object
+    #    ain  -- AnalogIn object
+    #    channel -- Analog channel under test
+    #    trig -- Trigger object
+    #    dir_name -- Directory where the plot files are saved
+    #    file -- Text file where are saved reference and computed values during the test
+    #    csv_path -- Path to the csv file where are saved the samples
+    # Returns:
+    #    cyclic_false -- Must be 1 if a single buffer was sent and succesfully recieved, 0 otherwise
 
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
@@ -785,19 +781,19 @@ def noncyclic_buffer_test(aout, ain, channel, trig, ctx):
     out_samples = 4096
     out_data = np.sin(np.linspace(-np.pi, np.pi, out_samples))
 
-    ain.startAcquisition(out_samples*4)
+    ain.startAcquisition(out_samples * 4)
 
     aout.push(channel, out_data)
 
-    return_val = ain.getSamples(out_samples*4)[channel]
+    return_val = ain.getSamples(out_samples * 4)[channel]
     ain.stopAcquisition()
     ch_ratio = aout.getSampleRate(
-        channel) / ain.getSampleRate()  # ratio between the samplerate on the output chanel and the input channel
+        channel) / ain.getSampleRate()  # ratio between the samplerate on the output channel and the input channel
     single_buffer_length = round(out_samples / ch_ratio)
     ref_data = (np.sin(np.linspace(-np.pi, np.pi,
-                                   single_buffer_length)))  # generate a reference signal to be compared with the acquired signal
+                                   single_buffer_length)))  # generate a reference signal to compare to read signal
     corr, _ = pearsonr(ref_data, return_val[
-                                 delay:single_buffer_length + delay])  # compute the correlation between the reference and the input data
+                                 delay:single_buffer_length + delay])  # correlation btw. reference and the input data
     if corr > 0.9:
         for i in range(out_samples):
             if i > out_samples / ch_ratio + delay:
@@ -810,8 +806,9 @@ def noncyclic_buffer_test(aout, ain, channel, trig, ctx):
     if gen_reports:
         if channel == 0:
             plot_to_file('Cyclic buffer set to False, channel 0', return_val, dir_name, 'cyclic_buffer_plot_ch0.png')
-            plot_to_file('Cyclic buffer set to False, channel 0',return_val[
-                                 delay:single_buffer_length + delay] , dir_name, 'cyclic_buffer_plot_ch0_2.png')
+            plot_to_file('Cyclic buffer set to False, channel 0', return_val[
+                                                                  delay:single_buffer_length + delay], dir_name,
+                         'cyclic_buffer_plot_ch0_2.png')
             cyclic_csv_vals['Channel 0'] = return_val
             save_data_to_csv(cyclic_csv_vals, csv_path + 'cyclic_buffer.csv')
         else:
@@ -826,15 +823,14 @@ def noncyclic_buffer_test(aout, ain, channel, trig, ctx):
 
 
 def get_samples_notcyclic(n_samples, ain, channel):
-    """Get samples in the parallel thread of the cyclic buffer test
+    # Get samples in the parallel thread of the cyclic buffer test
+    # Arguments:
+    #    n_samples -- Number of samples
+    #    ain -- AnalogIn object
+    #    channel -- Analog channel under test
+    # Returns:
+    #    data -- Data read on analog channel under test after the trigger condition was fulfilled
 
-    Arguments:
-        n_samples -- Number of samples\n
-        ain -- AnalogIn object\n
-        channel -- Analog channel under test\n
-    Returns:
-        data -- Data read on analog channel under test after the trigger condition was fulfilled
-    """
     # get samples in the paralel thread
     try:
         data = ain.getSamples(n_samples)[channel]
@@ -845,19 +841,20 @@ def get_samples_notcyclic(n_samples, ain, channel):
 
 
 def compute_frequency(channel, ain, aout, trig):
-    """Loops trhough available ADC and DAC samplerates and set the number of samples to be sent according to these samplerates. Computes  the frequency of the signal corresponding to the output buffer.
-    Reads the buffer from the specified channel and computes the frequency of the singnal corresponding to this buffer.
-    Arguments:
-        channel -- Analog channel under test\n
-        ain  -- AnalogIn object \n
-        aout  -- AnalogOut object\n
-        trig -- Trigger object \n
-        file -- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
-    Returns:
-        ofreqs-- Vector that holds the frequencies of the output buffers
-        ifreqs-- Vector that holds the frequencies of the input buffers
-    """
+    # Loops trough available ADC and DAC samplerates and set the number of samples to be sent according to
+    # these samplerates. Computes  the frequency of the signal corresponding to the output buffer.
+    # Reads the buffer from the specified channel and computes the frequency of the singnal corresponding to this buffer
+    # Arguments:
+    #    channel -- Analog channel under test
+    #    ain  -- AnalogIn object
+    #    aout  -- AnalogOut object
+    #    trig -- Trigger object
+    #    file -- Text file where are saved reference and computed values during the test
+    #    csv_path -- Path to the csv file where are saved the samples
+    # Returns:
+    #    ofreqs-- Vector that holds the frequencies of the output buffers
+    #    ifreqs-- Vector that holds the frequencies of the input buffers
+
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
         if results_file is None:
@@ -933,18 +930,16 @@ def compute_frequency(channel, ain, aout, trig):
 
 
 def compare_in_out_frequency(channel, ain, aout, trig):
-    """Compares the frequency of the signal in the output buffer with the frequency of the signal in the input buffer.
-    Frequencies are computed in compute_frequency(channel, ain, aout, trig, file)
-
-    Arguments:
-       channel -- Analog channel under test\n
-        ain  -- AnalogIn object \n
-        aout  -- AnalogOut object\n
-        trig -- Trigger object \n
-        file -- Text file where are saved reference and computed values during the test\n
-    Returns:
-        freq_test--Vector that holds 1 if the corresponding in and out frequencies are equal and 0 otherwise
-    """
+    # Compares the frequency of the signal in the output buffer with the frequency of the signal in the input buffer.
+    # Frequencies are computed in compute_frequency(channel, ain, aout, trig, file)
+    # Arguments:
+    #   channel -- Analog channel under test
+    #    ain  -- AnalogIn object
+    #    aout  -- AnalogOut object
+    #    trig -- Trigger object
+    #    file -- Text file where are saved reference and computed values during the test\n
+    # Returns:
+    #    freq_test--Vector that holds 1 if the corresponding in and out frequencies are equal and 0 otherwise
 
     reset.analog_in(ain)
     reset.analog_out(aout)
@@ -979,18 +974,18 @@ def compare_in_out_frequency(channel, ain, aout, trig):
 
 
 def test_oversampling_ratio(channel, ain, aout, trig):
-    """Sets different values for Ain oversampling ratios, sends a buffer at the output. From the corresponding input buffer, computes the oversampling ratio and compares it with the value previously set.
-
-        Arguments:
-            channel -- Analog channel under test\n
-            ain  -- AnalogIn object \n
-            aout  -- AnalogOut object\n
-            trig -- Trigger object \n
-            file-- Text file where are saved reference and computed values during the test\n
-            csv_path -- Path to the csv file where are saved the samples\n
-        Returns:
-            test_osr -- Must be 1 if the computed oversampling ratio is equal with the set oversampling ratio and 0 otherwise
-        """
+    # Sets different values for Ain oversampling ratios, sends a buffer at the output.
+    # From the corresponding input buffer, computes the oversampling ratio and compares it with the value previously set
+    # Arguments:
+    #        channel -- Analog channel under test\n
+    #        ain  -- AnalogIn object \n
+    #        aout  -- AnalogOut object\n
+    #        trig -- Trigger object \n
+    #        file-- Text file where are saved reference and computed values during the test\n
+    #        csv_path -- Path to the csv file where are saved the samples\n
+    # Returns:
+    #        test_osr -- Must be 1 if the computed oversampling ratio is equal with the set oversampling ratio
+    #        and 0 otherwise
 
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
@@ -1059,18 +1054,15 @@ def test_oversampling_ratio(channel, ain, aout, trig):
 
 
 def plot_to_file(title, data, dir_name, filename, xlabel=None, ylabel=None, data1=None):
-    """Saves the plots in a separate folder 
-    
-    Arguments:
-        title  -- Title of the plot\n
-        data  -- Data to be plotted\n
-        filename  -- Name of the file with the plot\n
-    
-    Keyword Arguments:
-        xlabel  -- Label of x-Axis (default: {None})
-        ylabel  -- Label of y-Axis(default: {None})
-        data1  --  Data that should be plotted on the same plot(default: {None})
-    """
+    # Saves the plots in a separate folder
+    # Arguments:
+    #    title  -- Title of the plot
+    #    data  -- Data to be plotted
+    #    filename  -- Name of the file with the plot
+    # Keyword Arguments:
+    #    xlabel  -- Label of x-Axis (default: {None})
+    #    ylabel  -- Label of y-Axis(default: {None})
+    #    data1  --  Data that should be plotted on the same plot(default: {None})
     # plot the signals in a separate folder
     plt.title(title)
     if xlabel is not None:  # if xlabel and ylabel are not specified there will be default values
@@ -1097,23 +1089,21 @@ def save_data_to_csv(csv_vals, csv_file):
 
 
 def channels_diff_in_samples(trig, channel, aout, ain):
-    """Find if there is a sample delay between channels for the same signal and trigger
-    
-    Arguments:
-        trig  -- Trigger object\n
-        channel  -- Channel source for the trigger\n
-        aout  -- Analog Out object\n
-        ain  -- Analog In object\n
-        file  -- File where are printed the results\n
-        csv_path  -- Path for csv file with resutls\n
-    
-    Returns:
-        diff_adc_sr-- 2-D array, holds the difference in samples for each ADC sample rate and Dac oversampling ratio combination\n
-        adc_sr-- sample rate set for Ain\n
-        dac_osr-- oversampling ratios set for Aout\n
-        freq -- frequency of the signals used for the test\n
+    # Find if there is a sample delay between channels for the same signal and trigger
+    # Arguments:
+    #    trig  -- Trigger object
+    #    channel  -- Channel source for the trigger
+    #    aout  -- Analog Out object
+    #    ain  -- Analog In object
+    #    file  -- File where are printed the results
+    #    csv_path  -- Path for csv file with results
+    # Returns:
+    #    diff_adc_sr-- 2-D array, holds the difference in samples for each ADC sample rate
+    #    and Dac oversampling ratio combination
+    #    adc_sr-- sample rate set for Ain
+    #    dac_osr-- oversampling ratios set for Aout
+    #    freq -- frequency of the signals used for the test
 
-    """
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
         if results_file is None:
@@ -1165,9 +1155,9 @@ def channels_diff_in_samples(trig, channel, aout, ain):
             diff_in_samples1['ADC sr' + str(sr) + '; DAC osr:' + str(osr)] = input_data[1]
             ain.stopAcquisition()
             for i in range(len(input_data0) - 1):
-                if (input_data0[i] <= 0 and input_data0[i + 1] > 0) or (input_data0[i] >= 0 and input_data0[i + 1] < 0):
+                if (input_data0[i] <= 0 < input_data0[i + 1]) or (input_data0[i] >= 0 > input_data0[i + 1]):
                     p0 = i  # position of trigger on channel 0
-                if (input_data1[i] <= 0 and input_data1[i + 1] > 0) or (input_data1[i] >= 0 and input_data1[i + 1] < 0):
+                if (input_data1[i] <= 0 < input_data1[i + 1]) or (input_data1[i] >= 0 > input_data1[i + 1]):
                     p1 = i  # position of trigger on channel 1
             diff_osr.append(p1 - p0)
 
@@ -1209,24 +1199,23 @@ def write_file(file, test_name, channel, data_string):
         file.write(str(data_string[i]) + '\n')
 
 
-
 def test_timeout(ctx, ain, aout, trig, channel, dir_name, file, csv_path):
-    """Set timeout, set trigger. Acquire data and if timeout occurs, set timeout to 0 and reset trigger then acquire data again.
-    The signal has an offset so if you compute the mean it is different than 0.
-    Arguments:
-        ctx-Context\n
-        ain  -- AnalogIn object \n
-        aout  -- AnalogOut object\n
-        trig -- Trigger object\n
-        channel -- Analog channel under test\n
-        dir_name -- Directory where the plot files are saved\n
-        file -- Text file where are saved reference and computed values during the test\n
-        csv_path -- Path to the csv file where are saved the samples\n
-    Returns
-        offset -- value of the average set
-        average-- value of the computed average
-        t_occ-- False by default, True if timeout occurred
-    """
+    # Set timeout, set trigger. Acquire data and if timeout occurs, set timeout to 0 and
+    # reset trigger then acquire data again. The signal has an offset so if you compute the mean it is different than 0.
+    # Arguments:
+    #    ctx-Context
+    #    ain  -- AnalogIn object
+    #    aout  -- AnalogOut object
+    #    trig -- Trigger object
+    #    channel -- Analog channel under test
+    #    dir_name -- Directory where the plot files are saved
+    #    file -- Text file where are saved reference and computed values during the test
+    #   csv_path -- Path to the csv file where are saved the samples
+    # Returns
+    #    offset -- value of the average set
+    #    average-- value of the computed average
+    #    t_occ-- False by default, True if timeout occurred
+
     reset.analog_in(ain)
     reset.analog_out(aout)
     reset.trigger(trig)

@@ -7,13 +7,11 @@ csv = None
 
 
 def create_dir(timestamp):
-    """Creates a new directory where all the plot files will be saved
+    # Creates a new directory where all the plot files will be saved
+    # Arguments:
+    #   timestamp -- Time and date when the program was run
 
-    Arguments:
-        timestamp -- Time and date when the program was run\n
-    """
     path = os.getcwd()
-
     results_dir = "results" + str(timestamp)
     path = os.path.join(path, results_dir)
     os.mkdir(path)
