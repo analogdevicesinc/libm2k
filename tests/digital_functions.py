@@ -97,11 +97,9 @@ def check_digital_output(dig):
         # get the signal from the digital channel i
         buff = [(2 ** i)] * 16
         dig.push(buff)
-        print(buff)
         dig.startAcquisition(16)
         data = dig.getSamples(16)
         dig.stopAcquisition()
-        print(data)
         val = data[0]
         if val & (2 ** i) == 2 ** i:
             ch2.append(1)
@@ -163,7 +161,6 @@ def check_digital_trigger(channel, dig, d_trig):
         if i == libm2k.RISING_EDGE_DIGITAL:
             ch = get_data_to_check_trig_condition(dig, channel, i, buff)
             if ch[delay] <= ch[delay + 3]:
-                print("rising")
                 trig_test = np.append(trig_test, 1)
             else:
                 trig_test = np.append(trig_test, 0)
@@ -174,7 +171,6 @@ def check_digital_trigger(channel, dig, d_trig):
         elif i == libm2k.FALLING_EDGE_DIGITAL:
             ch = get_data_to_check_trig_condition(dig, channel, i, buff)
             if ch[delay] >= ch[delay + 3]:
-                print("falling")
                 trig_test = np.append(trig_test, 1)
             else:
                 trig_test = np.append(trig_test, 0)
@@ -185,7 +181,6 @@ def check_digital_trigger(channel, dig, d_trig):
             d_trig.reset()
             ch = get_data_to_check_trig_condition(dig, channel, i, buff)
             if ch[delay] == 0:
-                print("low")
                 trig_test = np.append(trig_test, 1)
             else:
                 trig_test = np.append(trig_test, 0)
@@ -196,7 +191,6 @@ def check_digital_trigger(channel, dig, d_trig):
             d_trig.reset()
             ch = get_data_to_check_trig_condition(dig, channel, i, buff)
             if ch[delay] == 1:
-                print("high")
                 trig_test = np.append(trig_test, 1)
             else:
                 trig_test = np.append(trig_test, 0)
@@ -208,10 +202,8 @@ def check_digital_trigger(channel, dig, d_trig):
         elif i == libm2k.ANY_EDGE_DIGITAL:
             ch = get_data_to_check_trig_condition(dig, channel, i, buff)
             if ch[delay] <= ch[delay + 3]:
-                print("rising")
                 trig_test = np.append(trig_test, 1)
             elif ch[delay] >= ch[delay + 3]:
-                print("falling")
                 trig_test = np.append(trig_test, 1)
             else:
                 trig_test = np.append(trig_test, 0)
@@ -237,7 +229,6 @@ def check_open_drain_mode(dig, channel):
     dig.push(buff)
     data = dig.getSamples(100)
     for val in data:
-        print((val))
         if val & (2 ** channel) == 2 ** channel:
             ch = np.append(ch, 1)
         else:
@@ -252,7 +243,6 @@ def task1(nb_samples, dig):
     #    nb_samples  -- Number of samples
     #    dig  -- Digital object
 
-    print("Task 1 assigned to thread: {}".format(threading.current_thread().name))
     data = dig.getSamples(nb_samples)
     dig.stopAcquisition()
     return data
@@ -273,7 +263,6 @@ def test_digital_cyclic_buffer(dig, d_trig, channel):
     buff.extend(buff)
     ch = []
     pool = ThreadPool(processes=1)
-    print("Main thread name: {}".format(threading.main_thread().name))
 
     async_result = pool.apply_async(task1, args=[n, dig])
     dig.push(buff)

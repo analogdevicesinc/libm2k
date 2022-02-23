@@ -1250,20 +1250,21 @@ def test_timeout(ctx, ain, aout, trig, channel, dir_name, file, csv_path):
 
     ctx.setTimeout(ctx_timeout)  # set timeout to the initial value
 
-    file.write("\n\n Timeout test on channel " + str(channel) + "\n")
-    file.write("Timeout occured:\n" + str(t_occ) + "\n")
-    file.write("Average of the data set:" + str(offset) + "\n Average of the data read: " + str(average) + "\n")
-    if channel == 0:
-        plot_to_file('Timeout: ' + str(t_occ) + ' on ch' + str(channel), input_data[channel], dir_name,
-                     'timeout' + str(t_occ) + '_ch0.png')
-        timeout_csv_vals['Timeout: ' + str(t_occ) + ' ch0'] = input_data[channel]
-        save_data_to_csv(timeout_csv_vals, csv_path + 'timeout.csv')
+    if gen_reports:
+        file.write("\n\n Timeout test on channel " + str(channel) + "\n")
+        file.write("Timeout occured:\n" + str(t_occ) + "\n")
+        file.write("Average of the data set:" + str(offset) + "\n Average of the data read: " + str(average) + "\n")
+        if channel == 0:
+            plot_to_file('Timeout: ' + str(t_occ) + ' on ch' + str(channel), input_data[channel], dir_name,
+                         'timeout' + str(t_occ) + '_ch0.png')
+            timeout_csv_vals['Timeout: ' + str(t_occ) + ' ch0'] = input_data[channel]
+            save_data_to_csv(timeout_csv_vals, csv_path + 'timeout.csv')
 
-    else:
-        plot_to_file('Timeout: ' + str(t_occ) + ' on ch' + str(channel), input_data[channel], dir_name,
-                     'timeout' + str(t_occ) + '_ch1.png')
-        timeout_csv_vals['Timeout: ' + str(t_occ) + ' ch1'] = input_data[channel]
-        save_data_to_csv(timeout_csv_vals, csv_path + 'timeout.csv')
-    plt.close()
+        else:
+            plot_to_file('Timeout: ' + str(t_occ) + ' on ch' + str(channel), input_data[channel], dir_name,
+                         'timeout' + str(t_occ) + '_ch1.png')
+            timeout_csv_vals['Timeout: ' + str(t_occ) + ' ch1'] = input_data[channel]
+            save_data_to_csv(timeout_csv_vals, csv_path + 'timeout.csv')
+        plt.close()
     aout.stop()
     return offset, average, t_occ
