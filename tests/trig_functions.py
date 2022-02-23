@@ -54,20 +54,17 @@ def trigger_jitter(buffers, trig, channel, signal, trig_cond, ain, aout):
 
 
 def count_trigger_events(channel, buffers, delay, level, trig_cond, ain, test_signal):
-    """Counts how many trigger events happened in x buffers. The counter of trigger events should result equal with the number of buffers.
-    
-    Arguments:
-        channel  -- Channel under test\n
-        buffers  -- Number of buffers\n
-        delay  -- Trigger delay (position in the buffer)\n
-        level  -- Trigger level\n
-        trig_cond  -- Trigger condition\n
-        ain  -- AnalogIn object\n
-        test_signal  -- Test signal \n
-    
-    Returns:
-        counter -- Nr of trigger events in buffers\n
-    """
+    # Counts how many trigger events happened in x buffers. The counter of trigger events should result equal with
+    # the number of buffers.
+    # Arguments:
+    #   channel  -- Channel under test
+    #   buffers  -- Number of buffers
+    #   delay  -- Trigger delay (position in the buffer)
+    #   level  -- Trigger level
+    #   trig_cond  -- Trigger condition
+    #   ain  -- AnalogIn object
+    #   test_signal  -- Test signal
+    # Returns: counter -- Nr of trigger events in buffers
     counter = 0
     aout.push(channel, test_signal)
     ctx.setTimeout(5000)
@@ -77,23 +74,22 @@ def count_trigger_events(channel, buffers, delay, level, trig_cond, ain, test_si
         except:
             print("Timeout ocurred")
         if trig_cond == libm2k.RISING_EDGE_ANALOG:
-            if input_data[delay] < level and input_data[delay + 1] >= level:
+            if input_data[delay] < level <= input_data[delay + 1]:
                 counter = counter + 1
         elif trig_cond == libm2k.FALLING_EDGE_ANALOG:
-            if input_data[delay] >= level and input_data[delay + 1] < level:
+            if input_data[delay] >= level > input_data[delay + 1]:
                 counter = counter + 1
     ain.stopAcquisition()
     return counter
 
 
 def create_test_signals():
-    """Create a set of sine and square signals to test the trigger jitter. Signals are created based on nr_samples
-    
-    Returns:
-        nr_samples- number of samples in the output buffer, determines signal frequency\n
-        sine_signals-set of sinusoidal signals to be used for the test\n
-        square_signals-set of square seignals to be used for the test\n
-    """
+    # Create a set of sine and square signals to test the trigger jitter. Signals are created based on nr_samples
+    # Returns:
+    #    nr_samples- number of samples in the output buffer, determines signal frequency
+    #    sine_signals- set of sinusoidal signals to be used for the test
+    #    square_signals- set of square signals to be used for the test
+
     nr_samples = [150, 1500, 15000]
     sine_signals = []
     square_signals = []

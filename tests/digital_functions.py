@@ -31,11 +31,10 @@ def result_files(gen_reports):
 
 
 def dig_reset(dig):
-    """ Reset digital object
+    # Reset digital object
+    # Arguments:
+    #    dig  -- Digital object
 
-    Arguments:
-        dig  -- Digital object\n
-    """
     dig.setSampleRateIn(10000)
     dig.setSampleRateOut(10000)
     dig.setCyclic(True)
@@ -47,11 +46,10 @@ def dig_reset(dig):
 
 
 def set_digital_trigger(dig):
-    """Set the digital trigger
+    # Set the digital trigger
+    # Arguments:
+    #    dig  -- Digital object
 
-    Arguments:
-        dig  -- Digital object\n
-    """
     d_trig = dig.getTrigger()
     d_trig.setDigitalMode(0)
     d_trig.setDigitalStreamingFlag(True)
@@ -148,9 +146,6 @@ def get_data_to_check_trig_condition(dig, channel, i, buff):
 def check_digital_trigger(channel, dig, d_trig):
     file_name, dir_name, csv_path = result_files(gen_reports)
     dig_reset(dig)
-    # low=0
-    # high=1
-    # level=0.5
     delay = 1
 
     condition = [libm2k.RISING_EDGE_DIGITAL, libm2k.FALLING_EDGE_DIGITAL, libm2k.LOW_LEVEL_DIGITAL,
@@ -247,23 +242,16 @@ def check_open_drain_mode(dig, channel):
             ch = np.append(ch, 1)
         else:
             ch = np.append(ch, 0)
-    # dig.setValueRaw(channel,libm2k.HIGH)
-    # print("raw value of the channel")
-    # print(dig.getValueRaw(channel))
-    # plt.figure(15)
-    # plt.plot(ch)
-    # plt.show()
 
     return
 
 
 def task1(nb_samples, dig):
-    """Parallel process where data is read
+    # Parallel process where data is read
+    # Arguments:
+    #    nb_samples  -- Number of samples
+    #    dig  -- Digital object
 
-    Arguments:
-        nb_samples  -- Number of samples\n
-        dig  -- Digital object\n
-    """
     print("Task 1 assigned to thread: {}".format(threading.current_thread().name))
     data = dig.getSamples(nb_samples)
     dig.stopAcquisition()
@@ -310,18 +298,16 @@ def test_digital_cyclic_buffer(dig, d_trig, channel):
 
 
 def plot_to_file(title, data, dir_name, filename, xlabel=None, ylabel=None, data1=None):
-    """Saves the plots in a separate folder
+    # Saves the plots in a separate folder
+    # Arguments:
+    #    title  -- Title of the plot\n
+    #    data  -- Data to be plotted\n
+    #    filename  -- Name of the file with the plot\n
+    # Keyword Arguments:
+    #    xlabel  -- Label of x-Axis (default: {None})
+    #    ylabel  -- Label of y-Axis(default: {None})
+    #    data1  --  Data that should be plotted on the same plot(default: {None})
 
-    Arguments:
-        title  -- Title of the plot\n
-        data  -- Data to be plotted\n
-        filename  -- Name of the file with the plot\n
-
-    Keyword Arguments:
-        xlabel  -- Label of x-Axis (default: {None})
-        ylabel  -- Label of y-Axis(default: {None})
-        data1  --  Data that should be plotted on the same plot(default: {None})
-    """
     # plot the signals in a separate folder
     plt.title(title)
     if xlabel is not None:  # if xlabel and ylabel are not specified there will be default values

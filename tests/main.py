@@ -39,7 +39,6 @@ def no_reports():
 
 def wait_():
     global wait_for_input
-    print(len(sys.argv))
     if len(sys.argv) == 1 or sys.argv[1] == "nofiles" or (len(sys.argv) > 3 and "C_PowerSupplyTests" in sys.argv):
         wait_for_input = True
     else:

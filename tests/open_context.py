@@ -4,14 +4,13 @@ import os
 
 
 def calibrate(ctx):
-    """Calibrates ADC and DAC
-    
-    Arguments:
-        ctx  -- the available m2k context\n
-    Returns:
-        adc_calib-- Must be True if the calibration was successfull
-        dac_calib--Must be True if the calibration was successfull
-    """
+    # Calibrates ADC and DAC
+    # Arguments:
+    #    ctx  -- the available m2k context\n
+    # Returns:
+    #    adc_calib-- Must be True if the calibration was successful
+    #    dac_calib--Must be True if the calibration was successful
+
     # ADC
     adc_calib = ctx.calibrateADC()
     # DAC
@@ -20,13 +19,13 @@ def calibrate(ctx):
 
 
 def open_context():
-    """Opens the context and retrieves analog objects
-    Returns:
-        ctx-- M2k context opened
-        ain-- AnalogIn object
-        aout--Analog Out object
-        trig--Trigger object
-    """
+    #  Opens the context and retrieves analog objects
+    #  Returns:
+    #    ctx-- M2k context opened
+    #    ain-- AnalogIn object
+    #    aout--Analog Out object
+    #    trig--Trigger object
+
     ctx = libm2k.m2kOpen("ip:192.168.2.1")
     if ctx is None:
         print("Connection Error: No ADALM2000 device available/connected to your PC.")
@@ -50,11 +49,11 @@ def open_context():
 
 
 def create_dir(timestamp):
-    """Creates a new directory where all the plot files will be saved
+    # Creates a new directory where all the plot files will be saved
     
-    Arguments:
-        timestamp -- Time and date when the program was run\n
-    """
+    # Arguments:
+    #    timestamp -- Time and date when the program was run
+
     path = os.getcwd()
 
     results_dir = "results" + str(timestamp)
