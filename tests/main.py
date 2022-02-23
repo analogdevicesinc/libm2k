@@ -3,6 +3,7 @@ import unittest
 import HtmlTestRunner
 import sys
 import os
+import shutil
 import ps_functions
 import analog_functions
 import trig_functions
@@ -13,8 +14,6 @@ from m2k_analog_test import *
 from m2k_powersupply_test import *
 from m2k_trigger_test import *
 from m2k_digital_test import *
-
-# from m2k_digital_test import DigitalTests
 
 global gen_reports, wait_for_input
 gen_reports = True
@@ -29,13 +28,6 @@ def no_reports():
         trig_functions.gen_reports = False
         analog_functions.gen_reports = False
         digital_functions.gen_reports = False
-        path = os.path.dirname(os.path.realpath(results_dir))
-        dir_path = os.path.dirname(os.path.realpath(results_file_path))
-        results_file.close()
-        if os.path.isdir(dir_path):
-            os.remove(path + '/' + results_file_path)
-            os.rmdir(dir_path)
-
 
 def wait_():
     global wait_for_input
@@ -103,7 +95,11 @@ if __name__ == "__main__":
             if sys.argv[i] == "nofiles":
                 sys.argv.pop(i)
                 break
-        unittest.main(testRunner=unittest.TextTestRunner(), exit=False)
+
+        dir_path = os.path.dirname(os.path.realpath(results_file_path))
+        if os.path.isdir(dir_path):
+            shutil.rmtree(dir_path)
+        unittest.main(testRunner=unittest.TextTestRunner(stream=sys.stderr), exit=False)
 
         libm2k.contextClose(ctx)
         exit()
