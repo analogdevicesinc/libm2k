@@ -8,13 +8,14 @@ import ps_functions
 import analog_functions
 import trig_functions
 import digital_functions
+import bug_checks_functions
 from open_context import ctx
 from create_files import results_dir, results_file, results_file_path
 from m2k_analog_test import *
 from m2k_powersupply_test import *
 from m2k_trigger_test import *
 from m2k_digital_test import *
-
+# from m2k_bug_checks import *
 global gen_reports, wait_for_input
 gen_reports = True
 wait_for_input = False
@@ -28,6 +29,7 @@ def no_reports():
         trig_functions.gen_reports = False
         analog_functions.gen_reports = False
         digital_functions.gen_reports = False
+        bug_checks_functions.gen_reports = False
 
 def wait_():
     global wait_for_input
