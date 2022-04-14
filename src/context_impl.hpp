@@ -90,6 +90,7 @@ public:
 	const struct libm2k::IIO_CONTEXT_VERSION getIioContextVersion() override;
 	struct iio_context *getIioContext() override;
 	void setTimeout(unsigned int timeout) override;
+	void setContextOwnership(bool ownsContext);
 
 protected:
 	struct iio_context* m_context;
@@ -109,6 +110,7 @@ private:
 	std::string m_uri;
 	std::string m_name;
 	bool m_sync;
+	bool m_ownsContext;
 };
 }
 }

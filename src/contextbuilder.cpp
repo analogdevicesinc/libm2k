@@ -132,15 +132,29 @@ std::vector<std::string> ContextBuilder::getAllContexts()
 }
 
 Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
-			struct iio_context* ctx, bool sync) // enum Device Name
+			struct iio_context* ctx, bool sync, bool ownsContext) // enum Device Name
 {
 	std::string name = m_dev_name_map.at(type);
 	switch (type) {
-		case CtxM2K: return new M2kImpl(uri, ctx, name, sync);
-		case CtxLIDAR: return new LidarImpl(uri, ctx, name, sync);
+		case CtxM2K:
+		{
+			auto m2k = new M2kImpl(uri, ctx, name, sync);
+			m2k->setContextOwnership(ownsContext);
+			return m2k;
+		}
+		case CtxLIDAR:
+		{
+			auto lidar = new LidarImpl(uri, ctx, name, sync);
+			lidar->setContextOwnership(ownsContext);
+			return lidar;
+		}
 		case Other:
 		default:
-		return new GenericImpl(uri, ctx, name, sync);
+		{
+			auto generic = new GenericImpl(uri, ctx, name, sync);
+			generic->setContextOwnership(ownsContext);
+			return generic;
+		}
 	}
 }
 
@@ -178,7 +192,7 @@ Context* ContextBuilder::contextOpen(const char *uri)
 
 	ContextTypes dev_type = ContextBuilder::identifyContext(ctx);
 
-	Context* dev = buildContext(dev_type, std::string(uri), ctx, true);
+	Context* dev = buildContext(dev_type, std::string(uri), ctx, true, true);
 	s_connectedDevices.push_back(dev);
 
 	return dev;
@@ -248,6 +262,7 @@ M2k *ContextBuilder::m2kOpen(struct iio_context* ctx, const char *uri)
 	if (m2k) {
 		return m2k;
 	}
+	contextClose(dev);
 	return nullptr;
 }
 
@@ -262,6 +277,7 @@ M2k *ContextBuilder::m2kOpen(const char *uri)
 	if (m2k) {
 		return m2k;
 	}
+	contextClose(dev);
 	return nullptr;
 }
 
@@ -276,6 +292,7 @@ M2k *ContextBuilder::m2kOpen()
 	if (m2k) {
 		return m2k;
 	}
+	contextClose(dev);
 	return nullptr;
 }
 

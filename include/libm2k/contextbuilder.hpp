@@ -110,7 +110,8 @@ private:
 	static Context* buildContext(ContextTypes type,
 		std::string uri,
 		struct iio_context *ctx,
-		bool sync);
+		bool sync,
+		bool ownsContext = false);
 	static bool m_disable_logging;
 
 };

@@ -40,6 +40,7 @@ ContextImpl::ContextImpl(std::string uri, struct iio_context *ctx, std::string n
 	m_context = ctx;
 	m_uri = uri;
 	m_sync = sync;
+	m_ownsContext = false;
 
 	/* Initialize the DMM list */
 	scanAllDMM();
@@ -54,7 +55,7 @@ ContextImpl::~ContextImpl()
 	}
 	m_instancesDMM.clear();
 
-	if (m_context) {
+	if (m_context && m_ownsContext) {
 		iio_context_destroy(m_context);
 	}
 }
@@ -453,4 +454,9 @@ struct iio_context *ContextImpl::getIioContext()
 void ContextImpl::setTimeout(unsigned int timeout)
 {
 	iio_context_set_timeout(m_context, timeout);
+}
+
+void ContextImpl::setContextOwnership(bool ownsContext)
+{
+        m_ownsContext = ownsContext;
 }
