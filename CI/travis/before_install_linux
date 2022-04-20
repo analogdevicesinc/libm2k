@@ -28,8 +28,8 @@ handle_centos() {
 	if [ -n "$PACKAGE_TO_INSTALL" ] ; then
 		sudo yum localinstall -y $PACKAGE_TO_INSTALL
 	elif [ "$INSTALL_FROM_SW_DOWNLOADS" = "1" ] ; then
-		wget http://swdownloads.analog.com/cse/travis_builds/${LIBIIO_BRANCH}_latest_libiio${LDIST}.rpm
-		sudo yum localinstall -y ./${LIBIIO_BRANCH}_latest_libiio${LDIST}.rpm
+		wget https://swdownloads.analog.com/cse/azure_builds/${artifactName}_latest_${LIBIIO_BRANCH}_libiio.deb
+		sudo dpkg -i ./${artifactName}_latest_${LIBIIO_BRANCH}_libiio.deb
 	fi
 }
 
@@ -48,8 +48,8 @@ handle_default() {
 	if [ -n "$PACKAGE_TO_INSTALL" ] ; then
 		sudo dpkg -i $PACKAGE_TO_INSTALL
 	elif [ "$INSTALL_FROM_SW_DOWNLOADS" = "1" ] ; then
-		wget http://swdownloads.analog.com/cse/travis_builds/${LIBIIO_BRANCH}_latest_libiio${LDIST}.deb
-		sudo dpkg -i ./${LIBIIO_BRANCH}_latest_libiio${LDIST}.deb
+		wget https://swdownloads.analog.com/cse/azure_builds/${artifactName}_latest_${LIBIIO_BRANCH}_libiio.deb
+		sudo dpkg -i ./${artifactName}_latest_${LIBIIO_BRANCH}_libiio.deb
 	fi
 
 	#Install glog
