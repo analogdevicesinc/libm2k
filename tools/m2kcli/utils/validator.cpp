@@ -108,7 +108,7 @@ void Validator::validate(std::string strNumber, double &number)
 {
 	try {
 		number = std::stod(strNumber);
-	} catch (std::exception e) {
+	} catch (std::exception const& e) {
 		throw std::runtime_error("'" + strNumber + "' is not a number.\n");
 	}
 }
@@ -117,7 +117,7 @@ void Validator::validate(std::string strNumber, uint16_t &number)
 {
 	try {
 		number = std::stoi(strNumber);
-	} catch (std::exception e) {
+	} catch (std::exception const& e) {
 		throw std::runtime_error("'" + strNumber + "' is not a number.\n");
 	}
 }

@@ -239,7 +239,7 @@ void UartTerminal::writeData() {
 			try {
 				auto escapeSequence = LinuxKeyEncoder::getLinuxCode(c);
 				uart_write(uartDescTx, escapeSequence.data(), escapeSequence.size());
-			} catch (std::runtime_error) {
+			} catch (std::runtime_error const&) {
 				continue;
 			}
 		} else if (LinuxKeyEncoder::isExitCode(c)) {
@@ -260,7 +260,7 @@ void UartTerminal::writeData() {
 				}
 				uart_write(uartDescTx, escapeSequence.data(), escapeSequence.size());
 
-			} catch (std::runtime_error) {
+			} catch (std::runtime_error const&) {
 				continue;
 			}
 #endif
