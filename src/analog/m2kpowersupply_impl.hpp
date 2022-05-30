@@ -27,6 +27,7 @@
 #include "utils/deviceout.hpp"
 #include <vector>
 #include <memory>
+#include <map>
 
 namespace libm2k {
 /**
@@ -47,7 +48,9 @@ public:
 	/**
 	* @private
 	*/
-	M2kPowerSupplyImpl(struct iio_context* ctx, std::string write_dev,
+	M2kPowerSupplyImpl(struct iio_context* ctx,
+		const std::map<std::string, std::string>& context_attrs,
+		std::string write_dev,
 		std::string read_dev, bool sync);
 
 
@@ -125,6 +128,7 @@ private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_generic_device;
 
+	const std::map<std::string, std::string> m_context_attrs;
 	std::vector<std::pair<std::string, double>> m_calib_coefficients;
 	std::vector<double> m_write_coefficients;
 	std::vector<double> m_read_coefficients;

@@ -173,7 +173,8 @@ void M2kImpl::scanAllAnalogOut()
 
 void M2kImpl::scanAllPowerSupply()
 {
-	libm2k::analog::M2kPowerSupply* pSupply = new libm2k::analog::M2kPowerSupplyImpl(m_context, "ad5627", "ad9963", m_sync);
+	libm2k::analog::M2kPowerSupply* pSupply = new libm2k::analog::M2kPowerSupplyImpl(m_context,
+						m_context_attributes, "ad5627", "ad9963", m_sync);
 	m_instancesPowerSupply.push_back(pSupply);
 }
 

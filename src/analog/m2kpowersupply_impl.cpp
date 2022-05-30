@@ -31,8 +31,11 @@ using namespace libm2k::analog;
 using namespace libm2k::utils;
 
 
-M2kPowerSupplyImpl::M2kPowerSupplyImpl(iio_context *ctx, std::string write_dev,
+M2kPowerSupplyImpl::M2kPowerSupplyImpl(iio_context *ctx,
+				       const std::map<std::string, std::string>& context_attrs,
+				       std::string write_dev,
 				       std::string read_dev, bool sync) :
+	m_context_attrs(context_attrs),
 	m_pos_powerdown_idx(2),
 	m_neg_powerdown_idx(3),
 	m_individual_powerdown(false)
@@ -190,10 +193,13 @@ void M2kPowerSupplyImpl::loadCalibrationCoefficients()
 {
 	/*Load calibration parameters from iio context*/
 	m_calib_coefficients.clear();
-	for (unsigned int i = 4; i < 12; i++) {
+	for (auto pair : m_context_attrs) {
 		std::pair<std::string, double> calib_pair;
 		__try {
-			auto pair = m_generic_device->getContextAttr(i);
+			std::string cal_string = pair.first.substr(0, 4);
+			if (cal_string != "cal,") {
+				continue;
+			}
 			calib_pair.first = std::string(pair.first.c_str() + 4);
 			calib_pair.second = Utils::safeStod(pair.second);
 
