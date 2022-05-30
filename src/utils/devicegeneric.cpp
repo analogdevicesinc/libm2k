@@ -163,8 +163,22 @@ string DeviceGeneric::getName()
 	if (!m_dev) {
 		THROW_M2K_EXCEPTION("Device: No available device", libm2k::EXC_INVALID_PARAMETER);
 	}
-	return iio_device_get_name(m_dev);
+	std::string name = "";
+	auto n = iio_device_get_name(m_dev);
+	if (n) {
+		name = std::string(n);
+	}
+	return name;
 }
+
+string DeviceGeneric::getId()
+{
+	if (!m_dev) {
+		THROW_M2K_EXCEPTION("Device: No available device", libm2k::EXC_INVALID_PARAMETER);
+	}
+	return iio_device_get_id(m_dev);
+}
+
 
 unsigned int DeviceGeneric::getNbAttributes()
 {
