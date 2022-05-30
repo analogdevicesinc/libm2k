@@ -59,6 +59,7 @@ public:
 	virtual bool isChannelEnabled(unsigned int chnIdx, bool output);
 
 	virtual std::string getName();
+	virtual std::string getId();
 	virtual unsigned int getNbAttributes();
 	virtual unsigned int getNbBufferAttributes();
 	virtual std::string getAttributeName(unsigned int idx);
