@@ -83,18 +83,18 @@ static void writeBit(struct i2c_desc *desc, std::vector<unsigned short> &buffer,
 {
 	auto *m2KI2CDesc = (m2k_i2c_desc *) desc->extra;
 	auto samplesPerHalfBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz) / 2;
-	//scl high
+	//scl low
 	for (unsigned int i = 0; i < samplesPerHalfBit; ++i) {
 		unsigned short sample = 0;
-		setBit(sample, m2KI2CDesc->scl);
 		if (bit) {
 			setBit(sample, m2KI2CDesc->sda);
 		}
 		buffer.push_back(sample);
 	}
-	//scl low
+	//scl high
 	for (unsigned int i = 0; i < samplesPerHalfBit; ++i) {
 		unsigned short sample = 0;
+		setBit(sample, m2KI2CDesc->scl);
 		if (bit) {
 			setBit(sample, m2KI2CDesc->sda);
 		}
@@ -106,7 +106,7 @@ static void writeByte(struct i2c_desc *desc, std::vector<unsigned short> &buffer
 {
 	auto *m2KI2CDesc = (m2k_i2c_desc *) desc->extra;
 	auto samplesPerHalfBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz) / 2;
-	bool clockPolarity = true;
+	bool clockPolarity = false;
 
 	for (int i = 0; i < 16; i++) {
 		//encode data
