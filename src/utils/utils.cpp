@@ -191,7 +191,7 @@ std::string Utils::getFirmwareVersion(struct iio_context *ctx)
 			"fw_version");
 
 	if (!hw_fw_version) {
-		THROW_M2K_EXCEPTION("Can't determine firmware version.", libm2k::EXC_INVALID_PARAMETER);
+		hw_fw_version = "";
 	}
 	return hw_fw_version;
 }
