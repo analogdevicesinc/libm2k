@@ -79,7 +79,7 @@ public:
 
 	void setLed(bool on) override;
 	bool getLed() override;
-
+	std::string getFirmwareVersion() override;
 
 private:
 	M2kCalibration* m_calibration;

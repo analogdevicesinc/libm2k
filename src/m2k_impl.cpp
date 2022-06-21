@@ -36,6 +36,7 @@
 #include <libm2k/logger.hpp>
 #include <iio.h>
 #include <iostream>
+#include <algorithm>
 #include <thread>
 
 using namespace std;
@@ -536,6 +537,22 @@ bool M2kImpl::getLed()
 		on = !m_m2k_fabric->getBoolValue(4, "done_led_overwrite_powerdown", true);
 	}
 	return on;
+}
+
+string M2kImpl::getFirmwareVersion()
+{
+	std::string tmp = ContextImpl::getFirmwareVersion();
+	if (tmp == "") {
+		auto allDevs = getAllDevices();
+		auto it = std::find(allDevs.begin(), allDevs.end(), "m2k-adc");
+		if (it == allDevs.end()) {
+			THROW_M2K_EXCEPTION("Can't determine firmware version.", libm2k::EXC_INVALID_FIRMWARE_VERSION);
+		} else {
+			// We got the m2k-adc device and no fw_version, so we have the M2K FMC version
+			tmp = "v0.28";
+		}
+	}
+	return tmp;
 }
 
 bool M2kImpl::hasContextCalibration()
