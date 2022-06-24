@@ -40,6 +40,9 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 # build a shared library by default
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
+# setup install location for MacOS frameworks
+set(OSX_INSTALL_FRAMEWORKSDIR "/Library/Frameworks" CACHE STRING "Installation directory for frameworks")
+
 # generate docs by default
 option(ENABLE_DOC "Generate documentation with Doxygen" OFF)
 option(BUILD_EXAMPLES "Build the default examples" OFF)
