@@ -35,6 +35,7 @@ using namespace std;
 using namespace libm2k::utils;
 using namespace libm2k::context;
 
+#define KB_SET_MAX_RETRIES 20
 
 /** Represents an iio_device **/
 DeviceGeneric::DeviceGeneric(struct iio_context* context, std::string dev_name)
@@ -632,10 +633,19 @@ void DeviceGeneric::convertChannelHostFormat(unsigned int chn_idx, double *avg, 
 
 void DeviceGeneric::setKernelBuffersCount(unsigned int count)
 {
+	bool ok = false;
+	int ret;
+	int retry = 0;
 	if (!m_dev) {
 		THROW_M2K_EXCEPTION("Device: no such device", libm2k::EXC_OUT_OF_RANGE);
 	}
-	int ret = iio_device_set_kernel_buffers_count(m_dev, count);
+	while (!ok && retry < KB_SET_MAX_RETRIES) {
+		ret = iio_device_set_kernel_buffers_count(m_dev, count);
+		retry++;
+		if (ret != -EBUSY) {
+			ok = true;
+		}
+	}
 	if (ret != 0) {
 		THROW_M2K_EXCEPTION("Device: Cannot set the number of kernel buffers", libm2k::EXC_RUNTIME_ERROR, ret);
 	}

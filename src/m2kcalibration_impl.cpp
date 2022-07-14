@@ -124,17 +124,7 @@ void M2kCalibrationImpl::setAdcInCalibMode()
 
 	m_m2k_adc->loadNbKernelBuffers();
 	m_adc_kernel_buffers = m_m2k_adc->getKernelBuffersCount();
-
-	while (!ok) {
-		try {
-			m_m2k_adc->setKernelBuffersCount(1);
-			ok = true;
-		} catch (m2k_exception &e) {
-			if (e.iioCode() != -EBUSY) {
-				THROW_M2K_EXCEPTION(e.what(), e.type(), e.iioCode());
-			}
-		}
-	}
+	m_m2k_adc->setKernelBuffersCount(1);
 }
 
 void M2kCalibrationImpl::setDacInCalibMode()
@@ -157,17 +147,8 @@ void M2kCalibrationImpl::setDacInCalibMode()
 	m_m2k_dac->loadNbKernelBuffers();
 	m_dac_a_kernel_buffers = m_m2k_dac->getKernelBuffersCount(0);
 	m_dac_b_kernel_buffers = m_m2k_dac->getKernelBuffersCount(1);
-	while (!ok) {
-		try {
-			m_m2k_dac->setKernelBuffersCount(0, 1);
-			m_m2k_dac->setKernelBuffersCount(1, 1);
-			ok = true;
-		} catch (m2k_exception &e) {
-			if (e.iioCode() != -EBUSY) {
-				THROW_M2K_EXCEPTION(e.what(), e.type(), e.iioCode());
-			}
-		}
-	}
+	m_m2k_dac->setKernelBuffersCount(0, 1);
+	m_m2k_dac->setKernelBuffersCount(1, 1);
 }
 
 void M2kCalibrationImpl::restoreAdcFromCalibMode()
