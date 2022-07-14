@@ -56,7 +56,6 @@ public:
 	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
 	void stop();
 	void cancelBuffer();
-	void setKernelBuffersCount(unsigned int count);
 	struct IIO_OBJECTS getIioObjects();
 
 private:
