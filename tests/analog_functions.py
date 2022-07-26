@@ -1268,3 +1268,17 @@ def test_timeout(ctx, ain, aout, trig, channel, dir_name, file, csv_path):
         plt.close()
     aout.stop()
     return offset, average, t_occ
+
+def test_kernel_buffers(ain, trig, nb_kernel_buffers):
+    error = False
+    reset.analog_in(ain)
+    reset.trigger(trig)
+
+    ain.setSampleRate(1000000)
+    ain.startAcquisition(10000)
+    ain.stopAcquisition()
+    try:
+        ain.setKernelBuffersCount(nb_kernel_buffers)
+    except:
+        error = True
+    return error

@@ -60,6 +60,7 @@ if __name__ == "__main__":
         print(" ===== tests ====== \n")
         print("test_1_analog_objects\n"
               "test_2_calibration\n"
+              "test_kernel_buffers"
               "test_amplitude\n"
               "test_analog_trigger_ch0\n"
               "test_analog_trigger_ch1\n"
@@ -89,6 +90,7 @@ if __name__ == "__main__":
         print("test_digital_output_channels\n")
         print("test_trig_conditions\n")
         print("test_cyclic_buffer\n")
+        print("test_kernel_buffers\n")
 
         exit()
     elif len(sys.argv) > 1 and "nofiles" in sys.argv:

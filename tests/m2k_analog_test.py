@@ -4,7 +4,7 @@ import libm2k
 
 from shapefile import shape_gen, ref_shape_gen, shape_name
 from analog_functions import test_amplitude, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, \
-    test_voltmeter_functionality
+    test_voltmeter_functionality, test_kernel_buffers
 from analog_functions import noncyclic_buffer_test, set_samplerates_for_shapetest, set_trig_for_cyclicbuffer_test, \
     test_calibration
 from analog_functions import compare_in_out_frequency, test_oversampling_ratio, channels_diff_in_samples, test_timeout, \
@@ -44,6 +44,13 @@ class A_AnalogTests(unittest.TestCase):
         calibration = test_calibration(ctx)
         with self.subTest(msg='Test if ADC and DAC were succesfully calibrated'):
             self.assertEqual(calibration, (True, True), 'Calibration failed')
+
+    def test_kernel_buffers(self):
+        # Verifies if the kernel buffer count can be set without throwing runtime error (busy retry works)
+        test_err = test_kernel_buffers(ain, trig, 4)
+        with self.subTest(
+            msg='Set kernel buffers count on AIN without raising an error '):
+            self.assertEqual(test_err, False, 'Error occured')
 
     def test_shapes_ch0(self):
         # Verifies that all the elements of a correlation vector  returned by test_shape() are greater than 0.85. A
