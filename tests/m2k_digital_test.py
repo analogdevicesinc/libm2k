@@ -1,7 +1,7 @@
 import unittest
 import libm2k
 from digital_functions import dig_reset, set_digital_trigger, check_digital_channels_state, check_digital_output, \
-    check_digital_trigger, check_open_drain_mode
+    check_digital_trigger, check_open_drain_mode, test_kernel_buffers
 from digital_functions import test_digital_cyclic_buffer
 from open_context import dig, d_trig
 import logger
@@ -44,3 +44,9 @@ class D_DigitalTests(unittest.TestCase):
             with self.subTest(i):
                 self.assertEqual(test_digital_cyclic_buffer(dig, d_trig, i), 0, "Channel: " + str(i))
 
+    def test_kernel_buffers(self):
+        # Verifies if the kernel buffer count can be set without throwing runtime error (busy retry works)
+        test_err = test_kernel_buffers(dig, 4)
+        with self.subTest(
+            msg='Set kernel buffers count on Digital In without raising an error '):
+            self.assertEqual(test_err, False, 'Error occured')

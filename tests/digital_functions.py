@@ -320,3 +320,16 @@ def save_data_to_csv(csv_vals, csv_file):
     df = DataFrame(csv_vals)
     df.to_csv(csv_file)
     return
+
+def test_kernel_buffers(dig, nb_kernel_buffers):
+    error = False
+    dig.reset()
+
+    dig.startAcquisition(16)
+    data = dig.getSamples(16)
+    dig.stopAcquisition()
+    try:
+        dig.setKernelBuffersCountIn(nb_kernel_buffers)
+    except:
+        error = True
+    return error
