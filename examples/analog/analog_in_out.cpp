@@ -25,10 +25,11 @@
 // GND -> 2-
 //
 // The application will generate a sine and triangular wave on W1 and W2. The signal is fed back into the analog input
-// and the voltage values are displayed on the screen
+// and the voltage values are displayed on the screen and saved to files ch1.dat and ch2.dat for inspection.
 
 #define _USE_MATH_DEFINES
 #include <iostream>
+#include <fstream>
 #include <math.h>
 #include <libm2k/m2k.hpp>
 #include <libm2k/contextbuilder.hpp>
@@ -104,17 +105,26 @@ int main(int argc, char* argv[])
 
 	auto data = ain->getSamples(1024);
 
+	ofstream ch1_file;
+	ch1_file.open("ch1.dat", ios::out);
 	cout << "CHANNEL1"<<endl;
 	for(double val : data[0])
 	{
-		cout<<val<<endl;
+	  cout<<val<<endl;
+	  ch1_file<<val<<endl;
 	}
+	ch1_file.close();
+
+	ofstream ch2_file;
+	ch2_file.open("ch2.dat", ios::out);
 	cout << "CHANNEL2"<<endl;
 	for(double val : data[1])
 	{
-		cout<<val<<endl;
+	  cout<<val<<endl;
+	  ch2_file<<val<<endl;
 	}
-	cout <<"end";
+	ch2_file.close();
+	cout <<"end"<<endl;
 	aout->stop();
 	contextClose(ctx);
 }
