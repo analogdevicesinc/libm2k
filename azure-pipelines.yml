@@ -41,13 +41,19 @@ jobs:
         artifactName: 'Linux-Ubuntu-18.04'
         PACKAGE_TO_INSTALL: 'build/*.deb'
       ubuntu_20_04:
-        imageName: 'ubuntu-latest'
+        imageName: 'ubuntu-20.04'
         OS_TYPE: 'ubuntu_docker'
         OS_VERSION: focal
         artifactName: 'Linux-Ubuntu-20.04'
         PACKAGE_TO_INSTALL: 'build/*.deb'
+      ubuntu_22_04:
+        imageName: 'ubuntu-22.04'
+        OS_TYPE: 'ubuntu_docker'
+        OS_VERSION: jammy
+        artifactName: 'Linux-Ubuntu-22.04'
+        PACKAGE_TO_INSTALL: 'build/*.deb'
       deploy_doxygen:
-        imageName: 'ubuntu-latest'
+        imageName: 'ubuntu-20.04'
         OS_TYPE: 'doxygen'
         OS_VERSION: focal
         artifactName: 'Linux-Ubuntu-20.04'
@@ -88,12 +94,12 @@ jobs:
 - job: macOSBuilds
   strategy:
     matrix:
-      macOS_10_15:
-        imageName: 'macOS-10.15'
-        artifactName: 'macOS-10.15'
       macOS_11:
         imageName: 'macOS-11'
         artifactName: 'macOS-11'
+      macOS_12:
+        imageName: 'macOS-12'
+        artifactName: 'macOS-12'
   pool:
     vmImage: $(imageName)
   variables:
