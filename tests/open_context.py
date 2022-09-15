@@ -1,3 +1,4 @@
+import sys
 import libm2k
 import time
 import os
@@ -25,10 +26,18 @@ def open_context():
     #    ain-- AnalogIn object
     #    aout--Analog Out object
     #    trig--Trigger object
-
-    ctx = libm2k.m2kOpen("ip:192.168.2.1")
+    uri = "ip:192.168.2.1"
+    if len(sys.argv) >= 3 and ("--uri" in sys.argv):
+        for i in range(len(sys.argv)):
+            if sys.argv[i] == "--uri":
+                uri = sys.argv[i + 1]
+                sys.argv.pop(i)
+                sys.argv.pop(i)
+                break
+    print("URI " + uri)
+    ctx = libm2k.m2kOpen(uri)
     if ctx is None:
-        print("Connection Error: No ADALM2000 device available/connected to your PC.")
+        print("Connection Error: No available ADALM2000 found at the specified URI.")
         exit(1)
     # define input and output
     try:
@@ -50,7 +59,6 @@ def open_context():
 
 def create_dir(timestamp):
     # Creates a new directory where all the plot files will be saved
-    
     # Arguments:
     #    timestamp -- Time and date when the program was run
 
@@ -67,7 +75,8 @@ def create_dir(timestamp):
 ctx_timeout = 5000  # initial value of the timeout
 ctx, ain, aout, trig = open_context()  # open context
 ctx.setTimeout(ctx_timeout)  # set ctx timeout
-calibration = calibrate(ctx)
+if "ip:127.0.0.1" not in ctx.getUri():
+    calibration = calibrate(ctx)
 dig = ctx.getDigital()
 d_trig = dig.getTrigger()
 ps = ctx.getPowerSupply()
