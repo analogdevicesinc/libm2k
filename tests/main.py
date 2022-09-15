@@ -15,6 +15,7 @@ from m2k_analog_test import *
 from m2k_powersupply_test import *
 from m2k_trigger_test import *
 from m2k_digital_test import *
+from m2k_emulator_test import *
 # from m2k_bug_checks import *
 global gen_reports, wait_for_input
 gen_reports = True
