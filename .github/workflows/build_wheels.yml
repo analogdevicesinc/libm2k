@@ -60,6 +60,7 @@ jobs:
       - name: Upload to PyPI
         shell: bash
         run: |
+          python -m pip install twine
           python -m twine upload --repository "testpypi" ${{ github.workspace }}/wheelhouse/*.whl
         env:
           TWINE_USERNAME: __token__
