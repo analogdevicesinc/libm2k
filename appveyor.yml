@@ -63,6 +63,7 @@ build_script:
     - xcopy include c:\libm2k-win32 /s /e /h
     - copy build-win32\libm2k.* c:\libm2k-win32\
     - copy build-win32\_libm2k.* c:\libm2k-win32\
+    - copy build-win32\libm2k_lv.dll c:\libm2k-win32\
     - copy build-win32\libm2k-sharp.dll c:\libm2k-win32\
     - copy build-win32\libm2k-sharp-cxx-wrap.dll c:\libm2k-win32\
     - copy build-win32\*.exe c:\libm2k-win32\
@@ -81,6 +82,7 @@ build_script:
     - xcopy include c:\libm2k-win64 /s /e /h
     - copy build-win64\libm2k.* c:\libm2k-win64\
     - copy build-win64\_libm2k.* c:\libm2k-win64\
+    - copy build-win64\libm2k_lv.dll c:\libm2k-win64\
     - copy build-win64\libm2k-sharp.dll c:\libm2k-win64\
     - copy build-win64\libm2k-sharp-cxx-wrap.dll c:\libm2k-win64\
     - copy build-win64\*.exe c:\libm2k-win64\
