@@ -66,6 +66,10 @@ h1 = fullfile(hppPath,'enums.hpp'); h = [{h1},h(:)'];
 % h1 = fullfile(pwd,'libm2k','include','iio.h');  h = [{h1},h(:)'];
 headers = h;
 
+% this section should be used when API changes apear and the define file
+% needs to be regenerated
+% Once the file is generated user needs to manualy uncomment libm2k
+% functions they need
 %% Build interface file
 %% Add 'DefinedMacros' to fix builds using Visual Studio 16 2019
 % clibgen.generateLibraryDefinition(headers,...
@@ -77,8 +81,8 @@ headers = h;
 % delete definelibm2k.mlx
 
 %% Build library once manually updated
-pkg = definelibm2k_win64;
-build(pkg);
+% pkg = definelibm2k_win64;
+% build(pkg);
 
 
 
