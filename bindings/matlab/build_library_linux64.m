@@ -74,8 +74,8 @@ headers = h;
 %delete definelibm2k.mlx
 
 %% Build library once manually updated
-pkg = definelibm2k_linux64;
-build(pkg);
+% pkg = definelibm2k_linux64;
+% build(pkg);
 
 
 
