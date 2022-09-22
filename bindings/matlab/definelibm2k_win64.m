@@ -13,7 +13,7 @@ function libDef = definelibm2k()
 libDef = clibgen.LibraryDefinition("libm2kData.xml");
 %% OutputFolder and Libraries 
 libDef.OutputFolder = pwd;
-libDef.Libraries =  fullfile(pwd,'libm2k','libm2k.lib');
+libDef.Libraries = fullfile(pwd,'libm2k','libm2k.lib');
 
 %% C++ class |iio_channel| with MATLAB name |clib.libm2k.iio_channel| 
 iio_channelDefinition = addClass(libDef, "iio_channel", "MATLABName", "clib.libm2k.iio_channel", ...
@@ -2226,7 +2226,7 @@ getSamplesInterleaved_matlabDefinition = addMethod(M2kAnalogInDefinition, ...
     "Retrieve a specific number of samples from both channels", ...
     "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
 defineArgument(getSamplesInterleaved_matlabDefinition, "nb_samples", "uint32", "Description", "nb_samples The number of samples that will be retrieved");
-defineOutput(getSamplesInterleaved_matlabDefinition, "RetVal", "clib.array.libm2k.Double", "nb_samples", "Description", "A pointer to the interleaved samples"); % <MLTYPE> can be "clib.array.libm2k.Double", or "double"
+defineOutput(getSamplesInterleaved_matlabDefinition, "RetVal", "clib.array.libm2k.Double",  "nb_samples", "Description", "A pointer to the interleaved samples"); % <MLTYPE> can be "clib.array.libm2k.Double", or "double"
 validate(getSamplesInterleaved_matlabDefinition);
 
 %% C++ class method |getSamplesRawInterleaved_matlab| for C++ class |libm2k::analog::M2kAnalogIn| 
@@ -2238,7 +2238,7 @@ getSamplesRawInterleaved_matlabDefinition = addMethod(M2kAnalogInDefinition, ...
     "Retrieve a specific number of raw samples from both channels", ...
     "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
 defineArgument(getSamplesRawInterleaved_matlabDefinition, "nb_samples", "uint32", "Description", "nb_samples The number of samples that will be retrieved");
-defineOutput(getSamplesRawInterleaved_matlabDefinition, "RetVal", "clib.array.libm2k.Short", "nb_samples", "Description", "A pointer to the interleaved raw samples"); % <MLTYPE> can be "clib.array.libm2k.Short", or "int16"
+defineOutput(getSamplesRawInterleaved_matlabDefinition, "RetVal", "clib.array.libm2k.Short",  "nb_samples", "Description", "A pointer to the interleaved raw samples"); % <MLTYPE> can be "clib.array.libm2k.Short", or "int16"
 validate(getSamplesRawInterleaved_matlabDefinition);
 
 %% C++ class method |getVoltageRaw| for C++ class |libm2k::analog::M2kAnalogIn| 
@@ -3412,7 +3412,7 @@ getPowerSupplyDefinition = addMethod(M2kDefinition, ...
     "Description", "getPowerSupply Method of C++ class libm2k::context::M2k." + newline + ...
     "Retrieve the PowerSupply object", ...
     "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
-defineOutput(getPowerSupplyDefinition, "RetVal", "clib.libm2k.libm2k.analog.M2kPowerSupply",1 , "Description", "On success, a pointer to a PowerSupply object" + newline + ...
+defineOutput(getPowerSupplyDefinition, "RetVal", "clib.libm2k.libm2k.analog.M2kPowerSupply", 1, "Description", "On success, a pointer to a PowerSupply object" + newline + ...
     "	@throw EXC_INVALID_PARAMETER No M2K power supply");
 validate(getPowerSupplyDefinition);
 
@@ -4061,7 +4061,7 @@ m2kOpenDefinition = addFunction(libDef, ...
     "Description", "clib.libm2k.libm2k.context.m2kOpen Representation of C++ function libm2k::context::m2kOpen." + newline + ...
     "Open an ADALM2000 based on a given uri", ...
     "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
-defineArgument(m2kOpenDefinition,  "uri", "string", "input", "nullTerminated", "Description", "uri Describe the location of the context"); % <MLTYPE> can be "clib.array.libm2k.Char","int8","string", or "char"
+defineArgument(m2kOpenDefinition, "uri", "string", "input", "nullTerminated", "Description", "uri Describe the location of the context"); % <MLTYPE> can be "clib.array.libm2k.Char","int8","string", or "char"
 defineOutput(m2kOpenDefinition, "RetVal", "clib.libm2k.libm2k.context.M2k", 1, "Description", "M2k object or nullptr if no ADALM2000 was found/available");
 validate(m2kOpenDefinition);
 
