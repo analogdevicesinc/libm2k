@@ -1,5 +1,5 @@
 classdef libm2kTests < matlab.unittest.TestCase
-    
+
     properties
         root = '';
     end
@@ -15,14 +15,24 @@ classdef libm2kTests < matlab.unittest.TestCase
     end
     
     methods(Test)
+        
         function checkConnectivity(~)
-            m2k = clib.libm2k.libm2k.context.m2kOpen();
+            import clib.libm2k.libm2k.*
+            m2k = context.m2kOpen();
             if isempty(m2k)
                 error('No M2K found');
             end
         end
         function testDigital(~)
-            m2k = clib.libm2k.libm2k.context.m2kOpen();
+            import clib.libm2k.libm2k.*
+            m2k = context.m2kOpen();
+            if clibIsNull(m2k)
+                clib.libm2k.libm2k.context.contextCloseAll();
+                m2k = context.m2kOpen();
+            end
+            if isempty(m2k)
+                error('M2K device not found');
+            end
             if isempty(m2k)
                 error('No M2K found');
             end
