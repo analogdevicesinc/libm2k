@@ -33,7 +33,6 @@ if compile_bindings:
               long_description = long_description,
               long_description_content_type="text/markdown",
               url='https://github.com/analogdevicesinc/libm2k',
-              python_requires=">=3.6",
               classifiers=[
                      "Programming Language :: Python :: 3",
                      "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
@@ -61,7 +60,6 @@ else:
         py_modules = ["${PROJECT_NAME}"],
         packages=[''],
         package_data={'': ['_${PROJECT_NAME}.so', '_${PROJECT_NAME}.pyd']},
-        python_requires=">=3.6",
         classifiers=[
                 "Programming Language :: Python :: 3",
                 "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
