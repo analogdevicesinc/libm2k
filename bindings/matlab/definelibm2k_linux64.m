@@ -9,7 +9,7 @@
 
 %% Setup
 % Do not edit this setup section.
-function libDef = definelibm2k()
+function libDef = definelibm2k_linux64()
 libDef = clibgen.LibraryDefinition("libm2kData.xml");
 %% OutputFolder and Libraries 
 libDef.OutputFolder = pwd;
