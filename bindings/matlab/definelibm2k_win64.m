@@ -9,7 +9,7 @@
 
 %% Setup
 % Do not edit this setup section.
-function libDef = definelibm2k()
+function libDef = definelibm2k_win64()
 libDef = clibgen.LibraryDefinition("libm2kData.xml");
 %% OutputFolder and Libraries 
 libDef.OutputFolder = pwd;
@@ -37,7 +37,7 @@ addEnumeration(libDef, "ContextTypes", "int32",...
       "CtxFMCOMMS",...  % 0
       "CtxM2K",...  % 1
       "CtxLIDAR",...  % 2
-      "Other",...  % 3
+%       "Other",...  % 3
     ],...
     "MATLABName", "clib.libm2k.ContextTypes", ...
     "Description", "clib.libm2k.ContextTypes    Representation of C++ enumeration ContextTypes."); % Modify help description values as needed.
