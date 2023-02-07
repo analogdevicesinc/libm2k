@@ -1,6 +1,6 @@
 function build_installer()
 
-version = '22.1.1';
+version = '22.1.2';
 ml = ver('MATLAB');
 ml = ml.Release(2:end-1);
 arch = computer('arch');
