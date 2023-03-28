@@ -30,6 +30,7 @@
 #include <cstring>
 #include <sstream>
 #include <iterator>
+#include <thread>
 
 using namespace std;
 using namespace libm2k::utils;
@@ -644,6 +645,9 @@ void DeviceGeneric::setKernelBuffersCount(unsigned int count)
 		retry++;
 		if (ret != -EBUSY) {
 			ok = true;
+		} else {
+			// If the call failed, allow more time to settle
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 	}
 	if (ret != 0) {
