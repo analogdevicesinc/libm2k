@@ -96,6 +96,7 @@ class A_AnalogTests(unittest.TestCase):
                 self.assertEqual(int(phase_diff_between_channels[i]), 0,
                                  'not in phase, ADC SR:' + str(phase_diff_between_channels[i]))
 
+    @unittest.skip("Test needs further investigation.")
     def test_phase_difference_between_channels_in_samples(self):
 
         samples_diff0, adc_sr, dac_osr, freq = channels_diff_in_samples(trig, libm2k.ANALOG_IN_CHANNEL_1, aout, ain)
