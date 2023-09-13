@@ -166,3 +166,126 @@ jobs:
     env:
       TWINE_USERNAME: '__token__'
       TWINE_PASSWORD: $(TWINE_PASSWORD)
+
+- job: WindowsBuilds
+  strategy:
+    matrix:
+      VS2019_Win32:
+        imageName: 'windows-2019'
+        COMPILER: 'Visual Studio 16 2019'
+        ARCH: 'Win32'
+        artifactName: 'Windows-VS-16-2019-Win32'
+      VS2019_Win64:
+        imageName: 'windows-2019'
+        COMPILER: 'Visual Studio 16 2019'
+        ARCH: 'x64'
+        artifactName: 'Windows-VS-16-2019-x64'
+  pool:
+    vmImage: $[ variables['imageName'] ]
+  steps:
+    - checkout: self
+      fetchDepth: 1
+      clean: true
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Get libiio artifacts'
+      env:
+        MSYSTEM: MINGW64
+        CHERE_INVOKING: yes
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: $(TWINE_PASSWORD)
+      inputs:
+        source: 'specific'
+        project: '$(AnalogDevices_OpenSource_GUID)'
+        pipeline: $(libiioPipelineId)
+        artifact: '$(artifactName)'
+        runVersion: 'latestFromBranch'
+        runBranch: 'refs/heads/fixMinGW'
+        path: '$(Agent.BuildDirectory)/s/build/'
+    - task: PowerShell@2
+      displayName: 'Dependencies'
+      env:
+        MSYSTEM: MINGW64
+        CHERE_INVOKING: yes
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: $(TWINE_PASSWORD)
+      inputs:
+        targetType: inline
+        script: |
+          # Build and install libiio
+          - bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
+      
+          # Download SWIG
+          - cd c:\
+          - appveyor DownloadFile https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip
+          - 7z x swigwin-4.0.0.zip -oswig
+          - cd swig/swigwin-4.0.0
+          - xcopy * .. /s /e /h /Q
+      
+          #Install Inno Setup
+          - choco install InnoSetup
+          - set PATH=%PATH%;"C:\Program Files (x86)\Inno Setup 5"
+    - task: PowerShell@2
+      displayName: 'Build script'
+      env:
+        MSYSTEM: MINGW64
+        CHERE_INVOKING: yes
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: $(TWINE_PASSWORD)
+      inputs:
+        targetType: inline
+        script: |
+          # Download glog
+          - cd c:\
+          - C:\projects\libm2k\CI\appveyor\install_glog.bat "Release" "x64"
+          - C:\projects\libm2k\CI\appveyor\install_glog.bat "Release" "Win32"
+      
+          - bash -c "/c/projects/libm2k/CI/appveyor/build_appveyor_msvc.sh"
+          #Create the installer
+          - copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x86\Microsoft.VC142.CRT\msvcp140.dll" c:\projects\libm2k\build-win32
+          - copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\msvcp140.dll" c:\projects\libm2k\build-win64
+          - copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x86\Microsoft.VC142.CRT\vcruntime140.dll" c:\projects\libm2k\build-win32
+          - copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\vcruntime140.dll" c:\projects\libm2k\build-win64
+          - ISCC c:\projects\libm2k\build-win64\libm2k.iss
+          # - appveyor PushArtifact C:\libm2k-system-setup.exe
+      
+          # Create ZIPs
+          - cd c:\projects\libm2k
+          
+          - mkdir c:\wheelhouse
+          - mkdir c:\libm2k-win32
+          - mkdir c:\libm2k-win32\dist
+          - xcopy include c:\libm2k-win32 /s /e /h
+          - copy build-win32\libm2k.* c:\libm2k-win32\
+          - copy build-win32\_libm2k.* c:\libm2k-win32\
+          - copy build-win32\libm2k_lv.dll c:\libm2k-win32\
+          - copy build-win32\libm2k-sharp.dll c:\libm2k-win32\
+          - copy build-win32\libm2k-sharp-cxx-wrap.dll c:\libm2k-win32\
+          - copy build-win32\*.exe c:\libm2k-win32\
+          - copy build-win32\msvc*.dll c:\libm2k-win32\
+          - copy build-win32\vcruntime*.dll c:\libm2k-win32\
+          - copy build-win32\dist\*.whl c:\libm2k-win32\dist\
+          - copy build-win32\dist\*.whl c:\wheelhouse
+          - copy c:\libiio-win32\*.dll c:\libm2k-win32\
+          - copy c:\glog\build_0_4_0-Win32\Release\glog.dll c:\libm2k-win32\
+          - 7z a "c:\libm2k-win32.zip" c:\libm2k-win32
+          # - ps: Get-ChildItem c:\libm2k-win32\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+          # - appveyor PushArtifact c:\libm2k-win32.zip
+      
+          - mkdir c:\libm2k-win64
+          - mkdir c:\libm2k-win64\dist
+          - xcopy include c:\libm2k-win64 /s /e /h
+          - copy build-win64\libm2k.* c:\libm2k-win64\
+          - copy build-win64\_libm2k.* c:\libm2k-win64\
+          - copy build-win64\libm2k_lv.dll c:\libm2k-win64\
+          - copy build-win64\libm2k-sharp.dll c:\libm2k-win64\
+          - copy build-win64\libm2k-sharp-cxx-wrap.dll c:\libm2k-win64\
+          - copy build-win64\*.exe c:\libm2k-win64\
+          - copy build-win64\msvc*.dll c:\libm2k-win64\
+          - copy build-win64\vcruntime*.dll c:\libm2k-win64\
+          - copy build-win64\dist\*.whl c:\libm2k-win64\dist\
+          - copy build-win64\dist\*.whl c:\wheelhouse
+          - copy c:\libiio-win64\*.dll c:\libm2k-win64\
+          - copy c:\glog\build_0_4_0-x64\Release\glog.dll c:\libm2k-win64\
+          - 7z a "c:\libm2k-win64.zip" c:\libm2k-win64
+          # - ps: Get-ChildItem c:\libm2k-win64\dist\*.whl | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+          # - appveyor PushArtifact c:\libm2k-win64.zip
