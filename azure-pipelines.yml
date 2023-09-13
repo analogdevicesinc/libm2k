@@ -212,18 +212,18 @@ jobs:
         targetType: inline
         script: |
           # Build and install libiio
-          -bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
+          - bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
         
           # Download SWIG
           cd c:\
           wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip
-          -7z x swigwin-4.0.0.zip -oswig
-          -cd swig/swigwin-4.0.0
-          -xcopy * .. /s /e /h /Q
+          - 7z x swigwin-4.0.0.zip -oswig
+          - cd swig/swigwin-4.0.0
+          - xcopy * .. /s /e /h /Q
       
           #Install Inno Setup
-          -choco install InnoSetup
-          -set PATH=%PATH%;"C:\Program Files (x86)\Inno Setup 5"
+          - choco install InnoSetup
+          - set PATH=%PATH%;"C:\Program Files (x86)\Inno Setup 5"
     - task: PowerShell@2
       displayName: 'Build script'
       env:
