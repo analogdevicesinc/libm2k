@@ -211,7 +211,6 @@ jobs:
       inputs:
         targetType: inline
         script: |
-          #!/bin/bash
           # Build and install libiio
           -bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
         
