@@ -216,7 +216,7 @@ jobs:
       
           # Download SWIG
           - cd c:\
-          - appveyor DownloadFile https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip
+          - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip
           - 7z x swigwin-4.0.0.zip -oswig
           - cd swig/swigwin-4.0.0
           - xcopy * .. /s /e /h /Q
