@@ -185,7 +185,7 @@ jobs:
   steps:
     - checkout: self
       fetchDepth: 1
-      clean: true
+      clean: "true"
     - task: DownloadPipelineArtifact@2
       displayName: 'Get libiio artifacts'
       env:
@@ -211,6 +211,7 @@ jobs:
       inputs:
         targetType: inline
         script: |
+          Get-Childitem –Path C:\
           # Build and install libiio
           bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
         
