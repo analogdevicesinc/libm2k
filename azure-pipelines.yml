@@ -34,30 +34,30 @@ jobs:
 - job: LinuxBuilds
   strategy:
     matrix:
-      ubuntu_18_04:
-        imageName: 'ubuntu-18.04'
-        OS_TYPE: 'ubuntu_docker'
-        OS_VERSION: bionic
-        artifactName: 'Linux-Ubuntu-18.04'
-        PACKAGE_TO_INSTALL: 'build/*.deb'
-      ubuntu_20_04:
-        imageName: 'ubuntu-20.04'
-        OS_TYPE: 'ubuntu_docker'
-        OS_VERSION: focal
-        artifactName: 'Linux-Ubuntu-20.04'
-        PACKAGE_TO_INSTALL: 'build/*.deb'
+      # ubuntu_18_04:
+      #   imageName: 'ubuntu-18.04'
+      #   OS_TYPE: 'ubuntu_docker'
+      #   OS_VERSION: bionic
+      #   artifactName: 'Linux-Ubuntu-18.04'
+      #   PACKAGE_TO_INSTALL: 'build/*.deb'
+      # ubuntu_20_04:
+      #   imageName: 'ubuntu-20.04'
+      #   OS_TYPE: 'ubuntu_docker'
+      #   OS_VERSION: focal
+      #   artifactName: 'Linux-Ubuntu-20.04'
+      #   PACKAGE_TO_INSTALL: 'build/*.deb'
       ubuntu_22_04:
         imageName: 'ubuntu-22.04'
         OS_TYPE: 'ubuntu_docker'
         OS_VERSION: jammy
         artifactName: 'Linux-Ubuntu-22.04'
         PACKAGE_TO_INSTALL: 'build/*.deb'
-      deploy_doxygen:
-        imageName: 'ubuntu-20.04'
-        OS_TYPE: 'doxygen'
-        OS_VERSION: focal
-        artifactName: 'Linux-Ubuntu-20.04'
-        PACKAGE_TO_INSTALL: 'build/*.deb'
+      # deploy_doxygen:
+      #   imageName: 'ubuntu-20.04'
+      #   OS_TYPE: 'doxygen'
+      #   OS_VERSION: focal
+      #   artifactName: 'Linux-Ubuntu-20.04'
+      #   PACKAGE_TO_INSTALL: 'build/*.deb'
   pool:
     vmImage: $(imageName)
   steps:
@@ -91,81 +91,81 @@ jobs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactName: '$(artifactName)'
 
-- job: macOSBuilds
-  strategy:
-    matrix:
-      macOS_11:
-        imageName: 'macOS-11'
-        artifactName: 'macOS-11'
-      macOS_12:
-        imageName: 'macOS-12'
-        artifactName: 'macOS-12'
-  pool:
-    vmImage: $(imageName)
-  variables:
-    PACKAGE_TO_INSTALL: 'build/*.pkg'
-  steps:
-  - checkout: self
-    fetchDepth: 1
-    clean: true
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Get libiio artifacts'
-    inputs:
-      source: 'specific'
-      project: '$(AnalogDevices_OpenSource_GUID)'
-      pipeline: $(libiioPipelineId)
-      artifact: '$(artifactName)'
-      runVersion: 'latestFromBranch'
-      runBranch: 'refs/heads/fixMinGW'
-      path: '$(Agent.BuildDirectory)/s/build/'
-  - script: ./CI/travis/before_install_darwin
-    displayName: "Install Dependencies"
-  - script: ./CI/travis/make_darwin
-    displayName: "Build"
-  - ${{ each pyVersion in parameters.pythonVersions }}:
-    - task: UsePythonVersion@0
-      displayName: Use Python ${{ pyVersion }}
-      inputs:
-        versionSpec: '${{ pyVersion }}'
-    - script: |
-            python3 --version
-            python3 -m pip install wheel twine build virtualenv
-            cd '$(Agent.BuildDirectory)/s/build/'
-            mkdir -p wheelhouse
-            export COMPILE_BINDINGS=True
-            python3 -m build
-            export COMPILE_BINDINGS=
-            cp dist/*.whl wheelhouse
-      displayName: Wheel Python ${{ pyVersion }}
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Agent.BuildDirectory)/s/build/'
-      contents: '$(Agent.BuildDirectory)/s/build/?(*.pkg)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Agent.BuildDirectory)/s/build/'
-      contents: '$(Agent.BuildDirectory)/s/build/wheelhouse/?(*.whl)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Agent.BuildDirectory)/s/build_tar/'
-      contents: '$(Agent.BuildDirectory)/s/build_tar/?(*.tar.gz)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
-  - task: PublishPipelineArtifact@1
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-    inputs:
-      targetPath: '$(Build.ArtifactStagingDirectory)'
-      artifactName: '$(artifactName)'
-  - script: |
-      python -m pip install --upgrade pip twine
-      cd '$(Agent.BuildDirectory)/s/build/wheelhouse/'
-      python -m twine upload --repository "testpypi" *.whl
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
-    displayName: "Upload to PyPI"
-    env:
-      TWINE_USERNAME: '__token__'
-      TWINE_PASSWORD: $(TWINE_PASSWORD)
+# - job: macOSBuilds
+#   strategy:
+#     matrix:
+#       macOS_11:
+#         imageName: 'macOS-11'
+#         artifactName: 'macOS-11'
+#       macOS_12:
+#         imageName: 'macOS-12'
+#         artifactName: 'macOS-12'
+#   pool:
+#     vmImage: $(imageName)
+#   variables:
+#     PACKAGE_TO_INSTALL: 'build/*.pkg'
+#   steps:
+#   - checkout: self
+#     fetchDepth: 1
+#     clean: true
+#   - task: DownloadPipelineArtifact@2
+#     displayName: 'Get libiio artifacts'
+#     inputs:
+#       source: 'specific'
+#       project: '$(AnalogDevices_OpenSource_GUID)'
+#       pipeline: $(libiioPipelineId)
+#       artifact: '$(artifactName)'
+#       runVersion: 'latestFromBranch'
+#       runBranch: 'refs/heads/fixMinGW'
+#       path: '$(Agent.BuildDirectory)/s/build/'
+#   - script: ./CI/travis/before_install_darwin
+#     displayName: "Install Dependencies"
+#   - script: ./CI/travis/make_darwin
+#     displayName: "Build"
+#   - ${{ each pyVersion in parameters.pythonVersions }}:
+#     - task: UsePythonVersion@0
+#       displayName: Use Python ${{ pyVersion }}
+#       inputs:
+#         versionSpec: '${{ pyVersion }}'
+#     - script: |
+#             python3 --version
+#             python3 -m pip install wheel twine build virtualenv
+#             cd '$(Agent.BuildDirectory)/s/build/'
+#             mkdir -p wheelhouse
+#             export COMPILE_BINDINGS=True
+#             python3 -m build
+#             export COMPILE_BINDINGS=
+#             cp dist/*.whl wheelhouse
+#       displayName: Wheel Python ${{ pyVersion }}
+#   - task: CopyFiles@2
+#     inputs:
+#       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
+#       contents: '$(Agent.BuildDirectory)/s/build/?(*.pkg)'
+#       targetFolder: '$(Build.ArtifactStagingDirectory)'
+#   - task: CopyFiles@2
+#     inputs:
+#       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
+#       contents: '$(Agent.BuildDirectory)/s/build/wheelhouse/?(*.whl)'
+#       targetFolder: '$(Build.ArtifactStagingDirectory)'
+#   - task: CopyFiles@2
+#     inputs:
+#       sourceFolder: '$(Agent.BuildDirectory)/s/build_tar/'
+#       contents: '$(Agent.BuildDirectory)/s/build_tar/?(*.tar.gz)'
+#       targetFolder: '$(Build.ArtifactStagingDirectory)'
+#   - task: PublishPipelineArtifact@1
+#     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+#     inputs:
+#       targetPath: '$(Build.ArtifactStagingDirectory)'
+#       artifactName: '$(artifactName)'
+#   - script: |
+#       python -m pip install --upgrade pip twine
+#       cd '$(Agent.BuildDirectory)/s/build/wheelhouse/'
+#       python -m twine upload --repository "testpypi" *.whl
+#     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+#     displayName: "Upload to PyPI"
+#     env:
+#       TWINE_USERNAME: '__token__'
+#       TWINE_PASSWORD: $(TWINE_PASSWORD)
 
 - job: WindowsBuilds
   strategy:
@@ -211,7 +211,7 @@ jobs:
       inputs:
         targetType: inline
         script: |
-          Get-Childitem –Path C:\
+          Get-Childitem –Path 'C:\$(Agent.BuildDirectory)\s\build\'
           # Build and install libiio
           bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
         
