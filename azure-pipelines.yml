@@ -212,7 +212,7 @@ jobs:
         targetType: inline
         script: |
           # Build and install libiio
-          - bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
+          bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
         
           # Download SWIG
           cd c:\
