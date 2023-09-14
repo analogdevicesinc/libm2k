@@ -211,7 +211,7 @@ jobs:
       inputs:
         targetType: inline
         script: |
-          Get-Childitem –Path 'C:\$(Agent.BuildDirectory)\s\build\'
+          Get-Childitem –Path '$(Agent.BuildDirectory)\s\build\'
           # Build and install libiio
           bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
         
