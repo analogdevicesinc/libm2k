@@ -214,8 +214,8 @@ jobs:
           #Download libiio deps
           echo "Downloading deps..."
           cd c:\
-          wget -r -np http://swdownloads.analog.com/cse/build/libiio-win-deps-libusb1.0.24.zip
-          Get-Childitem –Path "c:\"
+          wget http://swdownloads.analog.com/cse/build/libiio-win-deps-libusb1.0.24.zip
+          Get-Childitem –Path C:\
           7z x -y "c:\libiio-win-deps-libusb1.0.24.zip"
 
           # Get-Childitem –Path '$(Agent.BuildDirectory)\s\.git'
