@@ -186,21 +186,21 @@ jobs:
     - checkout: self
       fetchDepth: 1
       clean: "true"
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Get libiio artifacts'
-      env:
-        MSYSTEM: MINGW64
-        CHERE_INVOKING: yes
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: $(TWINE_PASSWORD)
-      inputs:
-        source: 'specific'
-        project: '$(AnalogDevices_OpenSource_GUID)'
-        pipeline: $(libiioPipelineId)
-        artifact: '$(artifactName)'
-        runVersion: 'latestFromBranch'
-        runBranch: 'refs/heads/fixMinGW'
-        path: '$(Agent.BuildDirectory)/s/build/'
+    # - task: DownloadPipelineArtifact@2
+    #   displayName: 'Get libiio artifacts'
+    #   env:
+    #     MSYSTEM: MINGW64
+    #     CHERE_INVOKING: yes
+    #     TWINE_USERNAME: __token__
+    #     TWINE_PASSWORD: $(TWINE_PASSWORD)
+    #   inputs:
+    #     source: 'specific'
+    #     project: '$(AnalogDevices_OpenSource_GUID)'
+    #     pipeline: $(libiioPipelineId)
+    #     artifact: '$(artifactName)'
+    #     runVersion: 'latestFromBranch'
+    #     runBranch: 'refs/heads/fixMinGW'
+    #     path: '$(Agent.BuildDirectory)/s/build/'
     - task: PowerShell@2
       displayName: 'Dependencies'
       env:
@@ -211,7 +211,13 @@ jobs:
       inputs:
         targetType: inline
         script: |
-          Get-Childitem –Path '$(Agent.BuildDirectory)\s\.git'
+          #Download libiio deps
+          echo "Downloading deps..."
+          cd c:\
+          appveyor DownloadFile http://swdownloads.analog.com/cse/build/libiio-win-deps-libusb1.0.24.zip
+          7z x -y "c:\libiio-win-deps-libusb1.0.24.zip"
+
+          # Get-Childitem –Path '$(Agent.BuildDirectory)\s\.git'
           # Build and install libiio
           bash -c "/c/projects/libm2k/CI/appveyor/install_deps_msvc.sh"
         
