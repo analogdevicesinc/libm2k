@@ -93,6 +93,7 @@ if __name__ == "__main__":
         print("test_trig_conditions\n")
         print("test_cyclic_buffer\n")
         print("test_kernel_buffers\n")
+        print("test_pattern_generator_pulse\n")
 
         exit()
     elif len(sys.argv) > 1 and "nofiles" in sys.argv:
