@@ -333,3 +333,92 @@ def test_kernel_buffers(dig, nb_kernel_buffers):
     except:
         error = True
     return error
+
+
+def write_file(file, test_name, channel, data_string):
+    if test_name == "pattern_generator_pulse":
+        file.write("\n\nTest pattern generator on DIO_" + str(channel) + '\n')
+
+    for i in range(len(data_string)):
+        file.write(str(data_string[i]) + '\n')
+
+
+def count_edges(data, threshold = 0.5):
+    logic_data = np.where(data > threshold, 1, 0) # replace with logic values
+    rising_edges = np.sum(np.diff(logic_data) > 0)
+    falling_edges = np.sum(np.diff(-logic_data + 1) > 0) # inverted signal -> falling edges
+    return rising_edges + falling_edges
+
+
+def test_pattern_generator_pulse(dig, d_trig, channel):
+    if gen_reports:
+        from create_files import results_file, results_dir, csv, open_files_and_dirs
+        if results_file is None:
+            file, dir_name, csv_path = open_files_and_dirs()
+        else:
+            file = results_file
+            dir_name = results_dir
+            csv_path = csv
+    else:
+        file = []
+        
+    timeout = 15_000 # in  milliseconds
+    delay = 8192
+    buffer_size = 100_000
+    sampling_frequency_in = 10_000_000
+    sampling_frequency_out = 10_000
+    
+    test_name = "pattern_generator_pulse"
+    data_string = []
+    
+    file_name, dir_name, csv_path = result_files(gen_reports)
+    dig.reset()
+    ctx.setTimeout(timeout)
+    
+    dig.setSampleRateIn(sampling_frequency_in)
+    dig.setSampleRateOut(sampling_frequency_out) 
+    dig.setCyclic(False)
+    
+    d_trig.reset()
+    d_trig.setDigitalMode(libm2k.DIO_OR)
+    d_trig.setDigitalStreamingFlag(False)
+    # only tested channel should trigger acquisition
+    for i in range(16): 
+        d_trig.setDigitalCondition(i, libm2k.NO_TRIGGER_DIGITAL)
+    d_trig.setDigitalCondition(channel, libm2k.RISING_EDGE_DIGITAL)
+    d_trig.setDigitalDelay(-delay)
+    
+    dig.startAcquisition(buffer_size) 
+
+    dig.setDirection(channel, libm2k.DIO_OUTPUT) 
+    dig.setValueRaw(channel, libm2k.LOW) # setting chn to raw 0 before enable does not fix the bug
+    dig.enableChannel(channel,True)
+
+    # expected: line start LOW and then stays  HIGH
+    # each 0xFFFF should create 1 edge in the current channel
+    # 0, 0, 0, 0xFFFF, 0xFFFF, 0 , 0, 0xFFFF 0xFFFF, 0 , 0, 0xFFFF
+    #         1               2       3             4      5
+    buff = np.tile(A = np.array([0xFFFF, 0 , 0, 0xFFFF]), reps = 2) 
+    buff= np.insert(buff, 0, [0, 0, 0, 0xFFFF])    
+    
+    expected_num_edges = (buff == 0xFFFF).sum()
+    buff = buff.tolist()
+    dig.push(buff)
+    
+    data = dig.getSamples(buffer_size)
+    crnt_chn_dio_data = np.array(list(map(lambda s: (((0x0001 << channel) & int(s)) >> channel), data)))
+    actual_num_edges = count_edges(crnt_chn_dio_data)
+    extra_edges = abs(expected_num_edges - actual_num_edges) 
+    
+    data_string.append(
+        "Expected: " + str(expected_num_edges) + " , found: " + str(actual_num_edges))
+    
+    if gen_reports:
+        write_file(file, test_name, channel, data_string)    
+        plot_to_file("Pattern generator on ch" + str(channel), crnt_chn_dio_data, dir_name,
+                    "digital_pattern_generator_ch" + str(channel) + ".png")
+    
+    dig.stopAcquisition()
+    dig.stopBufferOut()
+    
+    return extra_edges

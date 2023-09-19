@@ -1,9 +1,9 @@
 import unittest
 import libm2k
 from digital_functions import dig_reset, set_digital_trigger, check_digital_channels_state, check_digital_output, \
-    check_digital_trigger, check_open_drain_mode, test_kernel_buffers
+    check_digital_trigger, check_open_drain_mode, test_kernel_buffers, test_pattern_generator_pulse
 from digital_functions import test_digital_cyclic_buffer
-from open_context import dig, d_trig
+from open_context import ctx, dig, d_trig
 import logger
 from repeat_test import repeat
 
@@ -50,3 +50,13 @@ class D_DigitalTests(unittest.TestCase):
         with self.subTest(
             msg='Set kernel buffers count on Digital In without raising an error '):
             self.assertEqual(test_err, False, 'Error occured')
+
+    @unittest.skip("This fix is a known bug which was not fixed in firmware v0.32")
+    def test_pattern_generator_pulse(self):
+        # Verifies that the pattern generator does not generate any additional edges. Currently it generates 1 additional edge
+        # before outputting the pattern set. At the end it holds the value of the last sample at the ouput.
+        # The measured pattern should be the same as the one set.
+        for i in range(16):
+            test_result = test_pattern_generator_pulse(dig, d_trig, i)
+            with self.subTest(i):
+                self.assertEqual(test_result, 0, "Found " + str(test_result) + " aditional edges on  Channel: " + str(i))
