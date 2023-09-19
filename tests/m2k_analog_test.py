@@ -4,7 +4,7 @@ import libm2k
 
 from shapefile import shape_gen, ref_shape_gen, shape_name
 from analog_functions import test_amplitude, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, \
-    test_voltmeter_functionality, test_kernel_buffers
+    test_voltmeter_functionality, test_kernel_buffers, test_buffer_transition_glitch
 from analog_functions import noncyclic_buffer_test, set_samplerates_for_shapetest, set_trig_for_cyclicbuffer_test, \
     test_calibration
 from analog_functions import compare_in_out_frequency, test_oversampling_ratio, channels_diff_in_samples, test_timeout, \
@@ -240,3 +240,15 @@ class A_AnalogTests(unittest.TestCase):
             else:
                 with self.subTest(msg='No timeout'):
                     self.assertEqual(data, True, 'Data was not acquired correctly')
+
+    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.32', 'This is a known bug in previous firmware implementations which is fixed in v0.32')
+    def test_buffer_transition_glitch(self):
+        # Pushing a new cyclic buffer should output the value of the raw attr. In previous firmware versions, the new buffer would start 
+        # with the last sample from previous buffer which lead to a glitch in the output signal. This test verifies that the glitch is not present anymore.
+        
+        for channel in [libm2k.ANALOG_IN_CHANNEL_1, libm2k.ANALOG_IN_CHANNEL_2]:
+            for waveform in ['dc', 'sine']:
+                num_glitches = test_buffer_transition_glitch(channel, ain, aout, trig, waveform)
+                
+                with self.subTest(msg='Test buffer transition glitch: ' + waveform + ' on ch' + str(channel)):
+                    self.assertEqual(num_glitches, 0, 'Found ' + str(num_glitches) + ' glitches on channel ' + str(channel))

@@ -73,7 +73,8 @@ if __name__ == "__main__":
               "test_phase_difference_between_channels_in_samples\n"
               "test_shapes_ch0\n"
               "test_shapes_ch1\n"
-              "test_voltmeter\n")
+              "test_voltmeter\n"
+              "test_buffer_transition_glitch\n")
         print("\n ===== class B_TriggerTests ===== \n")
         print(" ===== tests ====== \n")
         print("test_1_trigger_object\n"
