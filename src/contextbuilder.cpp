@@ -52,6 +52,7 @@ std::map<ContextTypes, std::string> ContextBuilder::m_dev_name_map = {
 };
 
 bool ContextBuilder::m_disable_logging = true;
+std::map<std::string, int> ContextBuilder::reference_count = {};
 
 ContextBuilder::ContextBuilder()
 {
@@ -148,19 +149,55 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 	}
 }
 
+void ContextBuilder::incrementReferenceCount(std::string uri)
+{
+	if (reference_count.find(uri) != reference_count.end()) {
+		reference_count[uri]++;
+	} else {
+		reference_count.emplace(uri, 1);
+	}
+}
+
+void ContextBuilder::decrementReferenceCount(std::string uri)
+{
+	if (reference_count.find(uri) != reference_count.end()) {
+		reference_count[uri]--;
+	}
+}
+
+bool ContextBuilder::checkLastReference(std::string uri)
+{
+	if (reference_count.find(uri) != reference_count.end()) {
+		return (reference_count[uri] == 0);
+	}
+	return false;
+}
+
+Context* ContextBuilder::searchInConnectedDevices(std::string uri)
+{
+	for (auto dev : s_connectedDevices) {
+		if (dev->getUri() == uri) {
+			return dev;
+		}
+	}
+	return nullptr;
+}
+
+
 Context* ContextBuilder::contextOpen(const char *uri)
 {
+	Context* dev = nullptr;
 	if (m_disable_logging) {
 		enableLogging(false);
 	}
 	LIBM2K_LOG(INFO, "libm2k version: " + getVersion());
-
-	for (Context* dev : s_connectedDevices) {
-		if (dev->getUri() == std::string(uri)) {
-			return dev;
-		}
+	// use saved device is possible
+	dev = searchInConnectedDevices(uri);
+	if (dev) {
+		incrementReferenceCount(uri);
+		return dev;
 	}
-
+	// create and save device during first call
 	struct iio_context* ctx = iio_create_context_from_uri(uri);
 	if (!ctx) {
 		return nullptr;
@@ -182,14 +219,16 @@ Context* ContextBuilder::contextOpen(const char *uri)
 
 	ContextTypes dev_type = ContextBuilder::identifyContext(ctx);
 
-	Context* dev = buildContext(dev_type, std::string(uri), ctx, true, true);
+	dev = buildContext(dev_type, std::string(uri), ctx, true, true);
 	s_connectedDevices.push_back(dev);
+	incrementReferenceCount(uri);
 
 	return dev;
 }
 
 Context* ContextBuilder::contextOpen(struct iio_context* ctx, const char* uri)
 {
+	Context* dev = nullptr;
     if (m_disable_logging) {
         enableLogging(false);
     }
@@ -210,21 +249,22 @@ Context* ContextBuilder::contextOpen(struct iio_context* ctx, const char* uri)
 	if (hw_fw_version != nullptr) {
 		LIBM2K_LOG(INFO, "Firmware version: " + std::string(hw_fw_version));
 	}
-
-	for (Context* dev : s_connectedDevices) {
-		if (dev->getUri() == std::string(uri)) {
-			return dev;
-		}
+	// use saved device is possible
+	dev = searchInConnectedDevices(uri);
+	if (dev) {
+		incrementReferenceCount(uri);
+		return dev;
 	}
 
 	if (!ctx) {
 		return nullptr;
 	}
-
+	// create and save device during first call
 	ContextTypes dev_type = ContextBuilder::identifyContext(ctx);
 
-	Context* dev = buildContext(dev_type, std::string(uri), ctx, true);
+	dev = buildContext(dev_type, std::string(uri), ctx, true);
 	s_connectedDevices.push_back(dev);
+	incrementReferenceCount(uri);
 
 	return dev;
 }
@@ -288,6 +328,17 @@ M2k *ContextBuilder::m2kOpen()
 
 void ContextBuilder::contextClose(Context* device, bool deinit)
 {
+	auto uri = device->getUri();
+	if (searchInConnectedDevices(uri) == nullptr) {
+		return;
+	}
+	decrementReferenceCount(uri);
+	bool isLastReference = checkLastReference(uri);
+	if (!isLastReference) {
+		return;
+	}
+
+	reference_count.erase(uri);
 	s_connectedDevices.erase(std::remove(s_connectedDevices.begin(),
 					     s_connectedDevices.end(),
 					     device), s_connectedDevices.end());

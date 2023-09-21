@@ -113,6 +113,11 @@ private:
 		bool ownsContext = false);
 	static bool m_disable_logging;
 
+	static std::map<std::string, int> reference_count;
+	static void incrementReferenceCount(std::string uri);
+	static void decrementReferenceCount(std::string uri);
+	static bool checkLastReference(std::string uri);
+	static Context* searchInConnectedDevices(std::string uri);
 };
 
 /**
