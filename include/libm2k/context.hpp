@@ -40,7 +40,6 @@ namespace analog {
 }
 
 namespace context {
-class Lidar;
 class M2k;
 class Generic;
 
@@ -152,14 +151,6 @@ public:
 	 * @return On error, return a nullptr
 	 */
 	virtual M2k* toM2k() = 0;
-
-
-	/**
-	 * @brief Convert the current context to Lidar context, if possible
-	 * @return On success, return the corresponding Lidar object
-	 * @return On error, return a nullptr
-	 */
-	virtual Lidar* toLidar() = 0;
 
 
 	/**

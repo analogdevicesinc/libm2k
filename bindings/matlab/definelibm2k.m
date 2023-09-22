@@ -37,8 +37,7 @@ addEnumeration(libDef, "ContextTypes", "int32",...
     [...
       "CtxFMCOMMS",...  % 0
       "CtxM2K",...  % 1
-      "CtxLIDAR",...  % 2
-      "Other",...  % 3
+      "Other",...  % 2
     ],...
     "MATLABName", "clib.libm2k.ContextTypes", ...
     "Description", "clib.libm2k.ContextTypes    Representation of C++ enumeration ContextTypes."); % Modify help description values as needed.
@@ -3923,10 +3922,6 @@ getLedDefinition = addMethod(M2kDefinition, ...
 defineOutput(getLedDefinition, "RetVal", "logical", "Description", "If the led is turned on, true");
 validate(getLedDefinition);
 
-%% C++ class |libm2k::context::Lidar| with MATLAB name |clib.libm2k.libm2k.context.Lidar| 
-LidarDefinition = addClass(libDef, "libm2k::context::Lidar", "MATLABName", "clib.libm2k.libm2k.context.Lidar", ...
-    "Description", "clib.libm2k.libm2k.context.Lidar    Representation of C++ class libm2k::context::Lidar."); % Modify help description values as needed.
-
 %% C++ class |libm2k::context::Generic| with MATLAB name |clib.libm2k.libm2k.context.Generic| 
 GenericDefinition = addClass(libDef, "libm2k::context::Generic", "MATLABName", "clib.libm2k.libm2k.context.Generic", ...
     "Description", "clib.libm2k.libm2k.context.Generic    Representation of C++ class libm2k::context::Generic."); % Modify help description values as needed.
@@ -4077,18 +4072,6 @@ validate(logAllAttributesDefinition);
 %    "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
 %defineOutput(toM2kDefinition, "RetVal", "clib.libm2k.libm2k.context.M2k", <SHAPE>, "Description", "On success, return the corresponding M2k object");
 %validate(toM2kDefinition);
-
-%% C++ class method |toLidar| for C++ class |libm2k::context::Context| 
-% C++ Signature: libm2k::context::Lidar * libm2k::context::Context::toLidar()
-
-%toLidarDefinition = addMethod(ContextDefinition, ...
-%    "libm2k::context::Lidar * libm2k::context::Context::toLidar()", ...
-%    "MATLABName", "toLidar", ...
-%    "Description", "toLidar Method of C++ class libm2k::context::Context." + newline + ...
-%    "Convert the current context to Lidar context, if possible", ...
-%    "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
-%defineOutput(toLidarDefinition, "RetVal", "clib.libm2k.libm2k.context.Lidar", <SHAPE>, "Description", "On success, return the corresponding Lidar object");
-%validate(toLidarDefinition);
 
 %% C++ class method |toGeneric| for C++ class |libm2k::context::Context| 
 % C++ Signature: libm2k::context::Generic * libm2k::context::Context::toGeneric()
