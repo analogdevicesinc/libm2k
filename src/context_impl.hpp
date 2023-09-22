@@ -23,7 +23,6 @@
 #define CONTEXT_IMPL_HPP
 
 #include <libm2k/context.hpp>
-#include <libm2k/lidar.hpp>
 #include <libm2k/generic.hpp>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/enums.hpp>
@@ -51,7 +50,6 @@ namespace digital {
 
 namespace context {
 class Context;
-class Lidar;
 class M2k;
 
 class ContextImpl : public virtual Context {
@@ -79,7 +77,6 @@ public:
 
 	libm2k::context::M2k* toM2k() override;
 	libm2k::context::Generic* toGeneric() override;
-	libm2k::context::Lidar* toLidar() override;
 
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);

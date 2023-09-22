@@ -33,7 +33,6 @@
 enum ContextTypes {
 	CtxFMCOMMS,
 	CtxM2K,
-	CtxLIDAR,
 	Other
 };
 

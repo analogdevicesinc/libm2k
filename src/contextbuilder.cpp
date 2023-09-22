@@ -20,7 +20,6 @@
  */
 
 #include "m2k_impl.hpp"
-#include "lidar_impl.hpp"
 #include "generic_impl.hpp"
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
@@ -44,14 +43,11 @@ std::map<ContextTypes, std::vector<std::string>> ContextBuilder::m_dev_map = {
 	{ContextTypes::CtxM2K, {"m2k-adc", "m2k-dac-a",
 				"m2k-dac-b", "m2k-logic-analyzer-rx",
 				"m2k-logic-analyzer-tx", "m2k-logic-analyzer"}},
-	{ContextTypes::CtxLIDAR, {"ad7091", "ltc2471", "xadc", "ad5627", "ad9528",
-				  "7c700000.axi-pulse-capture", "axi-ad9094-hpc"}}
 };
 
 std::map<ContextTypes, std::string> ContextBuilder::m_dev_name_map = {
 	{ContextTypes::CtxFMCOMMS, "FMMCOMMS"},
 	{ContextTypes::CtxM2K, "M2K"},
-	{ContextTypes::CtxLIDAR, "LIDAR"},
 	{Other, "Generic"}
 };
 
@@ -141,12 +137,6 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 			auto m2k = new M2kImpl(uri, ctx, name, sync);
 			m2k->setContextOwnership(ownsContext);
 			return m2k;
-		}
-		case CtxLIDAR:
-		{
-			auto lidar = new LidarImpl(uri, ctx, name, sync);
-			lidar->setContextOwnership(ownsContext);
-			return lidar;
 		}
 		case Other:
 		default:

@@ -391,16 +391,6 @@ Generic *ContextImpl::toGeneric()
 	}
 }
 
-Lidar *ContextImpl::toLidar()
-{
-	libm2k::context::Lidar* dev = dynamic_cast<Lidar*>(this);
-	if(dev) {
-		return dev;
-	} else {
-		return nullptr;
-	}
-}
-
 std::string ContextImpl::getUri()
 {
 	return m_uri;
