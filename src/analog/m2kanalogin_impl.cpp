@@ -181,11 +181,12 @@ void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int raw_offse
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	const int rawVertOffset = m_adc_hw_offset_raw.at(channel) - m_adc_calib_offset.at(channel);
-	if (m_calibbias_available) {
-		m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, raw_offset, "calibbias", false);
-	} else {
-		m_adc_calib_offset.at(channel) = raw_offset;
-	}
+	// if (m_calibbias_available) {
+	// 	m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, raw_offset, "calibbias", false);
+	// } else {
+	// 	m_adc_calib_offset.at(channel) = raw_offset;
+	// }
+	m_adc_calib_offset.at(channel) = raw_offset;
 
 	int hw_offset_raw = rawVertOffset + m_adc_calib_offset.at(channel);
 	m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
@@ -249,7 +250,7 @@ double M2kAnalogInImpl::setCalibscale(unsigned int index, double calibscale)
 	if (firmware_version > "0.31") {
 		m_adc_calib_gain.at(index) = calibscale;
 	}
-	return m_m2k_adc->setDoubleValue(index, calibscale, "calibscale");
+	return calibscale;
 }
 
 libm2k::M2kHardwareTrigger *M2kAnalogInImpl::getTrigger()
@@ -906,11 +907,12 @@ void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_off
 	double vertOffset = convertRawToVoltsVerticalOffset(channel, vert_offset);
 	m_adc_hw_vert_offset.at(channel) = vertOffset;
 
-	if (m_calibbias_available) {
-                m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, calib_offset, "calibbias", false);
-        } else {
-                m_adc_calib_offset.at(channel) = calib_offset;
-	}
+	// if (m_calibbias_available) {
+    //             m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, calib_offset, "calibbias", false);
+    //     } else {
+    //             m_adc_calib_offset.at(channel) = calib_offset;
+	// }
+	m_adc_calib_offset.at(channel) = calib_offset;
 
 	const int hw_offset_raw = vert_offset + m_adc_calib_offset.at(channel);
 	m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
@@ -925,11 +927,12 @@ void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int calib_off
     }
     m_adc_hw_vert_offset.at(channel) = vert_offset;
 
-    if (m_calibbias_available) {
-        m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, calib_offset, "calibbias", false);
-    } else {
-        m_adc_calib_offset.at(channel) = calib_offset;
-    }
+    // if (m_calibbias_available) {
+    //     m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, calib_offset, "calibbias", false);
+    // } else {
+    //     m_adc_calib_offset.at(channel) = calib_offset;
+    // }
+	m_adc_calib_offset.at(channel) = calib_offset;
 
     const int hw_offset_raw = convertVoltsToRaw(channel, vert_offset) + m_adc_calib_offset.at(channel);
     m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
