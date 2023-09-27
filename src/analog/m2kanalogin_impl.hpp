@@ -141,6 +141,7 @@ public:
 	bool hasCalibbias();
 	void loadNbKernelBuffers();
 private:
+	std::string firmware_version;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::shared_ptr<libm2k::utils::DeviceIn> m_m2k_adc;
@@ -180,6 +181,21 @@ private:
 
 	int convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
 	double convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset);
+
+	/**
+	 * This function can stop the calibration process for the ADC at the HW level.
+	 * The possible values can be checked in IIO in the "calibrate_available" device attribute of m2k-adc.
+	 * 
+	 * When calibrate is set to true, the calibration won't affect the ADC samples. When set to false 
+	 * the calibration is applied. It should be set before doing calibration to avoid sending samples.
+	 * 
+	 * Introduced in fw v0.32 to solve a bug where after HW calibration, some samples were missing due to rounding errors.
+	 * 
+	 * @param calibrate_val The calibration value to set. Can take values "true" or "false" as std::strings.
+	 *                      
+	 */
+	void setCalibrateHDL(std::string calibrate_val);
+	std::string getCalibrateHDL();
 };
 }
 }

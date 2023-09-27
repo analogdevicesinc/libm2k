@@ -43,9 +43,15 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	m_trigger(trigger)
 {
 	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kAnalogIn");
+	firmware_version = Utils::getFirmwareVersion(ctx);
+
 	m_m2k_adc = make_shared<DeviceIn>(ctx, adc_dev);
 	m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 	m_ad5625_dev = make_shared<DeviceGeneric>(ctx, "ad5625");
+
+	if (firmware_version >= "v0.32") {
+		setCalibrateHDL("true"); 
+	}
 
 	/* Filters applied while decimating affect the
 		/ amplitude of the received  data */
@@ -134,6 +140,9 @@ void M2kAnalogInImpl::syncDevice()
                         m_adc_calib_offset.at(i) = m_m2k_adc->getLongValue(i, "calibbias", false);
 		} else {
                         m_adc_calib_offset.at(i) = 2048;
+		}
+		if (firmware_version >= "v0.32") {
+			m_adc_calib_gain.at(i) = getCalibscale(i);
 		}
 		m_adc_hw_offset_raw.at(i) = m_ad5625_dev->getLongValue(2 + i, "raw", true);
 		m_adc_hw_vert_offset.at(i) = convertRawToVoltsVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(i), m_adc_hw_offset_raw.at(i) - m_adc_calib_offset.at(i));
@@ -240,6 +249,10 @@ double M2kAnalogInImpl::setCalibscale(unsigned int index, double calibscale)
 {
 	if (index >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
+	}
+	// update class attribute as well as the attribute in the device
+	if (firmware_version >= "v0.32") {
+		m_adc_calib_gain.at(index) = calibscale;
 	}
 	return m_m2k_adc->setDoubleValue(index, calibscale, "calibscale");
 }
@@ -940,4 +953,13 @@ int M2kAnalogInImpl::getAdcCalibOffset(ANALOG_IN_CHANNEL channel)
 		auto adc_hw_offset = m_ad5625_dev->getLongValue(channel + 2, "raw", true);
 		return (adc_hw_offset - convertVoltsToRawVerticalOffset(channel, m_adc_hw_vert_offset.at(channel)));
 	}
+}
+
+void M2kAnalogInImpl::setCalibrateHDL(std::string calibrate_val)
+{
+	m_m2k_adc->setStringValue("calibrate", calibrate_val);
+}
+std::string M2kAnalogInImpl::getCalibrateHDL()
+{
+	return m_m2k_adc->getStringValue("calibrate");
 }
