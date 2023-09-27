@@ -43,6 +43,8 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	m_trigger(trigger)
 {
 	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kAnalogIn");
+	firmware_version = Utils::getFirmwareVersion(ctx);
+
 	m_m2k_adc = make_shared<DeviceIn>(ctx, adc_dev);
 	m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 	m_ad5625_dev = make_shared<DeviceGeneric>(ctx, "ad5625");
@@ -135,6 +137,9 @@ void M2kAnalogInImpl::syncDevice()
 		} else {
                         m_adc_calib_offset.at(i) = 2048;
 		}
+		if (firmware_version > "0.31") {
+			m_adc_calib_gain.at(i) = getCalibscale(i);
+		}
 		m_adc_hw_offset_raw.at(i) = m_ad5625_dev->getLongValue(2 + i, "raw", true);
 		m_adc_hw_vert_offset.at(i) = convertRawToVoltsVerticalOffset(static_cast<ANALOG_IN_CHANNEL>(i), m_adc_hw_offset_raw.at(i) - m_adc_calib_offset.at(i));
 
@@ -177,9 +182,9 @@ void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int raw_offse
 	}
 	const int rawVertOffset = m_adc_hw_offset_raw.at(channel) - m_adc_calib_offset.at(channel);
 	if (m_calibbias_available) {
-                m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, raw_offset, "calibbias", false);
-        } else {
-                m_adc_calib_offset.at(channel) = raw_offset;
+		m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, raw_offset, "calibbias", false);
+	} else {
+		m_adc_calib_offset.at(channel) = raw_offset;
 	}
 
 	int hw_offset_raw = rawVertOffset + m_adc_calib_offset.at(channel);
@@ -240,6 +245,9 @@ double M2kAnalogInImpl::setCalibscale(unsigned int index, double calibscale)
 {
 	if (index >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
+	}
+	if (firmware_version > "0.31") {
+		m_adc_calib_gain.at(index) = calibscale;
 	}
 	return m_m2k_adc->setDoubleValue(index, calibscale, "calibscale");
 }

@@ -39,6 +39,7 @@ public:
 	~M2kAnalogInImpl() override;
 
 	void reset() override;
+	void syncDevice();
 	void startAcquisition(unsigned int nb_samples) override;
 	void stopAcquisition() override;
 
@@ -141,6 +142,7 @@ public:
 	bool hasCalibbias();
 	void loadNbKernelBuffers();
 private:
+	std::string firmware_version;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_ad5625_dev;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::shared_ptr<libm2k::utils::DeviceIn> m_m2k_adc;
@@ -160,8 +162,6 @@ private:
 	std::vector<bool> m_channels_enabled;
 	unsigned int m_nb_kernel_buffers;
 	bool m_data_available;
-
-	void syncDevice();
 
 	M2K_RANGE getRangeDevice(ANALOG_IN_CHANNEL channel);
 
