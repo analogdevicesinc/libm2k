@@ -49,6 +49,10 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 	m_ad5625_dev = make_shared<DeviceGeneric>(ctx, "ad5625");
 
+	if (firmware_version >= "v0.32") {
+		setCalibrateHDL("true"); // NOTE: in new HDL we can control when the parameters are sent to HDL with this attribute
+	}
+
 	/* Filters applied while decimating affect the
 		/ amplitude of the received  data */
 	m_filter_compensation_table[1E8] = 1.00;
@@ -137,7 +141,7 @@ void M2kAnalogInImpl::syncDevice()
 		} else {
                         m_adc_calib_offset.at(i) = 2048;
 		}
-		if (firmware_version > "0.31") {
+		if (firmware_version >= "v0.32") {
 			m_adc_calib_gain.at(i) = getCalibscale(i);
 		}
 		m_adc_hw_offset_raw.at(i) = m_ad5625_dev->getLongValue(2 + i, "raw", true);
@@ -181,12 +185,11 @@ void M2kAnalogInImpl::setAdcCalibOffset(ANALOG_IN_CHANNEL channel, int raw_offse
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
 	const int rawVertOffset = m_adc_hw_offset_raw.at(channel) - m_adc_calib_offset.at(channel);
-	// if (m_calibbias_available) {
-	// 	m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, raw_offset, "calibbias", false);
-	// } else {
-	// 	m_adc_calib_offset.at(channel) = raw_offset;
-	// }
-	m_adc_calib_offset.at(channel) = raw_offset;
+	if (m_calibbias_available) {
+		m_adc_calib_offset.at(channel) = m_m2k_adc->setLongValue(channel, raw_offset, "calibbias", false);
+	} else {
+		m_adc_calib_offset.at(channel) = raw_offset;
+	}
 
 	int hw_offset_raw = rawVertOffset + m_adc_calib_offset.at(channel);
 	m_adc_hw_offset_raw.at(channel) = m_ad5625_dev->setLongValue(channel + 2, hw_offset_raw, "raw", true);
@@ -247,10 +250,10 @@ double M2kAnalogInImpl::setCalibscale(unsigned int index, double calibscale)
 	if (index >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	if (firmware_version > "0.31") {
+	if (firmware_version >= "v0.32") {
 		m_adc_calib_gain.at(index) = calibscale;
 	}
-	return calibscale;
+	return m_m2k_adc->setDoubleValue(index, calibscale, "calibscale");
 }
 
 libm2k::M2kHardwareTrigger *M2kAnalogInImpl::getTrigger()
@@ -951,4 +954,13 @@ int M2kAnalogInImpl::getAdcCalibOffset(ANALOG_IN_CHANNEL channel)
 		auto adc_hw_offset = m_ad5625_dev->getLongValue(channel + 2, "raw", true);
 		return (adc_hw_offset - convertVoltsToRawVerticalOffset(channel, m_adc_hw_vert_offset.at(channel)));
 	}
+}
+
+void M2kAnalogInImpl::setCalibrateHDL(std::string calibrate_val)
+{
+	m_m2k_adc->setStringValue("calibrate", calibrate_val);
+}
+std::string M2kAnalogInImpl::getCalibrateHDL()
+{
+	return m_m2k_adc->getStringValue("calibrate");
 }

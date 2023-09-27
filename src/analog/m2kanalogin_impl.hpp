@@ -180,6 +180,9 @@ private:
 
 	int convertVoltsToRawVerticalOffset(ANALOG_IN_CHANNEL channel, double vertOffset);
 	double convertRawToVoltsVerticalOffset(ANALOG_IN_CHANNEL channel, int rawVertOffset);
+
+	void setCalibrateHDL(std::string calibrate_val);
+	std::string getCalibrateHDL();
 };
 }
 }
