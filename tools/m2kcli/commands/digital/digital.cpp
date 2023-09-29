@@ -278,6 +278,10 @@ void Digital::handleSet()
 			}
 			digital->getTrigger()->setDigitalMode(
 				static_cast<libm2k::digital::DIO_TRIGGER_MODE>(enumIndex));
+		} else if (argument == "kernel_buffers_in") {
+			digital->setKernelBuffersCountIn(std::stoi(value));
+		} else if (argument == "kernel_buffers_out") {
+			digital->setKernelBuffersCountOut(std::stoi(value));
 		} else {
 			throw std::runtime_error("Invalid attribute: " + argument + '\n');
 		}
@@ -403,6 +407,8 @@ const char *const Digital::helpMessage = "Usage:\n"
 					 "                            sampling_frequency_out - double\n"
 					 "                            trigger_delay - int\n"
 					 "                            trigger_mode - {or | and}\n"
+					 "                            kernel_buffers_in - int\n"
+					 "                            kernel_buffers_out - int\n"					 
 					 "  -S, --set-channel channel=<index> [<attribute>=<value> ...]\n"
 					 "                        set the value of the specified attributes corresponding to the given channel\n"
 					 "                        attributes: \n"

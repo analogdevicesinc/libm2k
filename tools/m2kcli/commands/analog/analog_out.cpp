@@ -212,6 +212,10 @@ void AnalogOut::handleSetChannel()
 			for (auto &channel : channels) {
 				analogOut->setOversamplingRatio(channel, std::stod(value));
 			}
+		} else if (argument == "kernel_buffers") {
+			for (auto &channel : channels) {
+				analogOut->setKernelBuffersCount(channel, std::stoi(value));
+			}
 		} else {
 			throw std::runtime_error("Invalid attribute: " + argument + '\n');
 		}
@@ -271,4 +275,5 @@ const char *const AnalogOut::helpMessage = "Usage:\n"
 					   "                        set the value of the specified attributes corresponding to the given channel\n"
 					   "                        attributes: \n"
 					   "                            sampling_frequency - {750 | 7500 | 75000 | 750000 | 7500000 | 75000000}\n"
-					   "                            oversampling_ratio - int\n";
+					   "                            oversampling_ratio - int\n"
+					   "                            kernel_buffers - int\n";
