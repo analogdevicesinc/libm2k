@@ -57,6 +57,5 @@ if(EXISTS ${PYTHON_EGG_DIR})
         if(NOT "${result}" STREQUAL 0)
             message(FATAL_ERROR "Failed to remove Python egg directory: '${PYTHON_EGG_DIR}'.")
         endif()
-    endif()
 endif()
 
