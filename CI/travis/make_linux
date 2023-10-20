@@ -60,4 +60,5 @@ handle_generic_docker() {
 
 setup_build_type_env_vars
 
+echo "handle_${BUILD_TYPE}"
 handle_${BUILD_TYPE}

@@ -35,7 +35,7 @@ ensure_command_exists sudo
 # Get the common stuff from libiio
 [ -f ${TRAVIS_BUILD_DIR}/build/lib.sh ] || {
 	mkdir -p ${TRAVIS_BUILD_DIR}/build
-	wget https://raw.githubusercontent.com/analogdevicesinc/libiio/master/CI/travis/lib.sh \
+	wget https://raw.githubusercontent.com/analogdevicesinc/libiio/${LIBIIO_BRANCH}/CI/travis/lib.sh \
 		-O ${TRAVIS_BUILD_DIR}/build/lib.sh
 }
 

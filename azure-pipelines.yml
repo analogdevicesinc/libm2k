@@ -25,6 +25,7 @@ parameters:
   - name: pythonVersions
     type: object
     default:
+    - 3.11
     - '3.10'
     - 3.9
     - 3.8
@@ -59,16 +60,6 @@ jobs:
     fetchDepth: 1
     clean: true
     persistCredentials: true
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Get libiio artifacts'
-    inputs:
-      source: 'specific'
-      project: '$(AnalogDevices_OpenSource_GUID)'
-      pipeline: $(libiioPipelineId)
-      artifact: '$(artifactName)'
-      runVersion: 'latestFromBranch'
-      runBranch: 'refs/heads/master'
-      path: '$(Agent.BuildDirectory)/s/build/'
   - script: ./CI/travis/before_install_linux
     displayName: "Install Dependencies"
   - script: ./CI/travis/make_linux
@@ -121,16 +112,6 @@ jobs:
   - checkout: self
     fetchDepth: 1
     clean: true
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Get libiio artifacts'
-    inputs:
-      source: 'specific'
-      project: '$(AnalogDevices_OpenSource_GUID)'
-      pipeline: $(libiioPipelineId)
-      artifact: '$(artifactName)'
-      runVersion: 'latestFromBranch'
-      runBranch: 'refs/heads/master'
-      path: '$(Agent.BuildDirectory)/s/build/'
   - script: ./CI/travis/before_install_darwin
     displayName: "Install Dependencies"
     condition: ne(variables['agentName'],'macOS_arm64')
