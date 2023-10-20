@@ -60,9 +60,9 @@ jobs:
     fetchDepth: 1
     clean: true
     persistCredentials: true
-  - script: ./CI/travis/before_install_linux
+  - script: ./CI/ubuntu/install_deps
     displayName: "Install Dependencies"
-  - script: ./CI/travis/make_linux
+  - script: ./CI/ubuntu/make_linux
     displayName: "Build"
   - task: CopyFiles@2
     condition: ne(variables['System.JobName'], 'deploy_doxygen')
@@ -112,10 +112,10 @@ jobs:
   - checkout: self
     fetchDepth: 1
     clean: true
-  - script: ./CI/travis/before_install_darwin
+  - script: ./CI/macOS/install_deps
     displayName: "Install Dependencies"
     condition: ne(variables['agentName'],'macOS_arm64')
-  - script: ./CI/travis/make_darwin
+  - script: ./CI/macOS/make_macOS
     displayName: "Build"
   - ${{ each pyVersion in parameters.pythonVersions }}:
     - task: UsePythonVersion@0

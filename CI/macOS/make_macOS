@@ -1,0 +1,19 @@
+#!/bin/sh -e
+
+TOP_DIR=$(pwd)
+
+set -x
+
+mkdir -p build
+mkdir -p build_tar
+export MACOSX_DEPLOYMENT_TARGET=10.15
+
+cd build
+cmake -DOSX_PACKAGE=ON -DENABLE_TOOLS=ON -DENABLE_PYTHON=ON -DENABLE_CSHARP=ON -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON ..
+make
+ls
+
+cd ${TOP_DIR}/build_tar
+cmake -DOSX_PACKAGE=OFF -DENABLE_PACKAGING=ON -DENABLE_PYTHON=ON -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON ..
+make && make package
+ls
