@@ -11,7 +11,7 @@ AppSupportURL="http://www.analog.com"
 AppUpdatesURL="http://www.analog.com"
 AppCopyright="Copyright 2019 ADI and other contributors"
 CreateAppDir=no
-LicenseFile="C:\projects\libm2k\LICENSE"
+LicenseFile="D:\a\1\s\LICENSE"
 OutputBaseFilename=libm2k-system-setup
 OutputDir="C:\"
 Compression=lzma
@@ -70,48 +70,48 @@ begin
  end;
  
 [Files]
-Source: "C:\projects\libm2k\build-win32\libm2k.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion
-Source: "C:\projects\libm2k\build-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
+;Source: "C:\projects\libm2k\build-win32\libm2k.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion
+Source: "D:\a\1\libm2k-win64\libm2k.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
 
-Source: "C:\projects\libm2k\build-win32\{#MsvcLib}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
-Source: "C:\projects\libm2k\build-win64\{#MsvcLib}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
+;Source: "C:\projects\libm2k\build-win32\{#MsvcLib}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
+Source: "D:\a\1\libm2k-win64\{#MsvcLib}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
 
-Source: "C:\projects\libm2k\build-win32\{#MsvcRuntime}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
-Source: "C:\projects\libm2k\build-win64\{#MsvcRuntime}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
+;Source: "C:\projects\libm2k\build-win32\{#MsvcRuntime}"; DestDir: "{sys}"; Check: not isMsvcInstalled; Flags: onlyifdoesntexist 32bit
+Source: "D:\a\1\libm2k-win64\{#MsvcRuntime}"; DestDir: "{sys}"; Check: Is64BitInstallMode and (not isMsvcInstalled); Flags: onlyifdoesntexist
 
 ;Source: "C:\projects\libm2k\build-win32\*.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode
-;Source: "C:\projects\libm2k\build-win64\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode
+;Source: "D:\a\1\libm2k-win64\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode
 
-Source: "C:\projects\libm2k\build-win32\m2kcli.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode;
-Source: "C:\projects\libm2k\build-win64\m2kcli.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode;
+;Source: "C:\projects\libm2k\build-win32\m2kcli.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode;
+Source: "D:\a\1\libm2k-win64\m2kcli.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode;
 
-Source: "C:\projects\libm2k\build-win32\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib"; Check: not Is64BitInstallMode
-Source: "C:\projects\libm2k\build-win64\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib\amd64"; Check: Is64BitInstallMode
-Source: "C:\projects\libm2k\include\*"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\include"; Flags: replacesameversion recursesubdirs
+;Source: "C:\projects\libm2k\build-win32\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib"; Check: not Is64BitInstallMode
+Source: "D:\a\1\libm2k-win64\libm2k.lib"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\lib\amd64"; Check: Is64BitInstallMode
+Source: "D:\a\1\libm2k-win64\libm2k\*"; DestDir: "{pf32}\Microsoft Visual Studio 15.0\VC\include"; Flags: replacesameversion recursesubdirs
 
-Source: "C:\libiio-win32\libiio.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit replacesameversion
-Source: "C:\libiio-win64\libiio.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio; Flags: replacesameversion
+;Source: "C:\libiio-win32\libiio.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit replacesameversion
+Source: "D:\a\1\libiio-x64\libiio.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio; Flags: replacesameversion
 
-Source: "C:\libiio-win32\libxml2.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
-Source: "C:\libiio-win64\libxml2.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
+;Source: "C:\libiio-win32\libxml2.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
+Source: "D:\a\1\libiio-x64\libxml2.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
-Source: "C:\libiio-win32\libusb-1.0.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
-Source: "C:\libiio-win64\libusb-1.0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
+;Source: "C:\libiio-win32\libusb-1.0.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
+Source: "D:\a\1\\libiio-x64\libusb-1.0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
-Source: "C:\libiio-win32\libserialport-0.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
-Source: "C:\libiio-win64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
+;Source: "C:\libiio-win32\libserialport-0.dll"; DestDir: "{sys}"; Tasks: install_libiio_force install_libiio; Flags: 32bit
+Source: "D:\a\1\libiio-x64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_libiio_force install_libiio;
 
-Source: "C:\glog\build_0_4_0-Win32\Release\glog.dll"; DestDir: "{sys}"; Tasks: install_glog; Flags: 32bit
-Source: "C:\glog\build_0_4_0-x64\Release\glog.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_glog;
+;Source: "C:\glog\build_0_4_0-Win32\Release\glog.dll"; DestDir: "{sys}"; Tasks: install_glog; Flags: 32bit
+Source: "D:\a\1\deps\glog\build_0_4_0-x64\Release\glog.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Tasks: install_glog;
 
-Source: "C:\projects\libm2k\build-win32\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode; Flags: replacesameversion
-Source: "C:\projects\libm2k\build-win32\libm2k-sharp-cxx-wrap.dll"; DestDir: "{sys}"; Check: not Is64BitInstallMode; Flags: replacesameversion
+;Source: "C:\projects\libm2k\build-win32\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: not Is64BitInstallMode; Flags: replacesameversion
+;Source: "C:\projects\libm2k\build-win32\libm2k-sharp-cxx-wrap.dll"; DestDir: "{sys}"; Check: not Is64BitInstallMode; Flags: replacesameversion
 
-Source: "C:\projects\libm2k\build-win64\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode; Flags: replacesameversion
-Source: "C:\projects\libm2k\build-win64\libm2k-sharp-cxx-wrap.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
+Source: "D:\a\1\libm2k-win64\libm2k-sharp.dll"; DestDir: "{cf}\libm2k"; Check: Is64BitInstallMode; Flags: replacesameversion
+Source: "D:\a\1\libm2k-win64\libm2k-sharp-cxx-wrap.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
 
-Source: "C:\projects\libm2k\build-win32\libm2k_lv.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion; Tasks: install_labview_wrapper;
-Source: "C:\projects\libm2k\build-win64\libm2k_lv.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion; Tasks: install_labview_wrapper;
+;Source: "C:\projects\libm2k\build-win32\libm2k_lv.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion; Tasks: install_labview_wrapper;
+Source: "D:\a\1\libm2k-win64\libm2k_lv.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion; Tasks: install_labview_wrapper;
 
 [Tasks]
 Name: "install_libiio"; 						Description: "Install libiio"; 	Check: Not isIioInstalled;
