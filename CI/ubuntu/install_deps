@@ -18,7 +18,8 @@ handle_default() {
     sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         libxml2-dev bison flex libcdk5-dev cmake \
         libaio-dev libusb-1.0-0-dev \
-        libserialport-dev libavahi-client-dev	
+        libserialport-dev libavahi-client-dev man2html 
+		
 
 	#Install glog
 	cd ${TOP_DIR}
@@ -31,16 +32,19 @@ handle_default() {
 
 	# Install libiio
 	echo "Building libiio - version $LIBIIO_VERSION"
+
 	cd ${TOP_DIR}
 	git clone https://github.com/analogdevicesinc/libiio.git -b $LIBIIO_VERSION libiio
 	mkdir ./libiio/build && cd ./libiio/build
-	cmake ../
+	cmake ../ -DCOMPILE_WARNING_AS_ERROR=ON -DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=OFF -DWITH_DOC=ON -DWITH_MAN=ON  -DWITH_USB_BACKEND=OFF -DWITH_IIOD_USBD=OFF -DWITH_LOCAL_MMAP_API=OFF
 	make
-	sudo make install 
+	make package 
+	sudo apt install ./libiio-*.deb
+	# sudo make install 
 }
 
 handle_doxygen() {
-    # TODO: REVIE THIS AFTER THE REWORK - IT MIGHT BREAK
+    # TODO: REVIEW THIS AFTER THE REWORK - IT MIGHT BREAK
 	# Install a recent version of doxygen
 	DOXYGEN_URL="wget https://sourceforge.net/projects/doxygen/files/rel-1.8.15/doxygen-1.8.15.src.tar.gz"
 	cd ${DEPS_DIR}
