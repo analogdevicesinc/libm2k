@@ -1,5 +1,6 @@
 #!/bin/sh -e
 
+LIBIIO_VERSION=libiio-v0
 PACKAGE_DIR=${1-build}
 echo $PACKAGE_DIR
 
@@ -9,7 +10,7 @@ apt-get install -y git wget tar graphviz libavahi-common-dev libavahi-client-dev
 python3 -m pip install cmake
 cmake --version
 
-git clone -b 'master' --single-branch --depth 1 https://github.com/analogdevicesinc/libiio.git
+git clone -b $LIBIIO_VERSION --single-branch --depth 1 https://github.com/analogdevicesinc/libiio.git libiio
 cd libiio
 mkdir -p build
 cd build
