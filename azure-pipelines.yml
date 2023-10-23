@@ -96,11 +96,12 @@ jobs:
         vmImage: 'macOS-13'
         agentName: 'Azure Pipelines 2'
         artifactName: 'macOS-13-x64'
-      macOS_13_arm64:
-        poolName: 'Default'
-        vmImage:
-        agentName: 'macOS_arm64'
-        artifactName: 'macOS-13-arm64'
+      # TODO: discuss with DevOps team how to setup ARM agent
+      # macOS_13_arm64:
+      #   poolName: 'Default'
+      #   vmImage:
+      #   agentName: 'macOS_arm64'
+      #   artifactName: 'macOS-13-arm64'
   pool:
     name: $(poolName)
     vmImage: $(vmImage)
