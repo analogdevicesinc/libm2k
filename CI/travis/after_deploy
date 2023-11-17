@@ -1,6 +1,0 @@
-#!/bin/sh -e
-
-. CI/travis/lib.sh
-
-should_trigger_next_builds "$TRAVIS_BRANCH" || exit 0
-
