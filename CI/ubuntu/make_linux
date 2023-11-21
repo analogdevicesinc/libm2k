@@ -9,7 +9,7 @@ handle_default() {
 	cd build
 
 	#create deb for bindings
-	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=OFF -DBUILD_EXAMPLES=ON .. && make
+	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON .. && make
 	sudo python3 setup.py --command-packages=stdeb.command sdist_dsc
 	cd "$(find . -type d -name "debian" | head -n 1)"
 	sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc
@@ -20,7 +20,7 @@ handle_default() {
 	ls
 
 	#create simple .deb without Python bindings
-	cmake -DENABLE_PACKAGING=ON -DDEB_DETECT_DEPENDENCIES=ON -DENABLE_PYTHON=OFF -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=OFF -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_EXAMPLES=ON ..
+	cmake -DENABLE_PACKAGING=ON -DDEB_DETECT_DEPENDENCIES=ON -DENABLE_PYTHON=OFF -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=ON -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_EXAMPLES=ON ..
 	make && make package
 	ls
 }

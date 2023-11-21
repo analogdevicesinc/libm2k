@@ -4,12 +4,18 @@ LIBIIO_VERSION=libiio-v0
 PACKAGE_DIR=${1-build}
 echo $PACKAGE_DIR
 
-apt-get -qq update
-apt-get install -y git wget tar graphviz libavahi-common-dev libavahi-client-dev libaio-dev libusb-1.0-0-dev libxml2-dev rpm tar bzip2 gzip flex bison git swig python3 python3-dev python3-setuptools python3-pip python3-all libserialport-dev
+yum -y update
+echo "## Installing dependencies"
+
+yum install -y  bzip2 gzip rpm rpm-build git wget tar \
+                libxml2-devel libusbx-devel libusb-devel doxygen libaio-devel avahi-devel avahi-tools graphviz swig flex bison \
+                python3 python3-devel python3-setuptools python3-pip 
 
 python3 -m pip install cmake
 cmake --version
 
+#Install libiio
+echo "## Building libiio $LIBIIO_VERSION"
 git clone -b $LIBIIO_VERSION --single-branch --depth 1 https://github.com/analogdevicesinc/libiio.git libiio
 cd libiio
 mkdir -p build
@@ -20,6 +26,7 @@ make install
 cd ../..
 
 #Install glog
+echo "## Building glog"
 git clone --branch v0.4.0 --depth 1 https://github.com/google/glog
 mkdir -p glog/build_0_4_0
 cd glog/build_0_4_0
@@ -39,4 +46,10 @@ make
 #rm -rf build
 cat setup.py
 make install
+
+# Repair wheel step fails if it does not find the .so file
+echo "## Content from src folder"
+ls ./src
+echo "creating links to .so"
+cp ./src/libm2k.so* /usr/lib/ && ldconfig -n -v /usr/lib
 

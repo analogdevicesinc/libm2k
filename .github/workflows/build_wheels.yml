@@ -2,6 +2,8 @@ name: Build
 
 on: [push, pull_request]
 
+# TODO: add a simple test that tries to import the libm2k package after creating wheel; 
+# NOTE: do i have a acces to a pip install during the cybuildwheel process?
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -9,11 +11,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-22.04]
+        # os: [CentOS_7] # manylinux2014: (CentOS 7 based)
         python_version: ['3.11']
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         name: Install Python ${{ matrix.python_version }}
         with:
           python-version: ${{ matrix.python_version }}
@@ -22,23 +25,25 @@ jobs:
         run: |
               mkdir ${{ github.workspace }}/build
               touch ${{ github.workspace }}/build/setup.py
+      # TODO: Test using more recent Docker image 
       - name: Get some sample wheels
         run: |
           python -m pip install cibuildwheel twine
           cibuildwheel --output-dir ${{ github.workspace }}/wheelhouse ${{ github.workspace }}/build
         env:
-          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_24
-          CIBW_MANYLINUX_I686_IMAGE: manylinux_2_24
-          CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_24
+          CIBW_DEBUG_KEEP_CONTAINER=: TRUE
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28           
+          CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28   
           # Skip building PyPy wheels on all platforms
           # Skip musllinux builds
-          CIBW_SKIP: "pp* *-musllinux*"
-          CIBW_BUILD_VERBOSITY: 1
+          # Skip i686 builds: 32bit arch not supported in manylinux_2_28  
+          CIBW_SKIP: "pp* *-musllinux* *i686"
+          CIBW_BUILD_VERBOSITY: 3
           CIBW_BEFORE_ALL: >
                             cd {project} && ./.github/scripts/install_deps.sh {package}
-          CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-*"
+          CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-* cp311-* cp312-*"
           CIBW_ENVIRONMENT: COMPILE_BINDINGS="True"
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: manylinux_wheels
           path: ${{ github.workspace }}/wheelhouse
@@ -51,9 +56,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-        name: Install Python 3.10
+        name: Install Python 3.11
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       - uses: actions/download-artifact@v2
         with:
           name: manylinux_wheels
