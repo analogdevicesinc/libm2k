@@ -5,7 +5,9 @@ LIBIIO_VERSION=libiio-v0
 
 set -x
 
-handle_default() {
+install_deps() {
+	echo "# INSTALLING DEPENDENCIES"
+
 	sudo apt-get -qq update
 	echo "libm2k packages"
 	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y cmake doxygen graphviz \
@@ -15,13 +17,17 @@ handle_default() {
 		debhelper devscripts fakeroot libserialport-dev swig dh-python
 
 	# libiio dependencies
+	echo "libiio packages"
     sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         libxml2-dev bison flex libcdk5-dev cmake \
         libaio-dev libusb-1.0-0-dev \
-        libserialport-dev libavahi-client-dev man2html 
-		
+        libserialport-dev libavahi-client-dev man2html \
+		python3-sphinx
+}
 
-	#Install glog
+install_glog() {
+	echo "## Building glog"
+
 	cd ${TOP_DIR}
 	git clone --branch v0.4.0 --depth 1 https://github.com/google/glog
 	mkdir -p glog/build_0_4_0 && cd glog/build_0_4_0
@@ -29,18 +35,28 @@ handle_default() {
 	make
 	sudo make install
 	sudo pip3 install --upgrade pip stdeb argparse
+}
 
-	# Install libiio
-	echo "Building libiio - version $LIBIIO_VERSION"
+install_libiio() {
+	echo "## Building libiio - version $LIBIIO_VERSION"
 
 	cd ${TOP_DIR}
 	git clone https://github.com/analogdevicesinc/libiio.git -b $LIBIIO_VERSION libiio
 	mkdir ./libiio/build && cd ./libiio/build
-	cmake ../ -DCOMPILE_WARNING_AS_ERROR=ON -DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=OFF -DWITH_DOC=ON -DWITH_MAN=ON  -DWITH_USB_BACKEND=OFF -DWITH_IIOD_USBD=OFF -DWITH_LOCAL_MMAP_API=OFF
+    cmake .. -Werror=dev -DCOMPILE_WARNING_AS_ERROR=ON -DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=ON -DWITH_DOC=ON -DWITH_SERIAL_BACKEND=ON -DWITH_MAN=ON -DCPACK_SYSTEM_NAME=${ARTIFACTNAME}
 	make
 	make package 
 	sudo apt install ./libiio-*.deb
-	# sudo make install 
+}
+
+handle_default() {
+	install_deps
+	install_glog
+	install_libiio
+}
+
+handle_ubuntu_docker() {
+	handle_default
 }
 
 handle_doxygen() {
@@ -69,10 +85,6 @@ handle_doxygen() {
 	#Also install Sphinx for Python bindings
 	sudo apt-get install python3-sphinx
 	sudo pip3 install --upgrade sphinx_rtd_theme
-}
-
-handle_ubuntu_docker() {
-	handle_default
 }
 
 handle_${OS_TYPE}
