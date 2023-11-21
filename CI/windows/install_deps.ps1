@@ -124,8 +124,6 @@ function Install-Swig {
     Set-Location $DIR_PATH
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    # Potential alternative but still breaks
-    # Invoke-WebRequest -UserAgent "Wget" -Uri "https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip/download" -OutFile "swigwin-4.0.0.zip"
     $crnt_attempt=0
     $max_attemps=10
     do {
