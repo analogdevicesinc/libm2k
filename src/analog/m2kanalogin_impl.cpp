@@ -49,7 +49,8 @@ M2kAnalogInImpl::M2kAnalogInImpl(iio_context * ctx, std::string adc_dev, bool sy
 	m_m2k_fabric = make_shared<DeviceGeneric>(ctx, "m2k-fabric");
 	m_ad5625_dev = make_shared<DeviceGeneric>(ctx, "ad5625");
 
-	if (firmware_version >= "v0.32") {
+	if (firmware_version >= "v0.31") {
+		std::cout << "Firmware version: " << firmware_version << std::endl;
 		setCalibrateHDL("true"); // NOTE: in new HDL we can control when the parameters are sent to HDL with this attribute
 	}
 
@@ -141,7 +142,7 @@ void M2kAnalogInImpl::syncDevice()
 		} else {
                         m_adc_calib_offset.at(i) = 2048;
 		}
-		if (firmware_version >= "v0.32") {
+		if (firmware_version >= "v0.31") {
 			m_adc_calib_gain.at(i) = getCalibscale(i);
 		}
 		m_adc_hw_offset_raw.at(i) = m_ad5625_dev->getLongValue(2 + i, "raw", true);
@@ -250,7 +251,7 @@ double M2kAnalogInImpl::setCalibscale(unsigned int index, double calibscale)
 	if (index >= getNbChannels()) {
 		THROW_M2K_EXCEPTION("M2kAnalogIn: no such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	if (firmware_version >= "v0.32") {
+	if (firmware_version >= "v0.31") {
 		m_adc_calib_gain.at(index) = calibscale;
 	}
 	return m_m2k_adc->setDoubleValue(index, calibscale, "calibscale");
