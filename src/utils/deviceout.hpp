@@ -46,14 +46,14 @@ public:
 
 	void initializeBuffer(unsigned int size, bool cyclic);
 	void push(std::vector<short> const &data, unsigned int channel,
-		bool cyclic = true, bool multiplex = false);
+		bool cyclic = true, bool multiplex = false, bool enableFlag = false);
 	void push(std::vector<unsigned short> const &data, unsigned int channel,
-		bool cyclic = true, bool multiplex = false);
+		bool cyclic = true, bool multiplex = false, bool enableFlag = false);
 	void push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
-		  bool cyclic = true, bool multiplex = false);
-	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true);
-	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
-	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true);
+		  bool cyclic = true, bool multiplex = false, bool enableFlag = false);
+	void push(std::vector<double> const &data, unsigned int channel, bool cyclic = true, bool enableFlag = false);
+	void push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true, bool enableFlag = false);
+	void push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic = true, bool enableFlag = false);
 	void stop();
 	void cancelBuffer();
 	struct IIO_OBJECTS getIioObjects();

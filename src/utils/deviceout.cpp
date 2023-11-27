@@ -56,13 +56,13 @@ void DeviceOut::initializeBuffer(unsigned int size, bool cyclic)
 }
 
 void DeviceOut::push(std::vector<short> const &data, unsigned int channel,
-		     bool cyclic, bool multiplex)
+		     bool cyclic, bool multiplex, bool enableFlag)
 {
 	if (!m_buffer) {
 		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
 	}
 	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, cyclic, multiplex);
+	m_buffer->push(data, channel, cyclic, multiplex, enableFlag);
 }
 
 
@@ -76,51 +76,51 @@ void DeviceOut::cancelBuffer()
 
 
 void DeviceOut::push(std::vector<unsigned short> const &data, unsigned int channel,
-		     bool cyclic, bool multiplex)
+		     bool cyclic, bool multiplex, bool enableFlag)
 {
 	if (!m_buffer) {
 		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
 	}
 	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, cyclic, multiplex);
+	m_buffer->push(data, channel, cyclic, multiplex, enableFlag);
 }
 
 
 void DeviceOut::push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
-		     bool cyclic, bool multiplex)
+		     bool cyclic, bool multiplex, bool enableFlag)
 {
 	if (!m_buffer) {
 		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
 	}
 	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, nb_samples, cyclic, multiplex);
+	m_buffer->push(data, channel, nb_samples, cyclic, multiplex, enableFlag);
 }
 
-void DeviceOut::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
+void DeviceOut::push(std::vector<double> const &data, unsigned int channel, bool cyclic, bool enableFlag)
 {
 	if (!m_buffer) {
 		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
 	}
 	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, cyclic);
+	m_buffer->push(data, channel, cyclic, enableFlag);
 }
 
-void DeviceOut::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+void DeviceOut::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic, bool enableFlag)
 {
 	if (!m_buffer) {
 		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
 	}
 	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, nb_samples, cyclic);
+	m_buffer->push(data, channel, nb_samples, cyclic, enableFlag);
 }
 
-void DeviceOut::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+void DeviceOut::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic, bool enableFlag)
 {
 	if (!m_buffer) {
 		THROW_M2K_EXCEPTION("Device: Cannot push; device not buffer capable", libm2k::EXC_RUNTIME_ERROR);
 	}
 	m_buffer->setChannels(m_channel_list);
-	m_buffer->push(data, channel, nb_samples, cyclic);
+	m_buffer->push(data, channel, nb_samples, cyclic, enableFlag);
 }
 
 void DeviceOut::stop()
