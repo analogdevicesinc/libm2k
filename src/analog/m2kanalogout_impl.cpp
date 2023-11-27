@@ -348,7 +348,7 @@ void M2kAnalogOutImpl::pushBytes(unsigned int chnIdx, double *data, unsigned int
 	for (unsigned int i = 0; i < nb_samples; i++) {
 		raw_data_buffer.push_back(convertVoltsToRaw(chnIdx, data[i]));
 	}
-	m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx));
+	m_dac_devices.at(chnIdx)->push(raw_data_buffer, 0, getCyclic(chnIdx), false, true);
 }
 
 

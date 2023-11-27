@@ -56,7 +56,7 @@ Buffer::~Buffer() {
 	m_data_short.clear();
 }
 
-void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output)
+void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output, bool enableFlag)
 {
 	/* In non-cyclic mode pushing samples will fill the internal buffers, creating the possibility of continuous
 		* data transferring; the buffer must be destroy when its size is changed
@@ -64,7 +64,15 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output)
 		* In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
 		* old buffer must be destroyed and a new one must be created*/
 	if (size != m_last_nb_samples || cyclic) {
+        if (enableFlag && cyclic) {
+            for(auto channel : m_channel_list) {
+                if (channel->hasAttribute("raw_enable")) {
+                    channel->setStringValue("raw_enable", "enabled");
+                }
+            }
+        }
 		destroy();
+
 		m_last_nb_samples = size;
 		m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 		if (!m_buffer) {
@@ -80,6 +88,13 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output)
 				THROW_M2K_EXCEPTION("Buffer: Cannot create the RX buffer", libm2k::EXC_RUNTIME_ERROR, errno);
 			}
 		}
+        if (enableFlag) {
+            for(auto channel : m_channel_list) {
+                if (channel->hasAttribute("raw_enable")) {
+                    channel->setStringValue("raw_enable", "disabled");
+                }
+            }
+        }
                 LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, std::string((output ? "TX" : "RX")) + " buffer created (" + std::to_string(size) +
                                                                       " samples)"));
 		LIBM2K_LOG_IF(WARNING, size % 4 != 0 || size < 16,
@@ -100,7 +115,7 @@ void Buffer::setChannels(std::vector<Channel*> channels)
 }
 
 void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_samples,
-	  bool cyclic, bool multiplex)
+	  bool cyclic, bool multiplex, bool enableFlag)
 {
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
 		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
@@ -113,7 +128,7 @@ void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_sa
 		return;
 	}
 
-	initializeBuffer(nb_samples, cyclic, true);
+	initializeBuffer(nb_samples, cyclic, true, enableFlag);
 
 	if (channel < m_channel_list.size() ) {
 		if (!multiplex) {
@@ -145,9 +160,9 @@ void Buffer::push(unsigned short *data, unsigned int channel, unsigned int nb_sa
 
 //push on a certain channel
 void Buffer::push(std::vector<short> const &data, unsigned int channel,
-	  bool cyclic, bool multiplex)
+	  bool cyclic, bool multiplex, bool enableFlag)
 {
-	size_t size = data.size();
+    size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
 		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
 	}
@@ -159,7 +174,7 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 		return;
 	}
 
-	initializeBuffer(size, cyclic, true);
+	initializeBuffer(size, cyclic, true, enableFlag);
 
 	if (channel < m_channel_list.size() ) {
 		if (!multiplex) {
@@ -190,7 +205,7 @@ void Buffer::push(std::vector<short> const &data, unsigned int channel,
 }
 
 void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
-	  bool cyclic, bool multiplex)
+	  bool cyclic, bool multiplex, bool enableFlag)
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) != OUTPUT) {
@@ -204,7 +219,7 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 		return;
 	}
 
-	initializeBuffer(size, cyclic, true);
+	initializeBuffer(size, cyclic, true, enableFlag);
 
 	if (channel < m_channel_list.size() ) {
 		if (!multiplex) {
@@ -235,7 +250,7 @@ void Buffer::push(std::vector<unsigned short> const &data, unsigned int channel,
 	}
 }
 
-void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cyclic)
+void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cyclic, bool enableFlag)
 {
 	size_t size = data.size();
 	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
@@ -249,7 +264,7 @@ void Buffer::push(std::vector<double> const &data, unsigned int channel, bool cy
 		return;
 	}
 
-	initializeBuffer(size, cyclic, true);
+	initializeBuffer(size, cyclic, true, enableFlag);
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data);
@@ -281,7 +296,7 @@ void Buffer::push(std::vector<std::vector<short>> const &data)
 	}
 }
 
-void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, bool cyclic, bool enableFlag)
 {
 	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
 		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
@@ -294,7 +309,7 @@ void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, b
 		return;
 	}
 
-	initializeBuffer(nb_samples, cyclic, true);
+	initializeBuffer(nb_samples, cyclic, true, enableFlag);
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
@@ -313,7 +328,7 @@ void Buffer::push(double *data, unsigned int channel, unsigned int nb_samples, b
 	}
 }
 
-void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic)
+void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bool cyclic, bool enableFlag)
 {
 	if (Utils::getIioDeviceDirection(m_dev) == INPUT) {
 		THROW_M2K_EXCEPTION("Device not output buffer capable, so no buffer was created", libm2k::EXC_INVALID_PARAMETER);
@@ -326,7 +341,7 @@ void Buffer::push(short *data, unsigned int channel, unsigned int nb_samples, bo
 		return;
 	}
 
-	initializeBuffer(nb_samples, cyclic, true);
+	initializeBuffer(nb_samples, cyclic, true, enableFlag);
 
 	if (channel < m_channel_list.size() ) {
 		m_channel_list.at(channel)->write(m_buffer, data, nb_samples);
