@@ -307,7 +307,7 @@ def plot_to_file(title, data, dir_name, filename, xlabel=None, ylabel=None, data
         plt.ylabel(ylabel)
     else:
         plt.ylabel('Voltage [V]')
-    plt.grid(b=True)
+    plt.grid(visible=True)
     plt.plot(data)  # if a second set of data must be printed (for ch0 and ch1 phase difference in this case)
     if data1 is not None:
         plt.plot(data1)
