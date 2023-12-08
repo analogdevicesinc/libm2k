@@ -132,6 +132,25 @@ void M2kAnalogOutImpl::loadNbKernelBuffers()
 		}
 	}
 }
+unsigned short M2kAnalogOutImpl::setVoltage(unsigned int chn_idx, double volts)
+{
+    auto chn = getDacDevice(chn_idx)->getChannel(0, true);
+	auto raw = static_cast<long long>(convertVoltsToRaw(chn_idx, volts));
+	// having the raw_enable attribute set to enable shout give at the dac output the corresponding raw value
+	chn->setStringValue("raw_enable", "enabled");
+	chn->setLongValue("raw", raw);
+    return chn->getLongValue("raw");
+}
+
+unsigned short M2kAnalogOutImpl::setVoltageRaw(unsigned int chn_idx, unsigned short raw)
+{
+    auto chn = getDacDevice(chn_idx)->getChannel(0, true);
+	// having the raw_enable attribute set to enable shout give at the dac output the corresponding raw value
+	chn->setStringValue("raw_enable", "enabled");
+    chn->setLongValue("raw", static_cast<long long>(raw));
+    return chn->getLongValue("raw");
+}
+
 
 double M2kAnalogOutImpl::getCalibscale(unsigned int index)
 {
