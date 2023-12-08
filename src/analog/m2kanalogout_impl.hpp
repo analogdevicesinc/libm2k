@@ -92,6 +92,9 @@ public:
 	void deinitialize();
 
 	void loadNbKernelBuffers();
+    unsigned short setVoltage(unsigned int chn_idx, double volts) override;
+    unsigned short setVoltageRaw(unsigned int chn_idx, unsigned short raw) override;
+
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	std::vector<double> m_max_samplerate;
