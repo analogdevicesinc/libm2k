@@ -123,6 +123,16 @@ jobs:
   - script: ./CI/macOS/install_deps
     displayName: "Install Dependencies"
     condition: ne(variables['agentName'],'macOS_arm64')
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/libiio/build/'
+      contents: '$(Agent.BuildDirectory)/s/libiio/build/?(*.pkg)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/libiio/build_tar/'
+      contents: '$(Agent.BuildDirectory)/s/libiio/build_tar/?(*.tar.gz)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
   - script: ./CI/macOS/make_macOS
     displayName: "Build"
   - ${{ each pyVersion in parameters.pythonVersions }}:
