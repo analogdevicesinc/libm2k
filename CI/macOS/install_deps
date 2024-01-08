@@ -3,15 +3,14 @@
 TOP_DIR=$(pwd)
 LIBIIO_VERSION=libiio-v0
 
-set -x
+set -ex
 
-# Note: not installing 'mono', it comes with Azure images,
-# but it doesn't look it's installed with Homebrew
-brew install cmake doxygen libusb libxml2 swig curl python
 # libiio deps
-brew install doxygen libusb libxml2 ncurses cdk libserialport sphinx-doc pkg-config
-pip3 install sphinx
+brew install doxygen libusb libxml2 ncurses cdk libserialport sphinx-doc pkg-config 
+# libm2k deps
+brew install cmake doxygen libusb libxml2 swig curl 
 
+pip3 install sphinx
 pip3 install wheel twine build virtualenv
 
 # Install glog
