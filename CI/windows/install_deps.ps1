@@ -122,8 +122,21 @@ function Install-Swig {
     )
     Write-Output "# Installing swig"
     Set-Location $DIR_PATH
+
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    curl.exe -L -o "swigwin-4.0.0.zip" "https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip/download"
+    # Potential alternative but still breaks
+    # Invoke-WebRequest -UserAgent "Wget" -Uri "https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip/download" -OutFile "swigwin-4.0.0.zip"
+    $crnt_attempt=0
+    $max_attemps=10
+    do {
+        try {
+            curl.exe -L -o "swigwin-4.0.0.zip" "https://sourceforge.net/projects/swig/files/swigwin/swigwin-4.0.0/swigwin-4.0.0.zip/download"
+        } catch {
+            Write-Output "## curl failed, retrying..."
+            Start-Sleep -s 3
+        }
+    } while (-not (Test-Path -Path "swigwin-4.0.0.zip") -and ($crnt_attempt++ -lt $max_attemps))
+    
     7z x "swigwin-4.0.0.zip" -oswig
     Remove-Item "swigwin-4.0.0.zip"
     Set-Location (Join-Path "swig" "swigwin-4.0.0")

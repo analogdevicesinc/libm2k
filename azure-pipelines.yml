@@ -33,215 +33,221 @@ parameters:
     - 3.7
 
 jobs:
-# - job: LinuxBuilds
-#   strategy:
-#     matrix:
-#       ubuntu_20_04:
-#         imageName: 'ubuntu-20.04'
-#         OS_TYPE: 'ubuntu_docker'
-#         OS_VERSION: focal
-#         artifactName: 'Linux-Ubuntu-20.04'
-#         PACKAGE_TO_INSTALL: 'build/*.deb'
-#       ubuntu_22_04:
-#         imageName: 'ubuntu-22.04'
-#         OS_TYPE: 'ubuntu_docker'
-#         OS_VERSION: jammy
-#         artifactName: 'Linux-Ubuntu-22.04'
-#         PACKAGE_TO_INSTALL: 'build/*.deb'
-#       deploy_doxygen:
-#         imageName: 'ubuntu-20.04'
-#         OS_TYPE: 'doxygen'
-#         OS_VERSION: focal
-#         artifactName: 'Linux-Ubuntu-20.04'
-#         PACKAGE_TO_INSTALL: 'build/*.deb'
-#   pool:
-#     vmImage: $(imageName)
-#   steps:
-#   - checkout: self
-#     fetchDepth: 1
-#     clean: true
-#     persistCredentials: true
-#   - script: ./CI/ubuntu/install_deps
-#     displayName: "Install Dependencies"
-#   - script: ./CI/ubuntu/make_linux
-#     displayName: "Build"
-#   - task: CopyFiles@2
-#     condition: ne(variables['System.JobName'], 'deploy_doxygen')
-#     inputs:
-#       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
-#       contents: '$(Agent.BuildDirectory)/s/build/?(*.deb|*.rpm)'
-#       targetFolder: '$(Build.ArtifactStagingDirectory)'
-#   - task: PublishPipelineArtifact@1
-#     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['System.JobName'], 'deploy_doxygen'))
-#     inputs:
-#       targetPath: '$(Build.ArtifactStagingDirectory)'
-#       artifactName: '$(artifactName)'
+- job: LinuxBuilds
+  strategy:
+    matrix:
+      ubuntu_20_04:
+        imageName: 'ubuntu-20.04'
+        OS_TYPE: 'ubuntu_docker'
+        OS_VERSION: focal
+        artifactName: 'Linux-Ubuntu-20.04'
+      ubuntu_22_04:
+        imageName: 'ubuntu-22.04'
+        OS_TYPE: 'ubuntu_docker'
+        OS_VERSION: jammy
+        artifactName: 'Linux-Ubuntu-22.04'
+      deploy_doxygen:
+        imageName: 'ubuntu-20.04'
+        OS_TYPE: 'doxygen'
+        OS_VERSION: focal
+        artifactName: 'Linux-Ubuntu-20.04'
+  pool:
+    vmImage: $(imageName)
+  steps:
+  - checkout: self
+    fetchDepth: 1
+    clean: true
+    persistCredentials: true
+  - script: ./CI/ubuntu/install_deps
+    displayName: "Install Dependencies"
+  - script: ./CI/ubuntu/make_linux
+    displayName: "Build"
+  - task: CopyFiles@2
+    condition: ne(variables['System.JobName'], 'deploy_doxygen')
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/build/'
+      contents: '$(Agent.BuildDirectory)/s/build/?(*.deb|*.rpm)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishPipelineArtifact@1
+    # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['System.JobName'], 'deploy_doxygen'))
+    condition: and(succeeded(), ne(variables['System.JobName'], 'deploy_doxygen'))
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifactName: '$(artifactName)'
 
-# - job: macOSBuilds
-#   workspace:
-#     clean: all
-#   strategy:
-#     matrix:
-#       macOS_11:
-#         poolName: 'Azure Pipelines'
-#         vmImage: 'macOS-11'
-#         agentName: 'Azure Pipelines 4'
-#         artifactName: 'macOS-11'
-#       macOS_12:
-#         poolName: 'Azure Pipelines'
-#         vmImage: 'macOS-12'
-#         agentName: 'Azure Pipelines 3'
-#         artifactName: 'macOS-12'
-#       macOS_13_x64:
-#         poolName: 'Azure Pipelines'
-#         vmImage: 'macOS-13'
-#         agentName: 'Azure Pipelines 2'
-#         artifactName: 'macOS-13-x64'
-#       # TODO: discuss with DevOps team how to setup ARM agent
-#       # macOS_13_arm64:
-#       #   poolName: 'Default'
-#       #   vmImage:
-#       #   agentName: 'macOS_arm64'
-#       #   artifactName: 'macOS-13-arm64'
-#   pool:
-#     name: $(poolName)
-#     vmImage: $(vmImage)
-#     demands:
-#       - agent.name -equals $(agentName)
-#   variables:
-#     PACKAGE_TO_INSTALL: 'build/*.pkg'
-#   steps:
-#   - checkout: self
-#     fetchDepth: 1
-#     clean: true
-#   - script: ./CI/macOS/install_deps
-#     displayName: "Install Dependencies"
-#     condition: ne(variables['agentName'],'macOS_arm64')
-#   - script: ./CI/macOS/make_macOS
-#     displayName: "Build"
-#   - ${{ each pyVersion in parameters.pythonVersions }}:
-#     - task: UsePythonVersion@0
-#       displayName: Use Python ${{ pyVersion }}
-#       inputs:
-#         versionSpec: '${{ pyVersion }}'
-#     - script: |
-#             python3 --version
-#             python3 -m pip install wheel twine build virtualenv
-#             cd '$(Agent.BuildDirectory)/s/build/'
-#             mkdir -p wheelhouse
-#             export COMPILE_BINDINGS=True
-#             python3 -m build
-#             export COMPILE_BINDINGS=
-#             cp dist/*.whl wheelhouse
-#       displayName: Wheel Python ${{ pyVersion }}
-#   - task: CopyFiles@2
-#     inputs:
-#       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
-#       contents: '$(Agent.BuildDirectory)/s/build/?(*.pkg)'
-#       targetFolder: '$(Build.ArtifactStagingDirectory)'
-#   - task: CopyFiles@2
-#     inputs:
-#       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
-#       contents: '$(Agent.BuildDirectory)/s/build/wheelhouse/?(*.whl)'
-#       targetFolder: '$(Build.ArtifactStagingDirectory)'
-#   - task: CopyFiles@2
-#     inputs:
-#       sourceFolder: '$(Agent.BuildDirectory)/s/build_tar/'
-#       contents: '$(Agent.BuildDirectory)/s/build_tar/?(*.tar.gz)'
-#       targetFolder: '$(Build.ArtifactStagingDirectory)'
-#   - task: PublishPipelineArtifact@1
-#     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-#     inputs:
-#       targetPath: '$(Build.ArtifactStagingDirectory)'
-#       artifactName: '$(artifactName)'
-#   - script: |
-#       python -m pip install --upgrade pip twine
-#       cd '$(Agent.BuildDirectory)/s/build/wheelhouse/'
-#       python -m twine upload --repository "testpypi" *.whl
-#     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
-#     displayName: "Upload to PyPI"
-#     env:
-#       TWINE_USERNAME: '__token__'
-#       TWINE_PASSWORD: $(TWINE_PASSWORD)
+- job: macOSBuilds
+  workspace:
+    clean: all
+  strategy:
+    matrix:
+      macOS_11:
+        poolName: 'Azure Pipelines'
+        vmImage: 'macOS-11'
+        agentName: 'Azure Pipelines 4'
+        artifactName: 'macOS-11'
+      macOS_12:
+        poolName: 'Azure Pipelines'
+        vmImage: 'macOS-12'
+        agentName: 'Azure Pipelines 3'
+        artifactName: 'macOS-12'
+      macOS_13_x64:
+        poolName: 'Azure Pipelines'
+        vmImage: 'macOS-13'
+        agentName: 'Azure Pipelines 2'
+        artifactName: 'macOS-13-x64'
+      # TODO: discuss with DevOps team how to setup ARM agent
+      # macOS_13_arm64:
+      #   poolName: 'Default'
+      #   vmImage:
+      #   agentName: 'macOS_arm64'
+      #   artifactName: 'macOS-13-arm64'
+  pool:
+    name: $(poolName)
+    vmImage: $(vmImage)
+    demands:
+      - agent.name -equals $(agentName)
+  steps:
+  - checkout: self
+    fetchDepth: 1
+    clean: true
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.11'
+      addToPath: true
+  - script: ./CI/macOS/install_deps
+    displayName: "Install Dependencies"
+    condition: ne(variables['agentName'],'macOS_arm64')
+  - script: ./CI/macOS/make_macOS
+    displayName: "Build"
+  - ${{ each pyVersion in parameters.pythonVersions }}:
+    - task: UsePythonVersion@0
+      displayName: Use Python ${{ pyVersion }}
+      inputs:
+        versionSpec: '${{ pyVersion }}'
+    - script: |
+            python3 --version
+            python3 -m pip install wheel twine build virtualenv
+            cd '$(Agent.BuildDirectory)/s/build/'
+            mkdir -p wheelhouse
+            export COMPILE_BINDINGS=True
+            python3 -m build
+            export COMPILE_BINDINGS=
+            cp dist/*.whl wheelhouse
+      displayName: Wheel Python ${{ pyVersion }}
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/build/'
+      contents: '$(Agent.BuildDirectory)/s/build/?(*.pkg)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/build/'
+      contents: '$(Agent.BuildDirectory)/s/build/wheelhouse/?(*.whl)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Agent.BuildDirectory)/s/build_tar/'
+      contents: '$(Agent.BuildDirectory)/s/build_tar/?(*.tar.gz)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishPipelineArtifact@1
+    # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    condition: succeeded()
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifactName: '$(artifactName)'
+  - script: |
+      python -m pip install --upgrade pip twine
+      cd '$(Agent.BuildDirectory)/s/build/wheelhouse/'
+      python -m twine upload --repository "testpypi" *.whl
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+    displayName: "Upload to PyPI"
+    env:
+      TWINE_USERNAME: '__token__'
+      TWINE_PASSWORD: $(TWINE_PASSWORD)
 
-  - job: WindowsBuilds
-    workspace:
-      clean: all
-    strategy:
-      matrix:
-        VS_2022:
-          poolName: 'Azure Pipelines'
-          vmImage: 'windows-2022'
-          COMPILER: 'Visual Studio 17 2022'
-          ARCH: 'x64'
-          PLATFORM: 'win64'
-          artifactName: 'Windows-VS-2022-x64'
-        VS_2019:
-          poolName: 'Azure Pipelines'
-          vmImage: 'windows-2019'
-          COMPILER: 'Visual Studio 16 2019'
-          ARCH: 'x64'
-          PLATFORM: 'win64'
-          artifactName: 'Windows-VS-2019-x64'
-    pool:
-      vmImage: $[ variables['vmImage'] ]
-    steps:
-      - checkout: self
-        fetchDepth: 1
-        clean: true
+- job: WindowsBuilds
+  workspace:
+    clean: all
+  strategy:
+    matrix:
+      VS_2022:
+        poolName: 'Azure Pipelines'
+        vmImage: 'windows-2022'
+        COMPILER: 'Visual Studio 17 2022'
+        ARCH: 'x64'
+        PLATFORM: 'win64'
+        artifactName: 'Windows-VS-2022-x64'
+      VS_2019:
+        poolName: 'Azure Pipelines'
+        vmImage: 'windows-2019'
+        COMPILER: 'Visual Studio 16 2019'
+        ARCH: 'x64'
+        PLATFORM: 'win64'
+        artifactName: 'Windows-VS-2019-x64'
+  pool:
+    vmImage: $[ variables['vmImage'] ]
+  steps:
+    - checkout: self
+      fetchDepth: 1
+      clean: true
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.11'
+    - task: PowerShell@2
+      displayName: 'Install Dependencies'
+      inputs: 
+        targetType: filePath
+        filePath: ./CI/windows/install_deps.ps1
+    - task: PowerShell@2
+      displayName: "Build libm2k"
+      inputs:
+        targetType: 'filePath'
+        filePath: ./CI/windows/make_windows.ps1
+    - ${{ each pyVersion in parameters.pythonVersions }}:
       - task: UsePythonVersion@0
+        displayName: Use Python ${{ pyVersion }}
         inputs:
-          versionSpec: '3.11'
-      - task: PowerShell@2
-        displayName: 'Install Dependencies'
-        inputs: 
-          targetType: filePath
-          filePath: ./CI/windows/install_deps.ps1
-      - task: PowerShell@2
-        displayName: "Build libm2k"
-        inputs:
-          targetType: 'filePath'
-          filePath: ./CI/windows/make_windows.ps1
-      - ${{ each pyVersion in parameters.pythonVersions }}:
-        - task: UsePythonVersion@0
-          displayName: Use Python ${{ pyVersion }}
-          inputs:
-            versionSpec: '${{ pyVersion }}'
-        - powershell: |
-                $SRC_DIR = Get-Item -Path $env:BUILD_SOURCESDIRECTORY
-                $OUTSIDE_BUILD = $SRC_DIR.Parent.FullName
+          versionSpec: '${{ pyVersion }}'
+      - powershell: |
+              $SRC_DIR = Get-Item -Path $env:BUILD_SOURCESDIRECTORY
+              $OUTSIDE_BUILD = $SRC_DIR.Parent.FullName
 
-                $BUILD_DIR = Join-Path $OUTSIDE_BUILD "libm2k-$Env:PLATFORM\dist"
-                $TEMP_BUILD_DIR = Join-Path $SRC_DIR "tmp-build-$Env:PLATFORM"
+              $BUILD_DIR = Join-Path $OUTSIDE_BUILD "libm2k-$env:PLATFORM"
+              $TEMP_BUILD_DIR = Join-Path $SRC_DIR "tmp-build-$env:PLATFORM"
 
-                Set-Location $TEMP_BUILD_DIR
-                python.exe -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
-                $env:COMPILE_BINDINGS = $true
-                python.exe -m build
-                Remove-Item Env:COMPILE_BINDINGS
-                Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
-                Set-Location $SRC_DIR
-          displayName: Wheel Python ${{ pyVersion }}
-      - task: PowerShell@2
-        displayName: 'Create libm2k-system-setup installer'
-        condition: and(succeeded(), eq(variables['System.JobName'], 'VS_2022'))
-        inputs:
-          targetType: 'filePath'
-          filePath: ./CI/windows/create_installer.ps1
-      - task: PublishPipelineArtifact@1
-        condition: eq(variables['System.JobName'], 'VS_2022')
-        inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)/installer'
-          artifactName: 'Libm2k-System-Setup-Exe'
-      - task: PowerShell@2
-        displayName: "Create ZIPs"
-        inputs:
-          targetType: 'filePath'
-          filePath: ./CI/windows/create_zips.ps1
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)/libm2k-$(PLATFORM)'
-          artifactName: '$(artifactName)'
+              Set-Location $TEMP_BUILD_DIR
+              python.exe -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
+              $env:COMPILE_BINDINGS = $true
+              python.exe -m build
+              Remove-Item Env:COMPILE_BINDINGS
+              Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
+              Set-Location $SRC_DIR
+        displayName: Wheel Python ${{ pyVersion }}
+        condition: eq('${{ pyVersion }}', '3.11') # TODO: to be removed in final version
+    - task: PowerShell@2
+      displayName: 'Create libm2k-system-setup installer'
+      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.JobName'], 'VS_2022'))
+      condition: and(succeeded(), eq(variables['System.JobName'], 'VS_2022'))
+      inputs:
+        targetType: 'filePath'
+        filePath: ./CI/windows/create_installer.ps1
+    - task: PublishPipelineArtifact@1
+      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.JobName'], 'VS_2022'))
+      condition: and(succeeded(), eq(variables['System.JobName'], 'VS_2022'))
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/installer'
+        artifactName: 'Libm2k-System-Setup-Exe'
+    - task: PowerShell@2
+      displayName: "Create ZIPs"
+      inputs:
+        targetType: 'filePath'
+        filePath: ./CI/windows/create_zips.ps1
+    - task: PublishPipelineArtifact@1
+      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+      condition: succeeded()
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/libm2k-$(PLATFORM)'
+        artifactName: '$(artifactName)'
 
 
 
