@@ -12,7 +12,7 @@ mkdir deps\include
 powershell -Command "Get-ChildItem -Path libiio -Recurse -Filter iio.h | Copy-Item -Destination deps/include "
 
 ::libm2k
-git clone -b v0.7.0 https://github.com/analogdevicesinc/libm2k.git
+git clone -b v0.8.0 https://github.com/analogdevicesinc/libm2k.git
 cd libm2k
 mkdir build
 cd build
