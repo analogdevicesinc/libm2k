@@ -472,20 +472,20 @@ public:
 
 
 	/**
-    * @brief Sets the voltage output of the DAC channel
-    * @param chn_idx - unsigned int representing the index of the channel
-    * @param volts - actual value to be set 
-    * @return unsigned short - the corresponding raw value for the given voltage
-    */
-    virtual unsigned short setVoltage(unsigned int chn_idx, double volts) = 0;
+	 * @brief Sets the voltage output of the DAC channel
+	 * @param chn_idx - unsigned int representing the index of the channel
+	 * @param volts - actual value to be set
+	 * @return unsigned short - the corresponding raw value for the given voltage
+	 */
+	virtual unsigned short setVoltage(unsigned int chn_idx, double volts) = 0;
 
-    /**
-    * @brief Sets the raw output of the DAC channel
-    * @param chn_idx - unsigned int representing the index of the channel
-    * @param raw - actual value to be set
-    * @return unsigned short - the value set in the raw attribute
-    */
-    virtual unsigned short setVoltageRaw(unsigned int chn_idx, unsigned short raw) = 0;
+	/**
+	 * @brief Sets the raw output of the DAC channel
+	 * @param chn_idx - unsigned int representing the index of the channel
+	 * @param raw - actual value to be set
+	 * @return unsigned short - the value set in the raw attribute
+	 */
+	virtual unsigned short setVoltageRaw(unsigned int chn_idx, unsigned short raw) = 0;
 };
 }
 }

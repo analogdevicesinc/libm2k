@@ -92,8 +92,8 @@ public:
 	void deinitialize();
 
 	void loadNbKernelBuffers();
-    unsigned short setVoltage(unsigned int chn_idx, double volts) override;
-    unsigned short setVoltageRaw(unsigned int chn_idx, unsigned short raw) override;
+	unsigned short setVoltage(unsigned int chn_idx, double volts) override;
+	unsigned short setVoltageRaw(unsigned int chn_idx, unsigned short raw) override;
 
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
@@ -108,6 +108,8 @@ private:
 	bool m_dma_start_sync_available;
 	bool m_dma_data_available;
 	std::vector<unsigned int> m_nb_kernel_buffers;
+	std::vector<bool> m_raw_enable_available;
+	std::vector<bool> m_raw_available;
 
 	DeviceOut* getDacDevice(unsigned int chnIdx) const;
 	void syncDevice();
