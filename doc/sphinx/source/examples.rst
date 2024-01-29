@@ -68,4 +68,4 @@ Generating data using the ADALM2000 DAC and acquiring it using the ADALM2000 ADC
   libm2k.contextClose(ctx)
 
 
-Other Python examples are available in the `source repository <https://github.com/analogdevicesinc/libm2k/tree/master/bindings/python/examples>`_
+Other Python examples are available in the `source repository <https://github.com/analogdevicesinc/libm2k/tree/main/bindings/python/examples>`_
