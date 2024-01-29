@@ -17,10 +17,10 @@ pushd ${TOP_DIR}/build
 echo_green "Documentation was generated successfully!"
 
 ############################################################################
-# If the current build is not a pull request and it is on master the 
+# If the current build is not a pull request and it is on the default branch the
 # documentation will be pushed to the gh-pages branch
 ############################################################################
-if [[ "${IS_PULL_REQUEST}" == "False" && "${BRANCH_NAME}" == "master" ]]
+if [[ "${IS_PULL_REQUEST}" == "False" && "${BRANCH_NAME}" == "main" ]]
 then
         echo_green "Running Github docs update on commit '$CURRENT_COMMIT'"
         git config --global user.email "cse-ci-notifications@analog.com"
@@ -59,5 +59,5 @@ then
                 echo_green "Documentation already up to date!"
         fi
 else
-        echo_green "Documentation will be updated when this commit gets on master!"
+        echo_green "Documentation will be updated when this commit gets on the default branch!"
 fi

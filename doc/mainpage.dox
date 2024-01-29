@@ -55,7 +55,7 @@
 
  There are multiple examples provided for libm2k and can be found on the Github [libm2k examples] page. The examples are created to ease the work for a libm2k user. To get familiar with libm2k API, the examples can be modified and built out of the libm2k source code tree by keeping the CMake configuration file provided for each example.
 
-[libm2k examples]: https://github.com/analogdevicesinc/libm2k/tree/master/examples "libm2k official Github page"
+[libm2k examples]: https://github.com/analogdevicesinc/libm2k/tree/main/examples "libm2k official Github page"
 
 ~~~{.cpp}
 // This example will generate a binary counter on the first N_BITS of the
