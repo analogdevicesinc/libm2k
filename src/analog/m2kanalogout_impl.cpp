@@ -73,6 +73,11 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 
 	// data_available attribute exists only in firmware versions newer than 0.23
 	m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
+
+	m_raw_enable_available.push_back(getDacDevice(0)->getChannel(0, true)->hasAttribute("raw_enable"));
+	m_raw_enable_available.push_back(getDacDevice(1)->getChannel(0, true)->hasAttribute("raw_enable"));
+	m_raw_available.push_back(getDacDevice(0)->getChannel(0, true)->hasAttribute("raw"));
+	m_raw_available.push_back(getDacDevice(1)->getChannel(0, true)->hasAttribute("raw"));
 	LIBM2K_LOG(INFO, "[END] Initialize M2kAnalogOut");
 }
 
@@ -132,25 +137,37 @@ void M2kAnalogOutImpl::loadNbKernelBuffers()
 		}
 	}
 }
+
 unsigned short M2kAnalogOutImpl::setVoltage(unsigned int chn_idx, double volts)
 {
-    auto chn = getDacDevice(chn_idx)->getChannel(0, true);
+	auto chn = getDacDevice(chn_idx)->getChannel(0, true);
 	auto raw = static_cast<long long>(convertVoltsToRaw(chn_idx, volts));
-	// having the raw_enable attribute set to enable shout give at the dac output the corresponding raw value
-	chn->setStringValue("raw_enable", "enabled");
-	chn->setLongValue("raw", raw);
-    return chn->getLongValue("raw");
+	long long ret = 0;
+	// having the raw_enable attribute set to enable should give at the dac output the corresponding raw value
+	if (m_raw_available.at(chn_idx) && m_raw_enable_available.at(chn_idx)) {
+		chn->setStringValue("raw_enable", "enabled");
+		chn->setLongValue("raw", raw);
+		ret = chn->getLongValue("raw");
+	} else {
+		THROW_M2K_EXCEPTION("Invalid firmware version: 0.32 or greater is required.", libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	}
+	return ret;
 }
 
 unsigned short M2kAnalogOutImpl::setVoltageRaw(unsigned int chn_idx, unsigned short raw)
 {
-    auto chn = getDacDevice(chn_idx)->getChannel(0, true);
-	// having the raw_enable attribute set to enable shout give at the dac output the corresponding raw value
-	chn->setStringValue("raw_enable", "enabled");
-    chn->setLongValue("raw", static_cast<long long>(raw));
-    return chn->getLongValue("raw");
+	auto chn = getDacDevice(chn_idx)->getChannel(0, true);
+	long long ret = 0;
+	// having the raw_enable attribute set to enable should give at the dac output the corresponding raw value
+	if (m_raw_available.at(chn_idx) && m_raw_enable_available.at(chn_idx)) {
+		chn->setStringValue("raw_enable", "enabled");
+		chn->setLongValue("raw", static_cast<long long>(raw));
+		ret = chn->getLongValue("raw");
+	} else {
+		THROW_M2K_EXCEPTION("Invalid firmware version: 0.32 or greater is required.", libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	}
+	return ret;
 }
-
 
 double M2kAnalogOutImpl::getCalibscale(unsigned int index)
 {
