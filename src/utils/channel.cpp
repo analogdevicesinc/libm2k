@@ -378,6 +378,11 @@ std::vector<std::string> Channel::getAvailableAttributeValues(const std::string 
 	std::vector<std::string> values;
 	std::string valuesAsString;
 
+	if (!hasAttribute(attr)) {
+		THROW_M2K_EXCEPTION(std::string(m_channel_id) + " has no " + attr + " attribute", libm2k::EXC_INVALID_PARAMETER);
+		return std::vector<std::string>();
+	}
+
 	__try {
 		valuesAsString = getStringValue(std::string(attr + "_available"));
 		std::istringstream iss(valuesAsString);
