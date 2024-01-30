@@ -56,8 +56,6 @@ public:
 private:
 	std::vector<std::shared_ptr<libm2k::utils::DeviceIn>> m_devices_in;
 	std::string m_dev_name;
-	unsigned int m_nb_channels;
-	bool m_cyclic;
 	std::shared_ptr<libm2k::utils::DeviceIn> getAdcDevice(unsigned int index);
 	static double processSample(int16_t sample, unsigned int channel);
 };
