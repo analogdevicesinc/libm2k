@@ -151,6 +151,38 @@ namespace libm2k {
 	};
 
 
+	/**		
+	* @enum M2K_TRIGGER_SOURCE_OUT
+	* @brief Selects the source trigger for the output interfaces
+	*/
+	enum M2K_TRIGGER_SOURCE_OUT {
+		TRIGGER_NONE = 0,
+		TRIGGER_TI_0 = 1, 
+		TRIGGER_TI_1 = 2,
+		TRIGGER_ADC = 3,
+		TRIGGER_LA = 4,
+	};
+
+	/**
+	* @enum M2K_TRIGGER_CONDITION_OUT
+	* @brief Condition of triggering when the M2K_TRIGGER_SOURCE_OUT is TRIGGER_TI_0
+	*/
+	enum M2K_TRIGGER_CONDITION_OUT {
+		NONE_OUT = 0,
+		LOW_LEVEL_OUT = 1,
+		HIGH_LEVEL_OUT = 2,
+		ANY_EDGE_OUT = 3,
+		RISING_EDGE_OUT = 4,
+		FALLING_EDGE_OUT = 5,
+	};
+
+	enum M2K_TRIGGER_ACTION_ANALOG_OUT {
+		DISABLED = 0,
+		START = 1,
+		STOP = 2,
+	};	
+
+
 	/**
 	 * @enum M2K_TRIGGER_SOURCE_DIGITAL
 	 * @brief Select the source for the digital trigger

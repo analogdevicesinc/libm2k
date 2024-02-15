@@ -570,3 +570,90 @@ void M2kHardwareTriggerImpl::setCalibParameters(unsigned int chnIdx, double scal
 	m_scaling[chnIdx] = scaling;
 	m_offset[chnIdx] = offset;
 }
+
+void M2kHardwareTriggerImpl::setAnalogOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src)
+{
+	UNUSED(src);
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog output trigger source is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+}
+M2K_TRIGGER_SOURCE_OUT M2kHardwareTriggerImpl::getAnalogOutTriggerSource() const 
+{
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog output trigger source is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	return TRIGGER_NONE;
+}
+
+void M2kHardwareTriggerImpl::setAnalogOutTriggerCondition(M2K_TRIGGER_CONDITION_OUT condition)
+{
+	UNUSED(condition);
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog output trigger condition is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+}
+
+M2K_TRIGGER_CONDITION_OUT M2kHardwareTriggerImpl::getAnalogOutTriggerCondition() const
+{
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog output trigger condition is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	return NONE_OUT;
+}
+
+void M2kHardwareTriggerImpl::setAnalogOutTriggeredAction(M2K_TRIGGER_ACTION_ANALOG_OUT event)
+{
+	UNUSED(event);
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog output triggered event is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);	
+}
+
+M2K_TRIGGER_ACTION_ANALOG_OUT M2kHardwareTriggerImpl::getAnalogOutTriggeredAction() const
+{
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog output triggered event is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);	
+	return DISABLED;
+}
+
+void M2kHardwareTriggerImpl::setDigitalOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src)
+{
+	UNUSED(src);
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the digital output trigger source is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+}
+
+M2K_TRIGGER_SOURCE_OUT M2kHardwareTriggerImpl::getDigitalOutTriggerSource() const
+{
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the digital output trigger source is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	return TRIGGER_NONE;
+}
+void M2kHardwareTriggerImpl::setDigitalOutTriggerCondition(M2K_TRIGGER_CONDITION_OUT condition)
+{
+	UNUSED(condition);
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the digital output trigger condition is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+}
+M2K_TRIGGER_CONDITION_OUT M2kHardwareTriggerImpl::getDigitalOutTriggerCondition() const
+{
+	THROW_M2K_EXCEPTION("M2kHardwareTrigger: "
+			    "the analog output trigger condition is not configurable on "
+			    "the current board; Check the firmware version.",
+			    libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	return NONE_OUT;
+}

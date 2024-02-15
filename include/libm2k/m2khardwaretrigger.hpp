@@ -404,6 +404,140 @@ public:
 	 * @note Only available from firmware v0.24.
 	 */
 	virtual M2K_TRIGGER_SOURCE_DIGITAL getDigitalSource() const;
+
+
+	// TODO: remove after validation in 0.32
+	/**
+	 * @brief Select which interface triggers the AnalogOut.
+	 * @param src: of type M2K_TRIGGER_SOURCE_OUT:\n
+	 *	TRIGGER_NONE - trigger events are disabled;\n
+	 *	TRIGGER_TI_0 - trigger events on the TI pin will trigger the AnalogOut interface;\n
+	 *	TRIGGER_TI_1 - trigger events on the TO pin will trigger the AnalogOut interface;\n  // TODO: this might be wrong - remove if necessary
+	 *	TRIGGER_ADC - trigger events on the AnalogIn interface will trigger the AnalogOut interface;\n
+	 *	TRIGGER_LA - trigger events on the DigitalIn interface will trigger the AnalogOut interface;\n
+	 * @note Only available from firmware v0.32.
+	 */	
+	virtual void setAnalogOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src) = 0;
+
+
+	/**
+	 * @brief Returns the source of the AnalogOut trigger event.
+	 * @return M2K_TRIGGER_SOURCE_OUT :\n
+	 *	TRIGGER_NONE;\n
+	 *	TRIGGER_TI_0;\n
+	 *	TRIGGER_TI_1;\n
+	 *	TRIGGER_ADC;\n
+	 *	TRIGGER_LA;\n
+	 * @note Only available from firmware v0.32.
+	 */
+	virtual M2K_TRIGGER_SOURCE_OUT getAnalogOutTriggerSource() const = 0;
+
+
+	/**
+	 * @brief Configures the triggering condition when the source of the AnalogOut 
+	 * trigger event is set to TRIGGER_TI_0. For the other sources this condition is 
+	 * ignored, the configuration is forwarded by the corresponding interface.
+	 * @param condition: of type M2K_TRIGGER_CONDITION_OUT:\n
+	 *	NONE_OUT - disabled;\n
+	 *	LOW_LEVEL_OUT;\n
+	 *	HIGH_LEVEL_OUT;\n
+	 *	ANY_EDGE_OUT;\n
+	 *	RISING_EDGE_OUT;\n
+	 *	FALLING_EDGE_OUT;\n
+	 * @note Only available from firmware v0.32.
+	 */
+	virtual void setAnalogOutTriggerCondition(M2K_TRIGGER_CONDITION_OUT condition) = 0;
+
+
+	/**
+	 * @brief Returns the condition of the AnalogOut trigger event when the source is TI.
+	 * @return M2K_TRIGGER_CONDITION_OUT :\n
+	 *	NONE_OUT - disabled;\n
+	 *	LOW_LEVEL_OUT;\n
+	 *	HIGH_LEVEL_OUT;\n
+	 *	ANY_EDGE_OUT;\n
+	 *	RISING_EDGE_OUT;\n
+	 *	FALLING_EDGE_OUT;\n
+	 * @note Only available from firmware v0.32.
+	 */
+	virtual M2K_TRIGGER_CONDITION_OUT getAnalogOutTriggerCondition() const = 0;
+
+	/**
+	 * @brief Defines the action to be performed when a trigger event occurs.
+	 * @param event: of type M2K_TRIGGER_ACTION_ANALOG_OUT:\n
+	 *	DISABLED - no action is performed when a trigger event occurs;\n
+	 *	START - the AnalogOut interface starts outputting samples;\n
+	 *	STOP - the AnalogOut interface stops outputting samples;\n
+	 * @note Only available from firmware v0.32.
+	 */
+	virtual void setAnalogOutTriggeredAction(M2K_TRIGGER_ACTION_ANALOG_OUT event) = 0;
+
+
+	/**
+	 * @brief Returns the action that is performed when a trigger event occurs.
+	 * @return M2K_TRIGGER_ACTION_ANALOG_OUT :\n
+	 *	DISABLED;\n
+	 *	START;\n
+	 *	STOP;\n
+	 * @note Only available from firmware v0.32.
+	 */
+	virtual M2K_TRIGGER_ACTION_ANALOG_OUT getAnalogOutTriggeredAction() const = 0;
+
+
+	/**
+	 * @brief Select which interface triggers the digital output pins.
+	 * @param src: of type M2K_TRIGGER_SOURCE_OUT:\n
+	 *	TRIGGER_NONE - trigger events are disabled;\n
+	 *	TRIGGER_TI_0 - trigger events on the TI pin will trigger the digital output pins;\n
+	 *	TRIGGER_TI_1 - trigger events on the TO pin will trigger the digital output pins;\n  // TODO: this might be wrong - remove if necessary
+	 *	TRIGGER_ADC - trigger events on the AnalogIn interface will trigger the digital output pins;\n
+	 *	TRIGGER_LA - trigger events on the DigitalIn interface will trigger the digital output pins;\n
+	 * @note Only available from firmware v0.32.
+	 */	
+	virtual void setDigitalOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src) = 0;
+
+
+	/**
+	 * @brief Returns the source of the AnalogOut trigger event.
+	 * @return M2K_TRIGGER_SOURCE_OUT :\n
+	 *	TRIGGER_NONE;\n
+	 *	TRIGGER_TI_0;\n
+	 *	TRIGGER_TI_1;\n
+	 *	TRIGGER_ADC;\n
+	 *	TRIGGER_LA;\n
+	 * @note Only available from firmware v0.32.
+	 */
+	virtual M2K_TRIGGER_SOURCE_OUT getDigitalOutTriggerSource() const = 0;	
+
+
+	/**
+	 * @brief Configures the triggering condition when the source of the digital 
+	 * output trigger event is set to TRIGGER_TI_0. For the other sources this 
+	 * condition is ignored, the configuration is forwarded by the corresponding interface.
+	 * @param condition: of type M2K_TRIGGER_CONDITION_OUT:\n
+	 *	NONE_OUT - disabled;\n
+	 *	LOW_LEVEL_OUT;\n
+	 *	HIGH_LEVEL_OUT;\n
+	 *	ANY_EDGE_OUT;\n
+	 *	RISING_EDGE_OUT;\n
+	 *	FALLING_EDGE_OUT;\n
+	 * @note Only available from firmware v0.32.
+	 */
+	virtual void setDigitalOutTriggerCondition(M2K_TRIGGER_CONDITION_OUT condition) = 0;
+
+
+	/**
+	 * @brief Returns the condition of the digital output trigger event when the source is TI.
+	 * @return M2K_TRIGGER_CONDITION_OUT :\n
+	 *	NONE_OUT - disabled;\n
+	 *	LOW_LEVEL_OUT;\n
+	 *	HIGH_LEVEL_OUT;\n
+	 *	ANY_EDGE_OUT;\n
+	 *	RISING_EDGE_OUT;\n
+	 *	FALLING_EDGE_OUT;\n
+	 * @note Only available from firmware v0.32.
+	 */
+	virtual M2K_TRIGGER_CONDITION_OUT getDigitalOutTriggerCondition() const = 0;	
 };
 }
 

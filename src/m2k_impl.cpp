@@ -26,6 +26,7 @@
 #include <digital/m2kdigital_impl.hpp>
 #include "m2khardwaretrigger_impl.hpp"
 #include "m2khardwaretrigger_v0.24_impl.hpp"
+#include "m2khardwaretrigger_v0.32_impl.hpp"
 #include "m2kcalibration_impl.hpp"
 #include <libm2k/analog/dmm.hpp>
 #include "utils/channel.hpp"
@@ -69,12 +70,23 @@ M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync)
 	m_instancesPowerSupply.clear();
 
 	m_firmware_version = getFirmwareVersion();
+	std::cout << "Firmware version: " << m_firmware_version << std::endl;
+	
 
-	int diff = Utils::compareVersions(m_firmware_version, "v0.24");
-	if (diff < 0) {	//m_firmware_version < 0.24
+	int compare_to_24 = Utils::compareVersions(m_firmware_version, "v0.24");
+	int compare_to_32 = Utils::compareVersions(m_firmware_version, "v0.32");
+
+	std::cout << "Compare to 24: " << compare_to_24 << std::endl;
+	std::cout << "Compare to 32: " << compare_to_32 << std::endl;
+	if (compare_to_24 < 0) {	//m_firmware_version < 0.24
+		std::cout << "Old firmware version, using M2kHardwareTriggerImpl\n";
 		m_trigger = new M2kHardwareTriggerImpl(ctx);
-	} else {
+	} else if ( (compare_to_24 >= 0) &&  (compare_to_32 < 0)) {
+		std::cout << "BETWEEN firmware version, using M2kHardwareTriggerV024Impl\n";
 		m_trigger = new M2kHardwareTriggerV024Impl(ctx);
+	} else {
+		std::cout << "NEWER firmware version, using M2kHardwareTriggerV032Impl\n";
+		m_trigger = new M2kHardwareTriggerV032Impl(ctx);
 	}
 
 	if (!m_trigger) {
