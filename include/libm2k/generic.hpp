@@ -26,7 +26,7 @@
 #include <vector>
 #include <list>
 #include <libm2k/m2kglobal.hpp>
-#include <libm2k/context.hpp>
+#include <libm2k/context_private.hpp>
 
 using namespace std;
 
@@ -36,7 +36,7 @@ class GenericAnalogOut;
 class GenericAnalogIn;
 }
 namespace context {
-class LIBM2K_API Generic : public virtual Context {
+class LIBM2K_API Generic : public virtual ContextPrivate {
 public:
 	virtual ~Generic() {}
 

@@ -19,46 +19,46 @@
  *
  */
 
-#ifndef CONTEXT_IMPL_HPP
-#define CONTEXT_IMPL_HPP
+#ifndef CONTEXT_IMPL_PRIVATE_HPP
+#define CONTEXT_IMPL_PRIVATE_HPP
 
-#include <libm2k/context.hpp>
 #include <libm2k/context_private.hpp>
-#include "context_impl_private.hpp"
 #include <libm2k/generic.hpp>
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/enums.hpp>
 #include <libm2k/utils/utils.hpp>
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include <map>
-// #include "libm2k/context_private.hpp"
 
 extern "C" {
-	struct iio_context;
+struct iio_context;
 }
 
 namespace libm2k {
 namespace analog {
-	class GenericAnalogIn;
-	class GenericAnalogOut;
-	class DMM;
-	class PowerSupply;
-}
+class GenericAnalogIn;
+class GenericAnalogOut;
+class DMM;
+class PowerSupply;
+} // namespace analog
 
 namespace digital {
-	class GenericDigital;
+class GenericDigital;
 }
 
 namespace context {
 class Context;
 class M2k;
 
-class ContextImpl : public virtual Context {
+class ContextImplPrivate : public virtual ContextPrivate {
+	friend class ContextImpl;
+
 public:
-	ContextImpl(ContextImplPrivate *ctx);
-	~ContextImpl() override;
+	ContextImplPrivate(std::string uri, struct iio_context *, std::string name,
+					   bool sync);
+	~ContextImplPrivate() override;
 
 	void reset() override;
 	void deinitialize() override;
@@ -67,9 +67,9 @@ public:
 
 	std::string getUri() override;
 
-	libm2k::analog::DMM* getDMM(unsigned int) override;
-	libm2k::analog::DMM* getDMM(std::string) override;
-	std::vector<libm2k::analog::DMM*> getAllDmm() override;
+	libm2k::analog::DMM *getDMM(unsigned int) override;
+	libm2k::analog::DMM *getDMM(std::string) override;
+	std::vector<libm2k::analog::DMM *> getAllDmm() override;
 
 	std::vector<std::string> getAvailableContextAttributes() override;
 	std::string getContextAttributeValue(std::string attr) override;
@@ -78,12 +78,13 @@ public:
 	std::unordered_set<std::string> getAllDevices() const override;
 	void logAllAttributes() const override;
 
-	libm2k::context::M2k* toM2k() override;
-	libm2k::context::Generic* toGeneric() override;
+	libm2k::context::M2k *toM2k() override;
+	libm2k::context::Generic *toGeneric() override;
 
 	static bool iioChannelHasAttribute(iio_channel *chn, const std::string &attr);
 	static bool iioDevHasAttribute(iio_device *dev, const std::string &attr);
-	static bool iioDevBufferHasAttribute(iio_device *dev, const std::string &attr);
+	static bool iioDevBufferHasAttribute(iio_device *dev,
+										 const std::string &attr);
 
 	unsigned int getDmmCount() override;
 	std::string getFirmwareVersion() override;
@@ -92,10 +93,28 @@ public:
 	void setTimeout(unsigned int timeout) override;
 	void setContextOwnership(bool ownsContext);
 
-private:
-	ContextImplPrivate *m_contextPrivate;
-};
-}
-}
+protected:
+	struct iio_context *m_context;
+	std::vector<libm2k::analog::DMM *> m_instancesDMM;
+	std::map<std::string, std::string> m_context_attributes;
 
-#endif // CONTEXT_IMPL_HPP
+	bool isIioDeviceBufferCapable(std::string dev_name);
+	std::vector<std::pair<std::string, std::string>>
+	getIioDevByChannelAttrs(std::vector<std::string> attr_list);
+	std::vector<std::pair<std::string, std::string>> getHwmonDevices();
+	libm2k::utils::DEVICE_TYPE getIioDeviceType(std::string dev_name);
+	libm2k::utils::DEVICE_DIRECTION getIioDeviceDirection(std::string dev_name);
+
+private:
+	void initializeContextAttributes();
+
+	std::string m_uri;
+	std::string m_name;
+	bool m_sync;
+	bool m_ownsContext;
+	int m_refCount;
+};
+} // namespace context
+} // namespace libm2k
+
+#endif // CONTEXT_IMPL_PRIVATE_HPP

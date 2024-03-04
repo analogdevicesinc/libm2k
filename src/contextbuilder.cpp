@@ -20,7 +20,7 @@
  */
 
 #include "m2k_impl.hpp"
-#include "generic_impl.hpp"
+// #include "generic_impl.hpp"
 #include <libm2k/contextbuilder.hpp>
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/logger.hpp>
@@ -135,14 +135,17 @@ Context* ContextBuilder::buildContext(ContextTypes type, std::string uri,
 	switch (type) {
 		case CtxM2K:
 		{
-			auto m2k = new M2kImpl(uri, ctx, name, sync);
+			// TODO: add logic
+			auto m2kPrivate = new M2kImplPrivate(uri, ctx, name, sync);
+			auto m2k = new M2kImpl(m2kPrivate);
 			m2k->setContextOwnership(ownsContext);
 			return m2k;
 		}
 		case Other:
 		default:
 		{
-			auto generic = new GenericImpl(uri, ctx, name, sync);
+			auto genericPrivate = new ContextImplPrivate(uri, ctx, name, sync);
+			auto generic = new ContextImpl(genericPrivate);
 			generic->setContextOwnership(ownsContext);
 			return generic;
 		}
@@ -182,7 +185,6 @@ Context* ContextBuilder::searchInConnectedDevices(std::string uri)
 	}
 	return nullptr;
 }
-
 
 Context* ContextBuilder::contextOpen(const char *uri)
 {

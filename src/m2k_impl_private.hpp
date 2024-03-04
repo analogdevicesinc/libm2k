@@ -19,13 +19,12 @@
  *
  */
 
-#ifndef M2K_IMPL_H
-#define M2K_IMPL_H
+#ifndef M2K_IMPL_PRIVATE_H
+#define M2K_IMPL_PRIVATE_H
 
-#include <libm2k/m2k.hpp>
-#include "context_impl.hpp"
-#include "m2k_impl_private.hpp"
-// #include <libm2k/m2k_impl_private.hpp>
+// #include <libm2k/m2k_private.hpp>
+#include "../include/libm2k/m2k_private.hpp"
+#include "context_impl_private.hpp"
 #include <libm2k/enums.hpp>
 
 namespace libm2k {
@@ -33,13 +32,13 @@ class M2kHardwareTrigger;
 class M2kCalibration;
 
 namespace context {
-class M2kImpl : public M2k, public ContextImpl
+class M2kImplPrivate : public M2kPrivate, public ContextImplPrivate
 {
 
 public:
-	M2kImpl(M2kImplPrivate *p);
+	M2kImplPrivate(std::string uri, iio_context* ctx, std::string name, bool sync);
 
-	~M2kImpl() override;
+	~M2kImplPrivate() override;
 	void reset() override;
 	void deinitialize() override;
 
@@ -84,8 +83,24 @@ public:
 	std::string getFirmwareVersion() override;
 
 private:
-	M2kImplPrivate *m_privateM2K;
+	M2kCalibration* m_calibration;
+	libm2k::M2kHardwareTrigger *m_trigger;
+	std::vector<analog::M2kAnalogOut*> m_instancesAnalogOut;
+	std::vector<analog::M2kAnalogIn*> m_instancesAnalogIn;
+	std::vector<analog::M2kPowerSupply*> m_instancesPowerSupply;
+	std::vector<digital::M2kDigital*> m_instancesDigital;
+	bool m_sync;
+	std::string m_firmware_version;
+	enum libm2k::M2K_TRIGGER_SOURCE_ANALOG analogSource;
+	enum libm2k::M2K_TRIGGER_SOURCE_DIGITAL digitalSource;
+	bool hasAnalogTrigger();
+	bool hasDigitalTrigger();
+	std::map<double, shared_ptr<struct CALIBRATION_PARAMETERS>> m_calibration_lut;
+
+	double getCalibrationTemperature(double temperature);
+	void blinkLed(const double duration = 4, bool blocking = false);
+	void initialize();
 };
 }
 }
-#endif // M2K_IMPL_H
+#endif // M2K_IMPL_PRIVATE_H
