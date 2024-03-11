@@ -23,7 +23,7 @@
 #define M2K_IMPL_PRIVATE_H
 
 // #include <libm2k/m2k_private.hpp>
-#include "../include/libm2k/m2k_private.hpp"
+#include <libm2k/m2k_private.hpp>
 #include "context_impl_private.hpp"
 #include <libm2k/enums.hpp>
 

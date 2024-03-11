@@ -33,7 +33,6 @@
 #include <vector>
 #include <memory>
 #include <map>
-// #include "libm2k/context_private.hpp"
 
 extern "C" {
 	struct iio_context;

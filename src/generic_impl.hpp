@@ -19,42 +19,42 @@
 //  *
 //  */
 
-// #ifndef GENERIC_IMPL_H
-// #define GENERIC_IMPL_H
+#ifndef GENERIC_IMPL_H
+#define GENERIC_IMPL_H
 
-// #include <map>
-// #include <vector>
-// #include <list>
-// #include <libm2k/generic.hpp>
-// #include "utils/devicein.hpp"
-// #include "utils/deviceout.hpp"
-// #include "context_impl.hpp"
+#include <map>
+#include <vector>
+#include <list>
+#include <libm2k/generic.hpp>
+#include "utils/devicein.hpp"
+#include "utils/deviceout.hpp"
+#include "context_impl.hpp"
 
-// using namespace std;
+using namespace std;
 
-// namespace libm2k {
-// namespace context {
-// class GenericImpl : public Generic, public ContextImpl {
-// public:
-// 	GenericImpl(std::string uri, iio_context* ctx, std::string name, bool sync);
-// 	virtual ~GenericImpl();
+namespace libm2k {
+namespace context {
+class GenericImpl : public Generic, public ContextImplPrivate {
+public:
+	GenericImpl(std::string uri, iio_context* ctx, std::string name, bool sync);
+	virtual ~GenericImpl();
 
-// 	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
-// 	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
-// 	libm2k::analog::GenericAnalogOut* getAnalogOut(unsigned int);
-// 	libm2k::analog::GenericAnalogOut* getAnalogOut(std::string);
+	libm2k::analog::GenericAnalogIn* getAnalogIn(unsigned int);
+	libm2k::analog::GenericAnalogIn* getAnalogIn(std::string);
+	libm2k::analog::GenericAnalogOut* getAnalogOut(unsigned int);
+	libm2k::analog::GenericAnalogOut* getAnalogOut(std::string);
 
-// 	unsigned int getAnalogInCount();
-// 	unsigned int getAnalogOutCount();
+	unsigned int getAnalogInCount();
+	unsigned int getAnalogOutCount();
 
-// private:
-// 	std::vector<analog::GenericAnalogOut*> m_instancesAnalogOut;
-// 	std::vector<analog::GenericAnalogIn*> m_instancesAnalogIn;
+private:
+	std::vector<analog::GenericAnalogOut*> m_instancesAnalogOut;
+	std::vector<analog::GenericAnalogIn*> m_instancesAnalogIn;
 
-// 	std::vector<std::string> scanAllAnalogIn();
-// 	std::vector<std::string> scanAllAnalogOut();
-// };
-// }
-// }
+	std::vector<std::string> scanAllAnalogIn();
+	std::vector<std::string> scanAllAnalogOut();
+};
+}
+}
 
-// #endif
+#endif

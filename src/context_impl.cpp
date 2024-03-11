@@ -38,11 +38,13 @@ ContextImpl::ContextImpl(ContextImplPrivate *p)
 {
 	m_contextPrivate = p;
 	m_contextPrivate->m_refCount++;
+	std::cout << "refcount++ " << m_contextPrivate->getRefCount() << " " << m_contextPrivate->getUri() << "\n";
 }
 
 ContextImpl::~ContextImpl()
 {
 	m_contextPrivate->m_refCount--;
+	std::cout << "refcount-- " << m_contextPrivate->getRefCount() << " " << m_contextPrivate->getUri() << "\n";
 }
 
 void ContextImpl::reset()
@@ -129,12 +131,23 @@ std::string ContextImpl::getSerialNumber()
 
 M2k* ContextImpl::toM2k()
 {
-	return m_contextPrivate->toM2k();
+	libm2k::context::M2k* dev = dynamic_cast<M2k*>(this);
+	if(dev) {
+		dev->calibrateADC();
+		return dev;
+	} else {
+		return nullptr;
+	}
 }
 
 Generic *ContextImpl::toGeneric()
 {
-	return m_contextPrivate->toGeneric();
+	libm2k::context::Generic* dev = dynamic_cast<Generic*>(this);
+	if(dev) {
+		return dev;
+	} else {
+		return nullptr;
+	}
 }
 
 std::string ContextImpl::getUri()
@@ -164,5 +177,5 @@ void ContextImpl::setTimeout(unsigned int timeout)
 
 void ContextImpl::setContextOwnership(bool ownsContext)
 {
-	m_contextPrivate->setTimeout(ownsContext);
+	m_contextPrivate->setContextOwnership(ownsContext);
 }

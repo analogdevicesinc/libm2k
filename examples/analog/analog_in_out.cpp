@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
 	{
 		cout<<val<<endl;
 	}
-	cout <<"end";
+	cout <<"end\n";
 	aout->stop();
 	contextClose(ctx);
 }

@@ -92,6 +92,7 @@ public:
 	struct iio_context *getIioContext() override;
 	void setTimeout(unsigned int timeout) override;
 	void setContextOwnership(bool ownsContext);
+	int getRefCount() override;
 
 protected:
 	struct iio_context *m_context;

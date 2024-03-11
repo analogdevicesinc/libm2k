@@ -449,5 +449,10 @@ void ContextImplPrivate::setTimeout(unsigned int timeout)
 
 void ContextImplPrivate::setContextOwnership(bool ownsContext)
 {
-        m_ownsContext = ownsContext;
+	m_ownsContext = ownsContext;
+}
+
+int ContextImplPrivate::getRefCount()
+{
+	return m_refCount;
 }

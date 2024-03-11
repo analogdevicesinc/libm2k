@@ -120,6 +120,11 @@ bool M2kImpl::resetCalibration()
 	return m_privateM2K->resetCalibration();
 }
 
+double M2kImpl::calibrateFromContext()
+{
+	return m_privateM2K->calibrateFromContext();
+}
+
 bool M2kImpl::calibrateADC()
 {
 	return m_privateM2K->calibrateADC();
@@ -153,6 +158,36 @@ int M2kImpl::getDacCalibrationOffset(unsigned int chn)
 void M2kImpl::setAdcCalibrationGain(unsigned int chn, double gain)
 {
 	m_privateM2K->setAdcCalibrationGain(chn, gain);
+}
+
+bool M2kImpl::hasContextCalibration()
+{
+	return m_privateM2K->hasContextCalibration();
+}
+
+std::map<double, std::shared_ptr<CALIBRATION_PARAMETERS> > &M2kImpl::getLUT()
+{
+	return m_privateM2K->getLUT();
+}
+
+bool M2kImpl::isCalibrated()
+{
+	return m_privateM2K->isCalibrated();
+}
+
+void M2kImpl::setLed(bool on)
+{
+	m_privateM2K->setLed(on);
+}
+
+bool M2kImpl::getLed()
+{
+	return m_privateM2K->getLed();
+}
+
+string M2kImpl::getFirmwareVersion()
+{
+	return m_privateM2K->getFirmwareVersion();
 }
 
 void M2kImpl::setAdcCalibrationOffset(unsigned int chn, int offset)

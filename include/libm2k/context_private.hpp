@@ -195,6 +195,9 @@ public:
 	*/
 	virtual void setTimeout(unsigned int timeout) = 0;
 
+
+	// TODO: add brief
+	virtual int getRefCount() = 0;
 };
 }
 }

@@ -22,6 +22,9 @@
 #ifndef DEVICEBUILDER_HPP
 #define DEVICEBUILDER_HPP
 
+#include "context_private.hpp"
+#include "context.hpp"
+
 #include <vector>
 #include <string>
 #include <libm2k/m2kglobal.hpp>
@@ -113,11 +116,16 @@ private:
 		bool ownsContext = false);
 	static bool m_disable_logging;
 
-	static std::map<std::string, int> reference_count;
-	static void incrementReferenceCount(std::string uri);
-	static void decrementReferenceCount(std::string uri);
-	static bool checkLastReference(std::string uri);
-	static Context* searchInConnectedDevices(std::string uri);
+	// static std::map<std::string, int> reference_count;
+
+	// new maps
+	static std::map<std::string, ContextPrivate*> m_connectedDevices;
+	static std::vector<Context*> m_sessions;
+
+	// static void incrementReferenceCount(std::string uri);
+	// static void decrementReferenceCount(std::string uri);
+	// static bool checkLastReference(std::string uri);
+	static ContextPrivate* searchInConnectedDevices(std::string uri);
 };
 
 /**
