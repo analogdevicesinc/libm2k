@@ -30,6 +30,12 @@ endif()
 SET(CMAKE_EXE_LINKER_FLAGS  "/FORCE")
 
 FILE(GLOB_RECURSE SRC_LIST  *.cpp *_impl.hpp */*_impl.hpp)
+IF(DEFINED LIBIIO_V1 AND NOT DEFINED CACHE{LIBIIO_V1})
+# TBD separate a diff if to check if cached and display an error msg
+	LIST(FILTER SRC_LIST EXCLUDE REGEX ".*_v0.cpp")
+ELSE()
+	LIST(FILTER SRC_LIST EXCLUDE REGEX ".*_v1.cpp")
+ENDIF()
 
 FILE(GLOB_RECURSE HEADERS_LIST ${CMAKE_SOURCE_DIR}/include/libm2k/*.hpp)
 FILE(GLOB_RECURSE HEADERS_LIST_LV ${CMAKE_SOURCE_DIR}/include/libm2k/*.h)
