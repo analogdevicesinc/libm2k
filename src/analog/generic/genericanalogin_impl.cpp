@@ -23,9 +23,14 @@
 #include "genericanalogin_impl.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include "libm2k/utils/utils.hpp"
-#include <iio.h>
 #include <iostream>
 #include <algorithm>
+
+#ifndef LIBIIO_V1
+#include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace libm2k::analog;
 using namespace libm2k::utils;

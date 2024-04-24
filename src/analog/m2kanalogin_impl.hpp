@@ -159,7 +159,9 @@ private:
 	std::vector<double> m_adc_hw_vert_offset;
 	std::map<double, double> m_filter_compensation_table;
 	std::vector<bool> m_channels_enabled;
+#ifndef LIBIIO_V1
 	unsigned int m_nb_kernel_buffers;
+#endif
 	bool m_data_available;
 
 	void syncDevice();

@@ -22,7 +22,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#ifndef LIBIIO_V1
 #include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
+
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/utils/enums.hpp>
 #include <string>

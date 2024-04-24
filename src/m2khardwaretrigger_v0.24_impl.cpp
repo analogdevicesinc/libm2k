@@ -27,7 +27,12 @@
 #include "m2khardwaretrigger_v0.24_impl.hpp"
 #include <stdexcept>
 #include <algorithm>
+
+#ifndef LIBIIO_V1
 #include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace libm2k;
 using namespace libm2k::utils;

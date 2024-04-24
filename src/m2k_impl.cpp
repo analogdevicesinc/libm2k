@@ -34,10 +34,15 @@
 #include <libm2k/utils/utils.hpp>
 #include "utils/devicegeneric.hpp"
 #include <libm2k/logger.hpp>
-#include <iio.h>
 #include <iostream>
 #include <algorithm>
 #include <thread>
+
+#ifndef LIBIIO_V1
+#include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace std;
 using namespace libm2k::context;

@@ -110,6 +110,7 @@ private:
 	std::vector<unsigned int> m_nb_kernel_buffers;
 	std::vector<bool> m_raw_enable_available;
 	std::vector<bool> m_raw_available;
+	bool m_sync_dma;
 
 	DeviceOut* getDacDevice(unsigned int chnIdx) const;
 	void syncDevice();

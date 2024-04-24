@@ -7,9 +7,14 @@
 #include <libm2k/m2kexceptions.hpp>
 #include "analog/generic/genericanalogin_impl.hpp"
 #include "analog/generic/genericanalogout_impl.hpp"
-#include <iio.h>
 #include <iostream>
 #include <algorithm>
+
+#ifndef LIBIIO_V1
+#include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace std;
 using namespace libm2k::analog;

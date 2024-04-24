@@ -25,7 +25,12 @@
 #include <libm2k/logger.hpp>
 #include "utils/channel.hpp"
 #include <libm2k/utils/utils.hpp>
+
+#ifndef LIBIIO_V1
 #include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace libm2k::analog;
 using namespace libm2k::utils;
