@@ -29,11 +29,16 @@
 #include <libm2k/enums.hpp>
 
 #include <errno.h>
-#include <iio.h>
 #include <vector>
 #include <thread>
 #include <chrono>
 #include <cmath>
+
+#ifndef LIBIIO_V1
+#include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace libm2k;
 using namespace libm2k::analog;

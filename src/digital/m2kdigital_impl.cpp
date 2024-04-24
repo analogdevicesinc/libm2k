@@ -23,9 +23,14 @@
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/logger.hpp>
 #include <libm2k/utils/utils.hpp>
-#include <iio.h>
 #include <iostream>
 #include <algorithm>
+
+#ifndef LIBIIO_V1
+#include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace libm2k;
 using namespace libm2k::utils;

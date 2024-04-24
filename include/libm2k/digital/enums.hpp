@@ -22,7 +22,11 @@
 #ifndef ENUMS_DIGITAL_HPP
 #define ENUMS_DIGITAL_HPP
 
+#ifndef LIBIIO_V1
 #include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 /**
  * @file digital/enums.hpp

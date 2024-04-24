@@ -28,7 +28,12 @@
 #include <stdexcept>
 #include <vector>
 #include <algorithm>
+
+#ifndef LIBIIO_V1
 #include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace libm2k;
 using namespace libm2k::utils;
