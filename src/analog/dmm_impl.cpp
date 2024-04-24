@@ -24,8 +24,13 @@
 #include "utils/devicein.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include "utils/channel.hpp"
-#include <iio.h>
 #include <iostream>
+
+#ifndef LIBIIO_V1
+#include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace libm2k::analog;
 using namespace libm2k::utils;

@@ -22,7 +22,12 @@
 #ifndef DEVICEIN_HPP
 #define DEVICEIN_HPP
 
+#ifndef LIBIIO_V1
 #include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
+
 #include <string>
 #include <iostream>
 #include <vector>

@@ -29,9 +29,14 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <iio.h>
 #include <string.h>
 #include <algorithm>
+
+#ifndef LIBIIO_V1
+#include <iio.h>
+#else
+#include <iio/iio.h>
+#endif
 
 using namespace libm2k::analog;
 using namespace libm2k::utils;
@@ -42,6 +47,7 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 {
 	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kAnalogOut");
 	firmware_version = Utils::getFirmwareVersion(ctx);
+	m_sync_dma = false;
 	m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(0)));
 	m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(1)));
 
@@ -63,7 +69,11 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 	for (unsigned int i = 0; i < m_dac_devices.size(); i++) {
 		m_cyclic.push_back(true);
 		m_samplerate.push_back(75E6);
+#ifdef LIBIIO_V1
+		m_nb_kernel_buffers.push_back(m_dac_devices.at(i)->getKernelBuffersCount());
+#else
 		m_nb_kernel_buffers.push_back(4);
+#endif
 		m_max_samplerate.push_back(-1);
 	}
 
@@ -72,9 +82,6 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 	}
 	// dma_start_sync attribute is only available in firmware versions newer than 0.24
 	m_dma_start_sync_available = getDacDevice(0)->hasGlobalAttribute("dma_sync_start");
-
-	// data_available attribute exists only in firmware versions newer than 0.23
-	m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
 
 	// auto_rearm_trigger attribute is only available in firmware versions newer than 0.33
 	m_auto_rearm_trigger_available = getDacDevice(0)->hasGlobalAttribute("auto_rearm_trigger");
@@ -131,6 +138,9 @@ void M2kAnalogOutImpl::syncDevice()
 
 void M2kAnalogOutImpl::loadNbKernelBuffers()
 {
+#ifndef LIBIIO_V1
+	// data_available attribute exists only in firmware versions newer than 0.23
+	m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
 	if (m_dma_data_available) {
 		const unsigned int buffersize = 16;
 		for (unsigned int  chn = 0; chn < m_dac_devices.size(); chn++) {
@@ -148,6 +158,11 @@ void M2kAnalogOutImpl::loadNbKernelBuffers()
 			m_nb_kernel_buffers[chn] = 4;
 		}
 	}
+#else
+	for (unsigned int  chn = 0; chn < m_dac_devices.size(); chn++) {
+		m_nb_kernel_buffers[chn] = m_dac_devices.at(chn)->getKernelBuffersCount();
+	}
+#endif
 }
 
 unsigned short M2kAnalogOutImpl::setVoltage(unsigned int chn_idx, double volts)
@@ -457,17 +472,27 @@ void M2kAnalogOutImpl::pushRaw(std::vector<std::vector<short>> const &data)
 		streamingData &= !getCyclic(chn);
 		allChannelsPushed &= (data.at(chn).size() != 0);
 	}
-	if (streamingData && m_dma_data_available) {
+	if (streamingData) {
+#ifndef LIBIIO_V1
 		// all kernel buffers are empty when maximum buffer space is equal with the unused space
 		unsigned int unusedBufferSpace, maxBufferSpace;
 		for (unsigned int  chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
 			m_dac_devices.at(chn)->initializeBuffer(size, false);
+
+			// data_available attribute exists only in firmware versions newer than 0.23
+			m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
+			if (!m_dma_data_available) {
+				continue;
+			}
 			unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
 			maxBufferSpace = 2u * size * (m_nb_kernel_buffers.at(chn) - 1);
 			isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
 		}
 		if (isBufferEmpty) {
+#else
+		if (!m_sync_dma) {
+#endif
 			// when kernel buffers are empty both channels must be synchronized
 			setSyncedDma(true);
 		}
@@ -483,7 +508,14 @@ void M2kAnalogOutImpl::pushRaw(std::vector<std::vector<short>> const &data)
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
 		if (m_dma_start_sync_available && allChannelsPushed) {
+#ifdef LIBIIO_V1
+			if (!m_sync_dma) {
+				m_sync_dma = true;
+				setSyncedStartDma(true);
+			}
+#else
 			setSyncedStartDma(true);
+#endif
 		}
 		setSyncedDma(false);
 	}
@@ -505,16 +537,26 @@ void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels,
 	for (unsigned int  chn = 0; chn < nb_channels; chn++) {
 		streamingData &= !getCyclic(chn);
 	}
-	if (streamingData && m_dma_data_available) {
+	if (streamingData) {
+#ifndef LIBIIO_V1
 		// all kernel buffers are empty when maximum buffer space is equal with the unused space
 		unsigned int unusedBufferSpace, maxBufferSpace;
 		for (unsigned int  chn = 0; chn < nb_channels; chn++) {
 			m_dac_devices.at(chn)->initializeBuffer(bufferSize, false);
+
+			// data_available attribute exists only in firmware versions newer than 0.23
+			m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
+			if (!m_dma_data_available) {
+				continue;
+			}
 			unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
 			maxBufferSpace = 2u * bufferSize * (m_nb_kernel_buffers.at(chn) - 1);
 			isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
 		}
 		if (isBufferEmpty) {
+#else
+		if (!m_sync_dma) {
+#endif
 			// when kernel buffers are empty both channels must be synchronized
 			setSyncedDma(true);
 		}
@@ -532,7 +574,14 @@ void M2kAnalogOutImpl::pushRawInterleaved(short *data, unsigned int nb_channels,
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
 		if (m_dma_start_sync_available && allChannelsPushed) {
+#ifdef LIBIIO_V1
+			if (!m_sync_dma) {
+				m_sync_dma = true;
+				setSyncedStartDma(true);
+			}
+#else
 			setSyncedStartDma(true);
+#endif
 		}
 		setSyncedDma(false);
 	}
@@ -556,18 +605,31 @@ void M2kAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 		allChannelsPushed &= (data.at(chn).size() != 0);
 	}
 
-	if (streamingData && m_dma_data_available) {
+	if (streamingData) {
+#ifndef LIBIIO_V1
 		// all kernel buffers are empty when maximum buffer space is equal with the unused space
 		unsigned int unusedBufferSpace, maxBufferSpace;
 		for (unsigned int  chn = 0; chn < data.size(); chn++) {
 			size_t size = data.at(chn).size();
 			m_dac_devices.at(chn)->initializeBuffer(size, false);
+
+			// data_available attribute exists only in firmware versions newer than 0.23
+			m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
+			if (!m_dma_data_available) {
+				continue;
+			}
 			unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
 			maxBufferSpace = 2u * size * (m_nb_kernel_buffers.at(chn) - 1);
 			isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
 		}
 		if (isBufferEmpty) {
 			// when kernel buffers are empty both channels must be synchronized
+			setSyncedDma(true);
+		}
+		if (isBufferEmpty) {
+#else
+		if (!m_sync_dma) {
+#endif
 			setSyncedDma(true);
 		}
 	} else {
@@ -586,7 +648,14 @@ void M2kAnalogOutImpl::push(std::vector<std::vector<double>> const &data)
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
 		if (m_dma_start_sync_available && allChannelsPushed) {
+#ifdef LIBIIO_V1
+			if (!m_sync_dma) {
+				m_sync_dma = true;
+				setSyncedStartDma(true);
+			}
+#else
 			setSyncedStartDma(true);
+#endif
 		}
 		setSyncedDma(false);
 	}
@@ -608,16 +677,26 @@ void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, u
 	for (unsigned int  chn = 0; chn < nb_channels; chn++) {
 		streamingData &= !getCyclic(chn);
 	}
-	if (streamingData && m_dma_data_available) {
+	if (streamingData) {
+#ifndef LIBIIO_V1
 		// all kernel buffers are empty when maximum buffer space is equal with the unused space
 		unsigned int unusedBufferSpace, maxBufferSpace;
 		for (unsigned int  chn = 0; chn < nb_channels; chn++) {
 			m_dac_devices.at(chn)->initializeBuffer(bufferSize, false);
+
+			// data_available attribute exists only in firmware versions newer than 0.23
+			m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
+			if (!m_dma_data_available) {
+				continue;
+			}
 			unusedBufferSpace = m_dac_devices[chn]->getBufferLongValue("data_available");
 			maxBufferSpace = 2u * bufferSize * (m_nb_kernel_buffers.at(chn) - 1);
 			isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
 		}
 		if (isBufferEmpty) {
+#else
+		if (!m_sync_dma) {
+#endif
 			// when kernel buffers are empty both channels must be synchronized
 			setSyncedDma(true);
 		}
@@ -635,7 +714,14 @@ void M2kAnalogOutImpl::pushInterleaved(double *data, unsigned int nb_channels, u
 
 	if ((streamingData && isBufferEmpty) || !streamingData) {
 		if (m_dma_start_sync_available && allChannelsPushed) {
+#ifdef LIBIIO_V1
+			if (!m_sync_dma) {
+				m_sync_dma = true;
+				setSyncedStartDma(true);
+			}
+#else
 			setSyncedStartDma(true);
+#endif
 		}
 		setSyncedDma(false);
 	}
@@ -658,6 +744,7 @@ double M2kAnalogOutImpl::getFilterCompensation(double samplerate)
 
 void M2kAnalogOutImpl::stop()
 {
+	m_sync_dma = false;
 	m_m2k_fabric->setBoolValue(0, true, "powerdown", true);
 	m_m2k_fabric->setBoolValue(1, true, "powerdown", true);
 	setSyncedDma(true, 0);
@@ -699,13 +786,16 @@ bool M2kAnalogOutImpl::isChannelEnabled(unsigned int chnIdx)
 bool M2kAnalogOutImpl::isPushDone(unsigned int chnIdx) const
 {
 	bool isBufferEmpty = true;
-	if (m_dma_data_available) {
-		unsigned int unusedBufferSpace, maxBufferSpace;
-		unsigned int bufferSize = getDacDevice(chnIdx)->getNbSamples();
-		unusedBufferSpace = getDacDevice(chnIdx)->getBufferLongValue("data_available");
-		maxBufferSpace = 2u * bufferSize * (m_nb_kernel_buffers.at(chnIdx) - 1);
-		isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
+	unsigned int unusedBufferSpace, maxBufferSpace;
+	unsigned int bufferSize = getDacDevice(chnIdx)->getNbSamples();
+
+	// data_available attribute exists only in firmware versions newer than 0.23
+	if (!getDacDevice(0)->hasBufferAttribute("data_available")) {
+		return isBufferEmpty;
 	}
+	unusedBufferSpace = getDacDevice(chnIdx)->getBufferLongValue("data_available");
+	maxBufferSpace = 2u * bufferSize * (m_nb_kernel_buffers.at(chnIdx) - 1);
+	isBufferEmpty &= (maxBufferSpace == unusedBufferSpace);
 	return isBufferEmpty;
 }
 
@@ -741,8 +831,8 @@ void M2kAnalogOutImpl::setKernelBuffersCount(unsigned int chnIdx, unsigned int c
 	if (chnIdx >= m_dac_devices.size()) {
 		THROW_M2K_EXCEPTION("Analog Out: No such channel", libm2k::EXC_OUT_OF_RANGE);
 	}
-	m_dac_devices[chnIdx]->setKernelBuffersCount(count);
 	m_nb_kernel_buffers[chnIdx] = count;
+	m_dac_devices[chnIdx]->setKernelBuffersCount(count);
 }
 
 unsigned int M2kAnalogOutImpl::getKernelBuffersCount(unsigned int chnIdx) const
