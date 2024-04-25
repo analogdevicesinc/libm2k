@@ -404,6 +404,80 @@ public:
 	 * @note Only available from firmware v0.24.
 	 */
 	virtual M2K_TRIGGER_SOURCE_DIGITAL getDigitalSource() const;
+
+
+	/**
+	 * @brief Select which interface triggers the AnalogOut.
+	 * @param src: of type M2K_TRIGGER_SOURCE_OUT:\n
+	 *	TRIGGER_NONE - trigger events are disabled;\n
+	 *	TRIGGER_TI - trigger events on the TI pin will trigger the AnalogOut interface;\n
+	 *	TRIGGER_ADC - trigger events on the AnalogIn interface will trigger the AnalogOut interface;\n
+	 *	TRIGGER_LA - trigger events on the DigitalIn interface will trigger the AnalogOut interface;\n
+	 * @note Only available from firmware v0.33. 
+	 */	
+	virtual void setAnalogOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src) = 0;
+
+
+	/**
+	 * @brief Returns the source of the AnalogOut trigger event.
+	 * @return M2K_TRIGGER_SOURCE_OUT :\n
+	 *	TRIGGER_NONE;\n
+	 *	TRIGGER_TI;\n
+	 *	TRIGGER_ADC;\n
+	 *	TRIGGER_LA;\n
+	 * @note Only available from firmware v0.33.
+	 */
+	virtual M2K_TRIGGER_SOURCE_OUT getAnalogOutTriggerSource() const = 0;
+
+
+	/**
+	 * @brief Configures the triggering condition when the source of the AnalogOut trigger event is set to TRIGGER_TI_0. 
+	 * @param condition: of type M2K_TRIGGER_CONDITION_OUT:\n
+	 *	NONE_OUT - disabled;\n
+	 *	LOW_LEVEL_OUT;\n
+	 *	HIGH_LEVEL_OUT;\n
+	 *	ANY_EDGE_OUT;\n
+	 *	RISING_EDGE_OUT;\n
+	 *	FALLING_EDGE_OUT;\n
+	 * @note For the other sources this condition is ignored, the configuration is forwarded by the corresponding interface.
+	 * @note Only available from firmware v0.33.
+	 */
+	virtual void setAnalogOutTriggerCondition(M2K_TRIGGER_CONDITION_OUT condition) = 0;
+
+
+	/**
+	 * @brief Returns the condition of the AnalogOut trigger event when the source is TI.
+	 * @return M2K_TRIGGER_CONDITION_OUT :\n
+	 *	NONE_OUT - disabled;\n
+	 *	LOW_LEVEL_OUT;\n
+	 *	HIGH_LEVEL_OUT;\n
+	 *	ANY_EDGE_OUT;\n
+	 *	RISING_EDGE_OUT;\n
+	 *	FALLING_EDGE_OUT;\n
+	 * @note Only available from firmware v0.33.
+	 */
+	virtual M2K_TRIGGER_CONDITION_OUT getAnalogOutTriggerCondition() const = 0;
+
+	/**
+	 * @brief Defines the action to be performed when a trigger event occurs.
+	 * @param status: of type M2K_TRIGGER_STATUS_ANALOG_OUT:\n
+	 *	DISABLED - no action is performed when a trigger event occurs;\n
+	 *	START - the AnalogOut interface starts outputting samples;\n
+	 *	STOP - the AnalogOut interface stops outputting samples;\n
+	 * @note Only available from firmware v0.33.
+	 */
+	virtual void setAnalogOutTriggerStatus(M2K_TRIGGER_STATUS_ANALOG_OUT status) = 0;
+
+
+	/**
+	 * @brief Returns the action that is performed when a trigger event occurs.
+	 * @return M2K_TRIGGER_STATUS_ANALOG_OUT :\n
+	 *	DISABLED;\n
+	 *	START;\n
+	 *	STOP;\n
+	 * @note Only available from firmware v0.33.
+	 */
+	virtual M2K_TRIGGER_STATUS_ANALOG_OUT getAnalogOutTriggerStatus() const = 0;
 };
 }
 
