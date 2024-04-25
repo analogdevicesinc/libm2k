@@ -168,7 +168,7 @@ void M2kImpl::scanAllAnalogIn()
 void M2kImpl::scanAllAnalogOut()
 {
 	std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
-	M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOutImpl(m_context, devs, m_sync);
+	M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOutImpl(m_context, devs, m_sync, m_trigger);
 	m_instancesAnalogOut.push_back(aOut);
 }
 

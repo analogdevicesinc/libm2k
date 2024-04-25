@@ -37,7 +37,8 @@ using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std;
 
-M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs, bool sync)
+M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs, bool sync, M2kHardwareTrigger *trigger) : 
+	m_trigger(trigger)
 {
 	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kAnalogOut");
 	m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(0)));
@@ -737,4 +738,9 @@ double M2kAnalogOutImpl::getMaximumSamplerate(unsigned int chn_idx)
 		m_max_samplerate[chn_idx] = *(max_element(values.begin(), values.end()));
 	}
 	return m_max_samplerate[chn_idx];
+}
+
+libm2k::M2kHardwareTrigger *M2kAnalogOutImpl::getTrigger()
+{
+	return m_trigger;
 }

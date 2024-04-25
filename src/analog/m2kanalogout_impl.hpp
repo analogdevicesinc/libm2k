@@ -21,7 +21,7 @@ namespace analog {
 class M2kAnalogOutImpl : public M2kAnalogOut
 {
 public:
-	M2kAnalogOutImpl(struct iio_context*, std::vector<std::string> dac_devs, bool sync);
+	M2kAnalogOutImpl(struct iio_context*, std::vector<std::string> dac_devs, bool sync, M2kHardwareTrigger *trigger);
 	virtual ~M2kAnalogOutImpl();
 
 	void reset() override;
@@ -95,8 +95,11 @@ public:
 	unsigned short setVoltage(unsigned int chn_idx, double volts) override;
 	unsigned short setVoltageRaw(unsigned int chn_idx, unsigned short raw) override;
 
+	libm2k::M2kHardwareTrigger* getTrigger() override;
+
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
+	libm2k::M2kHardwareTrigger *m_trigger;
 	std::vector<double> m_max_samplerate;
 	std::vector<double> m_calib_vlsb;
 	std::vector<bool> m_cyclic;
