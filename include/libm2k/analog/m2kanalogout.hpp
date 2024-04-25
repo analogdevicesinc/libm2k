@@ -24,6 +24,7 @@
 
 #include <libm2k/m2kglobal.hpp>
 #include <libm2k/enums.hpp>
+#include <libm2k/m2khardwaretrigger.hpp>
 #include <vector>
 #include <memory>
 #include <map>
@@ -486,6 +487,14 @@ public:
 	 * @return unsigned short - the value set in the raw attribute
 	 */
 	virtual unsigned short setVoltageRaw(unsigned int chn_idx, unsigned short raw) = 0;
+
+
+	/**
+	* @brief Get the hardware trigger handler
+	*
+	* @return A pointer to the hardware trigger
+	*/
+	virtual libm2k::M2kHardwareTrigger* getTrigger() = 0;
 };
 }
 }
