@@ -38,7 +38,7 @@ namespace digital {
  * @defgroup digital Digital
  * @brief Contains the representation of the digital segment
  * @{
- * @class M2kDigital
+ * @class M2kDigital m2kdigital.hpp libm2k/digital/m2kdigital.hpp
  * @brief Controls the digital input and output segment
  */
 class LIBM2K_API M2kDigital

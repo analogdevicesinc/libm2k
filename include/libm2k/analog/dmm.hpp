@@ -39,7 +39,7 @@ namespace analog {
  * @defgroup dmm DMM
  * @brief Contains the representation of the digital multimeter
  * @{
- * @class DMM
+ * @class DMM dmm.hpp libm2k/analog/dmm.hpp
  * @brief Controls the digital multimeter
  */
 class LIBM2K_API DMM {

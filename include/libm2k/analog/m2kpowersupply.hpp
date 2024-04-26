@@ -36,7 +36,7 @@ namespace analog {
  * @defgroup powersupply PowerSupply
  * @brief Contains the representation of the power supply
  * @{
- * @class M2kPowerSupply
+ * @class M2kPowerSupply m2kpowersupply.hpp libm2k/analog/m2kpowersupply.hpp
  * @brief Controls the power supply
  */
 class LIBM2K_API M2kPowerSupply {

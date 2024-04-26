@@ -46,7 +46,7 @@ class Generic;
 /** @defgroup context Context
  * @brief Contains the representation of a generic IIO context
  * @{
- * @class Context
+ * @class Context context.hpp libm2k/context.hpp
  * @brief Controls the IIO context
  */
 class LIBM2K_API Context {

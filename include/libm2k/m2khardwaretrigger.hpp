@@ -35,7 +35,7 @@ namespace libm2k {
  * @defgroup m2ktrigger HardwareTrigger
  * @brief Contains the representation of the ADALM2000 trigger system
  * @{
- * @class M2kHardwareTrigger
+ * @class M2kHardwareTrigger m2khardwaretrigger.hpp libm2k/m2khardwaretrigger.hpp
  * @brief Controls the hardware trigger for ADALM2000
  */
 class LIBM2K_API M2kHardwareTrigger

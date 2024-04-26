@@ -45,7 +45,7 @@ namespace analog {
  * @defgroup analogout AnalogOut
  * @brief Contains the representation of the analogical output segment
  * @{
- * @class M2kAnalogOut
+ * @class M2kAnalogOut m2kanalogout.hpp libm2k/analog/m2kanalogout.hpp
  * @brief Controls the analogical output compound
  */
 class LIBM2K_API M2kAnalogOut
