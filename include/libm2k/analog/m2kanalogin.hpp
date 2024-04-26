@@ -40,7 +40,7 @@ namespace analog {
  * @defgroup analogin AnalogIn
  * @brief Contains the representation of the analogical input segment
  * @{
- * @class M2kAnalogIn
+ * @class M2kAnalogIn m2kanalogin.hpp libm2k/analog/m2kanalogin.hpp
  * @brief Controls the analogical input compound
  */
 class LIBM2K_API M2kAnalogIn

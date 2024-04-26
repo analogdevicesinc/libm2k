@@ -48,7 +48,7 @@ namespace context {
 * @defgroup m2k M2k
 * @brief Contains the representation of the M2K
 * @{
-* @class M2k
+* @class M2k m2k.hpp libm2k/m2k.hpp
 * @brief Controls the ADALM2000
 */
 class LIBM2K_API M2k : public virtual Context

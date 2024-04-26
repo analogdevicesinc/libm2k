@@ -36,7 +36,7 @@ namespace analog {
 
 
 	/**
-	* @struct DMM_READING
+	* @struct DMM_READING enums.hpp libm2k/analog/enums.hpp
 	* @brief The structure of a DMM
 	*
 	*/

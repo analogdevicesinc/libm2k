@@ -51,7 +51,7 @@ namespace libm2k {
 
 
 	/**
-	* @struct CALIBRATION_PARAMETERS
+	* @struct CALIBRATION_PARAMETERS enums.hpp libm2k/enums.hpp
 	* @brief Calibration parameters of m2k
 	*/
 	struct CALIBRATION_PARAMETERS {
@@ -177,7 +177,7 @@ namespace libm2k {
 
 
 	/**
-	* @struct SETTINGS
+	* @struct SETTINGS enums.hpp libm2k/enums.hpp
 	* @brief Triggering system
 	*
 	*/
@@ -194,7 +194,7 @@ namespace libm2k {
 
 
 	/**
-	 * @struct CONTEXT_INFO
+	 * @struct CONTEXT_INFO enums.hpp libm2k/enums.hpp
 	 * @brief Additional information about the context
 	 */
 	struct CONTEXT_INFO {
@@ -220,7 +220,7 @@ namespace libm2k {
 	};
 
 	/**
-	 * @struct IIO_CONTEXT_VERSION
+	 * @struct IIO_CONTEXT_VERSION enums.hpp libm2k/enums.hpp
 	 * @brief The version of the backend
 	 */
 	struct IIO_CONTEXT_VERSION {
