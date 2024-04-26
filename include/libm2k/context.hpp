@@ -71,7 +71,7 @@ public:
 
 	/**
 	 * @brief Get the URI of the current context
-	 * @return string containt the context URI (ex: "usb:1.2.3", "ip:192.168.2.1")
+	 * @return string containing the context URI (ex: "usb:1.2.3", "ip:192.168.2.1")
 	 */
 	virtual std::string getUri() = 0;
 
@@ -103,7 +103,7 @@ public:
 
 	/**
 	 * @brief Retrieve all the available context attributes
-	 * @return A list of strings containg all the context attributes
+	 * @return A list of strings containing all the context attributes
 	 */
 	virtual std::vector<std::string> getAvailableContextAttributes() = 0;
 

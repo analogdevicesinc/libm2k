@@ -2276,7 +2276,7 @@ setSampleRateDefinition = addMethod(M2kAnalogOutDefinition, ...
     "Set the sample rate for both channels", ...
     "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
 defineArgument(setSampleRateDefinition, "samplerates", "clib.array.libm2k.Double", "Description", "samplerates A list containing the sample rates of each channel");
-defineOutput(setSampleRateDefinition, "RetVal", "clib.array.libm2k.Double", "Description", "A list containing the previously setted sample rates");
+defineOutput(setSampleRateDefinition, "RetVal", "clib.array.libm2k.Double", "Description", "A list containing the previously set sample rates");
 validate(setSampleRateDefinition);
 
 %% C++ class method |setSampleRate| for C++ class |libm2k::analog::M2kAnalogOut| 
@@ -3264,7 +3264,7 @@ getUriDefinition = addMethod(ContextDefinition, ...
     "Description", "getUri Method of C++ class libm2k::context::Context." + newline + ...
     "Get the URI of the current context", ...
     "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
-defineOutput(getUriDefinition, "RetVal", "string", "Description", "string containt the context URI (ex: ""usb:1.2.3"", ""ip:192.168.2.1"")");
+defineOutput(getUriDefinition, "RetVal", "string", "Description", "string containing the context URI (ex: ""usb:1.2.3"", ""ip:192.168.2.1"")");
 validate(getUriDefinition);
 
 %% C++ class method |getDMM| for C++ class |libm2k::context::Context| 
@@ -3302,7 +3302,7 @@ getAvailableContextAttributesDefinition = addMethod(ContextDefinition, ...
     "Description", "getAvailableContextAttributes Method of C++ class libm2k::context::Context." + newline + ...
     "Retrieve all the available context attributes", ...
     "DetailedDescription", "This content is from the external library documentation."); % Modify help description values as needed.
-defineOutput(getAvailableContextAttributesDefinition, "RetVal", "clib.array.libm2k.std.String", "Description", "A list of strings containg all the context attributes");
+defineOutput(getAvailableContextAttributesDefinition, "RetVal", "clib.array.libm2k.std.String", "Description", "A list of strings containing all the context attributes");
 validate(getAvailableContextAttributesDefinition);
 
 %% C++ class method |getContextAttributeValue| for C++ class |libm2k::context::Context| 

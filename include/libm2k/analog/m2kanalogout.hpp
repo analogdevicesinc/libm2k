@@ -124,7 +124,7 @@ public:
 	* @brief Set the sample rate for both channels
 	*
 	* @param samplerates A list containing the sample rates of each channel
-	* @return A list containing the previously setted sample rates
+	* @return A list containing the previously set sample rates
 	*/
 	virtual std::vector<double> setSampleRate(std::vector<double> samplerates) = 0;
 
