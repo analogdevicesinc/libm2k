@@ -61,9 +61,24 @@
 /* Apply all of the integer typemaps to double* and unsigned short * */
 %apply short * { unsigned short * };
 
-
 %typemap(out) short * getSamplesRawInterleaved {
 	auto iio_obj = arg1->getIioObjects();
+#ifdef LIBIIO_V1
+	struct iio_block *block = iio_obj.block_rx;
+	if (block) {
+		char* start = (char*)(iio_block_start(block));
+		char* end = (char*)(iio_block_end(block));
+		auto size = (end - start);
+
+		// This is used when returning double*
+		if (sizeof($*1_ltype) != sizeof(short)) {
+			size = size * sizeof(float);
+		}
+		auto memory_view = PyMemoryView_FromMemory(start, size, PyBUF_WRITE);
+		auto res = PyMemoryView_GetContiguous(memory_view, PyBUF_READ, 'F');
+		$result = res;
+	}
+#else
 	auto buf = iio_obj.buffers_rx[0];
 	if (buf) {
 		char* start = (char*)(iio_buffer_start(buf));
@@ -78,13 +93,13 @@
 		auto res = PyMemoryView_GetContiguous(memory_view, PyBUF_READ, 'F');
 		$result = res;
 	}
+#endif
 }
 %apply short * getSamplesRawInterleaved {short * getSamplesInterleaved};
 %apply short * getSamplesRawInterleaved {double * getSamplesInterleaved};
 %apply short * getSamplesRawInterleaved {unsigned short * getSamplesP};
 
 #endif
-
 
 #ifdef SWIGPYTHON
 #ifdef COMMUNICATION
@@ -113,6 +128,9 @@ namespace std {
 
 	extern "C" {
 		struct iio_context;
+#ifdef LIBIIO_V1
+		struct iio_block;
+#endif
 	}
 
 	#include <libm2k/m2kglobal.hpp>
