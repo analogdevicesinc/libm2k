@@ -217,6 +217,9 @@ namespace libm2k {
 		std::vector<iio_buffer*> buffers_rx;
 		std::vector<iio_buffer*> buffers_tx;
 		iio_context* context;
+#ifdef LIBIIO_V1
+		struct iio_block *block_rx;
+#endif
 	};
 
 	/**
