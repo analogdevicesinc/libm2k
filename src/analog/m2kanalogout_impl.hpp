@@ -96,6 +96,8 @@ public:
 	unsigned short setVoltageRaw(unsigned int chn_idx, unsigned short raw) override;
 
 	libm2k::M2kHardwareTrigger* getTrigger() override;
+	void setBufferRearmOnTrigger(bool enable) override;
+	bool getBufferRearmOnTrigger() const override;	
 
 private:
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
@@ -110,6 +112,7 @@ private:
 
 	bool m_dma_start_sync_available;
 	bool m_dma_data_available;
+	bool m_auto_rearm_trigger_available;
 	std::vector<unsigned int> m_nb_kernel_buffers;
 	std::vector<bool> m_raw_enable_available;
 	std::vector<bool> m_raw_available;
