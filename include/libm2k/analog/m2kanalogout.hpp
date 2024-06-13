@@ -495,6 +495,32 @@ public:
 	* @return A pointer to the hardware trigger
 	*/
 	virtual libm2k::M2kHardwareTrigger* getTrigger() = 0;
+
+
+	/**
+	* @brief Allows sequential output of multiple buffers with each trigger event.
+	* @param  enable A boolean value that enables or disables the buffer rearm functionality.
+	*
+	* @note  When disabled, all buffers will be sent at once. Opt to concatenate multiple small buffers into a single buffer to avoid timing problems.
+	* @note  When enabled, each previously pushed buffer will be sent sequentially with each trigger event.
+	* @note  For non-cyclic mode each buffer is sent only once.
+	* @note In cyclic mode:
+	*		- If rearm is disabled, the buffer will be sent continuously.
+	*		- If rearm is enabled, the buffer will be sent once for every trigger event.
+	* @note  Due to hardware limitation, in non-cyclic mode, the channel will idle with the first sample of the next buffer.
+	* @note Only available from firmware v0.33.
+	*/
+	virtual void setBufferRearmOnTrigger(bool enable) = 0;
+
+
+	/**
+	* @brief Retrieve the value of the attribute that controls buffer rearm on trigger
+	* @note The buffer rearm on trigger is disabled by default.
+	* @note The attribute is shared between both channels.
+	* @note Only available from firmware v0.33.
+	* @return A boolean value corresponding to the state of the rearm on trigger.
+	*/
+	virtual bool getBufferRearmOnTrigger() const = 0;
 };
 }
 }
