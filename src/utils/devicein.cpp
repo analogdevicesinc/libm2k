@@ -154,7 +154,9 @@ struct libm2k::IIO_OBJECTS DeviceIn::getIioObjects()
 {
 	IIO_OBJECTS iio_object = {};
 	iio_object.buffers_rx.push_back(m_buffer->getBuffer());
-
+#ifdef LIBIIO_V1
+	iio_object.block_rx = m_buffer->getBlock();
+#endif
 	for (auto chn : m_channel_list) {
 		iio_object.channels_in.push_back(chn->getChannel());
 	}
