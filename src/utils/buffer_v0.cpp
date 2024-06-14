@@ -19,7 +19,7 @@
  *
  */
 
-#include "buffer.hpp"
+#include "buffer_v0.hpp"
 #include "channel.hpp"
 #include <libm2k/m2kexceptions.hpp>
 #include <libm2k/logger.hpp>
