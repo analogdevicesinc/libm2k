@@ -315,6 +315,34 @@ def plot_to_file(title, data, dir_name, filename, xlabel=None, ylabel=None, data
     plt.close()
     return
 
+def plot_to_file_all_channels(title, data, dir_name, filename, xlabel=None, ylabel=None):
+    # Saves the plots in a separate folder
+    # Arguments:
+    #    title  -- Title of the plot\n
+    #    data  -- Data to be plotted\n
+    #    filename  -- Name of the file with the plot\n
+    # Keyword Arguments:
+    #    xlabel  -- Label of x-Axis (default: {None})
+    #    ylabel  -- Label of y-Axis(default: {None})
+
+    # plot the signals in a separate folder
+    plt.title(title)
+    if xlabel is not None:  # if xlabel and ylabel are not specified there will be default values
+        plt.xlabel(xlabel)
+    else:
+        plt.xlabel('Samples')
+    if ylabel is not None:
+        plt.ylabel(ylabel)
+    else:
+        plt.ylabel('Voltage [V]')
+    plt.grid(visible=True)
+    for chn in range(16):
+        DIO_chn = np.array(list(map(lambda s: (((0x0001 << chn) & int(s)) >> chn), data)))
+        plt.plot(DIO_chn+chn) # offset the channels
+    plt.yticks(range(17))
+    plt.savefig(dir_name + "/" + filename)
+    plt.close()
+    return
 
 def save_data_to_csv(csv_vals, csv_file):
     df = DataFrame(csv_vals)
@@ -344,13 +372,19 @@ def write_file(file, test_name, channel, data_string):
 
 
 def count_edges(data, threshold = 0.5):
-    logic_data = np.where(data > threshold, 1, 0) # replace with logic values
-    rising_edges = np.sum(np.diff(logic_data) > 0)
-    falling_edges = np.sum(np.diff(-logic_data + 1) > 0) # inverted signal -> falling edges
+    # Count number of edges for each digital channel
+    rising_edges = 0
+    falling_edges = 0
+    for channel in range(0, 16):
+        crnt_chn_dio = np.array(list(map(lambda s: (((0x0001 << channel) & int(s)) >> channel), data)))
+        rising_edges += np.sum(np.diff(crnt_chn_dio) > 0)
+        falling_edges += np.sum(np.diff(-crnt_chn_dio + 1) > 0) # inverted signal -> falling edges
+        
     return rising_edges + falling_edges
 
 
 def test_pattern_generator_pulse(dig, d_trig, channel):
+    # channel == -1: means all channels
     if gen_reports:
         from create_files import results_file, results_dir, csv, open_files_and_dirs
         if results_file is None:
@@ -362,13 +396,13 @@ def test_pattern_generator_pulse(dig, d_trig, channel):
     else:
         file = []
         
-    timeout = 15_000 # in  milliseconds
+    timeout = 15_000 # [ms]
     delay = 8192
     buffer_size = 100_000
     sampling_frequency_in = 10_000_000
     sampling_frequency_out = 10_000
     
-    test_name = "pattern_generator_pulse"
+    test_name = "pattern_generator_glitch"
     data_string = []
     
     file_name, dir_name, csv_path = result_files(gen_reports)
@@ -382,42 +416,52 @@ def test_pattern_generator_pulse(dig, d_trig, channel):
     d_trig.reset()
     d_trig.setDigitalMode(libm2k.DIO_OR)
     d_trig.setDigitalStreamingFlag(False)
-    # only tested channel should trigger acquisition
+
     for i in range(16): 
         d_trig.setDigitalCondition(i, libm2k.NO_TRIGGER_DIGITAL)
-    d_trig.setDigitalCondition(channel, libm2k.RISING_EDGE_DIGITAL)
-    d_trig.setDigitalDelay(-delay)
     
+    # Configure trigger
+    if channel == -1:
+        for i in range(16):
+            d_trig.setDigitalCondition(i, libm2k.RISING_EDGE_DIGITAL)
+            dig.setDirection(i, libm2k.DIO_OUTPUT) 
+            dig.setValueRaw(i, libm2k.LOW)
+            dig.enableChannel(i,True)
+    else:
+        d_trig.setDigitalCondition(channel, libm2k.RISING_EDGE_DIGITAL)
+        dig.setDirection(channel, libm2k.DIO_OUTPUT) 
+        dig.setValueRaw(channel, libm2k.LOW)
+        dig.enableChannel(channel,True)
+
+    d_trig.setDigitalDelay(-delay)
     dig.startAcquisition(buffer_size) 
 
-    dig.setDirection(channel, libm2k.DIO_OUTPUT) 
-    dig.setValueRaw(channel, libm2k.LOW) # setting chn to raw 0 before enable does not fix the bug
-    dig.enableChannel(channel,True)
-
-    # expected: line start LOW and then stays  HIGH
-    # each 0xFFFF should create 1 edge in the current channel
-    # 0, 0, 0, 0xFFFF, 0xFFFF, 0 , 0, 0xFFFF 0xFFFF, 0 , 0, 0xFFFF
-    #         1               2       3             4      5
-    buff = np.tile(A = np.array([0xFFFF, 0 , 0, 0xFFFF]), reps = 2) 
-    buff= np.insert(buff, 0, [0, 0, 0, 0xFFFF])    
+    # Generate pattern
+    # each sample==1 should create 1 edge in the current channel
+    # 0, 0, 0, sample, sample, 0 , 0, sample sample, 0 , 0, sample, sample, 0, 0
+    #         1               2       3             4      5               6
+    sample = 1 << channel if channel != -1 else 0xFFFF
+    TX_data = np.tile(A = np.array([sample, 0 , 0, sample]), reps = 2) 
+    TX_data= np.insert(TX_data, 0, [0, 0, 0, sample])    
+    TX_data = np.append(TX_data, [sample, 0, 0, 0])
     
-    expected_num_edges = (buff == 0xFFFF).sum()
-    buff = buff.tolist()
-    dig.push(buff)
+    expected_num_edges = count_edges(TX_data)
+    TX_data = TX_data.tolist()
+    dig.push(TX_data)
     
-    data = dig.getSamples(buffer_size)
-    crnt_chn_dio_data = np.array(list(map(lambda s: (((0x0001 << channel) & int(s)) >> channel), data)))
-    actual_num_edges = count_edges(crnt_chn_dio_data)
+    RX_data = dig.getSamples(buffer_size)
+    actual_num_edges = count_edges(np.array(RX_data))
+    
     extra_edges = abs(expected_num_edges - actual_num_edges) 
-    
-    data_string.append(
-        "Expected: " + str(expected_num_edges) + " , found: " + str(actual_num_edges))
+    data_string.append(f"\tExpected: {expected_num_edges}, found {actual_num_edges}")
     
     if gen_reports:
         write_file(file, test_name, channel, data_string)    
-        plot_to_file("Pattern generator on ch" + str(channel), crnt_chn_dio_data, dir_name,
-                    "digital_pattern_generator_ch" + str(channel) + ".png")
-    
+        channel_name = f'DIO{channel}'if channel != -1 else 'all channels'
+        plot_to_file_all_channels(title=f"Pattern generator on {channel_name}",
+                                  data=RX_data, dir_name=dir_name, 
+                                  filename=f"pattern_generator_glitch_{channel_name}.png",
+                                  xlabel='Samples', ylabel='DIO channel')
     dig.stopAcquisition()
     dig.stopBufferOut()
     
