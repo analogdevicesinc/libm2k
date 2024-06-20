@@ -37,7 +37,8 @@ using namespace libm2k::analog;
 using namespace libm2k::utils;
 using namespace std;
 
-M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs, bool sync)
+M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> dac_devs, bool sync, M2kHardwareTrigger *trigger) : 
+	m_trigger(trigger)
 {
 	LIBM2K_LOG(INFO, "[BEGIN] Initialize M2kAnalogOut");
 	m_dac_devices.push_back(new DeviceOut(ctx, dac_devs.at(0)));
@@ -73,6 +74,9 @@ M2kAnalogOutImpl::M2kAnalogOutImpl(iio_context *ctx, std::vector<std::string> da
 
 	// data_available attribute exists only in firmware versions newer than 0.23
 	m_dma_data_available = getDacDevice(0)->hasBufferAttribute("data_available");
+
+	// auto_rearm_trigger attribute is only available in firmware versions newer than 0.33
+	m_auto_rearm_trigger_available = getDacDevice(0)->hasGlobalAttribute("auto_rearm_trigger");
 
 	m_raw_enable_available.push_back(getDacDevice(0)->getChannel(0, true)->hasAttribute("raw_enable"));
 	m_raw_enable_available.push_back(getDacDevice(1)->getChannel(0, true)->hasAttribute("raw_enable"));
@@ -737,4 +741,25 @@ double M2kAnalogOutImpl::getMaximumSamplerate(unsigned int chn_idx)
 		m_max_samplerate[chn_idx] = *(max_element(values.begin(), values.end()));
 	}
 	return m_max_samplerate[chn_idx];
+}
+
+libm2k::M2kHardwareTrigger *M2kAnalogOutImpl::getTrigger()
+{
+	return m_trigger;
+}
+
+void M2kAnalogOutImpl::setBufferRearmOnTrigger(bool enable)
+{
+	if (!m_auto_rearm_trigger_available) {
+		THROW_M2K_EXCEPTION("Invalid firmware version: 0.33 or greater is required.", libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	}
+	m_dac_devices[0]->setBoolValue(enable, "auto_rearm_trigger");
+}
+
+bool M2kAnalogOutImpl::getBufferRearmOnTrigger()
+{
+	if (!m_auto_rearm_trigger_available) {
+		THROW_M2K_EXCEPTION("Invalid firmware version: 0.33 or greater is required.", libm2k::EXC_INVALID_FIRMWARE_VERSION);
+	}
+	return m_dac_devices[0]->getBoolValue("auto_rearm_trigger");
 }

@@ -26,6 +26,7 @@
 #include <digital/m2kdigital_impl.hpp>
 #include "m2khardwaretrigger_impl.hpp"
 #include "m2khardwaretrigger_v0.24_impl.hpp"
+#include "m2khardwaretrigger_v0.33_impl.hpp"
 #include "m2kcalibration_impl.hpp"
 #include <libm2k/analog/dmm.hpp>
 #include "utils/channel.hpp"
@@ -69,12 +70,20 @@ M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync)
 	m_instancesPowerSupply.clear();
 
 	m_firmware_version = getFirmwareVersion();
+	// Remove suffix from dev version
+	std::size_t pos = m_firmware_version.find("-dirty");
+	if (pos != std::string::npos) {
+		m_firmware_version = m_firmware_version.substr(0, pos);
+	}
 
-	int diff = Utils::compareVersions(m_firmware_version, "v0.24");
-	if (diff < 0) {	//m_firmware_version < 0.24
+	int diff_to_24 = Utils::compareVersions(m_firmware_version, "v0.24");
+	int diff_to_33 = Utils::compareVersions(m_firmware_version, "v0.33");
+	if (diff_to_24 < 0) { //m_firmware_version < 0.24 
 		m_trigger = new M2kHardwareTriggerImpl(ctx);
-	} else {
+	} else if (diff_to_33 < 0) { // (m_firmware_version >= 0.24) && (m_firmware_version < 0.33 )
 		m_trigger = new M2kHardwareTriggerV024Impl(ctx);
+	} else { // m_firmware_version >= 0.33
+		m_trigger = new M2kHardwareTriggerV033Impl(ctx);
 	}
 
 	if (!m_trigger) {
@@ -168,7 +177,7 @@ void M2kImpl::scanAllAnalogIn()
 void M2kImpl::scanAllAnalogOut()
 {
 	std::vector<std::string> devs = {"m2k-dac-a", "m2k-dac-b"};
-	M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOutImpl(m_context, devs, m_sync);
+	M2kAnalogOut* aOut = new libm2k::analog::M2kAnalogOutImpl(m_context, devs, m_sync, m_trigger);
 	m_instancesAnalogOut.push_back(aOut);
 }
 
