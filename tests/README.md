@@ -35,3 +35,7 @@ To repeat a test, add the @repeat(times) decorator before the test to be repeate
 ### iio_diff
 
 The directory contains utilities for storing iio state in xml format: ```xml_generator.py```, as well as an utility used to compare common, new and missing attributes: ```iio_diff.py```.
+
+### Manual tests
+
+The `dual_board` directory contains tests requiring two ADALM2000 boards. These tests cover synchronization and interaction scenarios. Ensure the boards are connected and configured as described in the standalone Python scripts.
