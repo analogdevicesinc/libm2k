@@ -33,28 +33,23 @@ typedef struct i2c_data {
 static void writeStartCondition(struct i2c_desc *desc, std::vector<unsigned short> &buffer)
 {
 	auto *m2KI2CDesc = (m2k_i2c_desc *) desc->extra;
-	auto samplesPerBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz);
-	//scl low, sda high - avoid to be interpreted as a stop condition
-	for (unsigned int i = 0; i < samplesPerBit; ++i) {
-		unsigned short sample = 0;
-		setBit(sample, m2KI2CDesc->sda);
-		buffer.push_back(sample);
-	}
-	//both high
-	for (unsigned int i = 0; i < samplesPerBit; ++i) {
+	auto samplesPerQuarterBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz) / 4;
+
+	//scl high, sda high
+	for (unsigned int i = 0; i < samplesPerQuarterBit*2; ++i) {
 		unsigned short sample = 0;
 		setBit(sample, m2KI2CDesc->scl);
 		setBit(sample, m2KI2CDesc->sda);
 		buffer.push_back(sample);
 	}
 	//scl high, sda low
-	for (unsigned int i = 0; i < samplesPerBit; ++i) {
+	for (unsigned int i = 0; i < samplesPerQuarterBit*2; ++i) {
 		unsigned short sample = 0;
 		setBit(sample, m2KI2CDesc->scl);
 		buffer.push_back(sample);
 	}
-	//both low
-	for (unsigned int i = 0; i < samplesPerBit; ++i) {
+	//scL low, sda low
+	for (unsigned int i = 0; i < samplesPerQuarterBit*4; ++i) {
 		unsigned short sample = 0;
 		buffer.push_back(sample);
 	}
@@ -63,15 +58,21 @@ static void writeStartCondition(struct i2c_desc *desc, std::vector<unsigned shor
 static void writeStopCondition(struct i2c_desc *desc, std::vector<unsigned short> &buffer)
 {
 	auto *m2KI2CDesc = (m2k_i2c_desc *) desc->extra;
-	auto samplesPerBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz);
+	auto samplesPerQuarterBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz) / 4;
+
+	//scl low, sda low
+	for (unsigned int i = 0; i < samplesPerQuarterBit*2; ++i) {
+		unsigned short sample = 0;
+		buffer.push_back(sample);
+	}
 	//scl high, sda low
-	for (unsigned int i = 0; i < samplesPerBit; ++i) {
+	for (unsigned int i = 0; i < samplesPerQuarterBit * 2; ++i) {
 		unsigned short sample = 0;
 		setBit(sample, m2KI2CDesc->scl);
 		buffer.push_back(sample);
 	}
-	//both high
-	for (unsigned int i = 0; i < samplesPerBit; ++i) {
+	//scl high, sda high
+	for (unsigned int i = 0; i < samplesPerQuarterBit * 4; ++i) {
 		unsigned short sample = 0;
 		setBit(sample, m2KI2CDesc->scl);
 		setBit(sample, m2KI2CDesc->sda);
@@ -81,19 +82,29 @@ static void writeStopCondition(struct i2c_desc *desc, std::vector<unsigned short
 
 static void writeBit(struct i2c_desc *desc, std::vector<unsigned short> &buffer, bool bit)
 {
+	//during data transmission, SDA transitions must occur only when SCL is low
 	auto *m2KI2CDesc = (m2k_i2c_desc *) desc->extra;
-	auto samplesPerHalfBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz) / 2;
-	//scl high
-	for (unsigned int i = 0; i < samplesPerHalfBit; ++i) {
+	auto samplesPerQuarterBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz) / 4;
+
+	//sda transition; scl low 
+	for (unsigned int i = 0; i < samplesPerQuarterBit; ++i) {
 		unsigned short sample = 0;
-		setBit(sample, m2KI2CDesc->scl);
 		if (bit) {
 			setBit(sample, m2KI2CDesc->sda);
 		}
 		buffer.push_back(sample);
 	}
-	//scl low
-	for (unsigned int i = 0; i < samplesPerHalfBit; ++i) {
+	//sda stable; scl high
+	for (unsigned int i = 0; i < samplesPerQuarterBit*2; ++i) {
+		unsigned short sample = 0;
+		if (bit) {
+			setBit(sample, m2KI2CDesc->sda);
+		}
+		setBit(sample, m2KI2CDesc->scl);
+		buffer.push_back(sample);
+	}
+	//sda stable; scl low for next bit
+	for (unsigned int i = 0; i < samplesPerQuarterBit; ++i) {
 		unsigned short sample = 0;
 		if (bit) {
 			setBit(sample, m2KI2CDesc->sda);
@@ -104,23 +115,11 @@ static void writeBit(struct i2c_desc *desc, std::vector<unsigned short> &buffer,
 
 static void writeByte(struct i2c_desc *desc, std::vector<unsigned short> &buffer, uint8_t byte)
 {
-	auto *m2KI2CDesc = (m2k_i2c_desc *) desc->extra;
-	auto samplesPerHalfBit = (unsigned int) (m2KI2CDesc->sample_rate / desc->max_speed_hz) / 2;
-	bool clockPolarity = true;
-
-	for (int i = 0; i < 16; i++) {
-		//encode data
-		for (unsigned int j = 0; j < samplesPerHalfBit; ++j) {
-			unsigned short sample = 0;
-			if (clockPolarity) {
-				setBit(sample, m2KI2CDesc->scl);
-			}
-			if (getBit(byte, 7 - (i / 2))) {
-				setBit(sample, m2KI2CDesc->sda);
-			}
-			buffer.push_back(sample);
-		}
-		clockPolarity = !clockPolarity;
+	//transmit the most significant bits of the byte first
+	const size_t BITS_IN_BYTE = 8;
+	for (size_t i = 0; i < BITS_IN_BYTE; i++) {
+		auto bit = getBit(byte, 7 - i);
+		writeBit(desc, buffer, bit);
 	}
 }
 
