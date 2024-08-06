@@ -9,6 +9,7 @@ make_package() {
     echo "### Make OSX packague"
     mkdir -p "${WORKDIR}"/build && cd "${WORKDIR}"/build
     cmake "$WORKDIR" \
+        -DPYTHON_EXECUTABLE:FILEPATH=$(python -c "import os, sys; print(os.path.dirname(sys.executable) + '/python')") \
         -DOSX_PACKAGE=ON \
         -DENABLE_TOOLS=ON \
         -DENABLE_PYTHON=ON \
@@ -24,6 +25,7 @@ make_tar() {
     echo "### Make OSX tar"
     mkdir -p "${WORKDIR}"/build_tar && cd "${WORKDIR}"/build_tar
     cmake "${WORKDIR}" \
+        -DPYTHON_EXECUTABLE:FILEPATH=$(python -c "import os, sys; print(os.path.dirname(sys.executable) + '/python')") \
         -DOSX_PACKAGE=OFF \
         -DENABLE_PACKAGING=ON \
         -DENABLE_PYTHON=ON \
