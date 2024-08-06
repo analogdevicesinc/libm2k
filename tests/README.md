@@ -31,3 +31,7 @@ To repeat a test, add the @repeat(times) decorator before the test to be repeate
  Ex: <br>
 ```    @repeat(50)``` <br>
 ```    def test_2_calibration(self):```
+
+### iio_diff
+
+The directory contains utilities for storing iio state in xml format: ```xml_generator.py```, as well as an utility used to compare common, new and missing attributes: ```iio_diff.py```.
