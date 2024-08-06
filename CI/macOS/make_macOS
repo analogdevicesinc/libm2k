@@ -1,19 +1,40 @@
 #!/bin/sh -e
 
-TOP_DIR=$(pwd)
+set -ex
 
-set -x
-
-mkdir -p build
-mkdir -p build_tar
+WORKDIR=$(pwd)
 export MACOSX_DEPLOYMENT_TARGET=10.15
 
-cd build
-cmake -DOSX_PACKAGE=ON -DENABLE_TOOLS=ON -DENABLE_PYTHON=ON -DENABLE_CSHARP=ON -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON ..
-make
-ls
+make_package() {
+    echo "### Make OSX packague"
+    mkdir -p "${WORKDIR}"/build && cd "${WORKDIR}"/build
+    cmake "$WORKDIR" \
+        -DOSX_PACKAGE=ON \
+        -DENABLE_TOOLS=ON \
+        -DENABLE_PYTHON=ON \
+        -DENABLE_CSHARP=ON \
+        -DENABLE_LOG=ON \
+        -DBUILD_EXAMPLES=ON
+    make
+    ls
+    cd "$WORKDIR"
+}
 
-cd ${TOP_DIR}/build_tar
-cmake -DOSX_PACKAGE=OFF -DENABLE_PACKAGING=ON -DENABLE_PYTHON=ON -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON ..
-make && make package
-ls
+make_tar() {
+    echo "### Make OSX tar"
+    mkdir -p "${WORKDIR}"/build_tar && cd "${WORKDIR}"/build_tar
+    cmake "${WORKDIR}" \
+        -DOSX_PACKAGE=OFF \
+        -DENABLE_PACKAGING=ON \
+        -DENABLE_PYTHON=ON \
+        -DENABLE_CSHARP=ON \
+        -DENABLE_TOOLS=ON \
+        -DENABLE_LOG=ON \
+        -DBUILD_EXAMPLES=ON
+    make && make package
+    ls
+    cd "$WORKDIR"
+}
+
+make_package
+make_tar
