@@ -56,3 +56,17 @@ def trigger(trig):
     trig.setAnalogDelay(0)
 
     return
+
+
+def digital(dig: libm2k.M2kDigital):
+    # Sets default values for digital parameters
+    # Arguments:
+    #    dig  -- Digital object
+
+    dig.setSampleRateIn(10000)
+    dig.setSampleRateOut(10000)
+    dig.setCyclic(True)
+    dig.setDirection(0b1111111111111111)
+    for i in range(16):
+        dig.setOutputMode(i, 1)
+    dig.enableAllOut(True)

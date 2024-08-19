@@ -3,46 +3,16 @@ import numpy as np
 import libm2k
 from multiprocessing.pool import ThreadPool
 import threading
-from pandas import DataFrame
 import random
 import time
 from open_context import ctx
+from helpers import get_result_files, save_data_to_csv, plot_to_file
+import reset_def_values as reset
+
 from scipy.signal import find_peaks
 
 sample = random.randint(0, 255)
 gen_reports = True
-
-
-def result_files(gen_reports):
-    if gen_reports:
-        from create_files import results_file, results_dir, csv, open_files_and_dirs
-        if results_file is None:
-            file, dir_name, csv_path = open_files_and_dirs()
-        else:
-            file = results_file
-            dir_name = results_dir
-            csv_path = csv
-    else:
-        file = []
-        dir_name = []
-        csv_path = []
-
-    return file, dir_name, csv_path
-
-
-def dig_reset(dig):
-    # Reset digital object
-    # Arguments:
-    #    dig  -- Digital object
-
-    dig.setSampleRateIn(10000)
-    dig.setSampleRateOut(10000)
-    dig.setCyclic(True)
-    dig.setDirection(0b1111111111111111)
-    for i in range(16):
-        dig.setOutputMode(i, 1)
-    dig.enableAllOut(True)
-    return
 
 
 def set_digital_trigger(dig):
@@ -59,7 +29,6 @@ def set_digital_trigger(dig):
 
 
 def check_digital_channels_state(dig, channel):
-
     dig.reset()
     # enable channel under test
     dig.setDirection(channel, libm2k.DIO_OUTPUT)
@@ -142,8 +111,9 @@ def get_data_to_check_trig_condition(dig, channel, i, buff):
 
 
 def check_digital_trigger(channel, dig, d_trig):
-    file_name, dir_name, csv_path = result_files(gen_reports)
-    dig_reset(dig)
+    file_name, dir_name, csv_path = get_result_files(gen_reports)
+
+    reset.digital(dig)
     delay = 1
 
     condition = [libm2k.RISING_EDGE_DIGITAL, libm2k.FALLING_EDGE_DIGITAL, libm2k.LOW_LEVEL_DIGITAL,
@@ -249,7 +219,8 @@ def task1(nb_samples, dig):
 
 
 def test_digital_cyclic_buffer(dig, d_trig, channel):
-    file, dir_name, csv_path = result_files(gen_reports)
+    file, dir_name, csv_path = get_result_files(gen_reports)
+
     dig.setDirection(channel, libm2k.DIO_OUTPUT)
     dig.enableChannel(channel, True)
     d_trig.setDigitalCondition(channel, libm2k.LOW_LEVEL_DIGITAL)
@@ -285,36 +256,6 @@ def test_digital_cyclic_buffer(dig, d_trig, channel):
         passed = False
     return passed
 
-
-def plot_to_file(title, data, dir_name, filename, xlabel=None, ylabel=None, data1=None):
-    # Saves the plots in a separate folder
-    # Arguments:
-    #    title  -- Title of the plot\n
-    #    data  -- Data to be plotted\n
-    #    filename  -- Name of the file with the plot\n
-    # Keyword Arguments:
-    #    xlabel  -- Label of x-Axis (default: {None})
-    #    ylabel  -- Label of y-Axis(default: {None})
-    #    data1  --  Data that should be plotted on the same plot(default: {None})
-
-    # plot the signals in a separate folder
-    plt.title(title)
-    if xlabel is not None:  # if xlabel and ylabel are not specified there will be default values
-        plt.xlabel(xlabel)
-    else:
-        plt.xlabel('Samples')
-    if ylabel is not None:
-        plt.ylabel(ylabel)
-    else:
-        plt.ylabel('Voltage [V]')
-    plt.grid(visible=True)
-    plt.plot(data)  # if a second set of data must be printed (for ch0 and ch1 phase difference in this case)
-    if data1 is not None:
-        plt.plot(data1)
-    plt.savefig(dir_name + "/" + filename)
-    plt.close()
-    return
-
 def plot_to_file_all_channels(title, data, dir_name, filename, xlabel=None, ylabel=None):
     # Saves the plots in a separate folder
     # Arguments:
@@ -342,11 +283,6 @@ def plot_to_file_all_channels(title, data, dir_name, filename, xlabel=None, ylab
     plt.yticks(range(17))
     plt.savefig(dir_name + "/" + filename)
     plt.close()
-    return
-
-def save_data_to_csv(csv_vals, csv_file):
-    df = DataFrame(csv_vals)
-    df.to_csv(csv_file)
     return
 
 def test_kernel_buffers(dig, nb_kernel_buffers):
@@ -405,7 +341,6 @@ def test_pattern_generator_pulse(dig, d_trig, channel):
     test_name = "pattern_generator_glitch"
     data_string = []
     
-    file_name, dir_name, csv_path = result_files(gen_reports)
     dig.reset()
     ctx.setTimeout(timeout)
     
