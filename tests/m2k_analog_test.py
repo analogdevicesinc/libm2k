@@ -3,7 +3,7 @@ import unittest
 import libm2k
 
 from shapefile import shape_gen, ref_shape_gen, shape_name
-from analog_functions import test_amplitude, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, \
+from analog_functions import get_experiment_config_for_sample_hold, test_amplitude, test_last_sample_hold, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, \
     test_voltmeter_functionality, test_kernel_buffers, test_buffer_transition_glitch
 from analog_functions import noncyclic_buffer_test, set_samplerates_for_shapetest, set_trig_for_cyclicbuffer_test, \
     test_calibration
@@ -14,6 +14,8 @@ from open_context import ctx, ain, aout, trig, create_dir
 from create_files import results_dir, csv, results_file
 import logger
 from repeat_test import repeat
+
+from helpers import get_sample_rate_display_format
 
 
 class A_AnalogTests(unittest.TestCase):
@@ -252,3 +254,27 @@ class A_AnalogTests(unittest.TestCase):
                 
                 with self.subTest(msg='Test buffer transition glitch: ' + waveform + ' on ch' + str(channel)):
                     self.assertEqual(num_glitches, 0, 'Found ' + str(num_glitches) + ' glitches on channel ' + str(channel))
+
+    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33',
+                    'The sample and hold feature is available starting with firmware v0.33. Note: v0.32 had a glitch that is handled in this test.')
+    def test_last_sample_hold(self):
+        # Tests the last sample hold functionality for different channels and DAC sample rates.
+        # This test iterates over different channels (each channel individually and both channels together) 
+        # and then tests the last sample hold functionality. When testing both channels together, 'None' 
+        # is used to denote this case. 
+        # It verifies that the last sample is held correctly and that there are no glitches in the output signal in between the last sample and a new push.
+
+        for channel in [libm2k.ANALOG_IN_CHANNEL_1, libm2k.ANALOG_IN_CHANNEL_2, None]:
+            for dac_sr in [75_000_000, 7_500_000, 750_000, 75_000, 7_500]:
+                cfg = get_experiment_config_for_sample_hold(dac_sr)
+                sr_format = get_sample_rate_display_format(cfg.get("dac_sr"))
+                chn_str = "both_channels" if channel is None else f"CH{channel}"
+                reset.analog_in(ain)
+                reset.analog_out(aout)
+                reset.trigger(trig)
+                has_glitch, is_last_sample_hold_ok, is_idle_ok = test_last_sample_hold(ain, aout, trig, ctx, cfg, channel)
+                with self.subTest(msg='Test last sample hold on ' + str(chn_str) + ' with DAC SR ' + str(cfg.get("dac_sr"))):
+                    self.assertEqual(has_glitch, False, f'Found glitches on {chn_str} with DAC SR {sr_format}')
+                    self.assertEqual(is_last_sample_hold_ok, True, f'Last sample hold failed on {chn_str} with DAC SR {sr_format}')
+                    self.assertEqual(is_last_sample_hold_ok, True, f'Last sample hold failed on {chn_str} with DAC SR {sr_format}')
+                    self.assertEqual(is_idle_ok, True, 'Test idle condition failed')

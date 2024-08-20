@@ -13,9 +13,11 @@ import pandas
 import random
 import sys
 import reset_def_values as reset
-from helpers import get_result_files, save_data_to_csv, plot_to_file
+from helpers import get_result_files, get_sample_rate_display_format, get_time_format, save_data_to_csv, plot_to_file
 from open_context import ctx_timeout, ctx
 from create_files import results_file, results_dir, csv
+
+from shapefile import shape_gen, Shape
 
 # dicts that will be saved to csv files
 shape_csv_vals = {}
@@ -1266,3 +1268,247 @@ def test_buffer_transition_glitch(channel, ain, aout, trig, waveform, amplitude=
                      data_marked=filtered_peaks)
 
     return num_peaks
+
+
+def get_experiment_config_for_sample_hold(dac_sr):
+    cfg = {}
+    if dac_sr == 75_000_000:
+        cfg["dac_sr"] = dac_sr
+        cfg["adc_sr"] = 100_000_000
+        cfg["buffer_size"] = 20_000
+        cfg["trig_threshold"] = 2.9
+        cfg["amplitude"] = 5
+        cfg["samples_per_period"] = 1024 * 8
+        cfg["offset"] = 0
+    elif dac_sr == 7_500_000:
+        cfg["dac_sr"] = dac_sr
+        cfg["adc_sr"] = 100_000_000
+        cfg["buffer_size"] = 30_000
+        cfg["trig_threshold"] = 2.9
+        cfg["amplitude"] = 5
+        cfg["samples_per_period"] = 1024
+        cfg["offset"] = 0
+    elif dac_sr == 750_000:
+        cfg["dac_sr"] = dac_sr
+        cfg["adc_sr"] = 10_000_000
+        cfg["buffer_size"] = 30_000
+        cfg["trig_threshold"] = 2.9
+        cfg["amplitude"] = 5
+        cfg["samples_per_period"] = 1024
+        cfg["offset"] = 0
+    elif dac_sr == 75_000:
+        cfg["dac_sr"] = dac_sr
+        cfg["adc_sr"] = 1_000_000
+        cfg["buffer_size"] = 30_000
+        cfg["trig_threshold"] = 2.9
+        cfg["amplitude"] = 5
+        cfg["samples_per_period"] = 1024
+        cfg["offset"] = 0
+    elif dac_sr == 7_500:
+        cfg["dac_sr"] = dac_sr
+        cfg["adc_sr"] = 1_000_000
+        cfg["buffer_size"] = 30_000
+        cfg["trig_threshold"] = 2.9
+        cfg["amplitude"] = 5
+        cfg["samples_per_period"] = 128
+        cfg["offset"] = 0
+    # 750 Hz ommited to avoid long test duration
+    else:
+        raise ValueError("Invalid DAC sample rate.")
+    return cfg
+
+def are_values_within_range(data: np.ndarray, lower_bound, upper_bound, chn):
+    assert lower_bound < upper_bound, "Invalid bounds"
+    is_CH0_in_range = np.all((lower_bound <= data[0]) & (data[0] <= upper_bound))
+    is_CH1_in_range = np.all((lower_bound <= data[1]) & (data[1] <= upper_bound))
+    if chn is None:
+        return is_CH0_in_range and is_CH1_in_range
+    elif chn == libm2k.ANALOG_IN_CHANNEL_1:
+        return is_CH0_in_range
+    elif chn == libm2k.ANALOG_IN_CHANNEL_2:
+        return is_CH1_in_range
+    else:
+        raise ValueError(f"Unknown channel: {chn}")
+
+def test_last_sample_hold(
+    ain: libm2k.M2kAnalogIn,
+    aout: libm2k.M2kAnalogOut,
+    trig: libm2k.M2kHardwareTrigger,
+    ctx: libm2k.M2k,
+    cfg, channel
+):
+    def step_ramp_rising(aout_chn, trig_chn, buffer_ramp_up):
+        set_trig(trig, trig_chn, 8192, libm2k.RISING_EDGE_ANALOG, -cfg.get("trig_threshold"))
+        ain.startAcquisition(cfg.get("buffer_size"))
+        if aout_chn is None:
+            aout.push([buffer_ramp_up, buffer_ramp_up])
+        else:
+            aout.push(aout_chn, buffer_ramp_up)
+        data = np.array(ain.getSamples(cfg.get("buffer_size")))
+        # Flush values from previous buffer
+        ain.stopAcquisition()
+        return data
+
+    def step_ramp_falling(aout_chn, trig_chn, buffer_ramp_down):
+        set_trig(trig, trig_chn, 8192, libm2k.FALLING_EDGE_ANALOG, cfg.get("trig_threshold"))
+        ain.startAcquisition(cfg.get("buffer_size"))
+        if aout_chn is None:
+            aout.push([buffer_ramp_down, buffer_ramp_down])
+        else:
+            aout.push(aout_chn, buffer_ramp_down)
+        data = np.array(ain.getSamples(cfg.get("buffer_size")))
+        # Flush values from previous buffer
+        ain.stopAcquisition()
+        return data
+
+    def check_for_glitch(data, threshold=0.3):
+        # The glitch is unwanted and happened in between the last sample of the previous buffer and the first sample of the new buffer.
+        # NOTE: At DAC_SR <= 7.5 KHz we see oscilations due to the response of the HDL filter
+        glitch_found = False
+        for  chn_samples in data:
+            if any(abs(left - right) >= threshold for left, right in zip(chn_samples, chn_samples[1:])):
+                glitch_found = True
+        return glitch_found   
+    
+    file_name, dir_name, csv_path = get_result_files(gen_reports)
+    test_name = "sample_hold"
+    data_string = []
+
+    chn_str = "both_channels" if channel is None else f"CH{channel}"
+    sr_str = get_sample_rate_display_format(cfg.get("dac_sr"))
+    x_time, x_label = get_time_format(cfg.get("buffer_size"), cfg.get("adc_sr"))
+    
+    if gen_reports:
+        subdir_name = f"{dir_name}/last_sample_hold/{chn_str}"
+        os.makedirs(subdir_name, exist_ok=True)
+
+    SLEEP = 0.15 
+    glitched = False
+    is_last_sample_hold_ok = True # Assume it is ok until proven otherwise
+    is_idle_ok = True
+    assert channel in [libm2k.ANALOG_IN_CHANNEL_1, libm2k.ANALOG_IN_CHANNEL_2, None], "Invalid channel ... None means use both channels"
+    trig_chn = libm2k.ANALOG_IN_CHANNEL_1 if channel is None else channel
+
+    buffer_ramp_up = shape_gen(n=cfg["samples_per_period"],
+                                amplitude=cfg["amplitude"],
+                                offset=cfg["offset"])[Shape.RISING_RAMP.value]
+    buffer_ramp_down = shape_gen(n=cfg["samples_per_period"],
+                                amplitude=cfg["amplitude"],
+                                offset=cfg["offset"])[Shape.FALLING_RAMP.value]
+
+    ain.enableChannel(libm2k.ANALOG_IN_CHANNEL_1, True)
+    ain.enableChannel(libm2k.ANALOG_IN_CHANNEL_2, True)
+    ain.setSampleRate(cfg.get("adc_sr"))
+    ain.setRange(0, libm2k.PLUS_MINUS_25V)
+    ain.setRange(1, libm2k.PLUS_MINUS_25V)
+
+    aout.setSampleRate(0, cfg.get("dac_sr"))
+    aout.setSampleRate(1, cfg.get("dac_sr"))
+    aout.setKernelBuffersCount(0, 4)
+    aout.setKernelBuffersCount(1, 4)
+    aout.enableChannel(0, True)
+    aout.enableChannel(1, True)
+    aout.setCyclic(False)
+
+    # Alternate between rising and falling ramps: rising, falling, rising, falling
+    # NOTE: we selected an arbitraty number of samples from both ends to validate sample hold and reset functionality
+    # 1: Rising
+    data = step_ramp_rising(channel, trig_chn, buffer_ramp_up)
+    if channel is None: 
+        # Both channels should idle at 0V before push due to being reset
+        is_idle_ok = is_idle_ok and are_values_within_range(data[:, :2000], -0.20, 0.20, channel)
+        assert is_idle_ok, "STEP1: Both channels should idle low before push due to being reset"
+    elif channel == libm2k.ANALOG_IN_CHANNEL_1:
+        # CH2 should idle at 0V if we are testing CH1
+        is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_2)
+        assert is_idle_ok, "STEP1: CH2 should idle at 0V if we are testing CH1"
+    elif channel == libm2k.ANALOG_IN_CHANNEL_2:
+        is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
+        assert is_idle_ok, "STEP1: CH1 should idle at 0V if we are testing CH2"
+    # Shoud hold last sample from new buffer for current channel config
+    is_idle_ok = is_idle_ok and are_values_within_range(data[:, -2000:], cfg["amplitude"] * 0.85, cfg["amplitude"] * 1.15, channel)
+    
+    if gen_reports:
+        plot_to_file(title=f"Last Sample Hold: {chn_str} - {sr_str} - Rising Ramp",
+                    data=data[0],
+                    data1=data[1],
+                    x_data=x_time,
+                    xlabel = x_label, 
+                    dir_name=subdir_name,
+                    y_lim=(-6, 6),
+                    filename=f"last_sample_hold_{chn_str}_{sr_str}_step1.png")
+    time.sleep(SLEEP)  # wait for the DAC output to settle with last sample
+    # 2: Falling
+    data = step_ramp_falling(channel, trig_chn, buffer_ramp_down)
+    # Shoud start with last sample from previous buffer
+    is_last_sample_hold_ok = is_last_sample_hold_ok and are_values_within_range(data[:, :2000], cfg["amplitude"] * 0.85, cfg["amplitude"] * 1.15, channel)
+    # Shoud hold last sample from new buffer
+    is_last_sample_hold_ok = is_last_sample_hold_ok and are_values_within_range(data[:, -2000:], -cfg["amplitude"] * 1.15, -cfg["amplitude"] * 0.85, channel)
+    if channel == libm2k.ANALOG_IN_CHANNEL_1:
+        # CH2 should idle at 0V if we are testing CH1
+        is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_2)
+        assert is_idle_ok, "STEP2: CH2 should idle at 0V if we are testing CH1"
+    elif channel == libm2k.ANALOG_IN_CHANNEL_2:
+        is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
+        assert is_idle_ok, "STEP2: CH1 should idle at 0V if we are testing CH2"
+    glitched = glitched or check_for_glitch(data)
+    if gen_reports:
+        plot_to_file(title=f"Last Sample Hold: {chn_str} - {sr_str} - Falling Ramp",
+                    data=data[0],
+                    data1=data[1],
+                    x_data=x_time,
+                    xlabel = x_label, 
+                    dir_name=subdir_name,
+                    y_lim=(-6, 6),
+                    filename=f"last_sample_hold_{chn_str}_{sr_str}_step2.png")
+    time.sleep(SLEEP)  # wait for the DAC output to settle with last sample
+    # 3: Rising
+    data = step_ramp_rising(channel, trig_chn, buffer_ramp_up)
+    # Shoud start with last sample from previous buffer
+    is_last_sample_hold_ok = is_last_sample_hold_ok and are_values_within_range(data[:, :2000], -cfg["amplitude"] * 1.15, -cfg["amplitude"] * 0.85, channel)
+    # Shoud hold last sample from new buffer
+    is_last_sample_hold_ok = is_last_sample_hold_ok and are_values_within_range(data[:, -2000:], cfg["amplitude"] * 0.85, cfg["amplitude"] * 1.15, channel)
+    if channel == libm2k.ANALOG_IN_CHANNEL_1:
+        # CH2 should idle at 0V if we are testing CH1
+        is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_2)
+        assert is_idle_ok, "STEP3: CH2 should idle at 0V if we are testing CH1"
+    elif channel == libm2k.ANALOG_IN_CHANNEL_2:
+        is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
+        assert is_idle_ok, "STEP3: CH1 should idle at 0V if we are testing CH2"
+    glitched = glitched or check_for_glitch(data)
+    if gen_reports:
+        plot_to_file(title=f"Last Sample Hold: {chn_str} - {sr_str} - Rising Ramp",
+                    data=data[0],
+                    data1=data[1],
+                    x_data=x_time,
+                    xlabel = x_label, 
+                    dir_name=subdir_name,
+                    y_lim=(-6, 6),
+                    filename=f"last_sample_hold_{chn_str}_{sr_str}_step3.png")
+    time.sleep(SLEEP)  # wait for the DAC output to settle with last sample
+    # 4: Falling
+    data = step_ramp_falling(channel, trig_chn, buffer_ramp_down)
+    # Shoud start with last sample from previous buffer
+    is_last_sample_hold_ok = is_last_sample_hold_ok and are_values_within_range(data[:, :2000], cfg["amplitude"] * 0.85, cfg["amplitude"] * 1.15, channel)
+    # Shoud hold last sample from new buffer
+    is_last_sample_hold_ok = is_last_sample_hold_ok and are_values_within_range(data[:, -2000:], -cfg["amplitude"] * 1.15, -cfg["amplitude"] * 0.85, channel)
+    if channel == libm2k.ANALOG_IN_CHANNEL_1:
+        # CH2 should idle at 0V if we are testing CH1
+        is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_2)
+        assert is_idle_ok, "STEP4: CH2 should idle at 0V if we are testing CH1"
+    elif channel == libm2k.ANALOG_IN_CHANNEL_2:
+        is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
+        assert is_idle_ok, "STEP4: CH1 should idle at 0V if we are testing CH2"
+    glitched = glitched or check_for_glitch(data)
+    if gen_reports:
+        plot_to_file(title=f"Last Sample Hold: {chn_str} - {sr_str} - Falling Ramp",
+                    data=data[0],
+                    data1=data[1],
+                    x_data=x_time,
+                    xlabel = x_label, 
+                    dir_name=subdir_name,
+                    y_lim=(-6, 6),
+                    filename=f"last_sample_hold_{chn_str}_{sr_str}_step4.png")
+
+    aout.stop()
+    return glitched, is_last_sample_hold_ok, is_idle_ok
