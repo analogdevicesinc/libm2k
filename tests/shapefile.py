@@ -1,3 +1,4 @@
+from enum import Enum
 import numpy as np
 import math
 
@@ -6,7 +7,7 @@ import math
 
 
 # signals that will be sent to output buffer
-def shape_gen(n):
+def shape_gen(n, amplitude: float = 1.0, offset: float = 0.0):
     # Generates different signal shapes that will be sent to the output
     # Arguments:
     #    n  -- Number of samples in the output buffer
@@ -15,18 +16,18 @@ def shape_gen(n):
 
     shape = [[]]
     # generate sine wave
-    sine = np.sin(np.linspace(-np.pi, np.pi, n))
+    sine = amplitude*(np.sin(np.linspace(-np.pi, np.pi, n))) + offset
     # generate square wave
-    square = np.append(np.linspace(-1, -1, int(n / 2)), np.linspace(1, 1, int(n / 2)))
+    square = amplitude * np.append(np.linspace(-1, -1, int(n / 2)), np.linspace(1, 1, int(n / 2))) + offset
 
     # generate triangle
-    triangle = np.append(np.linspace(-1, 1, int(n / 2)), np.linspace(1, -1, int(n / 2)))
+    triangle = amplitude * np.append(np.linspace(-1, 1, int(n / 2)), np.linspace(1, -1, int(n / 2))) + offset
 
     # generate rising ramp
-    rising_ramp = np.linspace(-1, 1, n)
+    rising_ramp = amplitude * np.linspace(-1, 1, n) + offset
 
     # generate falling ramp
-    falling_ramp = np.linspace(1, -1, n)
+    falling_ramp = amplitude * np.linspace(1, -1, n) + offset
 
     # shape and reference shape buffers
     shape = [sine, square, triangle, rising_ramp, falling_ramp]
@@ -58,3 +59,11 @@ def shape_name():
 
     shape_name = ['Sine', 'Square', 'Triangle', 'Rising_ramp', 'Falling_ramp']
     return shape_name
+
+
+class Shape(Enum):
+    SINE = 0
+    SQUARE = 1
+    TRIANGLE = 2
+    RISING_RAMP = 3
+    FALLING_RAMP = 4
