@@ -1,7 +1,7 @@
 import unittest
 import libm2k
 from digital_functions import dig_reset, set_digital_trigger, check_digital_channels_state, check_digital_output, \
-    check_digital_trigger, check_open_drain_mode, test_kernel_buffers, test_pattern_generator_pulse
+    check_digital_trigger, check_open_drain_mode, test_kernel_buffers, test_last_sample_hold, test_pattern_generator_pulse
 from digital_functions import test_digital_cyclic_buffer
 from open_context import ctx, dig, d_trig
 import logger
@@ -66,3 +66,18 @@ class D_DigitalTests(unittest.TestCase):
         test_result = test_pattern_generator_pulse(dig, d_trig, -1)
         with self.subTest(-1):
             self.assertEqual(test_result, 0, "Found " + str(test_result) + " aditional edges in multi-channel test")
+
+    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33', 'Test applicable for firmware v0.33 and later.')
+    def test_last_sample_hold(self):
+        # Tests the last sample and hold functionality of the digital interface.
+        # - After the pattern is sent, the last sample should be held at the output.
+
+        # Single channel
+        for DIO_chn in range(16):
+            result_ok = test_last_sample_hold(dig, d_trig, ctx, DIO_chn)
+            with self.subTest(msg=f"DIO{str(DIO_chn)}"):
+                self.assertEqual(result_ok, True, f"Failed to hold the last sample on DIO{str(DIO_chn)}")
+        # All channels
+        result_ok = test_last_sample_hold(dig, d_trig, ctx, None)
+        with self.subTest(msg="DIO all"):
+            self.assertEqual(result_ok, True, f"Failed to hold the last sample on all DIO test")
