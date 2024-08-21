@@ -466,3 +466,165 @@ def test_pattern_generator_pulse(dig, d_trig, channel):
     dig.stopBufferOut()
     
     return extra_edges
+
+
+def generate_digital_clock(
+    n_samples: int,
+    duty: float,
+    channel = None
+):
+    """
+    Generates a digital clock signal with a specified number of samples, duty cycle, and optional channel.
+
+    Args:
+        n_samples (int): The total number of samples in the signal. Must be greater than or equal to 16 and a multiple of 4.
+        duty (float): The duty cycle of the clock signal as a fraction (0 <= duty <= 1). This defines the proportion of the signal that will be high.
+        channel (Optional[int]): The specific digital channel for which to generate the signal. If None, all channels will be set.
+    Returns:
+        List[int]: A list of integers representing the digital clock signal, where each element corresponds to a sample.
+    """
+    assert n_samples >= 16, "Number of samples must be greater than 16"
+    assert n_samples % 4 == 0, "Number of samples must be a multiple of 4"
+    assert 0 <= duty <= 1, "Duty cycle must be between 0 and 1"
+
+    signal : np.ndarray = np.arange(n_samples) > (n_samples * duty) # should be 0s then 1s
+    if channel is not None:
+        signal  = signal << channel
+    else: 
+        signal = signal * 0xFFFF
+    return signal.tolist()
+
+
+def verify_samples(
+    samples: np.ndarray,
+    expected_value: int,
+    position: str = 'end',
+    sample_range=5000
+):
+    """
+    Verifies that samples hold the expected value at the specified position.
+
+    Args:
+        samples (np.ndarray): Samples to verify.
+        expected_value (int): Expected value to hold.
+        position (str): Position to check ('start' or 'end').
+        sample_window (int): Number of samples to consider for verification.
+
+    Returns:
+        bool: True if verification passes, False otherwise.
+    """
+    if position == 'start':
+        sample_segment = samples[:sample_range]
+    elif position == 'end':
+        sample_segment = samples[-sample_range:]
+    else:
+        raise ValueError("Invalid position. Must be 'start' or 'end'.")
+    return np.all(sample_segment == expected_value)
+
+
+def get_DIO_chn_samples(samples, channel):
+    """
+    Isolates the samples for a specific digital channel.
+    """
+    channel_mask = 1 << channel
+    extracted_samples = [(samples & channel_mask) >> channel for samples in samples]
+    return extracted_samples
+
+
+def test_last_sample_hold(dig: libm2k.M2kDigital, trig: libm2k.M2kHardwareTrigger, ctx:libm2k.M2k, channel=None):
+    if gen_reports:
+        from create_files import results_file, results_dir, csv, open_files_and_dirs
+        if results_file is None:
+            file, dir_name, csv_path = open_files_and_dirs()
+        else:
+            file = results_file
+            dir_name = results_dir
+            csv_path = csv
+    else:
+        file = []
+
+    test_name = "pattern_generator_last_sample_hold"
+    data_string = []
+
+    HIGH = 1
+    HIGH_ALL = 0xFFFF
+    HOLD_VALUE = HIGH if channel is not None else HIGH_ALL
+
+    delay = 8192
+    timeout = 15_000 # [ms]
+    buffer_size = 30_000
+    sampling_frequency_in = 100_000_000
+    sampling_frequency_out = 10_000_000
+    cyclic = False
+
+    buff = generate_digital_clock(n_samples=1024, duty=0.5, channel=channel)
+
+    ctx.setTimeout(timeout)
+    dig.stopAcquisition()
+    dig.stopBufferOut()
+    dig.reset()
+
+    dig.setSampleRateIn(sampling_frequency_in)
+    dig.setSampleRateOut(sampling_frequency_out) 
+    assert dig.getSampleRateIn() == sampling_frequency_in, "Failed to set sample rate IN"
+    assert dig.getSampleRateOut() == sampling_frequency_out, "Failed to set sample rate OUT"
+
+    dig.setCyclic(False)
+    assert dig.getCyclic() == cyclic, "Failed to set cyclic mode"
+
+    # Digital trigger rests
+    trig.reset()
+    trig.setDigitalMode(libm2k.DIO_OR)
+    trig.setDigitalStreamingFlag(False)
+    for i in range(16): 
+        trig.setDigitalCondition(i, libm2k.NO_TRIGGER_DIGITAL)
+
+    # Config trigger
+    if channel is not None:
+        trig.setDigitalCondition(channel, libm2k.RISING_EDGE_DIGITAL)
+        dig.setDirection(channel, libm2k.DIO_OUTPUT)
+        dig.enableChannel(channel, True)
+    else:
+        for i in range(16):
+            trig.setDigitalCondition(i, libm2k.RISING_EDGE_DIGITAL)
+            dig.setDirection(i, libm2k.DIO_OUTPUT)
+            dig.enableChannel(i, True)
+    trig.setDigitalDelay(-delay)
+
+    chn_str = str(channel) if channel is not None else "ALL"
+    # Step 1
+    dig.startAcquisition(buffer_size)
+    dig.push(buff)
+    RX_data = dig.getSamples(buffer_size)
+    samples = np.array(get_DIO_chn_samples(RX_data, channel) if channel is not None else RX_data)
+    result_step1 = verify_samples(samples, HOLD_VALUE, position='end', sample_range=50)
+    if gen_reports:
+        plot_to_file_all_channels(
+            title=f"Last sample hold on DIO_{chn_str}",
+            data=RX_data, dir_name=dir_name,
+            filename=f"last_sample_hold_DIO_{chn_str}_step{1}.png",
+            xlabel='Samples', ylabel='DIO channel'
+        )
+    time.sleep(0.15)
+
+    # Step 2
+    if channel is not None:
+        trig.setDigitalCondition(channel, libm2k.FALLING_EDGE_DIGITAL)
+    else:
+        for i in range(16):
+            trig.setDigitalCondition(i, libm2k.FALLING_EDGE_DIGITAL)
+    dig.push(buff)
+    RX_data = dig.getSamples(buffer_size)
+    samples = np.array(get_DIO_chn_samples(RX_data, channel) if channel is not None else RX_data)
+    result_step2 = (
+        verify_samples(samples, HOLD_VALUE, position='start', sample_range=50) and
+        verify_samples(samples, HOLD_VALUE, position='end', sample_range=50)
+    )
+    if gen_reports:
+        plot_to_file_all_channels(
+            title=f"Last sample hold on DIO_{chn_str}",
+            data=RX_data, dir_name=dir_name,
+            filename=f"last_sample_hold_DIO_{chn_str}_step{2}.png",
+            xlabel='Samples', ylabel='DIO channel'
+        )
+    return result_step1 and result_step2
