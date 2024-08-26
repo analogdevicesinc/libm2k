@@ -100,6 +100,7 @@ public:
 	bool getBufferRearmOnTrigger() const override;	
 
 private:
+	std::string firmware_version;
 	std::shared_ptr<libm2k::utils::DeviceGeneric> m_m2k_fabric;
 	libm2k::M2kHardwareTrigger *m_trigger;
 	std::vector<double> m_max_samplerate;
@@ -120,6 +121,12 @@ private:
 	DeviceOut* getDacDevice(unsigned int chnIdx) const;
 	void syncDevice();
 	double convRawToVolts(short raw, double vlsb, double filterCompensation);
+
+	void setRaw(unsigned int chn_idx, unsigned short raw);
+	unsigned short getRaw(unsigned int chn_idx) const;	
+	void setRawEnable(unsigned int chn_idx, bool enable);
+	bool getRawEnable(unsigned int chn_idx) const;
+
 };
 }
 }
