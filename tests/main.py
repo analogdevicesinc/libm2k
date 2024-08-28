@@ -75,7 +75,8 @@ if __name__ == "__main__":
               "test_shapes_ch1\n"
               "test_voltmeter\n"
               "test_buffer_transition_glitch\n"
-              "test_last_sample_hold\n")
+              "test_last_sample_hold\n"
+              "test_aout_triggering\n")
         print("\n ===== class B_TriggerTests ===== \n")
         print(" ===== tests ====== \n")
         print("test_1_trigger_object\n"
