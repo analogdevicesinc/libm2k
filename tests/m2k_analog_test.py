@@ -1,16 +1,17 @@
+import itertools
 import sys
 import unittest
 import libm2k
 
 from shapefile import shape_gen, ref_shape_gen, shape_name
-from analog_functions import get_experiment_config_for_sample_hold, test_amplitude, test_last_sample_hold, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, \
+from analog_functions import get_experiment_config_for_sample_hold, test_amplitude, test_aout_triggering, test_last_sample_hold, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, \
     test_voltmeter_functionality, test_kernel_buffers, test_buffer_transition_glitch
 from analog_functions import noncyclic_buffer_test, set_samplerates_for_shapetest, set_trig_for_cyclicbuffer_test, \
     test_calibration
 from analog_functions import compare_in_out_frequency, test_oversampling_ratio, channels_diff_in_samples, test_timeout, \
     cyclic_buffer_test
 import reset_def_values as reset
-from open_context import ctx, ain, aout, trig, create_dir
+from open_context import ctx, ain, aout, dig, trig, create_dir
 from create_files import results_dir, csv, results_file
 import logger
 from repeat_test import repeat
@@ -278,3 +279,18 @@ class A_AnalogTests(unittest.TestCase):
                     self.assertEqual(is_last_sample_hold_ok, True, f'Last sample hold failed on {chn_str} with DAC SR {sr_format}')
                     self.assertEqual(is_last_sample_hold_ok, True, f'Last sample hold failed on {chn_str} with DAC SR {sr_format}')
                     self.assertEqual(is_idle_ok, True, 'Test idle condition failed')
+
+    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33', 'DAC triggering is available starting with firmware v0.33')
+    def test_aout_triggering(self):
+        # Test the triggering functionality of the M2kAnalogOut.
+        # The test looks for patterns before and after the trigger event for 8 different combinations.
+        autorearm = [False, True]
+        isCyclic = [False, True]
+        status = [libm2k.START, libm2k.STOP]
+        combinations = list(itertools.product(autorearm, isCyclic, status))
+        for combination in combinations:
+            autorearm, isCyclic, status = combination
+            test_result = test_aout_triggering(ain, aout, dig, trig, ctx, autorearm, isCyclic, status)
+            status_str = "START" if status == libm2k.START else "STOP"
+            with self.subTest(msg=f'Test aout start with trigger for: status={status_str}, isCyclic={isCyclic}, autorearm={autorearm} '):
+                self.assertEqual(test_result, True, msg=f'Specification not met')

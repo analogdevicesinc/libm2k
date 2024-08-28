@@ -73,6 +73,40 @@ def plot_to_file(title, data, dir_name, filename, xlabel=None, x_lim = None, yla
     plt.close()
     return
 
+def plot_to_file_multiline(
+    title,
+    datasets,
+    dir_name,
+    filename,
+    xlabel="Samples", ylabel="Voltage [V]",
+    xlim = None,  ylim = None,
+):
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.grid(visible=True)
+
+    for data in datasets:
+        xdata, ydata, fmt = data
+        if xdata is not None:
+            if "marker" in fmt:
+                # Mark scattered points
+                plt.plot(xdata, ydata[xdata], linestyle="None", **fmt)
+            else:
+                plt.plot(xdata, ydata, **fmt)
+        else:
+            plt.plot(ydata, **fmt)
+    
+    if xlim is not None:
+        plt.xlim(*xlim)
+    if ylim is not None:
+        plt.ylim(*ylim)
+    plt.legend()
+
+    plt.savefig(f"{dir_name}/{filename}")
+    plt.close()
+    return
+
 
 def get_time_format(samples, sample_rate):
     x_time = np.linspace(0, samples/sample_rate, samples)

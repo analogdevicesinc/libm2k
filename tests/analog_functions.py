@@ -13,7 +13,7 @@ import pandas
 import random
 import sys
 import reset_def_values as reset
-from helpers import get_result_files, get_sample_rate_display_format, get_time_format, save_data_to_csv, plot_to_file
+from helpers import get_result_files, get_sample_rate_display_format, get_time_format, save_data_to_csv, plot_to_file, plot_to_file_multiline
 from open_context import ctx_timeout, ctx
 from create_files import results_file, results_dir, csv
 
@@ -1068,6 +1068,8 @@ def write_file(file, test_name, channel, data_string):
         file.write("\n\nAmplitude test on channel " + str(channel) + ": \n")
     elif test_name == "buffer_transition_glitch":
         file.write("\n\nTest buffer transition glitch on channel " + str(channel) + ": \n")
+    elif test_name == "aout_triggering":
+        file.write("\n\nTest aout start with trigger event on channel = " + str(channel) + ": \n")
     for i in range(len(data_string)):
         file.write(str(data_string[i]) + '\n')
 
@@ -1317,7 +1319,7 @@ def get_experiment_config_for_sample_hold(dac_sr):
         raise ValueError("Invalid DAC sample rate.")
     return cfg
 
-def are_values_within_range(data: np.ndarray, lower_bound, upper_bound, chn):
+def are_values_within_range(data: np.ndarray, lower_bound, upper_bound, chn=None):
     assert lower_bound < upper_bound, "Invalid bounds"
     is_CH0_in_range = np.all((lower_bound <= data[0]) & (data[0] <= upper_bound))
     is_CH1_in_range = np.all((lower_bound <= data[1]) & (data[1] <= upper_bound))
@@ -1329,7 +1331,6 @@ def are_values_within_range(data: np.ndarray, lower_bound, upper_bound, chn):
         return is_CH1_in_range
     else:
         raise ValueError(f"Unknown channel: {chn}")
-
 def test_last_sample_hold(
     ain: libm2k.M2kAnalogIn,
     aout: libm2k.M2kAnalogOut,
@@ -1512,3 +1513,165 @@ def test_last_sample_hold(
 
     aout.stop()
     return glitched, is_last_sample_hold_ok, is_idle_ok
+
+    
+def test_aout_triggering(
+    ain: libm2k.M2kAnalogIn,
+    aout: libm2k.M2kAnalogOut,
+    dig: libm2k.M2kDigital,
+    trig: libm2k.M2kHardwareTrigger,
+    ctx: libm2k.M2k,
+    auto_rearm : bool, isCyclic : bool, status
+):
+    def configure_trigger(trig: libm2k.M2kHardwareTrigger,
+                        dig: libm2k.M2kDigital,
+                        trig_pin, status, delay):
+        trig.setAnalogDelay(-delay)
+        trig.setDigitalDelay(-delay)
+        trig.setDigitalSource(libm2k.SRC_NONE) # DigitalIn conditioned by internal trigger structure 
+        trig.setDigitalCondition(trig_pin, libm2k.RISING_EDGE_DIGITAL)
+        trig.setAnalogOutTriggerSource(libm2k.TRIGGER_LA) # aout conditioned by the LA trigger
+        trig.setAnalogOutTriggerStatus(status)
+    file_name, dir_name, csv_path = get_result_files(gen_reports)
+    test_name = "aout_triggering"
+    data_string = []
+
+    TRIG_PIN = libm2k.DIO_CHANNEL_0
+    DELAY = 8_000
+    BUFFER_SIZE = 16_000
+    OVERSAMPLING = 1
+    KB_COUNT = 40
+    N_SAMPLES = 1024
+    AMPLITUDE = 5
+    OFFSET = 0
+    TIMEOUT = 10_000
+
+    ADC_SR = 100_000_000
+    DAC_SR = 75_000_000
+    SR_IN_DIG = 100_000_000 
+    SR_OUT_DIG = 100_000_000
+
+    ctx.reset()
+    ctx.calibrateADC()
+    ctx.calibrateDAC()
+    ctx.setTimeout(TIMEOUT)
+
+    ain.setSampleRate(ADC_SR)
+    ain.setOversamplingRatio(OVERSAMPLING)
+    ain.enableChannel(libm2k.ANALOG_IN_CHANNEL_1, True)
+    ain.enableChannel(libm2k.ANALOG_IN_CHANNEL_2, True)
+    ain.setRange(libm2k.ANALOG_IN_CHANNEL_1, -10, 10)
+    ain.setRange(libm2k.ANALOG_IN_CHANNEL_2, -10, 10)
+    assert ain.getSampleRate() == ADC_SR, "Failed to set the sample rate for AnalogIn"
+
+    aout.setSampleRate(0, DAC_SR)
+    aout.setSampleRate(1, DAC_SR)
+    aout.enableChannel(0, True)
+    aout.enableChannel(1, True)
+    aout.setOversamplingRatio(0, 1)
+    aout.setOversamplingRatio(1, 1)
+    aout.setKernelBuffersCount(0, KB_COUNT)
+    aout.setKernelBuffersCount(1, KB_COUNT)
+    assert aout.getSampleRate(1) == DAC_SR, "Failed to set the sample rate for AnalogOut1"
+    
+    dig.setDirection(TRIG_PIN, libm2k.DIO_OUTPUT)
+    dig.setOutputMode(TRIG_PIN, libm2k.DIO_PUSHPULL)
+    dig.enableChannel(TRIG_PIN, True)
+    dig.setCyclic(False)
+    dig.setValueRaw(TRIG_PIN, libm2k.LOW)
+    dig.setSampleRateIn(SR_IN_DIG)
+    dig.setSampleRateOut(SR_OUT_DIG)
+    assert dig.getSampleRateIn() == SR_IN_DIG , "Failed to set the sample rate for DigitalIn"
+    assert dig.getSampleRateOut() == SR_OUT_DIG , "Failed to set the sample rate for DigitalOut"
+
+    # LA trigger will determine an action for the aout based on the provided status
+    configure_trigger(trig, dig, TRIG_PIN, status, DELAY)
+    aout.setCyclic(isCyclic)
+    aout.setBufferRearmOnTrigger(auto_rearm)
+
+    # Configure Aout Signal
+    buf = shape_gen(n=N_SAMPLES, amplitude=AMPLITUDE, offset=OFFSET)[Shape.FALLING_RAMP.value]
+    aout.push([buf, buf])
+
+    ctx.startMixedSignalAcquisition(BUFFER_SIZE)
+
+    dig.setValueRaw(TRIG_PIN, libm2k.HIGH) # Trigger event -> should start the AOUT
+    analog_data = np.array(ain.getSamples(BUFFER_SIZE))
+    digital_data = np.array(dig.getSamples(BUFFER_SIZE))
+    mask = 0x0001 << TRIG_PIN
+    digital_data_chn = (digital_data & mask) >> TRIG_PIN
+
+    ctx.stopMixedSignalAcquisition()
+
+    # Validate test
+    peaks_CH0, _ = find_peaks(analog_data[0], prominence=1, height=1, distance = 100)
+    peaks_CH1, _ = find_peaks(analog_data[1], prominence=1, height=1, distance = 100)
+
+    CH0_left = analog_data[0][:DELAY]
+    CH0_right = analog_data[0][DELAY:]
+    peaks_CH0_left, _ = find_peaks(CH0_left, prominence=1, height=1, distance = 100)
+    peaks_CH0_right, _ = find_peaks(CH0_right, prominence=1, height=1, distance = 100)
+    CH1_left = analog_data[1][:DELAY]
+    CH1_right = analog_data[1][DELAY:]
+    peaks_CH1_left, _ = find_peaks(CH1_left, prominence=1, height=1, distance = 100)
+    peaks_CH1_right, _ = find_peaks(CH1_right, prominence=1, height=1, distance = 100)
+
+    status_str = "START" if status == libm2k.START else "STOP"
+    isCyclic_str = "Cyclic" if isCyclic else "Non-Cyclic"
+    rearm_str = "Ream" if auto_rearm else "No-Rearm"
+    data_string.append(f"Configuration: status={status_str} \t isCyclic={isCyclic_str} \t auto_rearm={rearm_str}")
+    data_string.append(f"\tPeaks before trigger: CH0={len(peaks_CH0_left)} CH1={len(peaks_CH1_left)}")
+    data_string.append(f"\tPeaks after trigger: CH0={len(peaks_CH0_right)} CH1={len(peaks_CH1_right)}")
+
+    result = True
+    # NOTE: auto_rearm only has effect on START status
+    # Case 1, 2, 4
+    if ((status == libm2k.START) and (not isCyclic) and (not auto_rearm)) or \
+        ((status == libm2k.START) and (not isCyclic) and (auto_rearm)) or \
+        ((status == libm2k.START) and (isCyclic) and (auto_rearm)):
+        # Should IDLE before trigger at 0V because the channel was reset
+        result = are_values_within_range(analog_data[:, :DELAY  - 500], -0.2, 0.2)
+        # result = result and (len(peaks_CH0_left) == 0) and (len(peaks_CH1_left) == 0)
+        # Should output exactly 1 period after trigger
+        result = result and (len(peaks_CH0_right) == 1) and (len(peaks_CH1_right) == 1)
+    # Case 3
+    if (status == libm2k.START) and (isCyclic) and (not auto_rearm): 
+        # Should IDLE before trigger at 0V because the channel was reset
+        result = are_values_within_range(analog_data[:, :DELAY ], -0.2, 0.2)
+        # Should output multiple period after trigger
+        result = result and (len(peaks_CH0_right) > 1) and (len(peaks_CH1_right) > 1)
+    # Case 5 and 6
+    if ((status == libm2k.STOP) and (not isCyclic) and (not auto_rearm)) or \
+        ((status == libm2k.STOP) and (not isCyclic) and (auto_rearm)): 
+        # The channels are in the last sample hold state and STOP is not available for non-cyclic buffers due to HDL limitations
+        # We expect both channels to hold last sample for the entire duration
+        result = result and are_values_within_range(analog_data, -AMPLITUDE * 1.2, -AMPLITUDE * 0.8)
+        result = result and (len(peaks_CH0_left) == 0) and (len(peaks_CH1_left) == 0)
+        result = result and (len(peaks_CH0_right) == 0) and (len(peaks_CH1_right) == 0)
+    # Case 7 and 8
+    if ((status == libm2k.STOP) and (isCyclic) and (not auto_rearm)) or \
+        ((status == libm2k.STOP) and (isCyclic) and (auto_rearm)): 
+        # Should be generating cyclic signal before trigger
+        result = result and (len(peaks_CH0_left) > 1) and (len(peaks_CH1_left) > 1)
+        # Should stop generating signal after trigger
+        # TODO: might need aditional delay since the channel takes some time untill it stops from when the trigger event occurs
+        result = result and are_values_within_range(analog_data[:, -DELAY + 500:], -0.2, 0.2)
+
+    if gen_reports:
+        write_file(file_name, test_name, "Both Channels", data_string)
+        filename_str = f"aout_triggering_{status_str}_{isCyclic_str}_{rearm_str}.png"
+        plot_to_file_multiline(
+            title="AOUT Triggering",
+            datasets=[
+                (None, digital_data_chn, {"label":"Digital"}),
+                (None, analog_data[0], {"label" :  "Analog CH0"}),
+                (peaks_CH0, analog_data[0], {"label" :  "Peaks CH0", "marker" : "x"}),
+                (None, analog_data[1],{"label" :  "Analog CH1"}),
+                (peaks_CH1, analog_data[1], {"label" :  "Peaks CH1", "marker" : "x"}),
+        ],
+            dir_name=dir_name,
+            filename=filename_str,
+            ylim=(-6, 6),
+        )
+    aout.stop()
+    return result
