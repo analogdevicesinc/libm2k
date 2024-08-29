@@ -44,60 +44,60 @@ public:
 
 	virtual ~M2kHardwareTriggerImpl();
 
-	void reset();
+	void reset() override;
 
-	int getAnalogLevelRaw(unsigned int chnIdx);
-	void setAnalogLevelRaw(unsigned int chnIdx, int level);
+	int getAnalogLevelRaw(unsigned int chnIdx) override;
+	void setAnalogLevelRaw(unsigned int chnIdx, int level) override;
 
-	void setAnalogLevel(unsigned int chnIdx, double v_level);
-	double getAnalogLevel(unsigned int chnIdx);
+	void setAnalogLevel(unsigned int chnIdx, double v_level) override;
+	double getAnalogLevel(unsigned int chnIdx) override;
 
-	double getAnalogHysteresis(unsigned int chnIdx);
-	void setAnalogHysteresis(unsigned int chnIdx, double hysteresis);
+	double getAnalogHysteresis(unsigned int chnIdx) override;
+	void setAnalogHysteresis(unsigned int chnIdx, double hysteresis) override;
 
-	M2K_TRIGGER_CONDITION_ANALOG getAnalogCondition(unsigned int chnIdx);
-	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_ANALOG cond);
+	M2K_TRIGGER_CONDITION_ANALOG getAnalogCondition(unsigned int chnIdx) override;
+	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_ANALOG cond) override;
 
-	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(unsigned int chnIdx);
-	void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond);
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(unsigned int chnIdx) override;
+	void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond) override;
 
-	M2K_TRIGGER_MODE getAnalogMode(unsigned int chnIdx);
-	void setAnalogMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode);
+	M2K_TRIGGER_MODE getAnalogMode(unsigned int chnIdx) override;
+	void setAnalogMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode) override;
 
-	libm2k::digital::DIO_TRIGGER_MODE getDigitalMode();
-	void setDigitalMode(libm2k::digital::DIO_TRIGGER_MODE mode);
+	libm2k::digital::DIO_TRIGGER_MODE getDigitalMode() override;
+	void setDigitalMode(libm2k::digital::DIO_TRIGGER_MODE mode) override;
 
-	M2K_TRIGGER_SOURCE_ANALOG getAnalogSource();
-	void setAnalogSource(M2K_TRIGGER_SOURCE_ANALOG src);
+	M2K_TRIGGER_SOURCE_ANALOG getAnalogSource() override;
+	void setAnalogSource(M2K_TRIGGER_SOURCE_ANALOG src) override;
 
-	int getAnalogSourceChannel();
-	void setAnalogSourceChannel(unsigned int chnIdx);
+	int getAnalogSourceChannel() override;
+	void setAnalogSourceChannel(unsigned int chnIdx) override;
 
-	int getAnalogDelay() const;
-	void setAnalogDelay(int delay);
+	int getAnalogDelay() const override;
+	void setAnalogDelay(int delay) override;
 
-	int getDigitalDelay() const;
-	void setDigitalDelay(int delay);
+	int getDigitalDelay() const override;
+	void setDigitalDelay(int delay) override;
 
-	struct SETTINGS *getCurrentHwSettings();
-	void setHwTriggerSettings(struct SETTINGS *settings);
+	struct SETTINGS *getCurrentHwSettings() override;
+	void setHwTriggerSettings(struct SETTINGS *settings) override;
 
-	void setAnalogStreamingFlag(bool enable);
-	bool getAnalogStreamingFlag();
+	void setAnalogStreamingFlag(bool enable) override;
+	bool getAnalogStreamingFlag() override;
 
-	void setDigitalStreamingFlag(bool enable);
-	bool getDigitalStreamingFlag();
+	void setDigitalStreamingFlag(bool enable) override;
+	bool getDigitalStreamingFlag() override;
 
 	static std::vector<std::string> getAvailableDigitalConditions();
 
-	void setCalibParameters(unsigned int chnIdx, double scaling, double vert_offset);
+	void setCalibParameters(unsigned int chnIdx, double scaling, double vert_offset) override;
 
-	M2K_TRIGGER_CONDITION_DIGITAL getAnalogExternalCondition(unsigned int chnIdx);
-	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond);
+	M2K_TRIGGER_CONDITION_DIGITAL getAnalogExternalCondition(unsigned int chnIdx) override;
+	void setAnalogExternalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond) override;
 
 
-	M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition() const;
-	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION_DIGITAL cond);
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalExternalCondition() const override;
+	void setDigitalExternalCondition(M2K_TRIGGER_CONDITION_DIGITAL cond) override;
 
 	bool hasExternalTriggerIn() const;
 	bool hasExternalTriggerOut() const;
@@ -108,14 +108,14 @@ public:
 	void setDigitalCondition(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION_DIGITAL cond);
 
 
-	void setAnalogOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src);
-	M2K_TRIGGER_SOURCE_OUT getAnalogOutTriggerSource() const;
+	void setAnalogOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src) override;
+	M2K_TRIGGER_SOURCE_OUT getAnalogOutTriggerSource() const override;
 
-	void setAnalogOutTriggerCondition(M2K_TRIGGER_CONDITION_OUT condition);
-	M2K_TRIGGER_CONDITION_OUT getAnalogOutTriggerCondition() const;
+	void setAnalogOutTriggerCondition(M2K_TRIGGER_CONDITION_OUT condition) override;
+	M2K_TRIGGER_CONDITION_OUT getAnalogOutTriggerCondition() const override;
 
-	void setAnalogOutTriggerStatus(M2K_TRIGGER_STATUS_ANALOG_OUT status);
-	M2K_TRIGGER_STATUS_ANALOG_OUT getAnalogOutTriggerStatus() const;
+	void setAnalogOutTriggerStatus(M2K_TRIGGER_STATUS_ANALOG_OUT status) override;
+	M2K_TRIGGER_STATUS_ANALOG_OUT getAnalogOutTriggerStatus() const override;
 
 protected:
 	struct iio_device *m_trigger_device;
