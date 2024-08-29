@@ -273,9 +273,9 @@ void M2kHardwareTriggerImpl::setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER
 }
 
 
-M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTriggerImpl::getDigitalCondition(DIO_CHANNEL chn)
+M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTriggerImpl::getDigitalCondition(DIO_CHANNEL chnIdx)
 {
-	std::string trigger_val = m_digital_trigger_device->getStringValue(chn, "trigger", false);
+	std::string trigger_val = m_digital_trigger_device->getStringValue(chnIdx, "trigger", false);
 	std::vector<std::string> available_digital_conditions = getAvailableDigitalConditions();
 
 	auto it = std::find(available_digital_conditions.begin(),
@@ -288,21 +288,21 @@ M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTriggerImpl::getDigitalCondition(DIO_CH
 			(it - available_digital_conditions.begin());
 }
 
-M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTriggerImpl::getDigitalCondition(unsigned int chn)
+M2K_TRIGGER_CONDITION_DIGITAL M2kHardwareTriggerImpl::getDigitalCondition(unsigned int chnIdx)
 {
-	DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
+	DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chnIdx);
 	return getDigitalCondition(idx);
 }
 
-void M2kHardwareTriggerImpl::setDigitalCondition(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION_DIGITAL cond)
+void M2kHardwareTriggerImpl::setDigitalCondition(DIO_CHANNEL chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond)
 {
 	std::string trigger_val = getAvailableDigitalConditions()[cond];
-	m_digital_trigger_device->setStringValue(chn, "trigger", trigger_val, false);
+	m_digital_trigger_device->setStringValue(chnIdx, "trigger", trigger_val, false);
 }
 
-void M2kHardwareTriggerImpl::setDigitalCondition(unsigned int chn, M2K_TRIGGER_CONDITION_DIGITAL cond)
+void M2kHardwareTriggerImpl::setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond)
 {
-	DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chn);
+	DIO_CHANNEL idx = static_cast<DIO_CHANNEL>(chnIdx);
 	setDigitalCondition(idx, cond);
 }
 

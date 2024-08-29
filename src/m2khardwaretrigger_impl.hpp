@@ -58,7 +58,9 @@ public:
 	void setAnalogCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_ANALOG cond) override;
 
 	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(unsigned int chnIdx) override;
+	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(DIO_CHANNEL chnIdx) override;
 	void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond) override;
+	void setDigitalCondition(DIO_CHANNEL chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond) override;
 
 	M2K_TRIGGER_MODE getAnalogMode(unsigned int chnIdx) override;
 	void setAnalogMode(unsigned int chnIdx, M2K_TRIGGER_MODE mode) override;
@@ -101,11 +103,6 @@ public:
 	bool hasExternalTriggerIn() const;
 	bool hasExternalTriggerOut() const;
 	bool hasCrossInstrumentTrigger() const;
-
-
-	M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(DIO_CHANNEL chn);
-	void setDigitalCondition(DIO_CHANNEL chn, M2K_TRIGGER_CONDITION_DIGITAL cond);
-
 
 	void setAnalogOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src) override;
 	M2K_TRIGGER_SOURCE_OUT getAnalogOutTriggerSource() const override;
