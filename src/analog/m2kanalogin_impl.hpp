@@ -35,8 +35,8 @@ namespace analog {
 class M2kAnalogInImpl : public M2kAnalogIn
 {
 public:
-        M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
-	~M2kAnalogInImpl() override;
+	M2kAnalogInImpl(struct iio_context*, std::string adc_dev, bool sync, M2kHardwareTrigger *trigger);
+	virtual ~M2kAnalogInImpl() override;
 
 	void reset() override;
 	void startAcquisition(unsigned int nb_samples) override;

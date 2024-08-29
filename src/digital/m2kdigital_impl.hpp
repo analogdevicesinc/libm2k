@@ -39,7 +39,7 @@ class M2kDigitalImpl : public M2kDigital
 {
 public:
 	M2kDigitalImpl(struct iio_context* ctx, std::string logic_dev, bool sync, M2kHardwareTrigger *trigger);
-	virtual ~M2kDigitalImpl();
+	virtual ~M2kDigitalImpl() override;
 
 	void reset() override;
 

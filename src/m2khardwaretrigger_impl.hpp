@@ -41,8 +41,7 @@ class M2kHardwareTriggerImpl : public M2kHardwareTrigger
 {
 public:
 	M2kHardwareTriggerImpl(struct iio_context *ctx, bool init = true);
-
-	virtual ~M2kHardwareTriggerImpl();
+	virtual ~M2kHardwareTriggerImpl() override;
 
 	void reset() override;
 

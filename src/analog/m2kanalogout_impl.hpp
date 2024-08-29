@@ -22,7 +22,7 @@ class M2kAnalogOutImpl : public M2kAnalogOut
 {
 public:
 	M2kAnalogOutImpl(struct iio_context*, std::vector<std::string> dac_devs, bool sync, M2kHardwareTrigger *trigger);
-	virtual ~M2kAnalogOutImpl();
+	virtual ~M2kAnalogOutImpl() override;
 
 	void reset() override;
 	std::vector<int> getOversamplingRatio() override;
