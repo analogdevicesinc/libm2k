@@ -44,6 +44,7 @@ public:
 	virtual ~M2kHardwareTriggerImpl() override;
 
 	void reset() override;
+	virtual void deinitialize();
 
 	int getAnalogLevelRaw(unsigned int chnIdx) override;
 	void setAnalogLevelRaw(unsigned int chnIdx, int level) override;

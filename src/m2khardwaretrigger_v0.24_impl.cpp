@@ -85,6 +85,11 @@ void M2kHardwareTriggerV024Impl::reset()
 	setDigitalSource(SRC_NONE);
 }
 
+void libm2k::M2kHardwareTriggerV024Impl::deinitialize()
+{
+	M2kHardwareTriggerImpl::deinitialize();
+}
+
 void M2kHardwareTriggerV024Impl::setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT out_select)
 {
 	unsigned int TRIGGER_OUT_PIN = 1;

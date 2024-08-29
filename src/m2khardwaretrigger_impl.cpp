@@ -181,6 +181,16 @@ void M2kHardwareTriggerImpl::M2kHardwareTriggerImpl::reset()
 	setDigitalExternalCondition(NO_TRIGGER_DIGITAL);
 }
 
+void libm2k::M2kHardwareTriggerImpl::deinitialize()
+{
+	for (unsigned int i = 0; i < m_analog_channels.size(); i++) {
+		setAnalogMode(i, ALWAYS);
+	}
+	for (unsigned int i = 0; i < m_digital_channels.size(); i++) {
+		setDigitalCondition(i, NO_TRIGGER_DIGITAL);
+	}
+}
+
 bool M2kHardwareTriggerImpl::hasExternalTriggerOut() const
 {
 	return m_logic_channels.at(1)->hasAttribute("out_select");
