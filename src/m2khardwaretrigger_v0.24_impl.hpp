@@ -44,6 +44,7 @@ public:
 	virtual ~M2kHardwareTriggerV024Impl();
 
 	void reset();
+	void deinitialize() override;
 
 	void setAnalogExternalOutSelect(M2K_TRIGGER_OUT_SELECT output_select);
 	M2K_TRIGGER_OUT_SELECT getAnalogExternalOutSelect();

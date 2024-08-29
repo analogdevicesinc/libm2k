@@ -75,6 +75,12 @@ void M2kHardwareTriggerV033Impl::reset()
 	setAnalogOutTriggerStatus(DISABLED);
 }
 
+void libm2k::M2kHardwareTriggerV033Impl::deinitialize()
+{
+	M2kHardwareTriggerV024Impl::deinitialize();
+	setAnalogOutTriggerStatus(DISABLED);
+}
+
 void M2kHardwareTriggerV033Impl::setAnalogOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src)
 {
 	if (src < 0 || src >= m_trigger_source_out.size())

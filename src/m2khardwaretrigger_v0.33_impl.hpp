@@ -43,6 +43,7 @@ public:
 	virtual ~M2kHardwareTriggerV033Impl();
 
 	void reset();
+	void deinitialize() override;
 
 	void setAnalogOutTriggerSource(M2K_TRIGGER_SOURCE_OUT src);
 	M2K_TRIGGER_SOURCE_OUT getAnalogOutTriggerSource() const;
