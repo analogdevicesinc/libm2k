@@ -118,18 +118,34 @@ public:
 
 	/**
 	 * @brief Get the trigger condition for the digital trigger on a specific channel
-	 * @param chnIdx the required channel
-	 * @return the trigger condition
+	 * @param chnIdx The index of the required channel
+	 * @return The trigger condition
 	 */
 	virtual M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(unsigned int chnIdx) = 0;
 
 
 	/**
+	 * @brief Get the trigger condition for the digital trigger on a specific channel
+	 * @param chnIdx An enumerator corresponding to the index of the required channel
+	 * @return The trigger condition
+	 */
+	virtual M2K_TRIGGER_CONDITION_DIGITAL getDigitalCondition(libm2k::digital::DIO_CHANNEL chnIdx) = 0;
+
+
+	/**
 	 * @brief Set the trigger condition for the digital trigger on a specific channel
-	 * @param chnIdx the required channel
+	 * @param chnIdx The index of the required channel
 	 * @param cond the specific trigger condition
 	 */
 	virtual void setDigitalCondition(unsigned int chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond) = 0;
+
+
+	/**
+	 * @brief Set the trigger condition for the digital trigger on a specific channel
+	 * @param chnIdx An enumerator corresponding to the index of the required channel
+	 * @param cond the specific trigger condition
+	 */
+	virtual void setDigitalCondition(libm2k::digital::DIO_CHANNEL chnIdx, M2K_TRIGGER_CONDITION_DIGITAL cond) = 0;
 
 
 
