@@ -59,7 +59,7 @@ jobs:
         name: Install Python 3.11
         with:
           python-version: '3.11'
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: manylinux_wheels
       - name: Upload to PyPI
