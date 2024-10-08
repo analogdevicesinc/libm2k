@@ -20,8 +20,16 @@
 
 import unittest
 import libm2k
-from digital_functions import set_digital_trigger, check_digital_channels_state, check_digital_output, \
-    check_digital_trigger, check_open_drain_mode, test_kernel_buffers, test_pattern_generator_pulse
+from digital_functions import (
+    check_digital_channels_state,
+    check_digital_output,
+    check_digital_trigger,
+    check_open_drain_mode,
+    set_digital_trigger,
+    test_kernel_buffers,
+    test_last_sample_hold,
+    test_pattern_generator_pulse,
+)
 from digital_functions import test_digital_cyclic_buffer
 import reset_def_values as reset
 from open_context import ctx, dig, d_trig
