@@ -1438,14 +1438,11 @@ def test_last_sample_hold(
     if channel is None: 
         # Both channels should idle at 0V before push due to being reset
         is_idle_ok = is_idle_ok and are_values_within_range(data[:, :2000], -0.20, 0.20, channel)
-        assert is_idle_ok, "STEP1: Both channels should idle low before push due to being reset"
     elif channel == libm2k.ANALOG_IN_CHANNEL_1:
         # CH2 should idle at 0V if we are testing CH1
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_2)
-        assert is_idle_ok, "STEP1: CH2 should idle at 0V if we are testing CH1"
     elif channel == libm2k.ANALOG_IN_CHANNEL_2:
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
-        assert is_idle_ok, "STEP1: CH1 should idle at 0V if we are testing CH2"
     # Shoud hold last sample from new buffer for current channel config
     is_idle_ok = is_idle_ok and are_values_within_range(data[:, -2000:], cfg["amplitude"] * 0.85, cfg["amplitude"] * 1.15, channel)
     
@@ -1468,10 +1465,8 @@ def test_last_sample_hold(
     if channel == libm2k.ANALOG_IN_CHANNEL_1:
         # CH2 should idle at 0V if we are testing CH1
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_2)
-        assert is_idle_ok, "STEP2: CH2 should idle at 0V if we are testing CH1"
     elif channel == libm2k.ANALOG_IN_CHANNEL_2:
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
-        assert is_idle_ok, "STEP2: CH1 should idle at 0V if we are testing CH2"
     glitched = glitched or check_for_glitch(data)
     if gen_reports:
         plot_to_file(title=f"Last Sample Hold: {chn_str} - {sr_str} - Falling Ramp",
@@ -1492,10 +1487,8 @@ def test_last_sample_hold(
     if channel == libm2k.ANALOG_IN_CHANNEL_1:
         # CH2 should idle at 0V if we are testing CH1
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_2)
-        assert is_idle_ok, "STEP3: CH2 should idle at 0V if we are testing CH1"
     elif channel == libm2k.ANALOG_IN_CHANNEL_2:
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
-        assert is_idle_ok, "STEP3: CH1 should idle at 0V if we are testing CH2"
     glitched = glitched or check_for_glitch(data)
     if gen_reports:
         plot_to_file(title=f"Last Sample Hold: {chn_str} - {sr_str} - Rising Ramp",
@@ -1516,10 +1509,8 @@ def test_last_sample_hold(
     if channel == libm2k.ANALOG_IN_CHANNEL_1:
         # CH2 should idle at 0V if we are testing CH1
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_2)
-        assert is_idle_ok, "STEP4: CH2 should idle at 0V if we are testing CH1"
     elif channel == libm2k.ANALOG_IN_CHANNEL_2:
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
-        assert is_idle_ok, "STEP4: CH1 should idle at 0V if we are testing CH2"
     glitched = glitched or check_for_glitch(data)
     if gen_reports:
         plot_to_file(title=f"Last Sample Hold: {chn_str} - {sr_str} - Falling Ramp",
