@@ -114,6 +114,7 @@ function Move-To-Build-Dir() {
     Copy-Item -Path "*.dll" -Destination $BUILD_DIR
     Copy-Item -Path "*.exe" -Destination $BUILD_DIR
     Copy-Item -Path "*libm2k.lib" -Destination $BUILD_DIR
+    Copy-Item -Path "libm2k.exp" -Destination $BUILD_DIR
     Copy-Item -Path "*.iss" -Destination $BUILD_DIR
 
     Copy-Item -Path (Join-Path $OUTSIDE_BUILD "libiio-$ARCH\*.dll") -Destination $BUILD_DIR   
