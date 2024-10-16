@@ -8,6 +8,7 @@ variables:
   REPO_SLUG: $(Build.Repository.Name)
   CURRENT_COMMIT: $(Build.SourceVersion)
   LIBIIO_VERSION: 'libiio-v0'
+  GLOG_VERSION: 'v0.4.0'
 
 trigger:
 - main
@@ -31,7 +32,7 @@ parameters:
     - 3.9
     - 3.8
     - 3.7
-# TODO: Fix conditions to export artifacts after validating current pipelines
+
 jobs:
 - job: LinuxBuilds
   strategy:
@@ -75,7 +76,6 @@ jobs:
       contents: '$(Agent.BuildDirectory)/s/build/?(libm2k*.deb|libm2k*.rpm)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
-    # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['System.JobName'], 'deploy_doxygen'))
     condition: and(succeeded(), ne(variables['System.JobName'], 'deploy_doxygen'))
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
@@ -161,7 +161,6 @@ jobs:
       contents: '$(Agent.BuildDirectory)/s/build_tar/?(*.tar.gz)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
-    # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     condition: succeeded()
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
@@ -236,13 +235,11 @@ jobs:
         displayName: Wheel Python ${{ pyVersion }}
     - task: PowerShell@2
       displayName: 'Create libm2k-system-setup installer'
-      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.JobName'], 'VS_2022'))
       condition: and(succeeded(), eq(variables['System.JobName'], 'VS_2022'))
       inputs:
         targetType: 'filePath'
         filePath: ./CI/windows/create_installer.ps1
     - task: PublishPipelineArtifact@1
-      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.JobName'], 'VS_2022'))
       condition: and(succeeded(), eq(variables['System.JobName'], 'VS_2022'))
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/installer'
@@ -253,13 +250,7 @@ jobs:
         targetType: 'filePath'
         filePath: ./CI/windows/create_zips.ps1
     - task: PublishPipelineArtifact@1
-      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       condition: succeeded()
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/libm2k-$(PLATFORM)'
         artifactName: '$(artifactName)'
-
-
-
-
-
