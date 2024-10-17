@@ -25,7 +25,7 @@ set root=%cd%
 :: libiio
 mkdir deps
 
-curl.exe  --output  libiio-win.zip --url https://github.com/analogdevicesinc/libiio/releases/download/v0.25/libiio-0.25-gb6028fd-windows.zip -L
+curl.exe  --output  libiio-win.zip --url https://github.com/analogdevicesinc/libiio/releases/download/v0.26/Windows.zip -L
 powershell -Command "Expand-Archive -Path libiio-win.zip -DestinationPath libiio"
 powershell -Command "Get-ChildItem -Path libiio/Windows-VS-2022-x64 -Recurse -Filter *.dll | Copy-Item -Destination deps "
 powershell -Command "Get-ChildItem -Path libiio/Windows-VS-2022-x64 -Recurse -Filter libiio.exp | Copy-Item -Destination deps "
@@ -34,7 +34,7 @@ mkdir deps\include
 powershell -Command "Get-ChildItem -Path libiio/include -Recurse -Filter iio.h | Copy-Item -Destination deps/include "
 
 ::libm2k
-git clone -b v0.8.0 https://github.com/analogdevicesinc/libm2k.git
+git clone -b v0.9.0 https://github.com/analogdevicesinc/libm2k.git
 cd libm2k
 mkdir build
 cd build
