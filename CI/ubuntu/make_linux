@@ -1,26 +1,41 @@
 #!/bin/sh -e
 
-TOP_DIR=$(pwd)
+WORKDIR=$(pwd)
 
-set -x
+set -ex
 
 handle_default() {
 	mkdir -p build
 	cd build
 
-	#create deb for bindings
-	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON .. && make
+	echo "Creating .deb for bindings"
+	cmake "$WORKDIR" \
+		-DBUILD_EXAMPLES=ON \
+		-DENABLE_CSHARP=OFF \
+		-DENABLE_LOG=ON \
+		-DENABLE_PYTHON=ON \
+		-DENABLE_TOOLS=ON \
+        -DPYTHON_EXECUTABLE:FILEPATH=$(python -c "import os, sys; print(os.path.dirname(sys.executable) + '/python')") \
+	make
 	sudo python3 setup.py --command-packages=stdeb.command sdist_dsc
 	cd "$(find . -type d -name "debian" | head -n 1)"
 	sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc
-	cp ../../*.deb ${TOP_DIR}/build/
-	cd ${TOP_DIR}/build/
+	cp ../../*.deb ${WORKDIR}/build/
+	cd ${WORKDIR}/build/
 	#remove the tar.gz for bindings
 	sudo rm *.tar.gz
 	ls
 
-	#create simple .deb without Python bindings
-	cmake -DENABLE_PACKAGING=ON -DDEB_DETECT_DEPENDENCIES=ON -DENABLE_PYTHON=OFF -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=ON -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_EXAMPLES=ON ..
+	echo "Create .deb without Python bingings"
+	cmake "$WORKDIR" \
+		-DBUILD_EXAMPLES=ON \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DDEB_DETECT_DEPENDENCIES=ON \
+		-DENABLE_CSHARP=ON -DENABLE_TOOLS=ON \
+		-DENABLE_LOG=ON \
+		-DENABLE_PACKAGING=ON \
+		-DENABLE_PYTHON=OFF \
+        -DPYTHON_EXECUTABLE:FILEPATH=$(python -c "import os, sys; print(os.path.dirname(sys.executable) + '/python')") \
 	make && make package
 	ls
 }
@@ -28,7 +43,10 @@ handle_default() {
 handle_doxygen() {
 	mkdir -p build
 	cd build
-	cmake -DENABLE_PYTHON=ON -DENABLE_CSHARP=OFF -DENABLE_DOC=ON ..
+	cmake "$WORKDIR" \
+		-DENABLE_PYTHON=ON \
+		-DENABLE_CSHARP=OFF \
+		-DENABLE_DOC=ON
 	make && sudo make install
 	make doc
 	cd ..
