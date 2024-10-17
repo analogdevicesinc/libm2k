@@ -31,7 +31,7 @@ parameters:
     - 3.9
     - 3.8
     - 3.7
-# TODO: Fix conditions to export artifacts after validating current pipelines
+
 jobs:
 - job: LinuxBuilds
   strategy:
@@ -75,7 +75,6 @@ jobs:
       contents: '$(Agent.BuildDirectory)/s/build/?(libm2k*.deb|libm2k*.rpm)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
-    # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['System.JobName'], 'deploy_doxygen'))
     condition: and(succeeded(), ne(variables['System.JobName'], 'deploy_doxygen'))
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
@@ -89,17 +88,14 @@ jobs:
       macOS_12:
         poolName: 'Azure Pipelines'
         vmImage: 'macOS-12'
-        agentName: 'Azure Pipelines 3'
         artifactName: 'macOS-12'
       macOS_13_x64:
         poolName: 'Azure Pipelines'
         vmImage: 'macOS-13'
-        agentName: 'Azure Pipelines 2'
         artifactName: 'macOS-13-x64'
       macOS_14_x64:
         poolName: 'Azure Pipelines'
         vmImage: 'macOS-14'
-        agentName: 'Azure Pipelines 2'
         artifactName: 'macOS-14-x64'
       # TODO: discuss with DevOps team how to setup ARM agent
       # macOS_13_arm64:
@@ -110,8 +106,6 @@ jobs:
   pool:
     name: $(poolName)
     vmImage: $(vmImage)
-    demands:
-      - agent.name -equals $(agentName)
   steps:
   - checkout: self
     fetchDepth: 1
@@ -122,7 +116,6 @@ jobs:
       addToPath: true
   - script: ./CI/macOS/install_deps
     displayName: "Install Dependencies"
-    condition: ne(variables['agentName'],'macOS_arm64')
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Agent.BuildDirectory)/s/libiio/build/'
@@ -166,7 +159,6 @@ jobs:
       contents: '$(Agent.BuildDirectory)/s/build_tar/?(*.tar.gz)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
-    # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     condition: succeeded()
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
@@ -241,13 +233,11 @@ jobs:
         displayName: Wheel Python ${{ pyVersion }}
     - task: PowerShell@2
       displayName: 'Create libm2k-system-setup installer'
-      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.JobName'], 'VS_2022'))
       condition: and(succeeded(), eq(variables['System.JobName'], 'VS_2022'))
       inputs:
         targetType: 'filePath'
         filePath: ./CI/windows/create_installer.ps1
     - task: PublishPipelineArtifact@1
-      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.JobName'], 'VS_2022'))
       condition: and(succeeded(), eq(variables['System.JobName'], 'VS_2022'))
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/installer'
@@ -258,7 +248,6 @@ jobs:
         targetType: 'filePath'
         filePath: ./CI/windows/create_zips.ps1
     - task: PublishPipelineArtifact@1
-      # condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       condition: succeeded()
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/libm2k-$(PLATFORM)'
