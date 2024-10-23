@@ -74,6 +74,18 @@ build_libiio() {
     chmod +x macos_tar_fixup.sh
     ./macos_tar_fixup.sh
     cd "${WORKDIR}"
+    
+    echo "#### Building with documentation"
+    cd "${WORKDIR}"/libiio/build
+    cmake "${WORKDIR}"/libiio \
+        -Werror=dev \
+        -DCOMPILE_WARNING_AS_ERROR=ON \
+        -DCPP_BINDINGS=ON \
+        -DPYTHON_BINDINGS=ON \
+        -DWITH_DOC=ON \
+        -DWITH_SERIAL_BACKEND=ON
+    make
+    cd "${WORKDIR}"
 }
 
 install_packages
