@@ -8,6 +8,7 @@ variables:
   REPO_SLUG: $(Build.Repository.Name)
   CURRENT_COMMIT: $(Build.SourceVersion)
   LIBIIO_VERSION: 'libiio-v0'
+  GLOG_VERSION: 'v0.4.0'
 
 trigger:
 - main
