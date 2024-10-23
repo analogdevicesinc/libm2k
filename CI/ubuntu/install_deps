@@ -1,7 +1,6 @@
 #!/bin/sh -e
 
 TOP_DIR=$(pwd)
-LIBIIO_VERSION=libiio-v0
 
 set -x
 

@@ -2,9 +2,6 @@
 
 set -ex
 
-LIBIIO_VERSION=libiio-v0
-GLOG_VERSION=v0.4.0
-
 WORKDIR=$(pwd)
 
 install_packages() {
