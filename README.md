@@ -2,7 +2,7 @@
 
 ## Important note (January 2024)
 
-This version is compatible with libiio v0.25 or older - [libiio-v0](https://github.com/analogdevicesinc/libiio/tree/libiio-v0)
+This version is compatible with libiio v0.26 or older - [libiio-v0](https://github.com/analogdevicesinc/libiio/tree/libiio-v0)
 
 # libm2k
 
