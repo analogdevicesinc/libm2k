@@ -32,7 +32,7 @@ handle_doxygen() {
 	make && sudo make install
 	make doc
 	cd ..
-	./CI/ubuntu/doxygen.sh
+	${TOP_DIR}/CI/ubuntu/doxygen.sh
 }
 
 handle_ubuntu_docker() {

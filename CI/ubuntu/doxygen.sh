@@ -36,6 +36,7 @@ then
 
         sudo rm -rf ${TOP_DIR}/doc
         sudo rm -rf ${TOP_DIR}/glog
+        sudo rm -rf ${TOP_DIR}/libiio
         sudo rm -rf ${TOP_DIR}/build
 
 	# Need to create a .nojekyll file to allow filenames starting with an underscore
