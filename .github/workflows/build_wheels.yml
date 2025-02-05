@@ -43,7 +43,7 @@ jobs:
                             cd {project} && ./.github/scripts/install_deps.sh {package}
           CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-* cp311-* cp312-*"
           CIBW_ENVIRONMENT: COMPILE_BINDINGS="True"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: manylinux_wheels
           path: ${{ github.workspace }}/wheelhouse
