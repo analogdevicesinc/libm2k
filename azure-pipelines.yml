@@ -86,10 +86,6 @@ jobs:
     clean: all
   strategy:
     matrix:
-      macOS_12:
-        poolName: 'Azure Pipelines'
-        vmImage: 'macOS-12'
-        artifactName: 'macOS-12'
       macOS_13_x64:
         poolName: 'Azure Pipelines'
         vmImage: 'macOS-13'
@@ -204,7 +200,7 @@ jobs:
         versionSpec: '3.11'
     - task: PowerShell@2
       displayName: 'Install Dependencies'
-      inputs: 
+      inputs:
         targetType: filePath
         filePath: ./CI/windows/install_deps.ps1
     - task: PowerShell@2
