@@ -14,3 +14,5 @@ Always install the latest release for your MATLAB version from the [releases pag
 |:-------:|:-------:|:-------------------:|
 | Windows 10 | R2024b |[Matlab Add-On](https://uk.mathworks.com/matlabcentral/fileexchange/74385-libm2k-matlab?s_tid=srchtitle_libm2k_1)|
 | Linux | R2024b | [Matlab Add-On](https://uk.mathworks.com/matlabcentral/fileexchange/74385-libm2k-matlab?s_tid=srchtitle_libm2k_1) |
+| Macos x86_64 | R2024b | [Release link](https://github.com/analogdevicesinc/libm2k-matlab/releases/tag/v24.2.2) |
+| Macos arm64 | R2024b | [Release link](https://github.com/analogdevicesinc/libm2k-matlab/releases/tag/v24.2.2) |
