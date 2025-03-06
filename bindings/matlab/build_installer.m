@@ -20,10 +20,9 @@
 
 function build_installer()
 
-version = '23.1.1';
+version = '24.2.2';
 ml = ver('MATLAB');
 ml = ml.Release(2:end-1);
-arch = computer('arch');
 
 %%
 cd(fileparts((mfilename('fullpath'))));
@@ -33,19 +32,31 @@ fid  = fopen('bsp.tmpl','r');
 f=fread(fid,'*char')';
 fclose(fid);
 
-if ispc
+% this affects system compatibility for the mltbx package 
+win = 'false';
+unix = 'false';
+mac = 'false';
+
+if isfile(fullfile(p, 'libm2k', 'libm2kInterface.dll'))
     win = 'true';
-    unix = 'false';
-else
-    win = 'false';
+end
+
+if isfile(fullfile(p, 'libm2k', 'libm2kInterface.so'))
     unix = 'true';
 end
+
+if isfile(fullfile(p, 'libm2k', 'libm2kInterface.dylib'))
+    mac = 'true';
+end
+
+
+f = strrep(f,'__PROJECT_ROOT__',p);
 f = strrep(f,'__REPO-ROOT__',p);
 f = strrep(f,'__VERSION__',version);
 f = strrep(f,'__ML-RELEASE__',ml);
-f = strrep(f,'__ARCH__',arch);
 f = strrep(f,'__LINUX__',unix);
 f = strrep(f,'__WINDOWS__',win);
+f = strrep(f,'__MAC_OS__',mac);
 
 fid  = fopen('bsp.prj','w');
 fprintf(fid,'%s',f);
