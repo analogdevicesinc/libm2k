@@ -23,11 +23,6 @@ cmake_minimum_required(VERSION 3.1.3)
 option(OSX_PACKAGE "Create OSX package" OFF)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
-if(APPLE)
-	# build universal binaries by default
-	set(CMAKE_OSX_ARCHITECTURES "x86_64")
-endif()
-
 if(MSVC)
 	if (NOT ENABLE_EXCEPTIONS)
 		# support for C/C++ conformant preprocessor in MSVC was added starting with
