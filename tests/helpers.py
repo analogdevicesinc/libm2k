@@ -47,7 +47,9 @@ def save_data_to_csv(csv_vals, csv_file):
     return
 
 
-def plot_to_file(title, data, dir_name, filename, xlabel=None, x_lim = None, ylabel=None, y_lim = None, data1=None, x_data = None, data_marked=None):
+def plot_to_file(title, data, dir_name, filename, xlabel=None, x_lim=None,
+                ylabel=None, y_lim=None, data1=None, x_data=None,
+                data_marked=None, label0="CH0", label1="CH1"):
     # Saves the plots in a separate folder
     # Arguments:
     #    title  -- Title of the plot
@@ -58,10 +60,12 @@ def plot_to_file(title, data, dir_name, filename, xlabel=None, x_lim = None, yla
     #    ylabel  -- Label of y-Axis(default: {None})
     #    data1  --  Data that should be plotted on the same plot(default: {None})
     #    data_marked -- Data that represents specific points on the plot(default: {None})
+    #    label0 -- Legend label for first dataset (default: {"CH0"})
+    #    label1 -- Legend label for second dataset (default: {"CH1"})
     # plot the signals in a separate folder
     plt.title(title)
     # if xlabel and ylabel are not specified there will be default values
-    if xlabel is not None:  
+    if xlabel is not None:
         plt.xlabel(xlabel)
     else:
         plt.xlabel('Samples')
@@ -72,22 +76,23 @@ def plot_to_file(title, data, dir_name, filename, xlabel=None, x_lim = None, yla
     plt.grid(visible=True)
     # if x_data is not None, the plot will be displayed with the specified x_data
     if x_data is not None:
-        plt.plot(x_data, data)
+        plt.plot(x_data, data, label=label0)
     else:
-        plt.plot(data)
+        plt.plot(data, label=label0)
     # if a second set of data must be printed (for ch0 and ch1 phase difference in this case)
     if data1 is not None:
         if x_data is not None:
-            plt.plot(x_data, data1)
+            plt.plot(x_data, data1, label=label1)
         else:
-            plt.plot(data1)
+            plt.plot(data1, label=label1)
     # Optional configurations
     if x_lim is not None:
         plt.xlim(*x_lim)
     if y_lim is not None:
         plt.ylim(*y_lim)
     if data_marked is not None:
-        plt.plot(data_marked, data[data_marked], 'xr')        
+        plt.plot(data_marked, data[data_marked], 'xr')
+    plt.legend()
     plt.savefig(dir_name + "/" + filename)
     plt.close()
     return
