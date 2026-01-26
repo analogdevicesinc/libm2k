@@ -19,17 +19,37 @@
 #
 
 import itertools
-import sys
 import unittest
 import libm2k
 
 from shapefile import shape_gen, ref_shape_gen, shape_name
-from analog_functions import get_experiment_config_for_sample_hold, test_amplitude, test_aout_triggering, test_last_sample_hold, test_shape, phase_diff_ch0_ch1, test_offset, test_analog_trigger, \
-    test_voltmeter_functionality, test_kernel_buffers, test_buffer_transition_glitch
-from analog_functions import noncyclic_buffer_test, set_samplerates_for_shapetest, set_trig_for_cyclicbuffer_test, \
-    test_calibration
-from analog_functions import compare_in_out_frequency, test_oversampling_ratio, channels_diff_in_samples, test_timeout, \
-    cyclic_buffer_test
+from analog_functions import (
+    get_experiment_config_for_sample_hold,
+    test_amplitude,
+    test_aout_triggering,
+    test_last_sample_hold,
+    test_shape,
+    phase_diff_ch0_ch1,
+    test_offset,
+    test_analog_trigger,
+    test_voltmeter_functionality,
+    test_kernel_buffers,
+    test_buffer_transition_glitch,
+    test_dual_channel_sync,
+)
+from analog_functions import (
+    noncyclic_buffer_test,
+    set_samplerates_for_shapetest,
+    set_trig_for_cyclicbuffer_test,
+    test_calibration,
+)
+from analog_functions import (
+    compare_in_out_frequency,
+    test_oversampling_ratio,
+    channels_diff_in_samples,
+    test_timeout,
+    cyclic_buffer_test,
+)
 import reset_def_values as reset
 from open_context import ctx, ain, aout, dig, trig, create_dir
 from create_files import results_dir, csv, results_file
@@ -58,7 +78,7 @@ class A_AnalogTests(unittest.TestCase):
             input()
 
     def test_1_analog_objects(self):
-        # Verify through open_context() function if the analog objects AnalogIn, AnalogOut and Trigger were 
+        # Verify through open_context() function if the analog objects AnalogIn, AnalogOut and Trigger were
         # successfully retrieved.
 
         with self.subTest(msg='test if AnalogIn, AnalogOut and Trigger objects were retrieved'):
@@ -269,13 +289,13 @@ class A_AnalogTests(unittest.TestCase):
 
     @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.32', 'This is a known bug in previous firmware implementations which is fixed in v0.32')
     def test_buffer_transition_glitch(self):
-        # Pushing a new cyclic buffer should output the value of the raw attr. In previous firmware versions, the new buffer would start 
+        # Pushing a new cyclic buffer should output the value of the raw attr. In previous firmware versions, the new buffer would start
         # with the last sample from previous buffer which lead to a glitch in the output signal. This test verifies that the glitch is not present anymore.
-        
+
         for channel in [libm2k.ANALOG_IN_CHANNEL_1, libm2k.ANALOG_IN_CHANNEL_2]:
             for waveform in ['dc', 'sine']:
                 num_glitches = test_buffer_transition_glitch(channel, ain, aout, trig, waveform)
-                
+
                 with self.subTest(msg='Test buffer transition glitch: ' + waveform + ' on ch' + str(channel)):
                     self.assertEqual(num_glitches, 0, 'Found ' + str(num_glitches) + ' glitches on channel ' + str(channel))
 
@@ -283,9 +303,9 @@ class A_AnalogTests(unittest.TestCase):
                     'The sample and hold feature is available starting with firmware v0.33. Note: v0.32 had a glitch that is handled in this test.')
     def test_last_sample_hold(self):
         # Tests the last sample hold functionality for different channels and DAC sample rates.
-        # This test iterates over different channels (each channel individually and both channels together) 
-        # and then tests the last sample hold functionality. When testing both channels together, 'None' 
-        # is used to denote this case. 
+        # This test iterates over different channels (each channel individually and both channels together)
+        # and then tests the last sample hold functionality. When testing both channels together, 'None'
+        # is used to denote this case.
         # It verifies that the last sample is held correctly and that there are no glitches in the output signal in between the last sample and a new push.
 
         for channel in [libm2k.ANALOG_IN_CHANNEL_1, libm2k.ANALOG_IN_CHANNEL_2, None]:
@@ -317,3 +337,16 @@ class A_AnalogTests(unittest.TestCase):
             status_str = "START" if status == libm2k.START else "STOP"
             with self.subTest(msg=f'Test aout start with trigger for: status={status_str}, isCyclic={isCyclic}, autorearm={autorearm} '):
                 self.assertEqual(test_result, True, msg=f'Specification not met')
+
+    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.34',
+                     'Dual-channel sync fix for m2k-fw#20 requires firmware v0.34+')
+    def test_dual_channel_waveform_sync(self):
+        """Test that dual-channel waveform phase relationships are correct.
+
+        Verifies fix for m2k-fw issue #20: When running both waveform generator
+        channels, the phase relationship should match configured settings.
+        """
+        success, details = test_dual_channel_sync(ain, aout, trig, ctx)
+
+        with self.subTest(msg='Dual-channel waveform synchronization (m2k-fw#20)'):
+            self.assertTrue(success, f'Synchronization failed: {details}')
