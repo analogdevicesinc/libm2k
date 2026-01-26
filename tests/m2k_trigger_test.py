@@ -25,6 +25,7 @@ import sys
 import libm2k
 from trig_functions import *  # trigger_jitter
 import logger
+import main
 from repeat_test import repeat
 
 
@@ -35,7 +36,15 @@ class B_TriggerTests(unittest.TestCase):
     def setUpClass(self):
         # print on the terminal some info
         log = logger.myLogger()
-        log.info("\n\n Trigger\n")
+        log.info("\n\n Trigger\n"
+                 "Connections:\n"
+                 "W1 ====> 1+\n"
+                 "W2 ====> 2+\n"
+                 "GND ===> 1-\n"
+                 "If needed, press enter, when you've made the connections.")
+
+        if main.wait_for_input:
+            input()
 
     def test_1_trigger_object(self):
         #  Verifies if the Trigger object was successfully retrieved
