@@ -299,8 +299,8 @@ class A_AnalogTests(unittest.TestCase):
                 with self.subTest(msg='Test buffer transition glitch: ' + waveform + ' on ch' + str(channel)):
                     self.assertEqual(num_glitches, 0, 'Found ' + str(num_glitches) + ' glitches on channel ' + str(channel))
 
-    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33',
-                    'The sample and hold feature is available starting with firmware v0.33. Note: v0.32 had a glitch that is handled in this test.')
+    # @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33',
+    #                 'The sample and hold feature is available starting with firmware v0.33. Note: v0.32 had a glitch that is handled in this test.')
     def test_last_sample_hold(self):
         # Tests the last sample hold functionality for different channels and DAC sample rates.
         # This test iterates over different channels (each channel individually and both channels together)
@@ -323,7 +323,7 @@ class A_AnalogTests(unittest.TestCase):
                     self.assertEqual(is_last_sample_hold_ok, True, f'Last sample hold failed on {chn_str} with DAC SR {sr_format}')
                     self.assertEqual(is_idle_ok, True, 'Test idle condition failed')
 
-    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33', 'DAC triggering is available starting with firmware v0.33')
+    # @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33', 'DAC triggering is available starting with firmware v0.33')
     def test_aout_triggering(self):
         # Test the triggering functionality of the M2kAnalogOut.
         # The test looks for patterns before and after the trigger event for 8 different combinations.
