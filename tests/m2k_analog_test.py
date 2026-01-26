@@ -338,8 +338,8 @@ class A_AnalogTests(unittest.TestCase):
             with self.subTest(msg=f'Test aout start with trigger for: status={status_str}, isCyclic={isCyclic}, autorearm={autorearm} '):
                 self.assertEqual(test_result, True, msg=f'Specification not met')
 
-    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.34',
-                     'Dual-channel sync fix for m2k-fw#20 requires firmware v0.34+')
+    # @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.34',
+    #                  'Dual-channel sync fix for m2k-fw#20 requires firmware v0.34+')
     def test_dual_channel_waveform_sync(self):
         """Test that dual-channel waveform phase relationships are correct.
 
