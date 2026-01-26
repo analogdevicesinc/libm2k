@@ -36,6 +36,7 @@ from m2k_powersupply_test import *
 from m2k_trigger_test import *
 from m2k_digital_test import *
 from m2k_emulator_test import *
+import re
 # from m2k_bug_checks import *
 global gen_reports, wait_for_input
 gen_reports = True
@@ -54,7 +55,18 @@ def no_reports():
 
 def wait_():
     global wait_for_input
-    if len(sys.argv) == 1 or sys.argv[1] == "nofiles" or (len(sys.argv) > 3 and "C_PowerSupplyTests" in sys.argv):
+
+    no_args_provided = len(sys.argv) == 1
+    nofiles_flag_present = any(arg == "nofiles" for arg in sys.argv)
+
+    has_power_supply_tests = any(re.search(r'C_PowerSupplyTests', arg) for arg in sys.argv)
+    has_analog_tests = any(re.search(r'A_AnalogTests', arg) for arg in sys.argv)
+    has_trigger_tests = any(re.search(r'B_TriggerTests', arg) for arg in sys.argv)
+
+    # Wait for input if running tests that require hardware setup
+    running_hw_tests = has_power_supply_tests or has_analog_tests or has_trigger_tests
+
+    if no_args_provided or nofiles_flag_present or running_hw_tests:
         wait_for_input = True
     else:
         wait_for_input = False
