@@ -34,6 +34,7 @@ import reset_def_values as reset
 from open_context import ctx, ain, aout, dig, trig, create_dir
 from create_files import results_dir, csv, results_file
 import logger
+import main
 from repeat_test import repeat
 
 from helpers import get_sample_rate_display_format
@@ -45,14 +46,16 @@ class A_AnalogTests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         # wait for user to make appropriate connections
-        global wait_for_input_a
-        wait_for_input_a = True
         log = logger.myLogger()
         log.info("\nAnalogical Segment\n"
                  "Connections:\n"
                  "W1 ====> 1+\n"
                  "W2 ====> 2+\n"
-                 "GND ===> 1-\n")
+                 "GND ===> 1-\n"
+                 "If needed, press enter, when you've made the connections.")
+
+        if main.wait_for_input:
+            input()
 
     def test_1_analog_objects(self):
         # Verify through open_context() function if the analog objects AnalogIn, AnalogOut and Trigger were 
