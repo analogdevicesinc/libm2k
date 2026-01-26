@@ -314,7 +314,7 @@ def phase_diff_ch0_ch1(aout, ain, trig):
     #    csv_path -- Path to the csv file where are saved the samples
     # Returns:
     #    phase_diff_between_channels-- the phase difference between channels in degrees
-    #  
+    #
 
     file_name, dir_name, csv_path = get_result_files(gen_reports)
 
@@ -1190,7 +1190,7 @@ def compute_percentage_diff(v1, v2):
     try:
         percentage_diff = ((vals[1] - vals[0]) / vals[1])
     except:
-        pass    
+        pass
     return percentage_diff
 
 def compute_y_distance(v1, v2):
@@ -1200,42 +1200,42 @@ def compute_y_distance(v1, v2):
 
 def is_spike(data, peak, threshold = 0.25):
     # for sampling_frequency_in = 1_000_000 the center of of the glitch is at 75 samples distance with repect to the peak
-    dx_small = 75 
+    dx_small = 75
     dx_large = 200
-    
+
     prev_sample, next_sample = data[peak - dx_small], data[peak + dx_small]
     step_inside_glitch_range = compute_y_distance(prev_sample, next_sample)
     prev_sample, next_sample = data[peak - dx_large], data[peak + dx_large]
     step_outside_glitch_range = compute_y_distance(prev_sample, next_sample)
-    
+
     percentage_dif = compute_percentage_diff(step_inside_glitch_range, step_outside_glitch_range)
     return percentage_dif > threshold
 
 def test_buffer_transition_glitch(channel, ain, aout, trig, waveform, amplitude=1):
     file_name, dir_name, csv_path = get_result_files(gen_reports)
-    
+
     BUFFER_SIZE = 5_00_000
-        
+
     reset.analog_in(ain)
-    reset.analog_out(aout) 
+    reset.analog_out(aout)
     reset.trigger(trig)
-    
+
     test_name = "buffer_transition_glitch"
     data_string = []
-    
+
     dac_sr = 75_000
     adc_sr = 1_000_000
-    
+
     ain.setSampleRate(adc_sr)
     ain.setRange(channel, libm2k.PLUS_MINUS_2_5V)
-    
+
     set_trig(trig, channel, 0, libm2k.RISING_EDGE_ANALOG, 0.1)
-    
+
     aout.setSampleRate(channel, dac_sr)
     aout.enableChannel(channel, True)
     aout.setCyclic(True)
     ctx.setTimeout(10000)
-    
+
     out_samples = 4096
     if waveform == 'sine':
         offset = 0
@@ -1244,7 +1244,7 @@ def test_buffer_transition_glitch(channel, ain, aout, trig, waveform, amplitude=
     if waveform == 'dc':
         data_high = [amplitude] * out_samples
         data_low = [-amplitude] * out_samples
-    
+
     ain.startAcquisition(BUFFER_SIZE)
     for _ in range(5):
         aout.push(channel, data_high)
@@ -1252,13 +1252,13 @@ def test_buffer_transition_glitch(channel, ain, aout, trig, waveform, amplitude=
         aout.push(channel, data_low)
         time.sleep(0.1)
     try:
-        data = np.array(ain.getSamples(BUFFER_SIZE)[channel][int(BUFFER_SIZE* 0.05):]) 
+        data = np.array(ain.getSamples(BUFFER_SIZE)[channel][int(BUFFER_SIZE* 0.05):])
     except:
         print('Timeout occured')
-    
+
     aout.stop()
     ain.stopAcquisition()
-    
+
     param_args = {
         'sine': {
             'threshold': 0.1,
@@ -1275,22 +1275,22 @@ def test_buffer_transition_glitch(channel, ain, aout, trig, waveform, amplitude=
             },
         },
     }
-    
-    peaks_pos, _ = find_peaks(data, **param_args[waveform]["find_peaks_args"]) 
-    peaks_neg, _ = find_peaks(-data, **param_args[waveform]["find_peaks_args"]) 
-    
-    peaks = np.concatenate((peaks_pos, peaks_neg)) 
-    filtered_peaks = list(filter(lambda peak: is_spike(data, peak, param_args[waveform]["threshold"]), peaks))  
+
+    peaks_pos, _ = find_peaks(data, **param_args[waveform]["find_peaks_args"])
+    peaks_neg, _ = find_peaks(-data, **param_args[waveform]["find_peaks_args"])
+
+    peaks = np.concatenate((peaks_pos, peaks_neg))
+    filtered_peaks = list(filter(lambda peak: is_spike(data, peak, param_args[waveform]["threshold"]), peaks))
     num_peaks = len(filtered_peaks)
-    
+
     data_string.append(
             "Number of glitch peaks found in " + waveform + " signal :" + str(num_peaks))
-    
+
     if gen_reports:
-        write_file(file_name, test_name, channel, data_string)    
-        plot_to_file(f'Buffer Glitch , channel{channel}', 
-                     data, 
-                     dir_name, 
+        write_file(file_name, test_name, channel, data_string)
+        plot_to_file(f'Buffer Glitch , channel{channel}',
+                     data,
+                     dir_name,
                      f'buffer_glitch_plot_ch{channel}_{waveform}.png',
                      data_marked=filtered_peaks)
 
@@ -1394,8 +1394,8 @@ def test_last_sample_hold(
         for  chn_samples in data:
             if any(abs(left - right) >= threshold for left, right in zip(chn_samples, chn_samples[1:])):
                 glitch_found = True
-        return glitch_found   
-    
+        return glitch_found
+
     file_name, dir_name, csv_path = get_result_files(gen_reports)
     test_name = "sample_hold"
     data_string = []
@@ -1403,12 +1403,12 @@ def test_last_sample_hold(
     chn_str = "both_channels" if channel is None else f"CH{channel}"
     sr_str = get_sample_rate_display_format(cfg.get("dac_sr"))
     x_time, x_label = get_time_format(cfg.get("buffer_size"), cfg.get("adc_sr"))
-    
+
     if gen_reports:
         subdir_name = f"{dir_name}/last_sample_hold/{chn_str}"
         os.makedirs(subdir_name, exist_ok=True)
 
-    SLEEP = 0.15 
+    SLEEP = 0.15
     glitched = False
     is_last_sample_hold_ok = True # Assume it is ok until proven otherwise
     is_idle_ok = True
@@ -1440,7 +1440,7 @@ def test_last_sample_hold(
     # NOTE: we selected an arbitraty number of samples from both ends to validate sample hold and reset functionality
     # 1: Rising
     data = step_ramp_rising(channel, trig_chn, buffer_ramp_up)
-    if channel is None: 
+    if channel is None:
         # Both channels should idle at 0V before push due to being reset
         is_idle_ok = is_idle_ok and are_values_within_range(data[:, :2000], -0.20, 0.20, channel)
     elif channel == libm2k.ANALOG_IN_CHANNEL_1:
@@ -1450,13 +1450,13 @@ def test_last_sample_hold(
         is_idle_ok = is_idle_ok and are_values_within_range(data, -0.20, 0.20, libm2k.ANALOG_IN_CHANNEL_1)
     # Shoud hold last sample from new buffer for current channel config
     is_idle_ok = is_idle_ok and are_values_within_range(data[:, -2000:], cfg["amplitude"] * 0.85, cfg["amplitude"] * 1.15, channel)
-    
+
     if gen_reports:
         plot_to_file(title=f"Last Sample Hold: {chn_str} - {sr_str} - Rising Ramp",
                     data=data[0],
                     data1=data[1],
                     x_data=x_time,
-                    xlabel = x_label, 
+                    xlabel = x_label,
                     dir_name=subdir_name,
                     y_lim=(-6, 6),
                     filename=f"last_sample_hold_{chn_str}_{sr_str}_step1.png")
@@ -1478,7 +1478,7 @@ def test_last_sample_hold(
                     data=data[0],
                     data1=data[1],
                     x_data=x_time,
-                    xlabel = x_label, 
+                    xlabel = x_label,
                     dir_name=subdir_name,
                     y_lim=(-6, 6),
                     filename=f"last_sample_hold_{chn_str}_{sr_str}_step2.png")
@@ -1500,7 +1500,7 @@ def test_last_sample_hold(
                     data=data[0],
                     data1=data[1],
                     x_data=x_time,
-                    xlabel = x_label, 
+                    xlabel = x_label,
                     dir_name=subdir_name,
                     y_lim=(-6, 6),
                     filename=f"last_sample_hold_{chn_str}_{sr_str}_step3.png")
@@ -1522,7 +1522,7 @@ def test_last_sample_hold(
                     data=data[0],
                     data1=data[1],
                     x_data=x_time,
-                    xlabel = x_label, 
+                    xlabel = x_label,
                     dir_name=subdir_name,
                     y_lim=(-6, 6),
                     filename=f"last_sample_hold_{chn_str}_{sr_str}_step4.png")
@@ -1530,7 +1530,7 @@ def test_last_sample_hold(
     aout.stop()
     return glitched, is_last_sample_hold_ok, is_idle_ok
 
-    
+
 def test_aout_triggering(
     ain: libm2k.M2kAnalogIn,
     aout: libm2k.M2kAnalogOut,
@@ -1544,7 +1544,7 @@ def test_aout_triggering(
                         trig_pin, status, delay):
         trig.setAnalogDelay(-delay)
         trig.setDigitalDelay(-delay)
-        trig.setDigitalSource(libm2k.SRC_NONE) # DigitalIn conditioned by internal trigger structure 
+        trig.setDigitalSource(libm2k.SRC_NONE) # DigitalIn conditioned by internal trigger structure
         trig.setDigitalCondition(trig_pin, libm2k.RISING_EDGE_DIGITAL)
         trig.setAnalogOutTriggerSource(libm2k.TRIGGER_LA) # aout conditioned by the LA trigger
         trig.setAnalogOutTriggerStatus(status)
@@ -1564,7 +1564,7 @@ def test_aout_triggering(
 
     ADC_SR = 100_000_000
     DAC_SR = 75_000_000
-    SR_IN_DIG = 100_000_000 
+    SR_IN_DIG = 100_000_000
     SR_OUT_DIG = 100_000_000
 
     ctx.reset()
@@ -1589,7 +1589,7 @@ def test_aout_triggering(
     aout.setKernelBuffersCount(0, KB_COUNT)
     aout.setKernelBuffersCount(1, KB_COUNT)
     assert aout.getSampleRate(1) == DAC_SR, "Failed to set the sample rate for AnalogOut1"
-    
+
     dig.setDirection(TRIG_PIN, libm2k.DIO_OUTPUT)
     dig.setOutputMode(TRIG_PIN, libm2k.DIO_PUSHPULL)
     dig.enableChannel(TRIG_PIN, True)
@@ -1651,14 +1651,14 @@ def test_aout_triggering(
         # Should output exactly 1 period after trigger
         result = result and (len(peaks_CH0_right) == 1) and (len(peaks_CH1_right) == 1)
     # Case 3
-    if (status == libm2k.START) and (isCyclic) and (not auto_rearm): 
+    if (status == libm2k.START) and (isCyclic) and (not auto_rearm):
         # Should IDLE before trigger at 0V because the channel was reset
         result = are_values_within_range(analog_data[:, :DELAY ], -0.2, 0.2)
         # Should output multiple period after trigger
         result = result and (len(peaks_CH0_right) > 1) and (len(peaks_CH1_right) > 1)
     # Case 5 and 6
     if ((status == libm2k.STOP) and (not isCyclic) and (not auto_rearm)) or \
-        ((status == libm2k.STOP) and (not isCyclic) and (auto_rearm)): 
+        ((status == libm2k.STOP) and (not isCyclic) and (auto_rearm)):
         # The channels are in the last sample hold state and STOP is not available for non-cyclic buffers due to HDL limitations
         # We expect both channels to hold last sample for the entire duration
         result = result and are_values_within_range(analog_data, -AMPLITUDE * 1.2, -AMPLITUDE * 0.8)
@@ -1666,7 +1666,7 @@ def test_aout_triggering(
         result = result and (len(peaks_CH0_right) == 0) and (len(peaks_CH1_right) == 0)
     # Case 7 and 8
     if ((status == libm2k.STOP) and (isCyclic) and (not auto_rearm)) or \
-        ((status == libm2k.STOP) and (isCyclic) and (auto_rearm)): 
+        ((status == libm2k.STOP) and (isCyclic) and (auto_rearm)):
         # Should be generating cyclic signal before trigger
         result = result and (len(peaks_CH0_left) > 1) and (len(peaks_CH1_left) > 1)
         # Should stop generating signal after trigger
