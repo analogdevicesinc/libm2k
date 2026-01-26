@@ -80,7 +80,7 @@ class D_DigitalTests(unittest.TestCase):
             msg='Set kernel buffers count on Digital In without raising an error '):
             self.assertEqual(test_err, False, 'Error occured')
 
-    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33', 'Test applicable for firmware v0.33 and later.')
+    # @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33', 'Test applicable for firmware v0.33 and later.')
     def test_pattern_generator_pulse(self):
         # Verifies that the pattern generator does not generate any additional edges prior to the pattern set.
         # At the end it holds the value of the last sample at the output.
@@ -96,7 +96,7 @@ class D_DigitalTests(unittest.TestCase):
         with self.subTest(-1):
             self.assertEqual(test_result, 0, "Found " + str(test_result) + " aditional edges in multi-channel test")
 
-    @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33', 'Test applicable for firmware v0.33 and later.')
+    # @unittest.skipIf(ctx.getFirmwareVersion() < 'v0.33', 'Test applicable for firmware v0.33 and later.')
     def test_last_sample_hold(self):
         # Tests the last sample and hold functionality of the digital interface.
         # - After the pattern is sent, the last sample should be held at the output.

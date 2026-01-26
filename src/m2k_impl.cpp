@@ -76,15 +76,16 @@ M2kImpl::M2kImpl(std::string uri, iio_context* ctx, std::string name, bool sync)
 		m_firmware_version = m_firmware_version.substr(0, pos);
 	}
 
-	int diff_to_24 = Utils::compareVersions(m_firmware_version, "v0.24");
-	int diff_to_33 = Utils::compareVersions(m_firmware_version, "v0.33");
-	if (diff_to_24 < 0) { //m_firmware_version < 0.24 
-		m_trigger = new M2kHardwareTriggerImpl(ctx);
-	} else if (diff_to_33 < 0) { // (m_firmware_version >= 0.24) && (m_firmware_version < 0.33 )
-		m_trigger = new M2kHardwareTriggerV024Impl(ctx);
-	} else { // m_firmware_version >= 0.33
-		m_trigger = new M2kHardwareTriggerV033Impl(ctx);
-	}
+	// int diff_to_24 = Utils::compareVersions(m_firmware_version, "v0.24");
+	// int diff_to_33 = Utils::compareVersions(m_firmware_version, "v0.33");
+	// if (diff_to_24 < 0) { //m_firmware_version < 0.24
+	// 	m_trigger = new M2kHardwareTriggerImpl(ctx);
+	// } else if (diff_to_33 < 0) { // (m_firmware_version >= 0.24) && (m_firmware_version < 0.33 )
+	// 	m_trigger = new M2kHardwareTriggerV024Impl(ctx);
+	// } else { // m_firmware_version >= 0.33
+	// 	m_trigger = new M2kHardwareTriggerV033Impl(ctx);
+	// }
+	m_trigger = new M2kHardwareTriggerV033Impl(ctx);
 
 	if (!m_trigger) {
 		THROW_M2K_EXCEPTION("Can't instantiate M2K board; M2K trigger is invalid.", libm2k::EXC_INVALID_PARAMETER);
