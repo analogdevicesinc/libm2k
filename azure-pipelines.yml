@@ -37,11 +37,6 @@ jobs:
 - job: LinuxBuilds
   strategy:
     matrix:
-      ubuntu_20_04:
-        imageName: 'ubuntu-20.04'
-        OS_TYPE: 'ubuntu_docker'
-        OS_VERSION: focal
-        artifactName: 'Linux-Ubuntu-20.04'
       ubuntu_22_04:
         imageName: 'ubuntu-22.04'
         OS_TYPE: 'ubuntu_docker'
@@ -73,7 +68,7 @@ jobs:
     condition: ne(variables['System.JobName'], 'deploy_doxygen')
     inputs:
       sourceFolder: '$(Agent.BuildDirectory)/s/build/'
-      contents: '$(Agent.BuildDirectory)/s/build/?(libm2k*.deb|libm2k*.rpm)'
+      contents: '$(Agent.BuildDirectory)/s/build/?(libm2k*.deb|libm2k*.rpm|python3-libm2k*.deb)'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
     condition: and(succeeded(), ne(variables['System.JobName'], 'deploy_doxygen'))
@@ -86,10 +81,6 @@ jobs:
     clean: all
   strategy:
     matrix:
-      macOS_13_x64:
-        poolName: 'Azure Pipelines'
-        vmImage: 'macOS-13'
-        artifactName: 'macOS-13-x64'
       macOS_14_x64:
         poolName: 'Azure Pipelines'
         vmImage: 'macOS-14'
@@ -182,13 +173,6 @@ jobs:
         ARCH: 'x64'
         PLATFORM: 'win64'
         artifactName: 'Windows-VS-2022-x64'
-      VS_2019:
-        poolName: 'Azure Pipelines'
-        vmImage: 'windows-2019'
-        COMPILER: 'Visual Studio 16 2019'
-        ARCH: 'x64'
-        PLATFORM: 'win64'
-        artifactName: 'Windows-VS-2019-x64'
   pool:
     vmImage: $[ variables['vmImage'] ]
   steps:
@@ -249,8 +233,3 @@ jobs:
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/libm2k-$(PLATFORM)'
         artifactName: '$(artifactName)'
-
-
-
-
-

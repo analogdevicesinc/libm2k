@@ -1,28 +1,47 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 TOP_DIR=$(pwd)
 
 set -x
 
+# Extract version from CMakeLists.txt
+get_version() {
+	grep -E "^set\(LIBM2K_VERSION_(MAJOR|MINOR|PATCH)" CMakeLists.txt | \
+		sed 's/.*[^0-9]\([0-9]*\)).*/\1/' | \
+		tr '\n' '.' | sed 's/\.$//'
+}
+
 handle_default() {
-	mkdir -p build
-	cd build
+	VERSION=$(get_version)
+	ARCHITECTURE=$(dpkg --print-architecture)
+	SOURCE_DIR=$(grep "^Source:" packaging/debian/control | cut -d' ' -f2)
+	CURRENT_DIR=$(basename "$PWD")
 
-	#create deb for bindings
-	cmake -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_LOG=ON -DBUILD_EXAMPLES=ON .. && make
-	sudo python3 setup.py --command-packages=stdeb.command sdist_dsc
-	cd "$(find . -type d -name "debian" | head -n 1)"
-	sudo env DEB_BUILD_OPTIONS=nocheck debuild -us -uc
-	cp ../../*.deb ${TOP_DIR}/build/
-	cd ${TOP_DIR}/build/
-	#remove the tar.gz for bindings
-	sudo rm *.tar.gz
-	ls
+	# Replace placeholders in debian template files
+	sed -i "s/@VERSION@/${VERSION}-1/" ${TOP_DIR}/packaging/debian/changelog
+	sed -i "s/@DATE@/$(date -R)/" ${TOP_DIR}/packaging/debian/changelog
+	sed -i "s/@ARCHITECTURE@/${ARCHITECTURE}/" ${TOP_DIR}/packaging/debian/control
 
-	#create simple .deb without Python bindings
-	cmake -DENABLE_PACKAGING=ON -DDEB_DETECT_DEPENDENCIES=ON -DENABLE_PYTHON=OFF -DENABLE_CSHARP=ON -DENABLE_TOOLS=ON -DENABLE_LOG=ON -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_EXAMPLES=ON ..
-	make && make package
-	ls
+	# Create orig tarball
+	pushd ..
+	tar czf ${SOURCE_DIR}_${VERSION}.orig.tar.gz ${CURRENT_DIR}
+	popd
+
+	# Copy debian directory from packaging to root
+	cp -r ${TOP_DIR}/packaging/debian ${TOP_DIR}/debian
+
+	# Build debian packages
+	debuild
+
+	# Move generated packages to build directory
+	mkdir -p ${TOP_DIR}/build
+	mv ${TOP_DIR}/../libm2k*.deb ${TOP_DIR}/build/ 2>/dev/null || true
+	mv ${TOP_DIR}/../libm2k*.changes ${TOP_DIR}/build/ 2>/dev/null || true
+	mv ${TOP_DIR}/../libm2k*.buildinfo ${TOP_DIR}/build/ 2>/dev/null || true
+	mv ${TOP_DIR}/../python3-libm2k*.deb ${TOP_DIR}/build/ 2>/dev/null || true
+
+	# List generated packages
+	ls -la ${TOP_DIR}/build/
 }
 
 handle_doxygen() {

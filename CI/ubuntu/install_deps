@@ -14,7 +14,8 @@ install_deps() {
 		libxml2-dev rpm tar bzip2 gzip flex bison git curl \
 		python3-dev python3-setuptools python3-pip python3-all \
 		debhelper devscripts fakeroot libserialport-dev swig dh-python \
-		libunwind-dev libunwind8
+		libunwind-dev libunwind8 \
+		libgoogle-glog-dev mono-mcs cli-common-dev
 
 	# libiio dependencies
 	echo "libiio packages"
@@ -43,15 +44,14 @@ install_libiio() {
 	cd ${TOP_DIR}
 	git clone https://github.com/analogdevicesinc/libiio.git -b $LIBIIO_VERSION libiio
 	mkdir ./libiio/build && cd ./libiio/build
-    cmake .. -Werror=dev -DCOMPILE_WARNING_AS_ERROR=ON -DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=ON -DWITH_DOC=ON -DWITH_SERIAL_BACKEND=ON -DWITH_MAN=ON -DCPACK_SYSTEM_NAME=${ARTIFACTNAME}
+	cmake .. -Werror=dev -DCOMPILE_WARNING_AS_ERROR=ON -DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=ON -DWITH_DOC=ON -DWITH_SERIAL_BACKEND=ON -DWITH_MAN=ON -DCPACK_SYSTEM_NAME=${ARTIFACTNAME}
 	make
-	make package 
+	make package
 	sudo apt install ./libiio-*.deb
 }
 
 handle_default() {
 	install_deps
-	install_glog
 	install_libiio
 }
 

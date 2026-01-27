@@ -1,0 +1,5 @@
+libm2k (@VERSION@) UNRELEASED; urgency=low
+
+  * Automated package build.
+
+ -- Engineerzone <https://ez.analog.com/community/linux-device-drivers>  @DATE@
