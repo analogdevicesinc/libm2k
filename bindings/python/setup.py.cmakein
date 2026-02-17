@@ -58,7 +58,7 @@ else:
         description = """Python bindings for the C/C++ libm2k""",
         url='https://github.com/analogdevicesinc/libm2k',
         py_modules = ["${PROJECT_NAME}"],
-        packages=[''],
+        # packages=[''],
         package_data={'': ['_${PROJECT_NAME}.so', '_${PROJECT_NAME}.pyd']},
         classifiers=[
                 "Programming Language :: Python :: 3",
