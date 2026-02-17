@@ -206,8 +206,14 @@ add_custom_target(${PROJECT_NAME}py ALL DEPENDS _${PROJECT_NAME} WORKING_DIRECTO
 	${CMAKE_BINARY_DIR} COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} build)
 
 if(NOT SKIP_INSTALL_ALL)
-	install(CODE "execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-		COMMAND ${PYTHON_EXECUTABLE_LIB_VERSION} ${SETUP_PY} install
-		--record=${CMAKE_BINARY_DIR}/install_manifest_py.txt
-		--root=\$ENV{DESTDIR}/ --prefix=${CMAKE_INSTALL_PREFIX})")
+	# Get Python site-packages path relative to prefix
+	execute_process(
+		COMMAND ${Python_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_path('purelib').replace(sysconfig.get_config_var('base') + '/', ''))"
+		OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_REL
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+
+	# Install Python module and native extension
+	install(FILES ${CMAKE_BINARY_DIR}/libm2k.py DESTINATION ${PYTHON_SITE_PACKAGES_REL})
+	install(TARGETS ${SWIG_OUTPUT_NAME} DESTINATION ${PYTHON_SITE_PACKAGES_REL})
 endif()
