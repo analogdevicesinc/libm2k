@@ -1,7 +1,7 @@
 Source: libm2k
 Section: libs
 Priority: optional
-Maintainer: Engineerzone <https://ez.analog.com/community/linux-device-drivers>
+Maintainer: Engineerzone <https://ez.analog.com/sw-interface-tools>
 Build-Depends: debhelper-compat (= 13),
                cmake,
                libiio-dev,
