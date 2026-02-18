@@ -21,7 +21,7 @@ Rules-Requires-Root: no
 Package: libm2k
 Architecture: @ARCHITECTURE@
 Multi-Arch: same
-Depends: libiio (>= 0.24), ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Library for interfacing with ADALM2000
  libm2k is a C++ library for interfacing with the ADALM2000, a
  portable lab for electronics learning and development.
