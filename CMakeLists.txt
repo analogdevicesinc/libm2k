@@ -18,7 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 3.1.3)
+cmake_minimum_required(VERSION 3.5)
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.18.0")
 	# https://cmake.org/cmake/help/v3.18/policy/CMP0068.html

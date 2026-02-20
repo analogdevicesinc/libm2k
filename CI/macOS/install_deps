@@ -26,7 +26,7 @@ build_glog() {
 
     cd "${WORKDIR}"/glog
     mkdir -p build_"${GLOG_VERSION}" && cd build_"${GLOG_VERSION}"
-    cmake "${WORKDIR}"/glog
+    cmake "${WORKDIR}"/glog -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     make
     sudo make install
     cd "${WORKDIR}"
