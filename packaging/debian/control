@@ -19,7 +19,7 @@ Vcs-Browser: https://github.com/analogdevicesinc/libm2k
 Rules-Requires-Root: no
 
 Package: libm2k
-Architecture: @ARCHITECTURE@
+Architecture: any
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Library for interfacing with ADALM2000
@@ -30,7 +30,7 @@ Description: Library for interfacing with ADALM2000
 
 Package: libm2k-dev
 Section: libdevel
-Architecture: @ARCHITECTURE@
+Architecture: any
 Multi-Arch: same
 Depends: libm2k (= ${binary:Version}), ${misc:Depends}
 Description: Library for interfacing with ADALM2000 - development files
@@ -41,7 +41,7 @@ Description: Library for interfacing with ADALM2000 - development files
 
 Package: libm2k-tools
 Section: utils
-Architecture: @ARCHITECTURE@
+Architecture: any
 Depends: libm2k (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Command-line tools for ADALM2000
  libm2k is a C++ library for interfacing with the ADALM2000, a
@@ -51,7 +51,7 @@ Description: Command-line tools for ADALM2000
 
 Package: python3-libm2k
 Section: python
-Architecture: @ARCHITECTURE@
+Architecture: any
 Depends: libm2k (= ${binary:Version}), ${python3:Depends}, ${shlibs:Depends}, ${misc:Depends}
 Description: Python 3 bindings for libm2k
  libm2k is a C++ library for interfacing with the ADALM2000, a
@@ -61,7 +61,7 @@ Description: Python 3 bindings for libm2k
 
 Package: libm2k-csharp
 Section: cli-mono
-Architecture: @ARCHITECTURE@
+Architecture: any
 Depends: libm2k (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, ${cli:Depends}
 Description: C# bindings for libm2k
  libm2k is a C++ library for interfacing with the ADALM2000, a
