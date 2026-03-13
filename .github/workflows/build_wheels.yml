@@ -15,7 +15,7 @@ jobs:
         python_version: ['3.11']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v4
         name: Install Python ${{ matrix.python_version }}
         with:
@@ -43,7 +43,7 @@ jobs:
                             cd {project} && ./.github/scripts/install_deps.sh {package}
           CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-* cp311-* cp312-*"
           CIBW_ENVIRONMENT: COMPILE_BINDINGS="True"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: manylinux_wheels
           path: ${{ github.workspace }}/wheelhouse
@@ -54,12 +54,12 @@ jobs:
     needs: [build_wheels]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v2
         name: Install Python 3.11
         with:
           python-version: '3.11'
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v8
         with:
           name: manylinux_wheels
       - name: Upload to PyPI
