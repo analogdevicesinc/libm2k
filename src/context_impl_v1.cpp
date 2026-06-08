@@ -76,44 +76,22 @@ void ContextImpl::deinitialize()
 
 bool ContextImpl::iioDevHasAttribute(iio_device* dev, std::string const& attr)
 {
-	unsigned int nb_attr = iio_device_get_attrs_count(dev);
-	for (unsigned int i = 0; i < nb_attr; i++) {
-		const struct iio_attr *attr_i = iio_device_get_attr(dev, i);
-		if (attr_i == NULL) {
-			continue;
-		}
-		const char *attr_name = iio_attr_get_name(attr_i);
-		std::size_t found = std::string(attr_name).find(attr);
-		if (found != std::string::npos) {
-			return true;
-		}
-	}
-	return false;
+	return iio_device_find_attr(dev, attr.c_str()) != NULL;
 }
 
 bool ContextImpl::iioDevBufferHasAttribute(iio_device *dev, const std::string &attr)
 {
-	// TBD buffers need to be created in order to check their attributes
-//	const char *attribute = iio_device_find_buffer_attr(dev, attr.c_str());
-//	return attribute != nullptr;
-	return true;
+	struct iio_buffer *buf = iio_device_get_buffer(dev, 0);
+	if (!buf)
+		return false;
+	if (iio_buffer_find_attr(buf, attr.c_str()))
+		return true;
+	return false;
 }
 
 bool ContextImpl::iioChannelHasAttribute(iio_channel* chn, std::string const& attr)
 {
-	unsigned int nb_attr = iio_channel_get_attrs_count(chn);
-	for (unsigned int i = 0; i < nb_attr; i++) {
-		const struct iio_attr *attr_i = iio_channel_get_attr(chn, i);
-		if (attr_i == NULL) {
-			continue;
-		}
-		const char *attr_name = iio_attr_get_name(attr_i);
-		std::size_t found = std::string(attr_name).find(attr);
-		if (found != std::string::npos) {
-			return true;
-		}
-	}
-	return false;
+	return iio_channel_find_attr(chn, attr.c_str()) != NULL;
 }
 
 DEVICE_DIRECTION ContextImpl::getIioDeviceDirection(std::string dev_name)
