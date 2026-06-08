@@ -1227,7 +1227,7 @@ def test_timeout(ctx, ain, aout, trig, channel, dir_name, file, csv_path):
 
     timeout_val = 2  # value of the timeout, small value so timeout occurrs during test
     t_occ = False
-    in_samples = 4096
+    in_samples = 8192
     out_samples = 4096
     offset = 0.5  # average value of the signal
     suma = 0
@@ -1236,10 +1236,9 @@ def test_timeout(ctx, ain, aout, trig, channel, dir_name, file, csv_path):
     x = offset + np.sin(np.linspace(-np.pi, np.pi, out_samples))
     out_data = [x, x]  # output buffer, same signal on both analog channels
     set_trig(trig, 0, 0, libm2k.FALLING_EDGE_ANALOG, 0)  # set trigger condition
-    ctx.setTimeout(timeout_val)  # set timeout
-    ain.stopAcquisition()  # flush buffer so previous values will not influence average
-    # send data
     aout.push(out_data)
+    ain.stopAcquisition() # flush buffer so previous values will not influence average
+    ctx.setTimeout(timeout_val) # set timeout
     try:
         input_data = ain.getSamples(in_samples)  # get data
     except:
