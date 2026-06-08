@@ -92,9 +92,12 @@ private:
 	struct iio_device* m_dev;
 	struct iio_buffer* m_buffer;
 	struct iio_channels_mask *m_mask;
-	struct iio_stream *m_stream;
+	struct iio_buffer_stream *m_buf_stream;
 	struct iio_block *m_block;
 	bool m_block_enqueued;
+	std::vector<struct iio_block*> m_rx_blocks;
+	unsigned int m_rx_head;
+	struct iio_block *m_current_rx_block;
 	const char *m_dev_name;
 	unsigned int m_last_nb_samples;
 	unsigned int m_nb_kernel_buffers;

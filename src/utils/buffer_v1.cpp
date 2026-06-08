@@ -45,7 +45,10 @@ Buffer::Buffer(struct iio_device *dev, struct iio_channels_mask *mask) {
 	m_buffer = nullptr;
 	m_block = nullptr;
 	m_block_enqueued = false;
-	m_stream = nullptr;
+	m_rx_blocks = {};
+	m_rx_head = 0;
+	m_current_rx_block = nullptr;
+	m_buf_stream = nullptr;
 	m_last_nb_samples = 0;
 	m_nb_kernel_buffers = 4;
 }
@@ -67,14 +70,9 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output, bool 
 	* old buffer must be destroyed and a new one must be created*/
 	if (!m_buffer) {
 		if (m_mask) {
-			m_buffer = iio_device_create_buffer(m_dev, 0, m_mask);
-			int buf_err = iio_err(m_buffer);
-			if (buf_err) {
-				m_buffer = nullptr;
-				if (buf_err == -ETIMEDOUT) {
-					THROW_M2K_EXCEPTION("Buffer: Cannot create the buffer", libm2k::EXC_TIMEOUT, -ETIMEDOUT);
-				}
-				THROW_M2K_EXCEPTION("Buffer: Cannot create the buffer", libm2k::EXC_RUNTIME_ERROR, buf_err);
+			m_buffer = iio_device_get_buffer(m_dev, 0);
+			if (!m_buffer) {
+				THROW_M2K_EXCEPTION("Buffer: Cannot get buffer from device", libm2k::EXC_RUNTIME_ERROR);
 			}
 		} else {
 			LIBM2K_LOG(INFO, "[FAIL] Buffer NOT created, no mask provided.");
@@ -92,29 +90,73 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output, bool 
 
 		m_last_nb_samples = size;
 		if (cyclic && output) {
-			ssize_t sample_size = iio_device_get_sample_size(m_dev, m_mask);
-			m_block = iio_buffer_create_block(m_buffer, sample_size * m_last_nb_samples);
-			int ret = iio_err(m_block);
+			m_buf_stream = iio_buffer_open(m_buffer, m_mask);
+			int ret = iio_err(m_buf_stream);
 			if (ret) {
+				m_buf_stream = nullptr;
+				THROW_M2K_EXCEPTION("Buffer: Cannot open cyclic buffer stream", libm2k::EXC_RUNTIME_ERROR, ret);
+				return;
+			}
+			ssize_t sample_size = iio_device_get_sample_size(m_dev, m_mask);
+			m_block = iio_buffer_stream_create_block(m_buf_stream, sample_size * m_last_nb_samples);
+			ret = iio_err(m_block);
+			if (ret) {
+				m_block = nullptr;
 				destroy();
-				THROW_M2K_EXCEPTION("Buffer: Cannot create block", libm2k::EXC_RUNTIME_ERROR, ret);
+				THROW_M2K_EXCEPTION("Buffer: Cannot create cyclic block", libm2k::EXC_RUNTIME_ERROR, ret);
 				return;
 			}
 		} else {
-			m_stream = iio_buffer_create_stream(m_buffer, m_nb_kernel_buffers, size);
-			int ret = iio_err(m_stream);
-			if (ret) {
-				destroy();
-				// timeout error code
-				THROW_M2K_EXCEPTION("Buffer: Cannot create stream", libm2k::EXC_RUNTIME_ERROR, ret);
-				return;
-			}
 			if (output) {
-				m_block = (struct iio_block*)iio_stream_get_next_block(m_stream);
+				m_buf_stream = iio_buffer_open(m_buffer, m_mask);
+				int ret = iio_err(m_buf_stream);
+				if (ret) {
+					m_buf_stream = nullptr;
+					destroy();
+					THROW_M2K_EXCEPTION("Buffer: Cannot open TX buffer stream", libm2k::EXC_RUNTIME_ERROR, ret);
+					return;
+				}
+				ssize_t sample_size = iio_device_get_sample_size(m_dev, m_mask);
+				m_block = iio_buffer_stream_create_block(m_buf_stream, sample_size * size);
 				ret = iio_err(m_block);
 				if (ret) {
+					m_block = nullptr;
 					destroy();
-					THROW_M2K_EXCEPTION("Buffer: Cannot get next block", libm2k::EXC_RUNTIME_ERROR, ret);
+					THROW_M2K_EXCEPTION("Buffer: Cannot create TX block", libm2k::EXC_RUNTIME_ERROR, ret);
+					return;
+				}
+			} else {
+				m_buf_stream = iio_buffer_open(m_buffer, m_mask);
+				int ret = iio_err(m_buf_stream);
+				if (ret) {
+					m_buf_stream = nullptr;
+					destroy();
+					THROW_M2K_EXCEPTION("Buffer: Cannot open RX buffer stream", libm2k::EXC_RUNTIME_ERROR, ret);
+					return;
+				}
+				ssize_t sample_size = iio_device_get_sample_size(m_dev, m_mask);
+				m_rx_blocks.resize(m_nb_kernel_buffers, nullptr);
+				for (unsigned int i = 0; i < m_nb_kernel_buffers; i++) {
+					m_rx_blocks[i] = iio_buffer_stream_create_block(m_buf_stream, sample_size * size);
+					ret = iio_err(m_rx_blocks[i]);
+					if (ret) {
+						m_rx_blocks[i] = nullptr;
+						destroy();
+						THROW_M2K_EXCEPTION("Buffer: Cannot create RX block", libm2k::EXC_RUNTIME_ERROR, ret);
+						return;
+					}
+					ret = iio_block_enqueue(m_rx_blocks[i], 0, false);
+					if (ret) {
+						destroy();
+						THROW_M2K_EXCEPTION("Buffer: Cannot enqueue RX block", libm2k::EXC_RUNTIME_ERROR, ret);
+						return;
+					}
+				}
+				m_rx_head = 0;
+				ret = iio_buffer_stream_start(m_buf_stream);
+				if (ret) {
+					destroy();
+					THROW_M2K_EXCEPTION("Buffer: Cannot start RX stream", libm2k::EXC_RUNTIME_ERROR, ret);
 					return;
 				}
 			}
@@ -181,22 +223,37 @@ void Buffer::pushGeneric(void *data, ssize_t data_type_size, size_t data_size, u
 			m_channel_list.at(channel)->write(m_block, (void*)data, data_type_size, data_size, true);
 		}
 		if (!cyclic) {
-			m_block = (struct iio_block*)iio_stream_get_next_block(m_stream);
-			int ret = iio_err(m_block);
+			int ret = iio_block_enqueue(m_block, 0, false);
 			if (ret) {
 				destroy();
-				THROW_M2K_EXCEPTION("Buffer: Cannot get next block", libm2k::EXC_RUNTIME_ERROR, ret);
+				THROW_M2K_EXCEPTION("Buffer: Cannot enqueue TX block", libm2k::EXC_RUNTIME_ERROR, ret);
+				return;
+			}
+			m_block_enqueued = true;
+			ret = iio_buffer_stream_start(m_buf_stream);
+			if (ret) {
+				destroy();
+				THROW_M2K_EXCEPTION("Buffer: Cannot start TX stream", libm2k::EXC_RUNTIME_ERROR, ret);
+				return;
+			}
+			ret = iio_block_dequeue(m_block, false);
+			m_block_enqueued = false;
+			if (ret) {
+				destroy();
+				THROW_M2K_EXCEPTION("Buffer: Cannot dequeue TX block", libm2k::EXC_RUNTIME_ERROR, ret);
 				return;
 			}
 		} else {
-			int err = iio_block_enqueue(m_block, 0, cyclic);
+			int err = iio_block_enqueue(m_block, 0, true);
 			if (err) {
 				THROW_M2K_EXCEPTION("Buffer: Unable to enqueue block.", libm2k::EXC_INVALID_PARAMETER, err);
 			}
 			m_block_enqueued = true;
-			err = iio_buffer_enable(m_buffer);
-			if (err) {
-				THROW_M2K_EXCEPTION("Buffer: Unable to enable buffer.", libm2k::EXC_INVALID_PARAMETER, err);
+			int start_ret = iio_buffer_stream_start(m_buf_stream);
+			if (start_ret) {
+				destroy();
+				THROW_M2K_EXCEPTION("Buffer: Cannot start TX cyclic stream", libm2k::EXC_RUNTIME_ERROR, start_ret);
+				return;
 			}
 		}
 		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer pushed"));
@@ -261,13 +318,18 @@ void Buffer::getSamples(std::vector<unsigned short> &data, unsigned int nb_sampl
 
 	initializeBuffer(nb_samples, false, false);
 
-	const struct iio_block *block = iio_stream_get_next_block(m_stream);
-	int ret = iio_err(block);
+	if (m_current_rx_block) {
+		iio_block_enqueue(m_current_rx_block, 0, false);
+	}
+	struct iio_block *block = m_rx_blocks[m_rx_head];
+	int ret = iio_block_dequeue(block, false);
 	if (ret) {
 		destroy();
-		THROW_M2K_EXCEPTION("Buffer: Cannot get next block", libm2k::EXC_RUNTIME_ERROR, ret);
+		THROW_M2K_EXCEPTION("Buffer: Cannot dequeue RX block", libm2k::EXC_RUNTIME_ERROR, ret);
 		return;
 	}
+	m_current_rx_block = block;
+	m_rx_head = (m_rx_head + 1) % m_rx_blocks.size();
 	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer refilled"));
 
 	unsigned short* d_ptr = (unsigned short*)iio_block_start(block);
@@ -302,13 +364,18 @@ const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 
 	initializeBuffer(nb_samples, false, false);
 
-	const struct iio_block *block = iio_stream_get_next_block(m_stream);
-	int ret = iio_err(block);
+	if (m_current_rx_block) {
+		iio_block_enqueue(m_current_rx_block, 0, false);
+	}
+	struct iio_block *block = m_rx_blocks[m_rx_head];
+	int ret = iio_block_dequeue(block, false);
 	if (ret) {
 		destroy();
-		THROW_M2K_EXCEPTION("Buffer: Cannot get next block", libm2k::EXC_RUNTIME_ERROR, ret);
+		THROW_M2K_EXCEPTION("Buffer: Cannot dequeue RX block", libm2k::EXC_RUNTIME_ERROR, ret);
 		return nullptr;
 	}
+	m_current_rx_block = block;
+	m_rx_head = (m_rx_head + 1) % m_rx_blocks.size();
 
 	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer refilled"));
 
@@ -379,16 +446,21 @@ void* Buffer::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 
 	initializeBuffer(nb_samples, false, false);
 
-	if (!m_stream) {
+	if (!m_buf_stream) {
 		return nullptr;
 	}
-	const struct iio_block *block = iio_stream_get_next_block(m_stream);
-	int ret = iio_err(block);
+	if (m_current_rx_block) {
+		iio_block_enqueue(m_current_rx_block, 0, false);
+	}
+	struct iio_block *block = m_rx_blocks[m_rx_head];
+	int ret = iio_block_dequeue(block, false);
 	if (ret) {
 		destroy();
-		THROW_M2K_EXCEPTION("Buffer: Cannot get next block", libm2k::EXC_RUNTIME_ERROR, ret);
+		THROW_M2K_EXCEPTION("Buffer: Cannot dequeue RX block", libm2k::EXC_RUNTIME_ERROR, ret);
 		return nullptr;
 	}
+	m_current_rx_block = block;
+	m_rx_head = (m_rx_head + 1) % m_rx_blocks.size();
 	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer refilled"));
 
 	return m_channel_list.at(0)->getFirstVoid(block);
@@ -429,9 +501,8 @@ void Buffer::stop()
 		return;
 	}
 
-	if (m_buffer) {
-		// TBD watchout for cancelling buffers
-		iio_buffer_cancel(m_buffer);
+	if (m_buf_stream) {
+		iio_buffer_stream_cancel(m_buf_stream);
 	}
 
 	destroy();
@@ -441,8 +512,7 @@ void Buffer::stop()
 void Buffer::destroyBuffer()
 {
 	if (m_buffer) {
-		iio_buffer_destroy(m_buffer);
-		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer destroyed"));
+		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer released"));
 		m_buffer = nullptr;
 		m_last_nb_samples = 0;
 	}
@@ -451,31 +521,45 @@ void Buffer::destroyBuffer()
 
 void Buffer::destroy()
 {
-	if (m_block && !m_stream) {
-		if (m_block_enqueued) {
-			iio_block_dequeue(m_block, false);
-			m_block_enqueued = false;
-		}
-		iio_block_destroy(m_block);
-		m_block = nullptr;
-		iio_buffer_disable(m_buffer);
+	if (m_buf_stream) {
+		iio_buffer_stream_cancel(m_buf_stream);
 	}
 
-	if (m_stream) {
-		iio_stream_destroy(m_stream);
-		m_block = nullptr;
+	if (m_block_enqueued) {
+		iio_block_dequeue(m_block, false);
+		m_block_enqueued = false;
 	}
+
+	if (m_buf_stream) {
+		if (m_block) {
+			iio_block_destroy(m_block);
+		}
+		for (auto &blk : m_rx_blocks) {
+			if (blk) {
+				if (blk != m_current_rx_block) {
+					iio_block_dequeue(blk, false);
+				}
+				iio_block_destroy(blk);
+				blk = nullptr;
+			}
+		}
+		m_rx_blocks.clear();
+		m_rx_head = 0;
+		m_current_rx_block = nullptr;
+		iio_buffer_close(m_buf_stream);
+		m_buf_stream = nullptr;
+	}
+	m_block = nullptr;
 
 	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Stream destroyed"));
-	m_stream = nullptr;
 	m_last_nb_samples = 0;
 }
 
 void Buffer::cancelBuffer()
 {
-	if (m_buffer) {
-		iio_buffer_cancel(m_buffer);
-		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer canceled"));
+	if (m_buf_stream) {
+		iio_buffer_stream_cancel(m_buf_stream);
+		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Stream canceled"));
 	}
 }
 
@@ -580,6 +664,9 @@ struct iio_buffer* Buffer::getBuffer()
 
 struct iio_block* Buffer::getBlock()
 {
+	if (m_current_rx_block) {
+		return m_current_rx_block;
+	}
 	return m_block;
 }
 
