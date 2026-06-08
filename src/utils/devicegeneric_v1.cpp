@@ -507,7 +507,7 @@ string DeviceGeneric::getStringValue(unsigned int chn_idx, string attr, bool out
 std::string DeviceGeneric::setBufferStringValue(std::string attr, std::string value)
 {
 	m_buffer->setStringValue(attr, value);
-
+	return getBufferStringValue(attr);
 }
 
 std::string DeviceGeneric::getBufferStringValue(string attr_name)
