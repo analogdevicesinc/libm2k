@@ -18,7 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 option(OSX_PACKAGE "Create OSX package" OFF)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
