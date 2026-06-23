@@ -2,6 +2,9 @@ name: Build
 
 on: [push, pull_request]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 # TODO: add a simple test that tries to import the libm2k package after creating wheel; 
 # NOTE: do i have a acces to a pip install during the cybuildwheel process?
 jobs:
@@ -15,8 +18,8 @@ jobs:
         python_version: ['3.11']
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         name: Install Python ${{ matrix.python_version }}
         with:
           python-version: ${{ matrix.python_version }}
@@ -43,7 +46,7 @@ jobs:
                             cd {project} && ./.github/scripts/install_deps.sh {package}
           CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-* cp311-* cp312-*"
           CIBW_ENVIRONMENT: COMPILE_BINDINGS="True"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v7
         with:
           name: manylinux_wheels
           path: ${{ github.workspace }}/wheelhouse
@@ -54,12 +57,12 @@ jobs:
     needs: [build_wheels]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         name: Install Python 3.11
         with:
           python-version: '3.11'
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v7
         with:
           name: manylinux_wheels
       - name: Upload to PyPI
