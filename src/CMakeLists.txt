@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.3)
+cmake_minimum_required(VERSION 3.10)
 
 option(OSX_PACKAGE "Create OSX package" OFF)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
