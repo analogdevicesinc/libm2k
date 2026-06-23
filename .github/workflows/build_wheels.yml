@@ -2,6 +2,9 @@ name: Build
 
 on: [push, pull_request]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 # TODO: add a simple test that tries to import the libm2k package after creating wheel; 
 # NOTE: do i have a acces to a pip install during the cybuildwheel process?
 jobs:
