@@ -9,7 +9,7 @@ echo "## Installing dependencies"
 
 yum install -y  bzip2 gzip rpm rpm-build git wget tar \
                 libxml2-devel libusbx-devel libusb-devel doxygen libaio-devel avahi-devel avahi-tools graphviz swig flex bison \
-                python3 python3-devel python3-setuptools python3-pip 
+                python3 python3-devel python3-setuptools python3-pip libzstd-devel
 
 python3 -m pip install cmake
 cmake --version
