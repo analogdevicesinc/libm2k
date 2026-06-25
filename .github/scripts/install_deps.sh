@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-LIBIIO_VERSION=libiio-v0
+LIBIIO_VERSION=main
 PACKAGE_DIR=${1-build}
 echo $PACKAGE_DIR
 
