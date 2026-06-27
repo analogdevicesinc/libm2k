@@ -43,10 +43,10 @@ jobs:
         OS_VERSION: jammy
         artifactName: 'Linux-Ubuntu-22.04'
       deploy_doxygen:
-        imageName: 'ubuntu-20.04'
+        imageName: 'ubuntu-22.04'
         OS_TYPE: 'doxygen'
         OS_VERSION: focal
-        artifactName: 'Linux-Ubuntu-20.04'
+        artifactName: 'Linux-Ubuntu-22.04'
   pool:
     vmImage: $(imageName)
   steps:
