@@ -27,9 +27,9 @@ cd ../..
 
 #Install glog
 echo "## Building glog"
-git clone --branch v0.4.0 --depth 1 https://github.com/google/glog
-mkdir -p glog/build_0_4_0
-cd glog/build_0_4_0
+git clone --branch v0.7.1 --depth 1 https://github.com/google/glog
+mkdir -p glog/build_0_7_1
+cd glog/build_0_7_1
 cmake -DCMAKE_PREFIX_PATH=/usr ..
 make
 make install
