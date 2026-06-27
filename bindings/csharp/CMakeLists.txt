@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.10)
 
 set(CSHARP_WRAPPER_DLL ${PROJECT_NAME}-sharp-cxx-wrap)
 
