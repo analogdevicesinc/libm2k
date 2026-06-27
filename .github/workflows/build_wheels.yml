@@ -15,8 +15,8 @@ jobs:
         python_version: ['3.11']
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         name: Install Python ${{ matrix.python_version }}
         with:
           python-version: ${{ matrix.python_version }}
@@ -31,7 +31,7 @@ jobs:
           python -m pip install cibuildwheel twine
           cibuildwheel --output-dir ${{ github.workspace }}/wheelhouse ${{ github.workspace }}/build
         env:
-          CIBW_DEBUG_KEEP_CONTAINER=: TRUE
+          CIBW_DEBUG_KEEP_CONTAINER: "TRUE"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28           
           CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28   
           # Skip building PyPy wheels on all platforms
@@ -41,7 +41,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 3
           CIBW_BEFORE_ALL: >
                             cd {project} && ./.github/scripts/install_deps.sh {package}
-          CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-* cp311-* cp312-*"
+          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-* cp313-*"
           CIBW_ENVIRONMENT: COMPILE_BINDINGS="True"
       - uses: actions/upload-artifact@v7
         with:
@@ -54,8 +54,8 @@ jobs:
     needs: [build_wheels]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         name: Install Python 3.11
         with:
           python-version: '3.11'
