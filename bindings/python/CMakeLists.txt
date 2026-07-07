@@ -208,7 +208,7 @@ add_custom_target(${PROJECT_NAME}py ALL DEPENDS _${PROJECT_NAME} WORKING_DIRECTO
 if(NOT SKIP_INSTALL_ALL)
 	# Get Python site-packages path relative to prefix
 	execute_process(
-		COMMAND ${Python_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_path('purelib').replace(sysconfig.get_config_var('base') + '/', ''))"
+		COMMAND ${Python_EXECUTABLE} -c "import sysconfig, os; plat = sysconfig.get_path('platlib'); base = sysconfig.get_config_var('base'); base = base + '/local' if plat.startswith(base + '/local') else base; print(os.path.relpath(plat, base))"
 		OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_REL
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
