@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: libm2k
-Upstream-Contact: Engineerzone <https://ez.analog.com/community/linux-device-drivers>
+Upstream-Contact: EngineerZone <https://ez.analog.com/sw-interface-tools/>
 Source: https://github.com/analogdevicesinc/libm2k
 
 Files: *
