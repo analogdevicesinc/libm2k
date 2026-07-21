@@ -48,7 +48,7 @@ set(CPACK_PACKAGE_VERSION_PATCH g${LIBM2K_VERSION_GIT})
 set(CPACK_BUNDLE_NAME libm2k)
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 # debian specific package settings
-set(CPACK_PACKAGE_CONTACT "Engineerzone <https://ez.analog.com/community/linux-device-drivers>")
+set(CPACK_PACKAGE_CONTACT "EngineerZone <https://ez.analog.com/sw-interface-tools/>")
 
 option(DEB_DETECT_DEPENDENCIES "Detect dependencies for .deb packages" OFF)
 
