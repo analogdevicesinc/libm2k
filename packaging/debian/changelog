@@ -2,4 +2,4 @@ libm2k (@VERSION@) UNRELEASED; urgency=low
 
   * Automated package build.
 
- -- EngineerZone <https://ez.analog.com/sw-interface-tools/>  @DATE@
+ -- IonutMuthi <ionut.muthi@analog.com>  @DATE@
