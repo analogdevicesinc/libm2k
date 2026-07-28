@@ -20,7 +20,7 @@ on:
 
 jobs:
   identify_version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       app-version: ${{ steps.set_version.outputs.version }}
     steps:
@@ -92,8 +92,18 @@ jobs:
         if-no-files-found: error
 
   build_ubuntu:
-    runs-on: ubuntu-latest
     needs: identify_version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-22.04
+            distro: ubuntu22
+          - runs-on: ubuntu-24.04
+            distro: ubuntu24
+          - runs-on: ubuntu-26.04
+            distro: ubuntu26
+    runs-on: ${{matrix.runs-on}}
     env:
       architecture: amd64
     defaults:
@@ -118,7 +128,7 @@ jobs:
     - name: Upload debian artifacts to github
       uses: actions/upload-artifact@v7
       with:
-        name: ${{env.APP_NAME}}-ubuntu
+        name: ${{env.APP_NAME}}-${{matrix.distro}}-amd64
         path: |
           ${{env.APP_NAME}}/artifacts/*.deb
           ${{env.APP_NAME}}/artifacts/*.dsc
