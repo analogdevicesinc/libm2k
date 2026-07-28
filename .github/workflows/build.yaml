@@ -97,8 +97,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runs-on: ubuntu-22.04
-            distro: ubuntu22
           - runs-on: ubuntu-24.04
             distro: ubuntu24
           - runs-on: ubuntu-26.04

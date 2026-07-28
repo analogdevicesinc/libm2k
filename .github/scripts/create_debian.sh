@@ -11,7 +11,7 @@ else
 fi
 
 $SUDO apt-get update
-$SUDO apt-get install -y build-essential cmake libiio-dev libunwind-dev libgoogle-glog-dev libserialport-dev swig python3 python3-dev python3-pip python3-setuptools dh-python mono-mcs cli-common-dev devscripts debhelper
+$SUDO apt-get install -y build-essential cmake libiio-dev libgoogle-glog-dev libserialport-dev swig python3 python3-dev python3-pip python3-setuptools dh-python mono-mcs cli-common-dev devscripts debhelper
 
 # Replace placeholders inside the debian template files
 sed -i "s/@VERSION@/$version-1/" packaging/debian/changelog
