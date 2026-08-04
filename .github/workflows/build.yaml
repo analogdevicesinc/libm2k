@@ -133,3 +133,28 @@ jobs:
           ${{env.APP_NAME}}/artifacts/*.debian.tar.xz
           ${{env.APP_NAME}}/artifacts/*.orig.tar.gz
         if-no-files-found: error
+
+  build_macos:
+    runs-on: macos-14
+    needs: identify_version
+    env:
+      LIBIIO_VERSION: libiio-v0
+      GLOG_VERSION: v0.4.0
+    steps:
+    - name: Checkout code repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: CI/macOS/install_deps
+
+    - name: Build libm2k
+      run: CI/macOS/make_macOS
+
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{env.APP_NAME}}-macos-arm64
+        path: |
+          build/*.pkg
+          build_tar/*.tar.gz
+        if-no-files-found: error
