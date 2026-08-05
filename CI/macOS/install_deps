@@ -17,7 +17,10 @@ install_packages() {
     PIP_LIBIIO="sphinx setuptools"
     PIP_LIBM2K="wheel twine build virtualenv"
     PACKAGES="$PIP_LIBIIO $PIP_LIBM2K"
-    pip3 install $PACKAGES
+    # macos-14 GitHub runners ship a Homebrew Python marked externally-managed
+    # (PEP 668); --break-system-packages installs into the same interpreter the
+    # build's CMake uses. It is a no-op on runners without the marker (e.g. Azure).
+    pip3 install --break-system-packages $PACKAGES
 }
 
 build_glog() {
