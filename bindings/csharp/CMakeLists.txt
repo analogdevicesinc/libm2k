@@ -72,11 +72,6 @@ endif()
 set(SRC_WRAPPER_FILE ${CMAKE_CURRENT_BINARY_DIR}/libm2kCSHARP_wrap.cxx)
 set_source_files_properties(${SRC_WRAPPER_FILE} PROPERTIES GENERATED TRUE)
 
-if(APPLE)
-	# build universal binaries by default
-	set(CMAKE_OSX_ARCHITECTURES "x86_64")
-endif()
-
 include_directories(
 	SYSTEM
 	${CMAKE_CURRENT_BINARY_DIR}
