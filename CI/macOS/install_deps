@@ -48,6 +48,7 @@ build_libiio() {
     mkdir -p build && cd build
     cmake "${WORKDIR}"/libiio \
         -Werror=dev \
+        -Wno-error=install-absolute-destination \
         -DCOMPILE_WARNING_AS_ERROR=ON \
         -DOSX_PACKAGE=ON \
         -DCPP_BINDINGS=ON \
@@ -64,6 +65,7 @@ build_libiio() {
     mkdir -p build_tar && cd build_tar
     cmake "${WORKDIR}"/libiio \
         -Werror=dev \
+        -Wno-error=install-absolute-destination \
         -DCOMPILE_WARNING_AS_ERROR=ON \
         -DOSX_PACKAGE=OFF \
         -DENABLE_PACKAGING=ON \
@@ -83,6 +85,7 @@ build_libiio() {
     cd "${WORKDIR}"/libiio/build
     cmake "${WORKDIR}"/libiio \
         -Werror=dev \
+        -Wno-error=install-absolute-destination \
         -DCOMPILE_WARNING_AS_ERROR=ON \
         -DCPP_BINDINGS=ON \
         -DPYTHON_BINDINGS=ON \
