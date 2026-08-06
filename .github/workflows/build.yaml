@@ -137,14 +137,28 @@ jobs:
         if-no-files-found: error
 
   build_macos:
-    runs-on: macos-14
     needs: identify_version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: macos-13
+            arch: x64
+          - runs-on: macos-14
+            arch: arm64
+    runs-on: ${{ matrix.runs-on }}
     env:
       LIBIIO_VERSION: libiio-v0
       GLOG_VERSION: v0.4.0
+      ARTIFACTNAME: macos-${{ matrix.arch }}
     steps:
     - name: Checkout code repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
+
+    - name: Select Python 3.11 for main build
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
 
     - name: Install dependencies
       run: CI/macOS/install_deps
@@ -152,11 +166,260 @@ jobs:
     - name: Build libm2k
       run: CI/macOS/make_macOS
 
-    - name: Upload macOS artifacts
-      uses: actions/upload-artifact@v4
+    - name: Use Python 3.9
+      uses: actions/setup-python@v7
       with:
-        name: ${{env.APP_NAME}}-macos-arm64
+        python-version: '3.9'
+    - name: Wheel Python 3.9
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+
+    - name: Use Python 3.10
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.10'
+    - name: Wheel Python 3.10
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+
+    - name: Use Python 3.11
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Wheel Python 3.11
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+
+    - name: Use Python 3.12
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.12'
+    - name: Wheel Python 3.12
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+
+    - name: Use Python 3.13
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.13'
+    - name: Wheel Python 3.13
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+
+    - name: Use Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.14'
+    - name: Wheel Python 3.14
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{env.APP_NAME}}-macos-${{matrix.arch}}
         path: |
           build/*.pkg
           build_tar/*.tar.gz
+          build/wheelhouse/*.whl
+        if-no-files-found: error
+
+    - name: Upload to testPyPI
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      run: |
+        python3 -m pip install --upgrade twine
+        python3 -m twine upload --repository testpypi build/wheelhouse/*.whl
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+
+  build_windows:
+    runs-on: windows-2022
+    needs: identify_version
+    env:
+      BUILD_SOURCESDIRECTORY: ${{ github.workspace }}
+      BUILD_ARTIFACTSTAGINGDIRECTORY: ${{ runner.temp }}/staging
+      COMPILER: Visual Studio 17 2022
+      ARCH: x64
+      PLATFORM: win64
+      LIBIIO_VERSION: libiio-v0
+    steps:
+    - name: Checkout code repository
+      uses: actions/checkout@v6
+
+    - name: Select Python 3.11 for main build
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      shell: pwsh
+      run: ./CI/windows/install_deps.ps1
+
+    - name: Build libm2k
+      shell: pwsh
+      run: ./CI/windows/make_windows.ps1
+
+    - name: Use Python 3.9
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.9'
+    - name: Wheel Python 3.9
+      shell: pwsh
+      run: |
+        $SRC_DIR = Get-Item -Path $env:BUILD_SOURCESDIRECTORY
+        $OUTSIDE_BUILD = $SRC_DIR.Parent.FullName
+        $BUILD_DIR = Join-Path $OUTSIDE_BUILD "libm2k-$env:PLATFORM"
+        $TEMP_BUILD_DIR = Join-Path $SRC_DIR "tmp-build-$env:PLATFORM"
+        Set-Location $TEMP_BUILD_DIR
+        python.exe -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
+        $env:COMPILE_BINDINGS = $true
+        python.exe -m build
+        Remove-Item Env:COMPILE_BINDINGS
+        Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
+        Set-Location $SRC_DIR
+
+    - name: Use Python 3.10
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.10'
+    - name: Wheel Python 3.10
+      shell: pwsh
+      run: |
+        $SRC_DIR = Get-Item -Path $env:BUILD_SOURCESDIRECTORY
+        $OUTSIDE_BUILD = $SRC_DIR.Parent.FullName
+        $BUILD_DIR = Join-Path $OUTSIDE_BUILD "libm2k-$env:PLATFORM"
+        $TEMP_BUILD_DIR = Join-Path $SRC_DIR "tmp-build-$env:PLATFORM"
+        Set-Location $TEMP_BUILD_DIR
+        python.exe -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
+        $env:COMPILE_BINDINGS = $true
+        python.exe -m build
+        Remove-Item Env:COMPILE_BINDINGS
+        Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
+        Set-Location $SRC_DIR
+
+    - name: Use Python 3.11
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Wheel Python 3.11
+      shell: pwsh
+      run: |
+        $SRC_DIR = Get-Item -Path $env:BUILD_SOURCESDIRECTORY
+        $OUTSIDE_BUILD = $SRC_DIR.Parent.FullName
+        $BUILD_DIR = Join-Path $OUTSIDE_BUILD "libm2k-$env:PLATFORM"
+        $TEMP_BUILD_DIR = Join-Path $SRC_DIR "tmp-build-$env:PLATFORM"
+        Set-Location $TEMP_BUILD_DIR
+        python.exe -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
+        $env:COMPILE_BINDINGS = $true
+        python.exe -m build
+        Remove-Item Env:COMPILE_BINDINGS
+        Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
+        Set-Location $SRC_DIR
+
+    - name: Use Python 3.12
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.12'
+    - name: Wheel Python 3.12
+      shell: pwsh
+      run: |
+        $SRC_DIR = Get-Item -Path $env:BUILD_SOURCESDIRECTORY
+        $OUTSIDE_BUILD = $SRC_DIR.Parent.FullName
+        $BUILD_DIR = Join-Path $OUTSIDE_BUILD "libm2k-$env:PLATFORM"
+        $TEMP_BUILD_DIR = Join-Path $SRC_DIR "tmp-build-$env:PLATFORM"
+        Set-Location $TEMP_BUILD_DIR
+        python.exe -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
+        $env:COMPILE_BINDINGS = $true
+        python.exe -m build
+        Remove-Item Env:COMPILE_BINDINGS
+        Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
+        Set-Location $SRC_DIR
+
+    - name: Use Python 3.13
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.13'
+    - name: Wheel Python 3.13
+      shell: pwsh
+      run: |
+        $SRC_DIR = Get-Item -Path $env:BUILD_SOURCESDIRECTORY
+        $OUTSIDE_BUILD = $SRC_DIR.Parent.FullName
+        $BUILD_DIR = Join-Path $OUTSIDE_BUILD "libm2k-$env:PLATFORM"
+        $TEMP_BUILD_DIR = Join-Path $SRC_DIR "tmp-build-$env:PLATFORM"
+        Set-Location $TEMP_BUILD_DIR
+        python.exe -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
+        $env:COMPILE_BINDINGS = $true
+        python.exe -m build
+        Remove-Item Env:COMPILE_BINDINGS
+        Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
+        Set-Location $SRC_DIR
+
+    - name: Use Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.14'
+    - name: Wheel Python 3.14
+      shell: pwsh
+      run: |
+        $SRC_DIR = Get-Item -Path $env:BUILD_SOURCESDIRECTORY
+        $OUTSIDE_BUILD = $SRC_DIR.Parent.FullName
+        $BUILD_DIR = Join-Path $OUTSIDE_BUILD "libm2k-$env:PLATFORM"
+        $TEMP_BUILD_DIR = Join-Path $SRC_DIR "tmp-build-$env:PLATFORM"
+        Set-Location $TEMP_BUILD_DIR
+        python.exe -m pip install --user --upgrade pip setuptools wheel twine build virtualenv
+        $env:COMPILE_BINDINGS = $true
+        python.exe -m build
+        Remove-Item Env:COMPILE_BINDINGS
+        Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
+        Set-Location $SRC_DIR
+
+    - name: Create artifact staging directory
+      shell: pwsh
+      run: New-Item -Path $env:BUILD_ARTIFACTSTAGINGDIRECTORY -ItemType Directory -Force
+
+    - name: Create libm2k-system-setup installer
+      shell: pwsh
+      run: ./CI/windows/create_installer.ps1
+
+    - name: Upload installer artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: Libm2k-System-Setup-Exe
+        path: ${{ runner.temp }}/staging/installer/*.exe
+        if-no-files-found: error
+
+    - name: Create ZIPs
+      shell: pwsh
+      run: ./CI/windows/create_zips.ps1
+
+    - name: Upload Windows folder artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: Windows-VS-2022-x64
+        path: ${{ runner.temp }}/staging/libm2k-win64
         if-no-files-found: error
