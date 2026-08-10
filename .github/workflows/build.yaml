@@ -246,6 +246,8 @@ jobs:
           build/*.pkg
           build_tar/*.tar.gz
           build/wheelhouse/*.whl
+          libiio/build/*.pkg
+          libiio/build_tar/*.tar.gz
         if-no-files-found: error
 
     - name: Upload to testPyPI
