@@ -323,7 +323,7 @@ void Buffer::getSamples(std::vector<unsigned short> &data, unsigned int nb_sampl
 	}
 	struct iio_block *block = m_rx_blocks[m_rx_head];
 	int ret = iio_block_dequeue(block, false);
-	if (ret) {
+	if (ret < 0) {
 		destroy();
 		THROW_M2K_EXCEPTION("Buffer: Cannot dequeue RX block", libm2k::EXC_RUNTIME_ERROR, ret);
 		return;
@@ -369,7 +369,7 @@ const unsigned short* Buffer::getSamplesP(unsigned int nb_samples)
 	}
 	struct iio_block *block = m_rx_blocks[m_rx_head];
 	int ret = iio_block_dequeue(block, false);
-	if (ret) {
+	if (ret < 0) {
 		destroy();
 		THROW_M2K_EXCEPTION("Buffer: Cannot dequeue RX block", libm2k::EXC_RUNTIME_ERROR, ret);
 		return nullptr;
@@ -454,7 +454,7 @@ void* Buffer::getSamplesRawInterleavedVoid(unsigned int nb_samples)
 	}
 	struct iio_block *block = m_rx_blocks[m_rx_head];
 	int ret = iio_block_dequeue(block, false);
-	if (ret) {
+	if (ret < 0) {
 		destroy();
 		THROW_M2K_EXCEPTION("Buffer: Cannot dequeue RX block", libm2k::EXC_RUNTIME_ERROR, ret);
 		return nullptr;
