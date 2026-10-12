@@ -64,33 +64,39 @@ jobs:
       with:
         path: ${{env.APP_NAME}}
 
+    - name: Checkout deb-generator-action
+      uses: actions/checkout@v6
+      with:
+        repository: analogdevicesinc/shared-actions
+        path: shared-actions
+
     - name: Start persistent container
       run: |
         docker run -d \
             ${{matrix.platform_flag}} \
             --name ${{matrix.distro}}-${{matrix.architecture}} \
-            -v "$GITHUB_WORKSPACE/${{env.APP_NAME}}:/workspace/${{env.APP_NAME}}" \
-            -w /workspace/${{env.APP_NAME}} \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
             ${{matrix.docker_image}} tail -f /dev/null
 
     - name: Create debian package
       run: |
-        docker exec ${{matrix.distro}}-${{matrix.architecture}} sh -c ".github/scripts/create_debian.sh ${{needs.identify_version.outputs.app-version}}"
-
-    - name: Copy debian artifacts from container to host
-      run: |
-        docker cp ${{matrix.distro}}-${{matrix.architecture}}:/workspace/. ./artifacts/
-        ls -la ./artifacts/
+        docker exec \
+            -e VERSION=${{needs.identify_version.outputs.app-version}} \
+            -e WORKING_DIRECTORY=/workspace/${{env.APP_NAME}} \
+            -e GITHUB_WORKSPACE=/workspace \
+            ${{matrix.distro}}-${{matrix.architecture}} \
+            bash -c "apt-get update -qq && apt-get install -y -qq curl ca-certificates && bash /workspace/shared-actions/deb-generator-action/build-deb.sh"
 
     - name: Upload debian artifacts to github
       uses: actions/upload-artifact@v7
       with:
         name: ${{env.APP_NAME}}-${{matrix.distro}}-${{matrix.architecture}}
         path: |
-          artifacts/*.deb
-          artifacts/*.dsc
-          artifacts/*.debian.tar.xz
-          artifacts/*.orig.tar.gz
+          ${{ github.workspace }}/artifacts/*.deb
+          ${{ github.workspace }}/artifacts/*.dsc
+          ${{ github.workspace }}/artifacts/*.debian.tar.xz
+          ${{ github.workspace }}/artifacts/*.orig.tar.gz
         if-no-files-found: error
 
   build_ubuntu:
@@ -116,24 +122,20 @@ jobs:
         path: ${{env.APP_NAME}}
 
     - name: Create .deb package
-      run: |
-        .github/scripts/create_debian.sh ${{needs.identify_version.outputs.app-version}}
-
-    - name: Copy debian artifacts
-      run: |
-        mkdir -p artifacts
-        cp ../*.deb ../*.dsc ../*.debian.tar.xz ../*.orig.tar.gz artifacts/
-        ls -la artifacts/
+      uses: analogdevicesinc/shared-actions/deb-generator-action@main
+      with:
+        version: ${{needs.identify_version.outputs.app-version}}
+        working-directory: ${{env.APP_NAME}}
 
     - name: Upload debian artifacts to github
       uses: actions/upload-artifact@v7
       with:
         name: ${{env.APP_NAME}}-${{matrix.distro}}-amd64
         path: |
-          ${{env.APP_NAME}}/artifacts/*.deb
-          ${{env.APP_NAME}}/artifacts/*.dsc
-          ${{env.APP_NAME}}/artifacts/*.debian.tar.xz
-          ${{env.APP_NAME}}/artifacts/*.orig.tar.gz
+          ${{ github.workspace }}/artifacts/*.deb
+          ${{ github.workspace }}/artifacts/*.dsc
+          ${{ github.workspace }}/artifacts/*.debian.tar.xz
+          ${{ github.workspace }}/artifacts/*.orig.tar.gz
         if-no-files-found: error
 
   build_macos:
