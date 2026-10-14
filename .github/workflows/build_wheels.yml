@@ -28,7 +28,7 @@ jobs:
       # TODO: Test using more recent Docker image 
       - name: Get some sample wheels
         run: |
-          python -m pip install cibuildwheel twine
+          python3 -m pip install cibuildwheel twine setuptools
           cibuildwheel --output-dir ${{ github.workspace }}/wheelhouse ${{ github.workspace }}/build
         env:
           CIBW_DEBUG_KEEP_CONTAINER: "TRUE"
@@ -40,7 +40,7 @@ jobs:
           CIBW_SKIP: "pp* *-musllinux* *i686"
           CIBW_BUILD_VERBOSITY: 3
           CIBW_BEFORE_ALL: >
-                            cd {project} && ./.github/scripts/install_deps.sh {package}
+                            cd {project} && ./.github/scripts/setup-wheels.sh {package}
           CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
           CIBW_ENVIRONMENT: COMPILE_BINDINGS="True"
       - uses: actions/upload-artifact@v7

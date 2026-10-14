@@ -1,0 +1,4 @@
+usr/include/libm2k/
+usr/lib/*/libm2k.so
+usr/lib/*/pkgconfig/libm2k.pc
+usr/lib/*/cmake/libm2k/

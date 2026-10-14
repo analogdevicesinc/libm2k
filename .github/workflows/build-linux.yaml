@@ -1,0 +1,112 @@
+name: Build and Deploy libm2k - linux
+
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - next_stable
+      - '20[1-9][0-9]_R[1-9]'
+      - staging/*
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+      - next_stable
+      - '20[1-9][0-9]_R[1-9]'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  identify-version:
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.set_version.outputs.version }}
+    steps:
+    - name: Checkout code repository
+      uses: actions/checkout@v6
+    - name: Set app version
+      id: set_version
+      run: |
+        .github/scripts/identify-version.sh
+  build-linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: amd64
+            runs-on: ubuntu-latest
+            stage: rel
+          - architecture: arm64
+            runs-on: ubuntu-24.04-arm
+            container: docker.cloudsmith.io/adi/containers/kuiper_basic_64:latest
+            stage: rel
+          - architecture: armhf
+            runs-on: ubuntu-24.04-arm
+            container: docker.cloudsmith.io/adi/containers/kuiper_basic_32:latest
+            platform: linux/arm/v7
+            stage: rel
+          - architecture: amd64
+            runs-on: ubuntu-latest
+            stage: dev
+            libiio-artifact: Linux-Ubuntu-24.04.deb
+          - architecture: arm64
+            runs-on: ubuntu-24.04-arm
+            container: docker.cloudsmith.io/adi/containers/kuiper_basic_64:latest
+            stage: dev
+            libiio-artifact: Debian-13-arm64.deb
+          - architecture: armhf
+            runs-on: ubuntu-24.04-arm
+            container: docker.cloudsmith.io/adi/containers/kuiper_basic_32:latest
+            platform: linux/arm/v7
+            stage: dev
+            libiio-artifact: Debian-13-armhf.deb
+    runs-on: ${{ matrix.runs-on }}
+    needs: identify-version
+    container: ${{ matrix.architecture == 'arm64' && matrix.container || '' }}
+    env:
+      ARCHITECTURE: ${{ matrix.architecture }}
+      CONTAINER: ${{ matrix.container }}
+      VERSION: ${{needs.identify-version.outputs.app-version}}
+      LIBIIO_ARTIFACT: ${{ matrix.libiio-artifact || '' }}
+      STAGE: ${{ matrix.stage }}
+      PLATFORM: ${{ matrix.platform }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Install deps
+        shell: sh
+        run: |
+          .github/scripts/install-deps-linux.sh
+      # This shared-action compatible only with amd64/arm64 architectures - armhf is managed in the next step 
+      - name: Create debian package - amd64/arm64
+        if: ${{ matrix.architecture == 'amd64' || matrix.architecture == 'arm64' }}
+        id: build_deb
+        uses: analogdevicesinc/shared-actions/deb-generator-action@main
+        with:
+          working-directory: .
+          ignore-path: |
+            packaging
+          control-path: ${{ matrix.stage == 'dev' && 'packaging/debian_dev' || 'packaging/debian' }}
+          version: ${{ env.VERSION }}
+      # Also debian creation for for armhf architecture
+      - name: Install and verify application
+        shell: sh
+        run: |
+          .github/scripts/install-app.sh
+        env:
+          ARTIFACTS_DIR: ${{ steps.build_deb.outputs.artifact-dir || '' }}
+      - name: Upload debian artifacts to github
+        uses: actions/upload-artifact@v7
+        with:
+          name: libm2k-debian-${{ matrix.architecture }}-${{ matrix.stage }}
+          path: |
+            artifacts/
+          if-no-files-found: error
