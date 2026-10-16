@@ -32,16 +32,15 @@ jobs:
           cibuildwheel --output-dir ${{ github.workspace }}/wheelhouse ${{ github.workspace }}/build
         env:
           CIBW_DEBUG_KEEP_CONTAINER: "TRUE"
-          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28           
-          CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28   
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+          CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
           # Skip building PyPy wheels on all platforms
           # Skip musllinux builds
-          # Skip i686 builds: 32bit arch not supported in manylinux_2_28  
+          # Skip i686 builds: 32bit arch not supported in manylinux_2_28
           CIBW_SKIP: "pp* *-musllinux* *i686"
           CIBW_BUILD_VERBOSITY: 3
-          CIBW_BEFORE_ALL: >
-                            cd {project} && ./.github/scripts/setup-wheels.sh {package}
-          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
+          CIBW_BEFORE_ALL: cd {project} && ./.github/scripts/setup-wheels.sh
+          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-* cp313-*"
           CIBW_ENVIRONMENT: COMPILE_BINDINGS="True"
       - uses: actions/upload-artifact@v7
         with:
