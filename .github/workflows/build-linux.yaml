@@ -78,6 +78,9 @@ jobs:
       LIBIIO_ARTIFACT: ${{ matrix.libiio-artifact || '' }}
       STAGE: ${{ matrix.stage }}
       PLATFORM: ${{ matrix.platform }}
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      CLOUDSMITH_ORG: adi
+      CLOUDSMITH_REPO: ${{ secrets.CLOUDSMITH_REPO }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -110,3 +113,12 @@ jobs:
           path: |
             artifacts/
           if-no-files-found: error
+      - name: Push to cloudsmith
+        if: ${{ env.STAGE == 'dev' }}
+        shell: bash
+        run: |
+          pip install cloudsmith-cli
+          .github/scripts/upload-to-cloudsmith.sh
+        env:
+          VERSION: ${{ env.VERSION }}
+          WORKSPACE: ${{ github.workspace }}

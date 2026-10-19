@@ -25,6 +25,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  identify-version:
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.set_version.outputs.version }}
+    steps:
+    - name: Checkout code repository
+      uses: actions/checkout@v6
+    - name: Set app version
+      id: set_version
+      run: |
+        .github/scripts/identify-version.sh
   build-windows:
     strategy:
       fail-fast: false
@@ -45,23 +56,23 @@ jobs:
       LIBIIO_VERSION: libiio-v0   # cloudsmith artifacts need ~latest suffix
       STAGE: ${{ matrix.stage }}
       LIBIIO_ARTIFACT: ${{ matrix.libiio-artifact }}
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      CLOUDSMITH_ORG: adi
+      CLOUDSMITH_REPO: ${{ secrets.CLOUDSMITH_REPO }}
+      WINDOWS_OS: ${{ matrix.runs-on }}
     steps:
     - name: Checkout code repository
       uses: actions/checkout@v6
-
     - name: Select Python 3.11 for main build
       uses: actions/setup-python@v7
       with:
         python-version: '3.11'
-
     - name: Install dependencies
       shell: pwsh
       run: .github/scripts/install_deps.ps1
-
     - name: Build libm2k
       shell: pwsh
       run: .github/scripts/make_windows.ps1
-
     - name: Use Python 3.9
       uses: actions/setup-python@v7
       with:
@@ -80,7 +91,6 @@ jobs:
         Remove-Item Env:COMPILE_BINDINGS
         Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
         Set-Location $SRC_DIR
-
     - name: Use Python 3.10
       uses: actions/setup-python@v7
       with:
@@ -99,7 +109,6 @@ jobs:
         Remove-Item Env:COMPILE_BINDINGS
         Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
         Set-Location $SRC_DIR
-
     - name: Use Python 3.11
       uses: actions/setup-python@v7
       with:
@@ -118,7 +127,6 @@ jobs:
         Remove-Item Env:COMPILE_BINDINGS
         Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
         Set-Location $SRC_DIR
-
     - name: Use Python 3.12
       uses: actions/setup-python@v7
       with:
@@ -137,7 +145,6 @@ jobs:
         Remove-Item Env:COMPILE_BINDINGS
         Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
         Set-Location $SRC_DIR
-
     - name: Use Python 3.13
       uses: actions/setup-python@v7
       with:
@@ -156,7 +163,6 @@ jobs:
         Remove-Item Env:COMPILE_BINDINGS
         Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
         Set-Location $SRC_DIR
-
     - name: Use Python 3.14
       uses: actions/setup-python@v7
       with:
@@ -175,29 +181,33 @@ jobs:
         Remove-Item Env:COMPILE_BINDINGS
         Copy-Item -Path "dist/libm2k*.whl" -Destination (Join-Path $BUILD_DIR "dist")
         Set-Location $SRC_DIR
-
     - name: Create artifact staging directory
       shell: pwsh
       run: New-Item -Path $env:BUILD_ARTIFACTSTAGINGDIRECTORY -ItemType Directory -Force
-
     - name: Create libm2k-system-setup installer
       shell: pwsh
       run: .github/scripts/create_installer.ps1
-
     - name: Upload installer artifact
       uses: actions/upload-artifact@v7
       with:
         name: Libm2k-System-Setup-Exe
         path: ${{ github.workspace }}/staging/installer/*.exe
         if-no-files-found: error
-
     - name: Create ZIPs
       shell: pwsh
       run: .github/scripts/create_zips.ps1
-
     - name: Upload Windows folder artifact
       uses: actions/upload-artifact@v7
       with:
         name: Windows-VS-2022-x64
         path: ${{ github.workspace }}/staging/libm2k-win64
         if-no-files-found: error
+    - name: Push to cloudsmith
+      if: ${{ env.STAGE == 'dev' }}
+      shell: bash
+      run: |
+        pip install cloudsmith-cli
+        .github/scripts/upload-to-cloudsmith.sh
+      env:
+        VERSION: ${{ env.VERSION }}
+        WORKSPACE: ${{ github.workspace }}

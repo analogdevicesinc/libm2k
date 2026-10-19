@@ -6,7 +6,7 @@ WORKDIR=$(pwd)
 export MACOSX_DEPLOYMENT_TARGET=10.15
 
 make_package() {
-    echo "### Make OSX packague"
+    echo "### Make OSX package"
     mkdir -p "${WORKDIR}"/build && cd "${WORKDIR}"/build
     cmake "$WORKDIR" \
         -DPYTHON_EXECUTABLE:FILEPATH=$(python -c "import os, sys; print(os.path.dirname(sys.executable) + '/python')") \
@@ -15,7 +15,9 @@ make_package() {
         -DENABLE_PYTHON=ON \
         -DENABLE_CSHARP=ON \
         -DENABLE_LOG=ON \
-        -DBUILD_EXAMPLES=ON
+        -DBUILD_EXAMPLES=ON \
+        -DMAC_OS="${MAC_OS}" \
+        -DMAC_ARCHITECTURE="${MAC_ARCHITECTURE}"
     make
     ls
     cd "$WORKDIR"
@@ -32,7 +34,9 @@ make_tar() {
         -DENABLE_CSHARP=ON \
         -DENABLE_TOOLS=ON \
         -DENABLE_LOG=ON \
-        -DBUILD_EXAMPLES=ON
+        -DBUILD_EXAMPLES=ON \
+        -DMAC_OS="${MAC_OS}" \
+        -DMAC_ARCHITECTURE="${MAC_ARCHITECTURE}"
     make && make package
     ls
     cd "$WORKDIR"

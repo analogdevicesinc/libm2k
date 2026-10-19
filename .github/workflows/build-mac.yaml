@@ -25,6 +25,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  identify-version:
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.set_version.outputs.version }}
+    steps:
+    - name: Checkout code repository
+      uses: actions/checkout@v6
+    - name: Set app version
+      id: set_version
+      run: |
+        .github/scripts/identify-version.sh
   build-macos:
     strategy:
       fail-fast: false
@@ -66,6 +77,7 @@ jobs:
             stage: dev
             libiio-artifact: macOS-27-arm64.pkg
     runs-on: ${{ matrix.runs-on }}
+    needs: identify-version
     env:
       GLOG_VERSION: v0.4.0
       ARCHITECTURE: ${{ matrix.arch }}
@@ -73,21 +85,23 @@ jobs:
       LIBIIO_VERSION: libiio-v0   # cloudsmith artifacts need ~latest suffix
       LIBIIO_ARTIFACT: ${{ matrix.libiio-artifact }}
       CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      VERSION: ${{needs.identify-version.outputs.app-version}}
+      CLOUDSMITH_ORG: adi
+      CLOUDSMITH_REPO: ${{ secrets.CLOUDSMITH_REPO }}
     steps:
     - name: Checkout code repository
       uses: actions/checkout@v6
-
     - name: Select Python 3.11 for main build
       uses: actions/setup-python@v7
       with:
         python-version: '3.11'
-
     - name: Install dependencies
       run: .github/scripts/install-deps-mac.sh
-
     - name: Build libm2k
       run: .github/scripts/make_macOS
-
+      env:
+        MAC_ARCHITECTURE: ${{ env.ARCHITECTURE }}
+        MAC_OS: ${{ matrix.runs-on }}
     - name: Use Python 3.9
       uses: actions/setup-python@v7
       with:
@@ -99,7 +113,6 @@ jobs:
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
-
     - name: Use Python 3.10
       uses: actions/setup-python@v7
       with:
@@ -111,7 +124,6 @@ jobs:
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
-
     - name: Use Python 3.11
       uses: actions/setup-python@v7
       with:
@@ -123,7 +135,6 @@ jobs:
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
-
     - name: Use Python 3.12
       uses: actions/setup-python@v7
       with:
@@ -135,7 +146,6 @@ jobs:
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
-
     - name: Use Python 3.13
       uses: actions/setup-python@v7
       with:
@@ -147,7 +157,6 @@ jobs:
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
-
     - name: Use Python 3.14
       uses: actions/setup-python@v7
       with:
@@ -159,19 +168,20 @@ jobs:
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
-
+    - name: Collect artifacts
+      shell: sh
+      run: |
+        mkdir ${{ github.workspace }}/artifacts
+        mv build/*.pkg artifacts/
+        mv build_tar/*.tar.gz artifacts/
+        mv build/wheelhouse/*.whl artifacts/
     - name: Upload macOS artifacts
       uses: actions/upload-artifact@v7
       with:
-        name: libm2k}-macos-${{matrix.arch}}
+        name: libm2k-${{ matrix.runs-on }}-${{matrix.arch}}
         path: |
-          build/*.pkg
-          build_tar/*.tar.gz
-          build/wheelhouse/*.whl
-          libiio/build/*.pkg
-          libiio/build_tar/*.tar.gz
+          artifacts/
         if-no-files-found: error
-
     - name: Upload to testPyPI
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       run: |
@@ -180,3 +190,12 @@ jobs:
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+    - name: Push to cloudsmith
+      if: ${{ env.STAGE == 'dev' }}
+      shell: bash
+      run: |
+        pip install cloudsmith-cli
+        .github/scripts/upload-to-cloudsmith.sh
+      env:
+        VERSION: ${{ env.VERSION }}
+        WORKSPACE: ${{ github.workspace }}
