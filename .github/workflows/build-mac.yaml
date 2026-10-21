@@ -1,0 +1,201 @@
+name: Build and Deploy libm2k - mac
+
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - next_stable
+      - '20[1-9][0-9]_R[1-9]'
+      - staging/*
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+      - next_stable
+      - '20[1-9][0-9]_R[1-9]'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  identify-version:
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.set_version.outputs.version }}
+    steps:
+    - name: Checkout code repository
+      uses: actions/checkout@v6
+    - name: Set app version
+      id: set_version
+      run: |
+        .github/scripts/identify-version.sh
+  build-macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: macos-15-large
+            arch: x64
+            stage: rel
+          - runs-on: macos-15-large
+            arch: x64
+            stage: dev
+            libiio-artifact: macOS-15-x64.pkg
+          - runs-on: macos-15
+            arch: arm64
+            stage: rel
+          - runs-on: macos-15
+            arch: arm64
+            stage: dev
+            libiio-artifact: macOS-15-arm64.pkg
+          - runs-on: macos-26-large
+            arch: x64
+            stage: rel
+          - runs-on: macos-26-large
+            arch: x64
+            stage: dev
+            libiio-artifact: macOS-26-x64.pkg
+          - runs-on: macos-26
+            arch: arm64
+            stage: rel
+          - runs-on: macos-26
+            arch: arm64
+            stage: dev
+            libiio-artifact: macOS-26-arm64.pkg
+          - runs-on: xcode-27
+            arch: arm64
+            stage: rel
+          - runs-on: xcode-27
+            arch: arm64
+            stage: dev
+            libiio-artifact: macOS-27-arm64.pkg
+    runs-on: ${{ matrix.runs-on }}
+    needs: identify-version
+    env:
+      GLOG_VERSION: v0.4.0
+      ARCHITECTURE: ${{ matrix.arch }}
+      STAGE: ${{ matrix.stage }}
+      LIBIIO_VERSION: libiio-v0   # cloudsmith artifacts need ~latest suffix
+      LIBIIO_ARTIFACT: ${{ matrix.libiio-artifact }}
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      VERSION: ${{needs.identify-version.outputs.app-version}}
+      CLOUDSMITH_ORG: adi
+      CLOUDSMITH_REPO: ${{ secrets.CLOUDSMITH_REPO }}
+    steps:
+    - name: Checkout code repository
+      uses: actions/checkout@v6
+    - name: Select Python 3.11 for main build
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: .github/scripts/install-deps-mac.sh
+    - name: Build libm2k
+      run: .github/scripts/make_macOS
+      env:
+        MAC_ARCHITECTURE: ${{ env.ARCHITECTURE }}
+        MAC_OS: ${{ matrix.runs-on }}
+    - name: Use Python 3.9
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.9'
+    - name: Wheel Python 3.9
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+    - name: Use Python 3.10
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.10'
+    - name: Wheel Python 3.10
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+    - name: Use Python 3.11
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Wheel Python 3.11
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+    - name: Use Python 3.12
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.12'
+    - name: Wheel Python 3.12
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+    - name: Use Python 3.13
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.13'
+    - name: Wheel Python 3.13
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+    - name: Use Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.14'
+    - name: Wheel Python 3.14
+      run: |
+        python3 -m pip install wheel twine build virtualenv
+        cd build
+        mkdir -p wheelhouse
+        COMPILE_BINDINGS=True python3 -m build
+        cp dist/*.whl wheelhouse/
+    - name: Collect artifacts
+      shell: sh
+      run: |
+        mkdir ${{ github.workspace }}/artifacts
+        mv build/*.pkg artifacts/
+        mv build_tar/*.tar.gz artifacts/
+        mv build/wheelhouse/*.whl artifacts/
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: libm2k-${{ matrix.runs-on }}-${{matrix.arch}}
+        path: |
+          artifacts/
+        if-no-files-found: error
+    - name: Upload to testPyPI
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      run: |
+        python3 -m pip install --upgrade twine
+        python3 -m twine upload --repository testpypi build/wheelhouse/*.whl
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+    - name: Push to cloudsmith
+      if: ${{ env.STAGE == 'dev' }}
+      shell: bash
+      run: |
+        pip install cloudsmith-cli
+        .github/scripts/upload-to-cloudsmith.sh
+      env:
+        VERSION: ${{ env.VERSION }}
+        WORKSPACE: ${{ github.workspace }}

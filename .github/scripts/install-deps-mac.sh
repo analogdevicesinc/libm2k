@@ -1,0 +1,111 @@
+#!/bin/bash
+
+set -e
+
+WORKDIR=$(pwd)
+
+echo "::group::Installing common dependencies"
+echo "#### Installing brew packages"
+BREW_LIBIIO="doxygen libusb libxml2 ncurses cdk libserialport sphinx-doc pkg-config"
+BREW_LIBM2K="cmake doxygen libusb libxml2 swig curl python"
+PACKAGES="$BREW_LIBIIO $BREW_LIBM2K"
+brew install --display-times $PACKAGES
+
+echo "#### Installing pip packages"
+PIP_LIBIIO="sphinx setuptools"
+PIP_LIBM2K="wheel twine build virtualenv"
+PACKAGES="$PIP_LIBIIO $PIP_LIBM2K"
+# The GitHub macos-14 (arm64) image ships two Python 3.14 installs: Homebrew's
+# (which ambient pip3 targets) and the python.org framework build. Every cmake
+# step below and in make_macOS selects the framework python via this same
+# expression, so install packages into THAT interpreter -- otherwise setuptools
+# etc. land in Homebrew's site-packages and the build's setup.py can't see them.
+# --break-system-packages handles the PEP 668 marker; it is a no-op without one.
+PYTHON=$(python -c "import os, sys; print(os.path.dirname(sys.executable) + '/python')")
+"$PYTHON" -m pip install --break-system-packages $PACKAGES
+echo "::endgroup::"
+
+echo "::group::Installing glog"
+echo "### Building glog - version $GLOG_VERSION"
+git clone https://github.com/google/glog -b $GLOG_VERSION "${WORKDIR}"/glog
+
+cd "${WORKDIR}"/glog
+mkdir -p build_"${GLOG_VERSION}" && cd build_"${GLOG_VERSION}"
+cmake "${WORKDIR}"/glog -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+make
+sudo make install
+cd "${WORKDIR}"
+echo "::endgroup::"
+
+echo "::group::Installing libiio"
+echo "### Building libiio - version $LIBIIO_VERSION"
+if [[ "$STAGE" == "rel" ]]; then
+    echo "Building for release stage ..."
+    git clone https://github.com/analogdevicesinc/libiio.git -b $LIBIIO_VERSION "${WORKDIR}"/libiio
+
+    echo "#### Building: .pkg"
+    cd "${WORKDIR}"/libiio
+    mkdir -p build && cd build
+    cmake "${WORKDIR}"/libiio \
+        -Werror=dev \
+        -Wno-error=install-absolute-destination \
+        -DCOMPILE_WARNING_AS_ERROR=ON \
+        -DOSX_PACKAGE=ON \
+        -DCPP_BINDINGS=ON \
+        -DPYTHON_EXECUTABLE:FILEPATH=$(python -c "import os, sys; print(os.path.dirname(sys.executable) + '/python')") \
+        -DPYTHON_BINDINGS=ON \
+        -DWITH_EXAMPLES=ON \
+        -DWITH_SERIAL_BACKEND=ON \
+        -DWITH_ZSTD=OFF
+    make
+    sudo make install
+
+    echo "#### Building: .tar"
+    cd "${WORKDIR}"/libiio
+    mkdir -p build_tar && cd build_tar
+    cmake "${WORKDIR}"/libiio \
+        -Werror=dev \
+        -Wno-error=install-absolute-destination \
+        -DCOMPILE_WARNING_AS_ERROR=ON \
+        -DOSX_PACKAGE=OFF \
+        -DENABLE_PACKAGING=ON \
+        -DCPP_BINDINGS=ON \
+        -DPYTHON_EXECUTABLE:FILEPATH=$(python -c "import os, sys; print(os.path.dirname(sys.executable) + '/python')") \
+        -DPYTHON_BINDINGS=ON \
+        -DWITH_SERIAL_BACKEND=ON \
+        -DWITH_ZSTD=OFF \
+        -DCPACK_SYSTEM_NAME=${ARTIFACTNAME}
+    make package
+    mv ../CI/azure/macos_tar_fixup.sh .
+    chmod +x macos_tar_fixup.sh
+    ./macos_tar_fixup.sh
+    cd "${WORKDIR}"
+    
+    echo "#### Building with documentation"
+    cd "${WORKDIR}"/libiio/build
+    cmake "${WORKDIR}"/libiio \
+        -Werror=dev \
+        -Wno-error=install-absolute-destination \
+        -DCOMPILE_WARNING_AS_ERROR=ON \
+        -DCPP_BINDINGS=ON \
+        -DPYTHON_BINDINGS=ON \
+        -DWITH_DOC=ON \
+        -DWITH_SERIAL_BACKEND=ON
+    make
+    cd "${WORKDIR}"
+else
+    echo "Building for development stage ..."
+    mkdir build && cd build
+    echo "Downloading libiio from cloudsmith repository ..."
+    wget -q https://raw.githubusercontent.com/analogdevicesinc/wiki-scripts/8d7a96779dd034005279ed1c7d052514df695d8c/utils/cloudsmith_utils/cloudsmith_helper.py \
+        -O /tmp/cloudsmith_helper.py
+    "$PYTHON" /tmp/cloudsmith_helper.py \
+        --method get_artifacts_from_location \
+        --repo external \
+        --package_version "${LIBIIO_VERSION}~latest" \
+        --package_name "${LIBIIO_ARTIFACT}"
+    echo "Installing local libiio package ..."
+    libiio_pkg=$(find . -name "*${LIBIIO_ARTIFACT}*")
+    sudo installer -pkg "$libiio_pkg" -target /
+fi
+echo "::endgroup::"

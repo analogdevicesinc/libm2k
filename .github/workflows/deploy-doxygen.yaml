@@ -1,0 +1,30 @@
+name: Deploy doxygen
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - next_stable
+      - '20[1-9][0-9]_R[1-9]'
+      - staging/*
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  env:
+    IS_PULL_REQUEST: ${{ github.event_name == "pull_request" }}
+    BRANCH_NAME: ${{ github.head_ref }}
+    CURRENT_COMMIT: ${{ github.sha }}
+  deploy-doxygen:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Build and publish doxygen
+        shell: sh
+        run: |
+          .github/scripts/doxygen.sh
