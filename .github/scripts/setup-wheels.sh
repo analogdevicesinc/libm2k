@@ -3,8 +3,9 @@
 set -e
 
 echo "=== Installing system dependencies ==="
-yum install -y libxml2-devel libusbx-devel libaio-devel cmake git flex bison swig || \
-    dnf install -y libxml2-devel libusbx-devel libaio-devel cmake git flex bison swig || true
+if ! yum install -y libxml2-devel libusbx-devel libaio-devel cmake git flex bison swig 2>/dev/null; then
+    dnf install -y libxml2-devel libusbx-devel libaio-devel cmake git flex bison swig
+fi
 
 echo "=== Building glog ==="
 cd /tmp
@@ -56,10 +57,14 @@ cmake .. -DENABLE_PYTHON=ON -DENABLE_TOOLS=ON -DENABLE_CSHARP=OFF -DENABLE_DOC=O
 make -j$(nproc) libm2k _libm2k m2kcli
 
 # Copy/link libm2k to where setup.py looks (-L/project/build -L/usr/lib64)
+if [ -z "$CI_VERSION" ]; then
+    echo "Error: CI_VERSION is not set. Check CIBW_ENVIRONMENT_PASS_LINUX in workflow."
+    exit 1
+fi
 cp -a ./src/libm2k.so* /usr/lib64/
-ln -sf libm2k.so.0.9.1 ./libm2k.so
-ln -sf libm2k.so.0.9.1 ./libm2k.so.0
-cp ./src/libm2k.so.0.9.1 .
+ln -sf libm2k.so.${CI_VERSION} ./libm2k.so
+ln -sf libm2k.so.${CI_VERSION} ./libm2k.so.0
+cp ./src/libm2k.so.${CI_VERSION} .
 ldconfig
 
 # Now run setup.py manually

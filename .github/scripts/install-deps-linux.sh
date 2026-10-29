@@ -36,7 +36,7 @@ if [[ "$ARCHITECTURE" == "armhf" ]]; then
             debian13-armhf \
             /bin/bash -c "
                 wget https://packages.analog.com/public/raw/versions/libiio-v0~latest/libiio-0.26.g-${LIBIIO_ARTIFACT}
-                dpkg -i *.deb
+                dpkg -i libiio-0.26.g-${LIBIIO_ARTIFACT}
                 ldconfig
                 apt-get install -y python3-libiio
             "
@@ -59,7 +59,7 @@ else
             libavahi-client-dev bison flex wget graphviz libavahi-common-dev bzip2 curl
 
     (${SUDO} apt-get install -y policykit-1 || ${SUDO} apt-get install -y polkitd pkexec) && \
-        ${SUDO} apt-get install python3-gi-cairo
+        ${SUDO} apt-get install -y python3-gi-cairo
     python3 -m pip install requests
     echo "::endgroup::"
 
@@ -68,7 +68,7 @@ else
     if [[ "$STAGE" == "dev" ]]; then
         wget https://packages.analog.com/public/raw/versions/libiio-v0~latest/libiio-0.26.g-${LIBIIO_ARTIFACT}
           
-        ${SUDO} dpkg -i *.deb
+        ${SUDO} dpkg -i libiio-0.26.g-${LIBIIO_ARTIFACT}
         ${SUDO} ldconfig
     else
         ${SUDO} apt-get install -y libiio-dev

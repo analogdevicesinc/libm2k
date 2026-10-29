@@ -1,7 +1,7 @@
 name: Build and Deploy libm2k - linux
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 on:
@@ -28,12 +28,14 @@ jobs:
   identify-version:
     runs-on: ubuntu-latest
     outputs:
-      app-version: ${{ steps.set_version.outputs.version }}
+      ci-version: ${{ steps.set_version.outputs.ci-version }}
+      cloudsmith-version: ${{ steps.set_version.outputs.cloudsmith-version }}
     steps:
     - name: Checkout code repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7
     - name: Set app version
       id: set_version
+      shell: bash
       run: |
         .github/scripts/identify-version.sh
   build-linux:
@@ -74,16 +76,16 @@ jobs:
     env:
       ARCHITECTURE: ${{ matrix.architecture }}
       CONTAINER: ${{ matrix.container }}
-      VERSION: ${{needs.identify-version.outputs.app-version}}
+      CI_VERSION: ${{ needs.identify-version.outputs.ci-version }}
+      CLOUDSMITH_VERSION: ${{ needs.identify-version.outputs.cloudsmith-version }}
       LIBIIO_ARTIFACT: ${{ matrix.libiio-artifact || '' }}
       STAGE: ${{ matrix.stage }}
       PLATFORM: ${{ matrix.platform }}
-      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
-      CLOUDSMITH_ORG: adi
+      CLOUDSMITH_ORG: ${{ secrets.CLOUDSMITH_ORG }}
       CLOUDSMITH_REPO: ${{ secrets.CLOUDSMITH_REPO }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7
       - name: Install deps
         shell: sh
         run: |
@@ -98,7 +100,7 @@ jobs:
           ignore-path: |
             packaging
           control-path: ${{ matrix.stage == 'dev' && 'packaging/debian_dev' || 'packaging/debian' }}
-          version: ${{ env.VERSION }}
+          version: ${{ env.CI_VERSION }}
       # Also debian creation for for armhf architecture
       - name: Install and verify application
         shell: sh
@@ -107,18 +109,22 @@ jobs:
         env:
           ARTIFACTS_DIR: ${{ steps.build_deb.outputs.artifact-dir || '' }}
       - name: Upload debian artifacts to github
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9    #v7
         with:
           name: libm2k-debian-${{ matrix.architecture }}-${{ matrix.stage }}
           path: |
             artifacts/
           if-no-files-found: error
+      - name: Setup cloudsmith
+        if: ${{ env.STAGE == 'dev' && env.CLOUDSMITH_VERSION != '' }}
+        uses: cloudsmith-io/cloudsmith-cli-action@v3
+        with:
+          oidc-namespace: ${{ secrets.CLOUDSMITH_ORG }}
+          oidc-service-slug: ${{ secrets.CLOUDSMITH_SVC }}
       - name: Push to cloudsmith
-        if: ${{ env.STAGE == 'dev' }}
+        if: ${{ env.STAGE == 'dev' && env.CLOUDSMITH_VERSION != '' }}
         shell: bash
         run: |
-          pip install cloudsmith-cli
           .github/scripts/upload-to-cloudsmith.sh
         env:
-          VERSION: ${{ env.VERSION }}
           WORKSPACE: ${{ github.workspace }}

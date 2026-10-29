@@ -9,7 +9,7 @@ if [[ "$ARCHITECTURE" == 'armhf' ]]; then
     [[ "$STAGE" == "dev" ]] && control_path="packaging/debian_dev" || control_path="packaging/debian"
 
     docker exec \
-        -e VERSION="$VERSION"\
+        -e VERSION="$CI_VERSION"\
         -e WORKING_DIRECTORY="/workspace/libm2k" \
         -e GITHUB_WORKSPACE="/workspace" \
         -e IGNORE_PATH="packaging" \
@@ -26,19 +26,24 @@ if [[ "$ARCHITECTURE" == 'armhf' ]]; then
     docker exec \
         -w /workspace/libm2k \
         -e ARCHITECTURE="$ARCHITECTURE" \
-        -e VERSION="$VERSION" \
+        -e VERSION="$CI_VERSION" \
         debian13-armhf \
         /bin/bash -c "
             set -e
-            apt-get install -y /workspace/artifacts/libm2k_${VERSION}-1_${ARCHITECTURE}.deb
+            apt-get install -y /workspace/artifacts/libm2k_${CI_VERSION}-1_${ARCHITECTURE}.deb
         "
     
     # Copy from docker to host
     mkdir -p artifacts
     docker cp debian13-armhf:/workspace/artifacts/. ./artifacts/
+    rm -rf artifacts/libm2k_${CI_VERSION}.orig.tar
 else
     [[ "$ARCHITECTURE" == "arm64" ]] && SUDO="" || SUDO="sudo"
-    [[ "$STAGE" == "rel" ]] && \
-        ${SUDO} apt-get install -y "${ARTIFACTS_DIR}/libm2k_${VERSION}-1_${ARCHITECTURE}.deb" || \
-        ${SUDO} dpkg -i "${ARTIFACTS_DIR}/libm2k_${VERSION}-1_${ARCHITECTURE}.deb"
+    if [[ "$STAGE" == "rel" ]]; then
+        ${SUDO} apt-get install -y "${ARTIFACTS_DIR}/libm2k_${CI_VERSION}-1_${ARCHITECTURE}.deb"
+    else
+        ${SUDO} dpkg -i "${ARTIFACTS_DIR}/libm2k_${CI_VERSION}-1_${ARCHITECTURE}.deb"
+    fi
+
+    rm -rf artifacts/libm2k_${CI_VERSION}.orig.tar
 fi
