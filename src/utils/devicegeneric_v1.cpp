@@ -444,7 +444,14 @@ string DeviceGeneric::setStringValue(string attr_name, string value)
 		THROW_M2K_EXCEPTION("Device: Cannot write " + attr_name, libm2k::EXC_INVALID_PARAMETER, ret);
 	}
 	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name, attr_name.c_str(), LIBM2K_ATTRIBUTE_WRITE}, value));
-	return getStringValue(attr_name);
+	// some attributes can be written but not read back (e.g. trigger_src on firmware v0.33)
+	__try {
+		return getStringValue(attr_name);
+	} __catch (exception_type&) {
+		LIBM2K_LOG(WARNING, libm2k::buildLoggingMessage({m_dev_name, attr_name.c_str()},
+				"Cannot read back attribute after write"));
+		return value;
+	}
 }
 
 string DeviceGeneric::setStringValue(unsigned int chn_idx, string attr, string value, bool output)

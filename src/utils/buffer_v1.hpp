@@ -95,6 +95,7 @@ private:
 	struct iio_buffer_stream *m_buf_stream;
 	struct iio_block *m_block;
 	bool m_block_enqueued;
+	bool m_stream_started;
 	std::vector<struct iio_block*> m_rx_blocks;
 	unsigned int m_rx_head;
 	struct iio_block *m_current_rx_block;
