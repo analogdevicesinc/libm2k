@@ -45,6 +45,7 @@ Buffer::Buffer(struct iio_device *dev, struct iio_channels_mask *mask) {
 	m_buffer = nullptr;
 	m_block = nullptr;
 	m_block_enqueued = false;
+	m_stream_started = false;
 	m_rx_blocks = {};
 	m_rx_head = 0;
 	m_current_rx_block = nullptr;
@@ -230,11 +231,15 @@ void Buffer::pushGeneric(void *data, ssize_t data_type_size, size_t data_size, u
 				return;
 			}
 			m_block_enqueued = true;
-			ret = iio_buffer_stream_start(m_buf_stream);
-			if (ret) {
-				destroy();
-				THROW_M2K_EXCEPTION("Buffer: Cannot start TX stream", libm2k::EXC_RUNTIME_ERROR, ret);
-				return;
+			// the stream is reused by same-size pushes, start it only once
+			if (!m_stream_started) {
+				ret = iio_buffer_stream_start(m_buf_stream);
+				if (ret) {
+					destroy();
+					THROW_M2K_EXCEPTION("Buffer: Cannot start TX stream", libm2k::EXC_RUNTIME_ERROR, ret);
+					return;
+				}
+				m_stream_started = true;
 			}
 			ret = iio_block_dequeue(m_block, false);
 			m_block_enqueued = false;
@@ -255,6 +260,7 @@ void Buffer::pushGeneric(void *data, ssize_t data_type_size, size_t data_size, u
 				THROW_M2K_EXCEPTION("Buffer: Cannot start TX cyclic stream", libm2k::EXC_RUNTIME_ERROR, start_ret);
 				return;
 			}
+			m_stream_started = true;
 		}
 		LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Buffer pushed"));
 	} else {
@@ -550,6 +556,7 @@ void Buffer::destroy()
 		m_buf_stream = nullptr;
 	}
 	m_block = nullptr;
+	m_stream_started = false;
 
 	LIBM2K_LOG(INFO, libm2k::buildLoggingMessage({m_dev_name}, "Stream destroyed"));
 	m_last_nb_samples = 0;
