@@ -20,8 +20,7 @@ echo_green "Documentation was generated successfully!"
 # If the current build is not a pull request and it is on the default branch the
 # documentation will be pushed to the gh-pages branch
 ############################################################################
-if [[ "${IS_PULL_REQUEST}" == "False" && "${BRANCH_NAME}" == "main" ]]
-then
+if [[ "${IS_PULL_REQUEST}" == "False" && "${BRANCH_NAME}" == "main" ]]; then
         echo_green "Running Github docs update on commit '$CURRENT_COMMIT'"
         git config --global user.email "cse-ci-notifications@analog.com"
         git config --global user.name "CSE-CI"

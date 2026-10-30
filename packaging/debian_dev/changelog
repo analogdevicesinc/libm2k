@@ -1,0 +1,5 @@
+libm2k (@VERSION@) UNRELEASED; urgency=low
+
+  * Automated package build.
+
+ -- IonutMuthi <ionut.muthi@analog.com>  @DATE@
