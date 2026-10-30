@@ -49,6 +49,7 @@ jobs:
             stage: dev
             libiio-artifact: Windows-VS-2022-x64
     runs-on: windows-2022
+    needs: identify-version
     env:
       BUILD_SOURCESDIRECTORY: ${{ github.workspace }}
       BUILD_ARTIFACTSTAGINGDIRECTORY: ${{ github.workspace }}/staging
@@ -207,7 +208,7 @@ jobs:
         if-no-files-found: error
     - name: Setup cloudsmith
       if: ${{ env.STAGE == 'dev' && env.CLOUDSMITH_VERSION != '' }}
-      uses: cloudsmith-io/cloudsmith-cli-action@v3
+      uses: cloudsmith-io/cloudsmith-cli-action@92b1383b22bbd36d804b858f273abcdf4d349f6b    # v3
       with:
         oidc-namespace: ${{ secrets.CLOUDSMITH_ORG }}
         oidc-service-slug: ${{ secrets.CLOUDSMITH_SVC }}
