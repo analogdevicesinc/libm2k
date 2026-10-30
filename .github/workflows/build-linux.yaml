@@ -90,7 +90,35 @@ jobs:
         shell: sh
         run: |
           .github/scripts/install-deps-linux.sh
-      # This shared-action compatible only with amd64/arm64 architectures - armhf is managed in the next step 
+      - name: Build libm2k for wheels - amd64/arm64
+        if: matrix.architecture == 'amd64' || matrix.architecture == 'arm64'
+        shell: bash
+        run: |
+          mkdir -p build_wheels && cd build_wheels
+          cmake .. \
+            -DENABLE_PYTHON=ON \
+            -DENABLE_TOOLS=ON \
+            -DENABLE_CSHARP=OFF \
+            -DENABLE_LOG=ON
+          make -j$(nproc)
+      - name: Build libm2k for wheels - armhf
+        if: matrix.architecture == 'armhf'
+        shell: bash
+        run: |
+          docker exec \
+            -w /workspace/libm2k \
+            debian13-armhf \
+            /bin/bash -c "
+              set -e
+              mkdir -p build_wheels && cd build_wheels
+              cmake .. \
+                -DENABLE_PYTHON=ON \
+                -DENABLE_TOOLS=ON \
+                -DENABLE_CSHARP=OFF \
+                -DENABLE_LOG=ON
+              make -j\$(nproc)
+            "
+      # This shared-action compatible only with amd64/arm64 architectures - armhf is managed in the next step
       - name: Create debian package - amd64/arm64
         if: ${{ matrix.architecture == 'amd64' || matrix.architecture == 'arm64' }}
         id: build_deb
@@ -115,9 +143,49 @@ jobs:
           path: |
             artifacts/
           if-no-files-found: error
+      - name: Build wheels - amd64/arm64
+        if: matrix.architecture == 'amd64' || matrix.architecture == 'arm64'
+        shell: bash
+        run: |
+          python3 -m pip install --break-system-packages wheel build virtualenv || \
+            python3 -m pip install wheel build virtualenv
+          cd build_wheels
+          mkdir -p wheelhouse
+          COMPILE_BINDINGS=True python3 -m build
+          cp dist/*.whl wheelhouse/
+      - name: Build wheels - armhf
+        if: matrix.architecture == 'armhf'
+        shell: bash
+        run: |
+          docker exec \
+            -w /workspace/libm2k \
+            debian13-armhf \
+            /bin/bash -c "
+              set -e
+              python3 -m pip install --break-system-packages wheel build virtualenv || \
+                python3 -m pip install wheel build virtualenv
+              cd build_wheels
+              mkdir -p wheelhouse
+              COMPILE_BINDINGS=True python3 -m build
+              cp dist/*.whl wheelhouse/
+            "
+          # Copy wheels from container to host
+          mkdir -p build_wheels/wheelhouse
+          docker cp debian13-armhf:/workspace/libm2k/build_wheels/wheelhouse/. ./build_wheels/wheelhouse/
+      - name: Upload wheel artifacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9    #v7
+        with:
+          name: libm2k-wheels-${{ matrix.architecture }}-${{ matrix.stage }}
+          path: build_wheels/wheelhouse/*.whl
+          if-no-files-found: error
+      - name: Copy wheels to artifacts for cloudsmith
+        if: ${{ env.STAGE == 'dev' }}
+        shell: bash
+        run: |
+          cp build_wheels/wheelhouse/*.whl artifacts/ 2>/dev/null || true
       - name: Setup cloudsmith
         if: ${{ env.STAGE == 'dev' && env.CLOUDSMITH_VERSION != '' }}
-        uses: cloudsmith-io/cloudsmith-cli-action@v3
+        uses: cloudsmith-io/cloudsmith-cli-action@92b1383b22bbd36d804b858f273abcdf4d349f6b    # v3
         with:
           oidc-namespace: ${{ secrets.CLOUDSMITH_ORG }}
           oidc-service-slug: ${{ secrets.CLOUDSMITH_SVC }}

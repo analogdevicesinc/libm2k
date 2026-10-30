@@ -106,66 +106,84 @@ jobs:
         MAC_ARCHITECTURE: ${{ env.ARCHITECTURE }}
         MAC_OS: ${{ matrix.runs-on }}
     - name: Use Python 3.9
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
       with:
         python-version: '3.9'
     - name: Wheel Python 3.9
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       run: |
+        export ARCHFLAGS="-arch ${{ matrix.arch == 'arm64' && 'arm64' || 'x86_64' }}"
         python3 -m pip install wheel twine build virtualenv
         cd build
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
     - name: Use Python 3.10
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
       with:
         python-version: '3.10'
     - name: Wheel Python 3.10
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       run: |
+        export ARCHFLAGS="-arch ${{ matrix.arch == 'arm64' && 'arm64' || 'x86_64' }}"
         python3 -m pip install wheel twine build virtualenv
         cd build
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
     - name: Use Python 3.11
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
       with:
         python-version: '3.11'
     - name: Wheel Python 3.11
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       run: |
+        export ARCHFLAGS="-arch ${{ matrix.arch == 'arm64' && 'arm64' || 'x86_64' }}"
         python3 -m pip install wheel twine build virtualenv
         cd build
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
     - name: Use Python 3.12
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
       with:
         python-version: '3.12'
     - name: Wheel Python 3.12
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       run: |
+        export ARCHFLAGS="-arch ${{ matrix.arch == 'arm64' && 'arm64' || 'x86_64' }}"
         python3 -m pip install wheel twine build virtualenv
         cd build
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
     - name: Use Python 3.13
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
       with:
         python-version: '3.13'
     - name: Wheel Python 3.13
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       run: |
+        export ARCHFLAGS="-arch ${{ matrix.arch == 'arm64' && 'arm64' || 'x86_64' }}"
         python3 -m pip install wheel twine build virtualenv
         cd build
         mkdir -p wheelhouse
         COMPILE_BINDINGS=True python3 -m build
         cp dist/*.whl wheelhouse/
     - name: Use Python 3.14
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
       with:
         python-version: '3.14'
     - name: Wheel Python 3.14
+      if: matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large'
       run: |
+        export ARCHFLAGS="-arch ${{ matrix.arch == 'arm64' && 'arm64' || 'x86_64' }}"
         python3 -m pip install wheel twine build virtualenv
         cd build
         mkdir -p wheelhouse
@@ -177,16 +195,17 @@ jobs:
         mkdir ${{ github.workspace }}/artifacts
         mv build/*.pkg artifacts/
         mv build_tar/*.tar.gz artifacts/
+        mv build/wheelhouse/*.whl artifacts/ 2>/dev/null
         rm -rf artifacts/*-Darwin.tar.gz
     - name: Upload macOS artifacts
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9    #v7
       with:
-        name: libm2k-${{ matrix.runs-on }}-${{matrix.arch}}
+        name: libm2k-${{ matrix.runs-on }}-${{ matrix.arch }}-${{ matrix.stage }}
         path: |
           artifacts/
         if-no-files-found: error
     - name: Upload to testPyPI
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      if: (matrix.runs-on == 'macos-15' || matrix.runs-on == 'macos-15-large') && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       run: |
         python3 -m pip install --upgrade twine
         python3 -m twine upload --repository testpypi build/wheelhouse/*.whl
@@ -195,7 +214,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
     - name: Setup cloudsmith
       if: ${{ env.STAGE == 'dev' && env.CLOUDSMITH_VERSION != '' }}
-      uses: cloudsmith-io/cloudsmith-cli-action@v3
+      uses: cloudsmith-io/cloudsmith-cli-action@92b1383b22bbd36d804b858f273abcdf4d349f6b    # v3
       with:
         oidc-namespace: ${{ secrets.CLOUDSMITH_ORG }}
         oidc-service-slug: ${{ secrets.CLOUDSMITH_SVC }}
