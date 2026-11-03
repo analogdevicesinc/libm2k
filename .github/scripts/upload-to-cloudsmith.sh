@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 ARTIFACTS=$(find "${WORKSPACE}/artifacts" -type f -not -name "*.orig.tar.gz*" -not -name "*.debian.tar.xz*" -not -name "*.dsc")
 

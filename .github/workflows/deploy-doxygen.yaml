@@ -12,7 +12,7 @@ on:
       - staging/*
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 jobs:

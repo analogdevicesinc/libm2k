@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 [[ "$ARCHITECTURE" == "arm64" ]] && SUDO="" || SUDO="sudo"
 

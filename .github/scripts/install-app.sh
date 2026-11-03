@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 # Detect manual container build or default
 if [[ "$ARCHITECTURE" == 'armhf' ]]; then

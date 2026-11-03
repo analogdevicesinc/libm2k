@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 echo "=== Installing system dependencies ==="
 if ! yum install -y libxml2-devel libusbx-devel libaio-devel cmake git flex bison swig 2>/dev/null; then

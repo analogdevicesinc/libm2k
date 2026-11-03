@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 # Extract version from CMakeLists.txt LIBM2K_VERSION_MAJOR/MINOR/PATCH variables for the CI_VERSION
 cmake_version=$(grep -oP 'set\s*\(\s*LIBM2K_VERSION_(MAJOR|MINOR|PATCH)\s+\K[0-9]+' CMakeLists.txt | paste -sd '.')

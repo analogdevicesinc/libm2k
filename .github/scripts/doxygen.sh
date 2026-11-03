@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 TOP_DIR=$(pwd)
 
 echo_red() { printf "\033[1;31m$*\033[m\n"; }
