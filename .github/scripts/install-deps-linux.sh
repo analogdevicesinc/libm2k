@@ -15,17 +15,19 @@ if [[ "$ARCHITECTURE" == "armhf" ]]; then
     # Install deps
     echo "::group::Installing common dependencies"
     docker exec \
+        -e CONTAINER="${CONTAINER}" \
         debian13-armhf \
         /bin/bash -c "
             set -e
             cd /workspace/libm2k
             apt-get update && apt-get install -y \
             python3-dev rpm pybuild-plugin-pyproject dh-python tar doxygen libgoogle-glog-dev \
-            libc6 libxml2-dev libcdk5-dev libaio-dev libusb-1.0-0-dev libserialport-dev \
-            libavahi-client-dev bison flex wget graphviz libavahi-common-dev bzip2 curl
+            libc6 libxml2-dev libcdk5-dev libaio-dev libusb-1.0-0-dev libserialport-dev git build-essential cmake \
+            libavahi-client-dev bison flex wget graphviz libavahi-common-dev bzip2 curl python3-pip python3-venv
             (apt-get install -y policykit-1 || apt-get install -y polkitd pkexec) && \
             apt-get install -y python3-gi-cairo swig
-            python3 -m pip install requests setuptools
+            [[ \"\$CONTAINER\" == \"debian:latest\" ]] && PIP_BREAK=\"--break-system-packages\" || PIP_BREAK=\"\"
+            python3 -m pip install \$PIP_BREAK requests setuptools
         "
     echo "::endgroup::"
 
@@ -56,12 +58,13 @@ else
     ${SUDO} apt-get update
     DEBIAN_FRONTEND=noninteractive ${SUDO} apt-get install -y \
             python3-dev rpm pybuild-plugin-pyproject dh-python tar doxygen libgoogle-glog-dev swig \
-            libc6 libxml2-dev libcdk5-dev libaio-dev libusb-1.0-0-dev libserialport-dev \
-            libavahi-client-dev bison flex wget graphviz libavahi-common-dev bzip2 curl
+            libc6 libxml2-dev libcdk5-dev libaio-dev libusb-1.0-0-dev libserialport-dev git build-essential cmake \
+            libavahi-client-dev bison flex wget graphviz libavahi-common-dev bzip2 curl python3-pip python3-venv
 
     (${SUDO} apt-get install -y policykit-1 || ${SUDO} apt-get install -y polkitd pkexec) && \
         ${SUDO} apt-get install -y python3-gi-cairo
-    python3 -m pip install requests setuptools
+    [[ "$CONTAINER" == "debian:latest" ]] && PIP_BREAK="--break-system-packages" || PIP_BREAK=""
+    python3 -m pip install $PIP_BREAK requests setuptools
     echo "::endgroup::"
 
     # Install libiio

@@ -70,6 +70,26 @@ jobs:
             platform: linux/arm/v7
             stage: dev
             libiio-artifact: Debian-13-armhf.deb
+          - architecture: arm64
+            runs-on: ubuntu-24.04-arm
+            container: debian:latest
+            stage: rel
+          - architecture: arm64
+            runs-on: ubuntu-24.04-arm
+            container: debian:latest
+            stage: dev
+            libiio-artifact: Debian-13-arm64.deb
+          - architecture: armhf
+            runs-on: ubuntu-24.04-arm
+            container: debian:latest
+            platform: linux/arm/v7
+            stage: rel
+          - architecture: armhf
+            runs-on: ubuntu-24.04-arm
+            container: debian:latest
+            platform: linux/arm/v7
+            stage: dev
+            libiio-artifact: Debian-13-armhf.deb
     runs-on: ${{ matrix.runs-on }}
     needs: identify-version
     container: ${{ matrix.architecture == 'arm64' && matrix.container || '' }}
@@ -144,7 +164,7 @@ jobs:
       - name: Upload debian artifacts to github
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9    #v7
         with:
-          name: libm2k-debian-${{ matrix.architecture }}-${{ matrix.stage }}
+          name: ${{ env.LIBM2K_DEBIAN }}
           path: |
             artifacts/
           if-no-files-found: error
@@ -152,8 +172,8 @@ jobs:
         if: matrix.architecture == 'amd64' || matrix.architecture == 'arm64'
         shell: bash
         run: |
-          python3 -m pip install --break-system-packages wheel build virtualenv || \
-            python3 -m pip install wheel build virtualenv
+          [[ "$CONTAINER" == "debian:latest" ]] && PIP_BREAK="--break-system-packages" || PIP_BREAK=""
+          python3 -m pip install $PIP_BREAK wheel build setuptools
           cd build_wheels
           mkdir -p wheelhouse
           COMPILE_BINDINGS=True python3 -m build
@@ -163,19 +183,20 @@ jobs:
         shell: bash
         run: |
           docker exec \
+            -e CONTAINER="${CONTAINER}" \
             -w /workspace/libm2k/build_wheels \
             debian13-armhf \
             /bin/bash -c "
               set -e
-              python3 -m pip install --break-system-packages wheel build virtualenv || \
-                python3 -m pip install wheel build virtualenv
+              [[ \"\$CONTAINER\" == \"debian:latest\" ]] && PIP_BREAK=\"--break-system-packages\" || PIP_BREAK=\"\"
+              python3 -m pip install \$PIP_BREAK wheel build setuptools
               COMPILE_BINDINGS=True python3 -m build -o /tmp/wheelhouse
               cp -r /tmp/wheelhouse wheelhouse
             "
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9    #v7
         with:
-          name: libm2k-wheels-${{ matrix.architecture }}-${{ matrix.stage }}
+          name: ${{ env.LIBM2K_WHEELS }}
           path: build_wheels/wheelhouse/*.whl
           if-no-files-found: error
       - name: Copy wheels to artifacts for cloudsmith

@@ -47,3 +47,14 @@ else
 
     rm -rf artifacts/libm2k_${CI_VERSION}.orig.tar
 fi
+
+# Create debian and wheels outputs name - differentiate by distro
+if [[ "${CONTAINER}" == *"kuiper"* ]]; then
+    distro_tag="-kuiper"
+elif [[ "${CONTAINER}" == "debian:latest" ]]; then
+    distro_tag="-debian"
+else
+    distro_tag=""
+fi
+echo "LIBM2K_DEBIAN=libm2k-debian-${ARCHITECTURE}-${STAGE}${distro_tag}" >> $GITHUB_ENV
+echo "LIBM2K_WHEELS=libm2k-wheels-${ARCHITECTURE}-${STAGE}${distro_tag}" >> $GITHUB_ENV
