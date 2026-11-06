@@ -20,6 +20,8 @@
 
 cmake_minimum_required(VERSION 3.10)
 
+find_package(Python COMPONENTS Interpreter Compiler Development)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 string(REGEX MATCHALL "([^\ ]+\ |[^\ ]+$)" CMAKE_CXX_LIST "${CMAKE_CXX_FLAGS}")
