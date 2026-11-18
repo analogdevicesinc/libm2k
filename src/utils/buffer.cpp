@@ -63,7 +63,7 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output, bool 
 		*
 		* In cyclic mode the very first buffer pushed will be repeated; in order to push any other buffer the
 		* old buffer must be destroyed and a new one must be created*/
-	if (size != m_last_nb_samples || cyclic) {
+	if (!m_buffer || size != m_last_nb_samples || cyclic) {
         if (enableFlag && cyclic) {
             for(auto channel : m_channel_list) {
                 if (channel->hasAttribute("raw_enable")) {
@@ -73,7 +73,6 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output, bool 
         }
 		destroy();
 
-		m_last_nb_samples = size;
 		m_buffer = iio_device_create_buffer(m_dev, size, cyclic);
 		if (!m_buffer) {
 			if (output) {
@@ -88,6 +87,7 @@ void Buffer::initializeBuffer(unsigned int size, bool cyclic, bool output, bool 
 				THROW_M2K_EXCEPTION("Buffer: Cannot create the RX buffer", libm2k::EXC_RUNTIME_ERROR, errno);
 			}
 		}
+		m_last_nb_samples = size;
         if (enableFlag) {
             for(auto channel : m_channel_list) {
                 if (channel->hasAttribute("raw_enable")) {
