@@ -14,6 +14,7 @@ if [[ "$ARCHITECTURE" == 'armhf' ]]; then
         -e GITHUB_WORKSPACE="/workspace" \
         -e IGNORE_PATH="packaging" \
         -e CONTROL_PATH="$control_path" \
+        -e VERSION_SUFFIX="$VERSION_SUFFIX" \
         -w /workspace/libm2k \
         debian13-armhf \
         /bin/bash -c "
@@ -50,11 +51,13 @@ fi
 
 # Create debian and wheels outputs name - differentiate by distro
 if [[ "${CONTAINER}" == *"kuiper"* ]]; then
-    distro_tag="-kuiper"
+    distro_tag="kuiper"
 elif [[ "${CONTAINER}" == "debian:latest" ]]; then
-    distro_tag="-debian"
+    distro_tag="debian"
 else
-    distro_tag=""
+    distro_tag="ubuntu"
 fi
-echo "LIBM2K_DEBIAN=libm2k-debian-${ARCHITECTURE}-${STAGE}${distro_tag}" >> $GITHUB_ENV
-echo "LIBM2K_WHEELS=libm2k-wheels-${ARCHITECTURE}-${STAGE}${distro_tag}" >> $GITHUB_ENV
+
+version_id=$(cat /etc/os-release | grep "VERSION_ID" | cut -d "=" -f2)
+echo "LIBM2K_DEBIAN=libm2k-deb-${ARCHITECTURE}-${distro_tag}-${version_id}-${STAGE}" >> $GITHUB_ENV
+echo "LIBM2K_WHEELS=libm2k-wheels-${ARCHITECTURE}-${distro_tag}-${version_id}-${STAGE}" >> $GITHUB_ENV

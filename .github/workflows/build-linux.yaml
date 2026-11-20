@@ -44,52 +44,71 @@ jobs:
       matrix:
         include:
           - architecture: amd64
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-24.04
             stage: rel
+            version-suffix: +Ubuntu24.04
+          - architecture: amd64
+            runs-on: ubuntu-26.04
+            stage: rel
+            version-suffix: +Ubuntu26.04
           - architecture: arm64
-            runs-on: ubuntu-24.04-arm
+            runs-on: ubuntu-26.04-arm
             container: docker.cloudsmith.io/adi/containers/kuiper_basic_64:latest
             stage: rel
+            version-suffix: +Debian13
           - architecture: armhf
-            runs-on: ubuntu-24.04-arm
+            runs-on: ubuntu-26.04-arm
             container: docker.cloudsmith.io/adi/containers/kuiper_basic_32:latest
             platform: linux/arm/v7
             stage: rel
+            version-suffix: +Debian13
           - architecture: amd64
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-24.04
             stage: dev
             libiio-artifact: Linux-Ubuntu-24.04.deb
+            version-suffix: +Ubuntu24.04
+          - architecture: amd64
+            runs-on: ubuntu-26.04
+            stage: dev
+            libiio-artifact: Linux-Ubuntu-26.04.deb
+            version-suffix: +Ubuntu26.04
           - architecture: arm64
-            runs-on: ubuntu-24.04-arm
+            runs-on: ubuntu-26.04-arm
             container: docker.cloudsmith.io/adi/containers/kuiper_basic_64:latest
             stage: dev
             libiio-artifact: Debian-13-arm64.deb
+            version-suffix: +Debian13
           - architecture: armhf
-            runs-on: ubuntu-24.04-arm
+            runs-on: ubuntu-26.04-arm
             container: docker.cloudsmith.io/adi/containers/kuiper_basic_32:latest
             platform: linux/arm/v7
             stage: dev
             libiio-artifact: Debian-13-armhf.deb
+            version-suffix: +Debian13
           - architecture: arm64
-            runs-on: ubuntu-24.04-arm
-            container: debian:latest
+            runs-on: ubuntu-26.04-arm
+            container: debian:forky
             stage: rel
+            version-suffix: +Debian14
           - architecture: arm64
-            runs-on: ubuntu-24.04-arm
-            container: debian:latest
+            runs-on: ubuntu-26.04-arm
+            container: debian:forky
             stage: dev
-            libiio-artifact: Debian-13-arm64.deb
+            libiio-artifact: Debian-14-arm64.deb
+            version-suffix: +Debian14
           - architecture: armhf
-            runs-on: ubuntu-24.04-arm
-            container: debian:latest
+            runs-on: ubuntu-26.04-arm
+            container: debian:forky
             platform: linux/arm/v7
             stage: rel
+            version-suffix: +Debian14
           - architecture: armhf
-            runs-on: ubuntu-24.04-arm
-            container: debian:latest
+            runs-on: ubuntu-26.04-arm
+            container: debian:forky
             platform: linux/arm/v7
             stage: dev
-            libiio-artifact: Debian-13-armhf.deb
+            libiio-artifact: Debian-14-armhf.deb
+            version-suffix: +Debian14
     runs-on: ${{ matrix.runs-on }}
     needs: identify-version
     container: ${{ matrix.architecture == 'arm64' && matrix.container || '' }}
@@ -103,6 +122,7 @@ jobs:
       PLATFORM: ${{ matrix.platform }}
       CLOUDSMITH_ORG: ${{ secrets.CLOUDSMITH_ORG }}
       CLOUDSMITH_REPO: ${{ secrets.CLOUDSMITH_REPO }}
+      VERSION_SUFFIX: ${{ matrix.version-suffix }}
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7
@@ -154,6 +174,7 @@ jobs:
             packaging
           control-path: ${{ matrix.stage == 'dev' && 'packaging/debian_dev' || 'packaging/debian' }}
           version: ${{ env.CI_VERSION }}
+          version-suffix: ${{ matrix.VERSION_SUFFIX}}
       # Also debian creation for for armhf architecture
       - name: Install and verify application
         shell: sh
@@ -172,7 +193,7 @@ jobs:
         if: matrix.architecture == 'amd64' || matrix.architecture == 'arm64'
         shell: bash
         run: |
-          [[ "$CONTAINER" == "debian:latest" ]] && PIP_BREAK="--break-system-packages" || PIP_BREAK=""
+          [[ "$CONTAINER" == "debian:forky" ]] && PIP_BREAK="--break-system-packages" || PIP_BREAK=""
           python3 -m pip install $PIP_BREAK wheel build setuptools
           cd build_wheels
           mkdir -p wheelhouse
@@ -188,7 +209,7 @@ jobs:
             debian13-armhf \
             /bin/bash -c "
               set -e
-              [[ \"\$CONTAINER\" == \"debian:latest\" ]] && PIP_BREAK=\"--break-system-packages\" || PIP_BREAK=\"\"
+              [[ \"\$CONTAINER\" == \"debian:forky\" ]] && PIP_BREAK=\"--break-system-packages\" || PIP_BREAK=\"\"
               python3 -m pip install \$PIP_BREAK wheel build setuptools
               COMPILE_BINDINGS=True python3 -m build -o /tmp/wheelhouse
               cp -r /tmp/wheelhouse wheelhouse
