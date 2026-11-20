@@ -8,7 +8,7 @@ set -eo pipefail
 if [[ "$ARCHITECTURE" == "armhf" ]]; then
     # Start container
     docker run --platform ${PLATFORM} \
-        --name debian13-armhf \
+        --name debian-armhf \
         -v "${GITHUB_WORKSPACE}:/workspace/libm2k" \
         -dit ${CONTAINER}
     
@@ -16,7 +16,7 @@ if [[ "$ARCHITECTURE" == "armhf" ]]; then
     echo "::group::Installing common dependencies"
     docker exec \
         -e CONTAINER="${CONTAINER}" \
-        debian13-armhf \
+        debian-armhf \
         /bin/bash -c "
             set -e
             cd /workspace/libm2k
@@ -26,7 +26,7 @@ if [[ "$ARCHITECTURE" == "armhf" ]]; then
             libavahi-client-dev bison flex wget graphviz libavahi-common-dev bzip2 curl python3-pip python3-venv
             (apt-get install -y policykit-1 || apt-get install -y polkitd pkexec) && \
             apt-get install -y python3-gi-cairo swig
-            [[ \"\$CONTAINER\" == \"debian:latest\" ]] && PIP_BREAK=\"--break-system-packages\" || PIP_BREAK=\"\"
+            [[ \"\$CONTAINER\" == \"debian:forky\" || \"\$CONTAINER\" == \"debian:latest\" ]] && PIP_BREAK=\"--break-system-packages\" || PIP_BREAK=\"\"
             python3 -m pip install \$PIP_BREAK requests setuptools
         "
     echo "::endgroup::"
@@ -36,7 +36,7 @@ if [[ "$ARCHITECTURE" == "armhf" ]]; then
     if [[ "$STAGE" == "dev" ]]; then
         docker exec \
             -e LIBIIO_ARTIFACT="${LIBIIO_ARTIFACT}" \
-            debian13-armhf \
+            debian-armhf \
             /bin/bash -c "
                 wget https://packages.analog.com/public/raw/versions/libiio-v0~latest/libiio-0.26.g-${LIBIIO_ARTIFACT}
                 dpkg -i libiio-0.26.g-${LIBIIO_ARTIFACT}
@@ -45,7 +45,7 @@ if [[ "$ARCHITECTURE" == "armhf" ]]; then
             "
     else
         docker exec \
-            debian13-armhf \
+            debian-armhf \
             /bin/bash -c "
                 apt-get install -y libiio-dev
                 ldconfig
@@ -63,7 +63,7 @@ else
 
     (${SUDO} apt-get install -y policykit-1 || ${SUDO} apt-get install -y polkitd pkexec) && \
         ${SUDO} apt-get install -y python3-gi-cairo
-    [[ "$CONTAINER" == "debian:latest" ]] && PIP_BREAK="--break-system-packages" || PIP_BREAK=""
+    [[ "$CONTAINER" == "debian:forky" || "$CONTAINER" == "debian:latest" ]] && PIP_BREAK="--break-system-packages" || PIP_BREAK=""
     python3 -m pip install $PIP_BREAK requests setuptools
     echo "::endgroup::"
 
