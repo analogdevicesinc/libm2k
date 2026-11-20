@@ -1,7 +1,7 @@
 Source: libm2k
 Section: libs
 Priority: optional
-Maintainer: IonutMuthi <ionut.muthi@analog.com>
+Maintainer: EngineerZone <linux@analog.com>
 Build-Depends: debhelper-compat (= 13),
                cmake,
                libiio-dev,
