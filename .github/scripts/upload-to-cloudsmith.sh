@@ -32,7 +32,12 @@ while IFS="" read -r file; do
     stable=$(echo "${filename}" | sed 's/\.g[0-9a-f]\+//')
     ext="${stable##*.}"
     stable="${stable%.${ext}}"
-    # Add distro tag to differentiate kuiper vs debian builds
-    cloudsmith push raw --republish --no-wait-for-sync --name "${stable}${DISTRO_TAG}.${ext}" --tags "${stable}${DISTRO_TAG}" --version "${CLOUDSMITH_VERSION}" \
-        ${CLOUDSMITH_ORG}/${CLOUDSMITH_REPO} "${file}"
+    # Check if a debian is publishing and add distro tag to differentiate kuiper vs debian builds
+    if [[ ! -z "$DEBIAN_ARTIFACT" ]]; then
+        cloudsmith push deb -SW --republish --no-wait-for-sync \
+            "${CLOUDSMITH_ORG}/${CLOUDSMITH_REPO}/debian/${DISTRIBUTION_NAME}" "$f"
+    else
+        cloudsmith push raw --republish --no-wait-for-sync --name "${stable}${DISTRO_TAG}.${ext}" --tags "${stable}${DISTRO_TAG}" --version "${CLOUDSMITH_VERSION}" \
+            ${CLOUDSMITH_ORG}/${CLOUDSMITH_REPO} "${file}"
+    fi
 done <<< "$ARTIFACTS"

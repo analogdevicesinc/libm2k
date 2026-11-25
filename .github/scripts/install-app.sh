@@ -59,8 +59,24 @@ else
     distro_tag="ubuntu"
 fi
 
-version_id=$(grep "^VERSION_ID" /etc/os-release | cut -d "=" -f2 | tr -d '"' || true)
+# On armhf the os-release has to be read from inside the container
+if [[ "$ARCHITECTURE" == 'armhf' ]]; then
+    os_release=$(docker exec debian-armhf cat /etc/os-release)
+else
+    os_release=$(cat /etc/os-release)
+fi
+
+version_id=$(echo "$os_release" | grep "^VERSION_ID" | cut -d "=" -f2 | tr -d '"' || true)
+
+# Set distribution name based on os release version
+if [[ "${VERSION_SUFFIX}" == *"Debian14"* ]]; then
+    distribution_name="forky"
+else
+    distribution_name="trixie"
+fi
 # Debian testing (forky) has no VERSION_ID - fall back to the codename
-[[ -z "$version_id" ]] && version_id=$(grep "^VERSION_CODENAME" /etc/os-release | cut -d "=" -f2 | tr -d '"')
+[[ -z "$version_id" ]] && version_id=$(echo "$os_release" | grep "^VERSION_CODENAME" | cut -d "=" -f2 | tr -d '"') || true
+
 echo "LIBM2K_DEBIAN=libm2k-deb-${ARCHITECTURE}-${distro_tag}-${version_id}-${STAGE}" >> $GITHUB_ENV
 echo "LIBM2K_WHEELS=libm2k-wheels-${ARCHITECTURE}-${distro_tag}-${version_id}-${STAGE}" >> $GITHUB_ENV
+echo "DISTRIBUTION_NAME=${distribution_name}" >> "$GITHUB_ENV"
