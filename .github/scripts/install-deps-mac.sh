@@ -47,7 +47,6 @@ if [[ "$STAGE" == "rel" ]]; then
     cd "${WORKDIR}"/libiio
     mkdir -p build && cd build
     cmake "${WORKDIR}"/libiio \
-        -Werror=dev \
         -Wno-error=install-absolute-destination \
         -DCOMPILE_WARNING_AS_ERROR=ON \
         -DOSX_PACKAGE=ON \
@@ -64,7 +63,6 @@ if [[ "$STAGE" == "rel" ]]; then
     cd "${WORKDIR}"/libiio
     mkdir -p build_tar && cd build_tar
     cmake "${WORKDIR}"/libiio \
-        -Werror=dev \
         -Wno-error=install-absolute-destination \
         -DCOMPILE_WARNING_AS_ERROR=ON \
         -DOSX_PACKAGE=OFF \
@@ -84,7 +82,6 @@ if [[ "$STAGE" == "rel" ]]; then
     echo "#### Building with documentation"
     cd "${WORKDIR}"/libiio/build
     cmake "${WORKDIR}"/libiio \
-        -Werror=dev \
         -Wno-error=install-absolute-destination \
         -DCOMPILE_WARNING_AS_ERROR=ON \
         -DCPP_BINDINGS=ON \
