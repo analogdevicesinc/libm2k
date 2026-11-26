@@ -68,15 +68,12 @@ fi
 
 version_id=$(echo "$os_release" | grep "^VERSION_ID" | cut -d "=" -f2 | tr -d '"' || true)
 
-# Set distribution name based on os release version
-if [[ "${VERSION_SUFFIX}" == *"Debian14"* ]]; then
-    distribution_name="forky"
-else
-    distribution_name="trixie"
-fi
+# Cloudsmith distribution (e.g. debian/trixie, ubuntu/noble) comes from the os-release of the build system
+distribution_id=$(echo "$os_release" | grep "^ID=" | cut -d "=" -f2 | tr -d '"' || true)
+distribution_codename=$(echo "$os_release" | grep "^VERSION_CODENAME" | cut -d "=" -f2 | tr -d '"' || true)
 # Debian testing (forky) has no VERSION_ID - fall back to the codename
 [[ -z "$version_id" ]] && version_id=$(echo "$os_release" | grep "^VERSION_CODENAME" | cut -d "=" -f2 | tr -d '"') || true
 
 echo "LIBM2K_DEBIAN=libm2k-deb-${ARCHITECTURE}-${distro_tag}-${version_id}-${STAGE}" >> $GITHUB_ENV
 echo "LIBM2K_WHEELS=libm2k-wheels-${ARCHITECTURE}-${distro_tag}-${version_id}-${STAGE}" >> $GITHUB_ENV
-echo "DISTRIBUTION_NAME=${distribution_name}" >> "$GITHUB_ENV"
+echo "DISTRIBUTION_NAME=${distribution_id}/${distribution_codename}" >> "$GITHUB_ENV"

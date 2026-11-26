@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: libm2k
-Upstream-Contact: EngineerZone <linux@analog.com>
+Upstream-Contact: Analog Devices Maintainers <linux@analog.com>
 Source: https://github.com/analogdevicesinc/libm2k
 
 Files: *
