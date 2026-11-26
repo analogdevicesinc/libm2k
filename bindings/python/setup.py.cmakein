@@ -1,5 +1,9 @@
-from distutils.core import setup, Extension
-from distutils.command.build import build
+try:
+    from setuptools import setup, Extension
+    from setuptools.command.build import build
+except ImportError:
+    from distutils.core import setup, Extension
+    from distutils.command.build import build
 import sys
 import re
 import os
